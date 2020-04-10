@@ -29,7 +29,7 @@
 @endforeach
 @endif
 
-### HTTP Request
+### Request
 @foreach($route['methods'] as $method)
 <small class="badge badge-{{ \Knuckles\Scribe\Tools\Utils::$httpMethodToCssColour[$method] }}">{{$method}}</small> **`{{$route['uri']}}`**
 
@@ -63,6 +63,17 @@
     {!! $parameter['description'] !!}
 </p>
     @endforeach
+@endif
+
+@if(count($route['responseFields'] ?? []))
+### Response Fields
+@foreach($route['responseFields'] as $attribute => $parameter)
+<p>
+    <code><b>{{$attribute}}</b></code>
+    <br>
+    {!! $parameter['description'] !!}
+</p>
+@endforeach
 @endif
 
 <!-- END_{{$route['id']}} -->
