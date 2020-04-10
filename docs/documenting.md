@@ -4,7 +4,7 @@ This package generates documentation from your code using mainly annotations (in
 ## Grouping endpoints
 All endpoints are grouped for easy organization. Using `@group` in a controller doc block creates a Group within the API documentation. All routes handled by that controller will be grouped under this group in the table of contents shown in the sidebar. 
 
-The short description after the `@group` should be unique to allow anchor tags to navigate to this section. A longer description can be included below. Custom formatting and `<aside>` tags are also supported. (see the [Documentarian docs](http://marcelpociot.de/documentarian/installation/markdown_syntax))
+The short description after the `@group` should be unique to allow anchor tags to navigate to this section. A longer description can be included below. Custom formatting and `<aside>` tags are also supported. (see the [Pastel docs](http://github.com/knuckleswtf/pastel/README.md))
 
  > Note: using `@group` is optional. Ungrouped routes will be placed in a default group.
 

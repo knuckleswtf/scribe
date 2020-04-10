@@ -8,5 +8,5 @@ Read this page if you want a deeper understanding of how this works (for instanc
   - Determining and obtaining info on body parameters, query parameters and headers to be added to the route's documentation.
   - Obtaining a sample response.
 - The generate command uses information from these parsed routes and other configuration to generate a Markdown file via Blade templating.
-- This Markdown file is passed to Documentarian, which transforms it into HTML, CSS and JavaScript assets.
+- This Markdown file is passed to Pastel, which transforms it into HTML, CSS and JavaScript assets.
 - If enabled, a Postman collection is generated as well.

@@ -139,7 +139,7 @@ class Writer
         $prependFileContents = $this->getMarkdownToPrepend();
         $appendFileContents = $this->getMarkdownToAppend();
 
-        $markdown = view('apidoc::documentarian')
+        $markdown = view('apidoc::pastel')
             ->with('writeCompareFile', false)
             ->with('frontmatter', $frontmatter)
             ->with('infoText', $infoText)
@@ -159,7 +159,7 @@ class Writer
         file_put_contents($targetFile, $markdown);
 
         // Write comparable markdown file
-        $compareMarkdown = view('apidoc::documentarian')
+        $compareMarkdown = view('apidoc::pastel')
             ->with('writeCompareFile', true)
             ->with('frontmatter', $frontmatter)
             ->with('infoText', $infoText)

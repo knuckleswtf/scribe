@@ -18,7 +18,7 @@
             <directory suffix=".php">src/</directory>
             <exclude>
                 <file>src/ApiDocGeneratorServiceProvider.php</file>
-                <file>resources/views/documentarian.blade.php</file>
+                <file>resources/views/pastel.blade.php</file>
             </exclude>
         </whitelist>
     </filter>

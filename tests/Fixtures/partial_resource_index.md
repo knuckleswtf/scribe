@@ -10,7 +10,7 @@ includes:
 search: true
 
 toc_footers:
-- <a href='http://github.com/mpociot/documentarian'>Documentation Powered by Documentarian</a>
+- <a href='http://github.com/knuckleswtf/pastel'>Documentation Powered by Pastel</a>
 ---
 <!-- START_INFO -->
 # Info

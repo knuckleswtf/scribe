@@ -67,7 +67,3 @@ Generating docs for large APIs can be memory intensive. If you run into memory l
 ```
 php -d memory_limit=1G artisan apidoc:generate
 ```
-
-## Further modification
-
-This package uses [Documentarian](https://github.com/mpociot/documentarian) to generate the API documentation. If you want to modify the CSS files of your documentation, or simply want to learn more about what is possible, take a look at the [Documentarian guide](http://marcelpociot.de/documentarian/installation).
