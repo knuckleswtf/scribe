@@ -8,16 +8,22 @@ use Mpociot\ApiDoc\Tools\Flags;
 use Mpociot\ApiDoc\Writing\Writer;
 use Shalvah\Clara\Clara;
 
-class RebuildDocumentation extends Command
+class UpdateDocumentation extends Command
 {
-    protected $signature = 'apidoc:rebuild';
+    protected $signature = 'scribe:update';
 
-    protected $description = 'Rebuild your API documentation from your markdown file.';
+    protected $description = 'Update your API documentation with changes made to your markdown files.';
 
     /**
      * @var Clara
      */
     private $clara;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->setAliases(['scribe:rebuild']);
+    }
 
     public function handle()
     {

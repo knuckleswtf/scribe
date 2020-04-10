@@ -25,10 +25,10 @@ If you want to modify the content of your generated documentation without changi
 
 This file is located in the `source` folder of  your `output` directory (see [configuration](config.html#output)), so by default, this is `public/docs/source/index.md`.
  
-After editing the markdown file, you can use the `apidoc:rebuild` command to rebuild your documentation into HTML.
+After editing the markdown file, you can use the `scribe:update` command to rebuild your documentation into HTML.
 
 ```sh
-php artisan apidoc:rebuild
+php artisan scribe:update
 ```
 
 ## Automatically add markdown to the beginning or end of the documentation
