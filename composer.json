@@ -14,6 +14,15 @@
             "email": "hello@shalvah.me"
         }
     ],
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../pastel",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
     "require": {
         "php": ">=7.2.0",
         "ext-json": "*",
@@ -21,7 +30,7 @@
         "illuminate/console": "^5.7|^6.0|^7.0",
         "illuminate/routing": "^5.7|^6.0|^7.0",
         "illuminate/support": "^5.7|^6.0|^7.0",
-        "knuckleswtf/pastel": "^1.1",
+        "knuckleswtf/pastel": "dev-master",
         "league/flysystem": "^1.0",
         "mpociot/reflection-docblock": "^1.0.1",
         "nunomaduro/collision": "^3.0|^4.0",

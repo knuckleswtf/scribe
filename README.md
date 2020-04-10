@@ -1,8 +1,6 @@
-## Laravel API Documentation Generator
+## Scribe ✍
 
 Automatically generate your API documentation from your existing Laravel/Lumen/[Dingo](https://github.com/dingo/api) routes. [Here's what the output looks like](https://shalvah.me/TheCensorshipAPI/).
-
-`php artisan scribe:generate`
 
 [![Latest Stable Version](https://poser.pugx.org/knuckleswtf/scribe/v/stable)](https://packagist.org/packages/knuckleswtf/scribe)[![Total Downloads](https://poser.pugx.org/knuckleswtf/scribe/downloads)](https://packagist.org/packages/knuckleswtf/scribe)
 [![Build Status](https://travis-ci.org/knuckleswtf/scribe.svg?branch=master)](https://travis-ci.org/knuckleswtf/scribe)

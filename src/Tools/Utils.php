@@ -209,4 +209,13 @@ class Utils
 
         return (new ReflectionClass($class))->getMethod($method);
     }
+
+    public static $httpMethodToCssColour = [
+        'GET' => 'green',
+        'HEAD' => 'darkgreen',
+        'POST' => 'black',
+        'PUT' => 'darkblue',
+        'PATCH' => 'purple',
+        'DELETE' => 'red',
+    ];
 }

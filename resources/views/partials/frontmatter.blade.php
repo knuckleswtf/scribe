@@ -15,6 +15,6 @@ logo: {{ $settings['logo'] ?? false }}
 
 toc_footers:
 @if($showPostmanCollectionButton)
-- <a href="{{ $postmanCollectionLink }}">Get Postman Collection</a>
+- <a href="{{ $postmanCollectionLink }}">View Postman Collection</a>
 @endif
-- <a href='http://github.com/knuckleswtf/scribe'>Documentation powered by Scribe</a>
+- <a href='http://github.com/knuckleswtf/scribe'>Documentation powered by Scribe ✍</a>

@@ -2,8 +2,7 @@
 @if($route['metadata']['title'] != '')## {{ $route['metadata']['title']}}
 @else## {{$route['uri']}}@endif
 @if($route['metadata']['authenticated'])
-
-<br><small style="padding: 1px 9px 2px;font-weight: bold;white-space: nowrap;color: #ffffff;-webkit-border-radius: 9px;-moz-border-radius: 9px;border-radius: 9px;background-color: #3a87ad;">Requires authentication</small>@endif
+<small class="badge badge-darkred">REQUIRES AUTHENTICATION</small>@endif
 @if($route['metadata']['description'])
 
 {!! $route['metadata']['description'] !!}
@@ -32,33 +31,37 @@
 
 ### HTTP Request
 @foreach($route['methods'] as $method)
-`{{$method}} {{$route['uri']}}`
+<small class="badge badge-{{ \Knuckles\Scribe\Tools\Utils::$httpMethodToCssColour[$method] }}">{{$method}}</small> **`{{$route['uri']}}`**
 
 @endforeach
 @if(count($route['urlParameters']))
 #### URL Parameters
-
-Parameter | Status | Description
---------- | ------- | ------- | -------
 @foreach($route['urlParameters'] as $attribute => $parameter)
-    `{{$attribute}}` | @if($parameter['required']) required @else optional @endif | {!! $parameter['description'] !!}
+<p>
+    <code><b>{{ "{".$attribute."}" }}</b></code>&nbsp; @if(!$parameter['required'])<i>optional</i>@endif
+    <br>
+    {!! $parameter['description'] !!}
+</p>
 @endforeach
 @endif
 @if(count($route['queryParameters']))
 #### Query Parameters
-
-Parameter | Status | Description
---------- | ------- | ------- | -----------
 @foreach($route['queryParameters'] as $attribute => $parameter)
-    `{{$attribute}}` | @if($parameter['required']) required @else optional @endif | {!! $parameter['description'] !!}
+<p>
+    <code><b>{{$attribute}}</b></code>&nbsp; @if(!$parameter['required'])<i>optional</i>@endif
+    <br>
+    {!! $parameter['description'] !!}
+</p>
 @endforeach
 @endif
 @if(count($route['bodyParameters']))
 #### Body Parameters
-Parameter | Type | Status | Description
---------- | ------- | ------- | ------- | -----------
 @foreach($route['bodyParameters'] as $attribute => $parameter)
-    `{{$attribute}}` | {{$parameter['type']}} | @if($parameter['required']) required @else optional @endif | {!! $parameter['description'] !!}
+<p>
+    <code><b>{{$attribute}}</b></code>&nbsp; <small>{{$parameter['type']}}</small> @if(!$parameter['required'])<i>optional</i>@endif
+    <br>
+    {!! $parameter['description'] !!}
+</p>
     @endforeach
 @endif
 
