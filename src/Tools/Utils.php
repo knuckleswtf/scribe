@@ -2,6 +2,8 @@
 
 namespace Knuckles\Scribe\Tools;
 
+use Closure;
+use Exception;
 use Illuminate\Routing\Route;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
@@ -83,7 +85,7 @@ class Utils
         return $uri;
     }
 
-    public static function dumpException(\Exception $e)
+    public static function dumpException(Exception $e)
     {
         if (class_exists(\NunoMaduro\Collision\Handler::class)) {
             $output = new ConsoleOutput(OutputInterface::VERBOSITY_VERBOSE);
@@ -93,7 +95,7 @@ class Utils
             $handler->handle();
         } else {
             dump($e);
-            echo "You can get better exception output by installing the library \nunomaduro/collision (PHP 7.1+ only).\n";
+            clara('knuckleswtf/scribe')->info("You can get better exception output by installing the library nunomaduro/collision.");
         }
     }
 
@@ -203,7 +205,7 @@ class Utils
     {
         [$class, $method] = $routeControllerAndMethod;
 
-        if ($class instanceof \Closure) {
+        if ($class instanceof Closure) {
             return new ReflectionFunction($class);
         }
 

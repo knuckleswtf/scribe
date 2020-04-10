@@ -3,6 +3,8 @@
 namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 
 use Dingo\Api\Dispatcher;
+use Exception;
+use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Route;
@@ -11,6 +13,8 @@ use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\Flags;
 use Knuckles\Scribe\Tools\Utils;
+use ReflectionClass;
+use ReflectionFunctionAbstract;
 
 /**
  * Make a call to the route and retrieve its response.
@@ -21,14 +25,14 @@ class ResponseCalls extends Strategy
 
     /**
      * @param Route $route
-     * @param \ReflectionClass $controller
-     * @param \ReflectionFunctionAbstract $method
+     * @param ReflectionClass $controller
+     * @param ReflectionFunctionAbstract $method
      * @param array $routeRules
      * @param array $context
      *
      * @return array|null
      */
-    public function __invoke(Route $route, \ReflectionClass $controller, \ReflectionFunctionAbstract $method, array $routeRules, array $context = [])
+    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $context = [])
     {
         $rulesToApply = $routeRules['response_calls'] ?? [];
         if (! $this->shouldMakeApiCall($route, $rulesToApply, $context)) {
@@ -51,12 +55,12 @@ class ResponseCalls extends Strategy
                     'content' => $response->getContent(),
                 ],
             ];
-        } catch (\Exception $e) {
-            echo 'Exception thrown during response call for [' . implode(',', $route->methods) . "] {$route->uri}.\n";
+        } catch (Exception $e) {
+            clara('knuckleswtf/scribe')->warn('Exception thrown during response call for [' . implode(',', $route->methods) . "] {$route->uri}.");
             if (Flags::$shouldBeVerbose) {
                 Utils::dumpException($e);
             } else {
-                echo "Run this again with the --verbose flag to see the exception.\n";
+                clara('knuckleswtf/scribe')->warn("Run this again with the --verbose flag to see the exception.");
             }
             $response = null;
         } finally {
@@ -150,7 +154,7 @@ class ResponseCalls extends Strategy
     {
         try {
             app('db')->beginTransaction();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 
@@ -161,7 +165,7 @@ class ResponseCalls extends Strategy
     {
         try {
             app('db')->rollBack();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 
@@ -277,7 +281,7 @@ class ResponseCalls extends Strategy
     /**
      * @param Request $request
      *
-     * @throws \Exception
+     * @throws Exception
      *
      * @return \Illuminate\Http\JsonResponse|mixed|\Symfony\Component\HttpFoundation\Response
      */
@@ -295,15 +299,15 @@ class ResponseCalls extends Strategy
     /**
      * @param Request $request
      *
-     * @throws \Exception
+     * @throws Exception
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     protected function callLaravelRoute(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         // Confirm we're running in Laravel, not Lumen
-        if (app()->bound(\Illuminate\Contracts\Http\Kernel::class)) {
-            $kernel = app(\Illuminate\Contracts\Http\Kernel::class);
+        if (app()->bound(Kernel::class)) {
+            $kernel = app(Kernel::class);
             $response = $kernel->handle($request);
             $kernel->terminate($request, $response);
         } else {

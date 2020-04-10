@@ -32,11 +32,11 @@ class UseApiResourceTags extends Strategy
      * @param array $rulesToApply
      * @param array $context
      *
-     * @throws \Exception
-     *
      * @return array|null
+     *@throws Exception
+     *
      */
-    public function __invoke(Route $route, \ReflectionClass $controller, \ReflectionFunctionAbstract $method, array $rulesToApply, array $context = [])
+    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $rulesToApply, array $context = [])
     {
         $docBlocks = RouteDocBlocker::getDocBlocksFromRoute($route);
         /** @var DocBlock $methodDocBlock */
@@ -65,7 +65,7 @@ class UseApiResourceTags extends Strategy
 
             try {
                 $resource = new $apiResourceClass($modelInstance);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 // If it is a ResourceCollection class, it might throw an error
                 // when trying to instantiate with something other than a collection
                 $resource = new $apiResourceClass(collect([$modelInstance]));
@@ -89,12 +89,12 @@ class UseApiResourceTags extends Strategy
                     'content' => $response->getContent(),
                 ],
             ];
-        } catch (\Exception $e) {
-            echo 'Exception thrown when fetching Eloquent API resource response for [' . implode(',', $route->methods) . "] {$route->uri}.\n";
+        } catch (Exception $e) {
+            clara('knuckleswtf/scribe')->warn('Exception thrown when fetching Eloquent API resource response for [' . implode(',', $route->methods) . "] {$route->uri}.");
             if (Flags::$shouldBeVerbose) {
                 Utils::dumpException($e);
             } else {
-                echo "Run this again with the --verbose flag to see the exception.\n";
+                clara('knuckleswtf/scribe')->warn("Run this again with the --verbose flag to see the exception.");
             }
 
             return null;
@@ -151,9 +151,9 @@ class UseApiResourceTags extends Strategy
             $type = ltrim($type, '\\');
 
             return factory($type)->make();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             if (Flags::$shouldBeVerbose) {
-                echo "Eloquent model factory failed to instantiate {$type}; trying to fetch from database.\n";
+                clara('knuckleswtf/scribe')->warn("Eloquent model factory failed to instantiate {$type}; trying to fetch from database.");
             }
 
             $instance = new $type();
@@ -164,10 +164,10 @@ class UseApiResourceTags extends Strategy
                     if ($firstInstance) {
                         return $firstInstance;
                     }
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     // okay, we'll stick with `new`
                     if (Flags::$shouldBeVerbose) {
-                        echo "Failed to fetch first {$type} from database; using `new` to instantiate.\n";
+                        clara('knuckleswtf/scribe')->warn("Failed to fetch first {$type} from database; using `new` to instantiate.");
                     }
                 }
             }

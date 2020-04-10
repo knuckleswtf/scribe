@@ -85,11 +85,11 @@ class UseTransformerTags extends Strategy
                 ],
             ];
         } catch (Exception $e) {
-            echo 'Exception thrown when fetching transformer response for [' . implode(',', $route->methods) . "] {$route->uri}.\n";
+            clara('knuckleswtf/scribe')->warn('Exception thrown when fetching transformer response for [' . implode(',', $route->methods) . "] {$route->uri}.");
             if (Flags::$shouldBeVerbose) {
                 Utils::dumpException($e);
             } else {
-                echo "Run this again with the --verbose flag to see the exception.\n";
+                clara('knuckleswtf/scribe')->warn("Run this again with the --verbose flag to see the exception.");
             }
 
             return null;
@@ -160,7 +160,7 @@ class UseTransformerTags extends Strategy
             return factory($type)->make();
         } catch (Exception $e) {
             if (Flags::$shouldBeVerbose) {
-                echo "Eloquent model factory failed to instantiate {$type}; trying to fetch from database.\n";
+                clara('knuckleswtf/scribe')->warn("Eloquent model factory failed to instantiate {$type}; trying to fetch from database.");
             }
 
             $instance = new $type();
@@ -174,7 +174,7 @@ class UseTransformerTags extends Strategy
                 } catch (Exception $e) {
                     // okay, we'll stick with `new`
                     if (Flags::$shouldBeVerbose) {
-                        echo "Failed to fetch first {$type} from database; using `new` to instantiate.\n";
+                        clara('knuckleswtf/scribe')->warn("Failed to fetch first {$type} from database; using `new` to instantiate.");
                     }
                 }
             }
