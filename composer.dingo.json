@@ -1,5 +1,5 @@
 {
-    "name": "mpociot/laravel-apidoc-generator",
+    "name": "knuckleswtf/scribe",
     "license": "MIT",
     "description": "Generate beautiful API documentation from your Laravel application",
     "keywords": [
@@ -7,11 +7,11 @@
         "Documentation",
         "Laravel"
     ],
-    "homepage": "http://github.com/mpociot/laravel-apidoc-generator",
+    "homepage": "http://github.com/knuckleswtf/scribe",
     "authors": [
         {
-            "name": "Marcel Pociot",
-            "email": "m.pociot@gmail.com"
+            "name": "Shalvah",
+            "email": "hello@shalvah.me"
         }
     ],
     "require": {
@@ -42,12 +42,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Mpociot\\ApiDoc\\": "src/"
+            "Knuckles\\Scribe\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Mpociot\\ApiDoc\\Tests\\": "tests/"
+            "Knuckles\\Scribe\\Tests\\": "tests/"
         }
     },
     "scripts": {
@@ -58,7 +58,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Mpociot\\ApiDoc\\ApiDocGeneratorServiceProvider"
+                "Knuckles\\Scribe\\ScribeServiceProvider"
             ]
         }
     },

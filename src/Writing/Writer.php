@@ -1,13 +1,13 @@
 <?php
 
-namespace Mpociot\ApiDoc\Writing;
+namespace Knuckles\Scribe\Writing;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Knuckles\Pastel\Pastel;
-use Mpociot\ApiDoc\Tools\DocumentationConfig;
-use Mpociot\ApiDoc\Tools\Flags;
+use Knuckles\Scribe\Tools\DocumentationConfig;
+use Knuckles\Scribe\Tools\Flags;
 use Shalvah\Clara\Clara;
 
 class Writer
@@ -60,7 +60,7 @@ class Writer
     public function __construct(DocumentationConfig $config = null, bool $forceIt = false)
     {
         // If no config is injected, pull from global
-        $this->config = $config ?: new DocumentationConfig(config('apidoc'));
+        $this->config = $config ?: new DocumentationConfig(config('scribe'));
         $this->baseUrl = $this->config->get('base_url') ?? config('app.url');
         $this->forceIt = $forceIt;
         $this->clara = clara('knuckleswtf/scribe',  Flags::$shouldBeVerbose)->only();
@@ -68,7 +68,7 @@ class Writer
         $this->pastel = new Pastel();
         $this->isStatic = $this->config->get('type') === 'static';
         $this->sourceOutputPath = 'resources/docs';
-        $this->outputPath = $this->isStatic ? 'public/docs' : 'resources/views/apidoc';
+        $this->outputPath = $this->isStatic ? 'public/docs' : 'resources/views/scribe';
     }
 
     public function writeDocs(Collection $routes)
@@ -77,7 +77,7 @@ class Writer
         // The static assets (js/, css/, and images/) always go in public/docs/.
         // For 'static' docs, the output files (index.html, collection.json) go in public/docs/.
         // For 'laravel' docs, the output files (index.blade.php, collection.json)
-        // go in resources/views/apidoc/ and storage/app/apidoc/ respectively.
+        // go in resources/views/scribe/ and storage/app/scribe/ respectively.
 
         $this->writeMarkdownAndSourceFiles($routes);
 
@@ -96,7 +96,7 @@ class Writer
         $targetFile = $this->sourceOutputPath . '/source/index.md';
         $compareFile = $this->sourceOutputPath . '/source/.compare.md';
 
-        $infoText = view('apidoc::partials.info');
+        $infoText = view('scribe::partials.info');
 
         $settings = [
             'languages' => $this->config->get('example_languages'),
@@ -105,7 +105,7 @@ class Writer
         // Generate Markdown for each route
         $parsedRouteOutput = $this->generateMarkdownOutputForEachRoute($parsedRoutes, $settings);
 
-        $frontmatter = view('apidoc::partials.frontmatter')
+        $frontmatter = view('scribe::partials.frontmatter')
             ->with('showPostmanCollectionButton', $this->shouldGeneratePostmanCollection)
              // This path is wrong for laravel type but will be replaced in post
             ->with('postmanCollectionLink', './collection.json')
@@ -143,7 +143,7 @@ class Writer
         $prependFileContents = $this->getMarkdownToPrepend();
         $appendFileContents = $this->getMarkdownToAppend();
 
-        $markdown = view('apidoc::pastel')
+        $markdown = view('scribe::pastel')
             ->with('writeCompareFile', false)
             ->with('frontmatter', $frontmatter)
             ->with('infoText', $infoText)
@@ -163,7 +163,7 @@ class Writer
         file_put_contents($targetFile, $markdown);
 
         // Write comparable markdown file
-        $compareMarkdown = view('apidoc::pastel')
+        $compareMarkdown = view('scribe::pastel')
             ->with('writeCompareFile', true)
             ->with('frontmatter', $frontmatter)
             ->with('infoText', $infoText)
@@ -188,7 +188,7 @@ class Writer
                 }
 
                 $hasRequestOptions = ! empty($route['headers']) || ! empty($route['cleanQueryParameters']) || ! empty($route['cleanBodyParameters']);
-                $route['output'] = (string) view('apidoc::partials.route')
+                $route['output'] = (string) view('scribe::partials.route')
                     ->with('hasRequestOptions', $hasRequestOptions)
                     ->with('route', $route)
                     ->with('settings', $settings)
@@ -212,8 +212,8 @@ class Writer
                 $collectionPath = "{$this->outputPath}/collection.json";
                 file_put_contents($collectionPath, $collection);
             } else {
-                Storage::disk('local')->put('apidoc/collection.json', $collection);
-                $collectionPath = 'storage/app/apidoc/collection.json';
+                Storage::disk('local')->put('scribe/collection.json', $collection);
+                $collectionPath = 'storage/app/scribe/collection.json';
             }
 
             $this->clara->success("Wrote Postman collection to: {$collectionPath}");
@@ -268,7 +268,7 @@ class Writer
             $contents = str_replace('href="css/style.css"', 'href="/docs/css/style.css"', $contents);
             $contents = str_replace('src="js/all.js"', 'src="/docs/js/all.js"', $contents);
             $contents = str_replace('src="images/', 'src="/docs/images/', $contents);
-            $contents = preg_replace('#href="./collection.json"#', 'href="{{ route("apidoc.json") }}"', $contents);
+            $contents = preg_replace('#href="./collection.json"#', 'href="{{ route("scribe.json") }}"', $contents);
             file_put_contents("$this->outputPath/index.blade.php", $contents);
     }
 

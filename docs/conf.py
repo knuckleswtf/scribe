@@ -18,9 +18,9 @@ from recommonmark.transform import AutoStructify
 
 # -- Project information -----------------------------------------------------
 
-project = 'laravel-apidoc-generator'
-copyright = '2019, Marcel Pociot'
-author = 'Marcel Pociot'
+project = 'laravel-scribe-generator'
+copyright = '2020, Shalvah'
+author = 'Shalvah'
 
 
 # -- General configuration ---------------------------------------------------

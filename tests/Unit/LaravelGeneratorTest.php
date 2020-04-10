@@ -1,18 +1,18 @@
 <?php
 
-namespace Mpociot\ApiDoc\Tests\Unit;
+namespace Knuckles\Scribe\Tests\Unit;
 
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Route as RouteFacade;
-use Mpociot\ApiDoc\ApiDocGeneratorServiceProvider;
-use Mpociot\ApiDoc\Tests\Fixtures\TestController;
+use Knuckles\Scribe\ScribeServiceProvider;
+use Knuckles\Scribe\Tests\Fixtures\TestController;
 
 class LaravelGeneratorTest extends GeneratorTestCase
 {
     protected function getPackageProviders($app)
     {
         return [
-            ApiDocGeneratorServiceProvider::class,
+            ScribeServiceProvider::class,
         ];
     }
 

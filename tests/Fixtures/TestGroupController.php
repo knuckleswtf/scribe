@@ -1,6 +1,6 @@
 <?php
 
-namespace Mpociot\ApiDoc\Tests\Fixtures;
+namespace Knuckles\Scribe\Tests\Fixtures;
 
 /**
  * @group 1. Group 1

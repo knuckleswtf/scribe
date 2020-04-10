@@ -1,8 +1,6 @@
 <?php
 
-namespace Mpociot\ApiDoc\Matching;
-
-use Mpociot\ApiDoc\Matching\RouteMatcher\Match;
+namespace Knuckles\Scribe\Matching;
 
 interface RouteMatcherInterface
 {

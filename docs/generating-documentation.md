@@ -1,9 +1,9 @@
 # Generating Documentation
 
-To generate your API documentation, use the `apidoc:generate` artisan command.
+To generate your API documentation, use the `scribe:generate` artisan command.
 
 ```sh
-php artisan apidoc:generate
+php artisan scribe:generate
 
 ```
 
@@ -18,7 +18,7 @@ The generator automatically creates a Postman collection file, which you can imp
 
 If you don't want to create a Postman collection, set the `postman.enabled` config option to false.
 
-The base URL used in the Postman collection will be the value of the `base_url` key in your Laravel `config/apidoc.php` file. 
+The base URL used in the Postman collection will be the value of the `base_url` key in your Laravel `config/scribe.php` file. 
 
 ## Manually modifying the content of the generated documentation
 If you want to modify the content of your generated documentation without changing the routes, go ahead and edit the generated `index.md` file.
@@ -42,10 +42,10 @@ php artisan scribe:update
  - Publish the vendor views by running:
  
  ```bash
- php artisan vendor:publish --provider="Mpociot\ApiDoc\ApiDocGeneratorServiceProvider" --tag=apidoc-views
+ php artisan vendor:publish --provider="Knuckles\Scribe\ScribeServiceProvider" --tag=scribe-views
  ```
  
- This will copy the views files to `\resources\views\vendor\apidoc`.
+ This will copy the views files to `\resources\views\vendor\scribe`.
  
  - Next, create a file called {language-name}.blade.php (for example, ruby.blade.php) in the partials/example-requests directory. You can then write Markdown with Blade templating that describes how the example request for the language should be rendered. You have the `$route` variable available to you. This variable is an array with the following keys:
 - `methods`: an array of the HTTP methods for that route
@@ -65,5 +65,5 @@ To customise existing language templates you can perform the `vendor:publish` co
 Generating docs for large APIs can be memory intensive. If you run into memory limits, consider running PHP with command line flags to increase memory limit or update your CLI php.ini file:
 
 ```
-php -d memory_limit=1G artisan apidoc:generate
+php -d memory_limit=1G artisan scribe:generate
 ```

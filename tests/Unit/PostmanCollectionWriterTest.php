@@ -1,16 +1,16 @@
 <?php
 
-namespace Mpociot\ApiDoc\Tests\Unit;
+namespace Knuckles\Scribe\Tests\Unit;
 
 use Illuminate\Support\Collection;
-use Mpociot\ApiDoc\Writing\PostmanCollectionWriter;
+use Knuckles\Scribe\Writing\PostmanCollectionWriter;
 use Orchestra\Testbench\TestCase;
 
 class PostmanCollectionWriterTest extends TestCase
 {
     public function testNameIsPresentInCollection()
     {
-        \Config::set('apidoc.postman', [
+        \Config::set('scribe.postman', [
             'name' => 'Test collection',
         ]);
 
@@ -32,7 +32,7 @@ class PostmanCollectionWriterTest extends TestCase
 
     public function testDescriptionIsPresentInCollection()
     {
-        \Config::set('apidoc.postman', [
+        \Config::set('scribe.postman', [
             'description' => 'A fake description',
         ]);
 
@@ -56,7 +56,7 @@ class PostmanCollectionWriterTest extends TestCase
             'type' => 'test',
             'test' => ['a' => 1],
         ];
-        \Config::set('apidoc.postman', [
+        \Config::set('scribe.postman', [
             'auth' => $auth,
         ]);
 
@@ -240,7 +240,7 @@ class PostmanCollectionWriterTest extends TestCase
      */
     public function testAuthAutoExcludesHeaderDefinitions(array $authConfig, array $expectedRemovedHeaders)
     {
-        \Config::set('apidoc.postman', [
+        \Config::set('scribe.postman', [
             'auth' => $authConfig,
         ]);
 
@@ -270,7 +270,7 @@ class PostmanCollectionWriterTest extends TestCase
 
     public function testApiKeyAuthIsIgnoredIfExplicitlyNotInHeader()
     {
-        \Config::set('apidoc.postman', [
+        \Config::set('scribe.postman', [
             'auth' => ['type' => 'apikey', 'apikey' => [
                 'value' => 'Test',
                 'key' => 'X-Authorization',

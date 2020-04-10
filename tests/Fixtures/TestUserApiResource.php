@@ -1,6 +1,6 @@
 <?php
 
-namespace Mpociot\ApiDoc\Tests\Fixtures;
+namespace Knuckles\Scribe\Tests\Fixtures;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 

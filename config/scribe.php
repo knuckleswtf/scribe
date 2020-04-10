@@ -46,8 +46,8 @@ return [
     /*
      * Generate a Postman collection in addition to HTML docs.
      * For 'static' docs, the collection will be generated to public/docs/collection.json.
-     * For 'laravel' docs, it will be generated to storage/app/apidoc/collection.json.
-     * The `ApiDoc::routes()` helper will add routes for both the HTML and the Postman collection.
+     * For 'laravel' docs, it will be generated to storage/app/scribe/collection.json.
+     * Setting `laravel.autoload` to true (above) will add routes for both the HTML and the Postman collection.
      */
     'postman' => [
         /*
@@ -193,26 +193,26 @@ return [
 
     'strategies' => [
         'metadata' => [
-            \Mpociot\ApiDoc\Extracting\Strategies\Metadata\GetFromDocBlocks::class,
+            \Knuckles\Scribe\Extracting\Strategies\Metadata\GetFromDocBlocks::class,
         ],
         'urlParameters' => [
-            \Mpociot\ApiDoc\Extracting\Strategies\UrlParameters\GetFromUrlParamTag::class,
+            \Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromUrlParamTag::class,
         ],
         'queryParameters' => [
-            \Mpociot\ApiDoc\Extracting\Strategies\QueryParameters\GetFromQueryParamTag::class,
+            \Knuckles\Scribe\Extracting\Strategies\QueryParameters\GetFromQueryParamTag::class,
         ],
         'headers' => [
-            \Mpociot\ApiDoc\Extracting\Strategies\RequestHeaders\GetFromRouteRules::class,
+            \Knuckles\Scribe\Extracting\Strategies\RequestHeaders\GetFromRouteRules::class,
         ],
         'bodyParameters' => [
-            \Mpociot\ApiDoc\Extracting\Strategies\BodyParameters\GetFromBodyParamTag::class,
+            \Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromBodyParamTag::class,
         ],
         'responses' => [
-            \Mpociot\ApiDoc\Extracting\Strategies\Responses\UseTransformerTags::class,
-            \Mpociot\ApiDoc\Extracting\Strategies\Responses\UseResponseTag::class,
-            \Mpociot\ApiDoc\Extracting\Strategies\Responses\UseResponseFileTag::class,
-            \Mpociot\ApiDoc\Extracting\Strategies\Responses\UseApiResourceTags::class,
-            \Mpociot\ApiDoc\Extracting\Strategies\Responses\ResponseCalls::class,
+            \Knuckles\Scribe\Extracting\Strategies\Responses\UseTransformerTags::class,
+            \Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseTag::class,
+            \Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseFileTag::class,
+            \Knuckles\Scribe\Extracting\Strategies\Responses\UseApiResourceTags::class,
+            \Knuckles\Scribe\Extracting\Strategies\Responses\ResponseCalls::class,
         ],
     ],
 
@@ -239,7 +239,7 @@ return [
      * Supported options are: bash, javascript, php, python
      * You can add a language of your own, but you must publish the package's views
      * and define a corresponding view for it in the partials/example-requests directory.
-     * See https://laravel-apidoc-generator.readthedocs.io/en/latest/generating-documentation.html
+     * See https://scribe.readthedocs.io/en/latest/generating-documentation.html
      *
      */
     'example_languages' => [
@@ -278,5 +278,5 @@ return [
      * declare your own implementation of RouteMatcherInterface
      *
      */
-    'routeMatcher' => \Mpociot\ApiDoc\Matching\RouteMatcher::class,
+    'routeMatcher' => \Knuckles\Scribe\Matching\RouteMatcher::class,
 ];

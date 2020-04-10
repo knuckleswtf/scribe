@@ -1,18 +1,18 @@
 <?php
 
-namespace Mpociot\ApiDoc\Tests;
+namespace Knuckles\Scribe\Tests;
 
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route as RouteFacade;
 use Illuminate\Support\Str;
-use Mpociot\ApiDoc\ApiDocGeneratorServiceProvider;
-use Mpociot\ApiDoc\Tests\Fixtures\TestController;
-use Mpociot\ApiDoc\Tests\Fixtures\TestGroupController;
-use Mpociot\ApiDoc\Tests\Fixtures\TestPartialResourceController;
-use Mpociot\ApiDoc\Tests\Fixtures\TestResourceController;
-use Mpociot\ApiDoc\Tests\Fixtures\TestUser;
-use Mpociot\ApiDoc\Tools\Utils;
+use Knuckles\Scribe\ScribeServiceProvider;
+use Knuckles\Scribe\Tests\Fixtures\TestController;
+use Knuckles\Scribe\Tests\Fixtures\TestGroupController;
+use Knuckles\Scribe\Tests\Fixtures\TestPartialResourceController;
+use Knuckles\Scribe\Tests\Fixtures\TestResourceController;
+use Knuckles\Scribe\Tests\Fixtures\TestUser;
+use Knuckles\Scribe\Tools\Utils;
 use Orchestra\Testbench\TestCase;
 use ReflectionException;
 
@@ -49,7 +49,7 @@ class GenerateDocumentationTest extends TestCase
     protected function getPackageProviders($app)
     {
         return [
-            ApiDocGeneratorServiceProvider::class,
+            ScribeServiceProvider::class,
         ];
     }
 
@@ -61,8 +61,8 @@ class GenerateDocumentationTest extends TestCase
         });
         RouteFacade::get('/api/test', TestController::class . '@withEndpointDescription');
 
-        config(['apidoc.routes.0.match.prefixes' => ['api/*']]);
-        $output = $this->artisan('apidoc:generate');
+        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
+        $output = $this->artisan('scribe:generate');
 
         $this->assertStringContainsString('Processed route: [GET] api/closure', $output);
         $this->assertStringContainsString('Processed route: [GET] api/test', $output);
@@ -79,10 +79,10 @@ class GenerateDocumentationTest extends TestCase
             $api->get('/test', TestController::class . '@withEndpointDescription');
         });
 
-        config(['apidoc.router' => 'dingo']);
-        config(['apidoc.routes.0.match.prefixes' => ['*']]);
-        config(['apidoc.routes.0.match.versions' => ['v1']]);
-        $output = $this->artisan('apidoc:generate');
+        config(['scribe.router' => 'dingo']);
+        config(['scribe.routes.0.match.prefixes' => ['*']]);
+        config(['scribe.routes.0.match.versions' => ['v1']]);
+        $output = $this->artisan('scribe:generate');
 
         $this->assertStringContainsString('Processed route: [GET] closure', $output);
         $this->assertStringContainsString('Processed route: [GET] test', $output);
@@ -93,8 +93,8 @@ class GenerateDocumentationTest extends TestCase
     {
         RouteFacade::get('/api/array/test', [TestController::class, 'withEndpointDescription']);
 
-        config(['apidoc.routes.0.match.prefixes' => ['api/*']]);
-        $output = $this->artisan('apidoc:generate');
+        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
+        $output = $this->artisan('scribe:generate');
 
         $this->assertStringNotContainsString('Skipping route: [GET] api/array/test', $output);
         $this->assertStringContainsString('Processed route: [GET] api/array/test', $output);
@@ -106,8 +106,8 @@ class GenerateDocumentationTest extends TestCase
         RouteFacade::get('/api/skip', TestController::class . '@skip');
         RouteFacade::get('/api/test', TestController::class . '@withEndpointDescription');
 
-        config(['apidoc.routes.0.match.prefixes' => ['api/*']]);
-        $output = $this->artisan('apidoc:generate');
+        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
+        $output = $this->artisan('scribe:generate');
 
         $this->assertStringContainsString('Skipping route: [GET] api/skip', $output);
         $this->assertStringContainsString('Processed route: [GET] api/test', $output);
@@ -118,8 +118,8 @@ class GenerateDocumentationTest extends TestCase
     {
         RouteFacade::get('/api/non-existent', TestController::class . '@withNonExistentResponseFile');
 
-        config(['apidoc.routes.0.match.prefixes' => ['api/*']]);
-        $output = $this->artisan('apidoc:generate');
+        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
+        $output = $this->artisan('scribe:generate');
 
         $this->assertStringContainsString('Skipping route: [GET] api/non-existent', $output);
         $this->assertStringContainsString('@responseFile i-do-not-exist.json does not exist', $output);
@@ -130,14 +130,14 @@ class GenerateDocumentationTest extends TestCase
     {
         RouteFacade::resource('/api/users', TestResourceController::class);
 
-        config(['apidoc.routes.0.match.prefixes' => ['api/*']]);
+        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
         config([
-            'apidoc.routes.0.apply.headers' => [
+            'scribe.routes.0.apply.headers' => [
                 'Accept' => 'application/json',
             ],
         ]);
 
-        $this->artisan('apidoc:generate');
+        $this->artisan('scribe:generate');
 
         $fixtureMarkdown = __DIR__ . '/Fixtures/resource_index.md';
         $generatedMarkdown = __DIR__ . '/../resources/docs/source/index.md';

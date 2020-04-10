@@ -1,10 +1,10 @@
 <?php
 
-namespace Mpociot\ApiDoc\Tests\Unit;
+namespace Knuckles\Scribe\Tests\Unit;
 
 use Dingo\Api\Routing\Router;
 use Illuminate\Support\Str;
-use Mpociot\ApiDoc\Matching\RouteMatcher;
+use Knuckles\Scribe\Matching\RouteMatcher;
 use Orchestra\Testbench\TestCase;
 
 /**

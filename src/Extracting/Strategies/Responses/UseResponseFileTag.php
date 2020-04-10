@@ -1,10 +1,10 @@
 <?php
 
-namespace Mpociot\ApiDoc\Extracting\Strategies\Responses;
+namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 
 use Illuminate\Routing\Route;
-use Mpociot\ApiDoc\Extracting\RouteDocBlocker;
-use Mpociot\ApiDoc\Extracting\Strategies\Strategy;
+use Knuckles\Scribe\Extracting\RouteDocBlocker;
+use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Mpociot\Reflection\DocBlock;
 use Mpociot\Reflection\DocBlock\Tag;
 

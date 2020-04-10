@@ -1,6 +1,6 @@
 <?php
 
-namespace Mpociot\ApiDoc\Http;
+namespace Knuckles\Scribe\Http;
 
 use Illuminate\Support\Facades\Storage;
 
@@ -8,7 +8,7 @@ class Controller
 {
     public function html()
     {
-        return view('apidoc.index');
+        return view('scribe.index');
     }
 
     /**
@@ -19,7 +19,7 @@ class Controller
     public function json()
     {
         return response()->json(
-            json_decode(Storage::disk('local')->get('apidoc/collection.json'))
+            json_decode(Storage::disk('local')->get('scribe/collection.json'))
         );
     }
 }

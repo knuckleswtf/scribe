@@ -1,6 +1,6 @@
 <?php
 
-namespace Mpociot\ApiDoc\Writing;
+namespace Knuckles\Scribe\Writing;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\URL;
@@ -40,7 +40,7 @@ class PostmanCollectionWriter
         $this->routeGroups = $routeGroups;
         $this->protocol = Str::startsWith($baseUrl, 'https') ? 'https' : 'http';
         $this->baseUrl = $this->getBaseUrl($baseUrl);
-        $this->auth = config('apidoc.postman.auth');
+        $this->auth = config('scribe.postman.auth');
     }
 
     public function getCollection()
@@ -48,9 +48,9 @@ class PostmanCollectionWriter
         $collection = [
             'variables' => [],
             'info' => [
-                'name' => config('apidoc.postman.name') ?: config('app.name') . ' API',
+                'name' => config('scribe.postman.name') ?: config('app.name') . ' API',
                 '_postman_id' => Uuid::uuid4()->toString(),
-                'description' => config('apidoc.postman.description') ?: '',
+                'description' => config('scribe.postman.description') ?: '',
                 'schema' => 'https://schema.getpostman.com/json/collection/v2.0.0/collection.json',
             ],
             'item' => $this->routeGroups->map(function (Collection $routes, $groupName) {

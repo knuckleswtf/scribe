@@ -1,12 +1,11 @@
 <?php
 
-namespace Mpociot\ApiDoc\Matching;
+namespace Knuckles\Scribe\Matching;
 
 use Dingo\Api\Routing\RouteCollection;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Route as RouteFacade;
 use Illuminate\Support\Str;
-use Mpociot\ApiDoc\Matching\RouteMatcher\Match;
 
 class RouteMatcher implements RouteMatcherInterface
 {
@@ -76,7 +75,7 @@ class RouteMatcher implements RouteMatcherInterface
         $excludes = $routeRule['exclude'] ?? [];
 
         // Exclude this package's routes
-        $excludes[] = 'apidoc';
+        $excludes[] = 'scribe';
 
         // Exclude Laravel Telescope routes
         if (class_exists("Laravel\Telescope\Telescope")) {

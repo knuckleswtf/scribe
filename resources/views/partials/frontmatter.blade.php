@@ -13,4 +13,4 @@ toc_footers:
 @if($showPostmanCollectionButton)
 - <a href="{{ $postmanCollectionLink }}">Get Postman Collection</a>
 @endif
-- <a href='http://github.com/knuckleswtf/pastel'>Documentation powered by Pastel</a>
+- <a href='http://github.com/knuckleswtf/scribe'>Documentation powered by Scribe</a>

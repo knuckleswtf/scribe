@@ -1,10 +1,10 @@
 <?php
 
-namespace Mpociot\ApiDoc\Tests\Fixtures;
+namespace Knuckles\Scribe\Tests\Fixtures;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Mpociot\ApiDoc\Tests\Unit\GeneratorTestCase;
+use Knuckles\Scribe\Tests\Unit\GeneratorTestCase;
 
 /**
  * @group Group A
@@ -152,8 +152,8 @@ class TestController extends Controller
     }
 
     /**
-     * @apiResource \Mpociot\ApiDoc\Tests\Fixtures\TestUserApiResource
-     * @apiResourceModel \Mpociot\ApiDoc\Tests\Fixtures\TestUser
+     * @apiResource \Knuckles\Scribe\Tests\Fixtures\TestUserApiResource
+     * @apiResourceModel \Knuckles\Scribe\Tests\Fixtures\TestUser
      */
     public function withEloquentApiResource()
     {
@@ -163,8 +163,8 @@ class TestController extends Controller
     /**
      * @group Other😎
      *
-     * @apiResourceCollection Mpociot\ApiDoc\Tests\Fixtures\TestUserApiResource
-     * @apiResourceModel Mpociot\ApiDoc\Tests\Fixtures\TestUser
+     * @apiResourceCollection Knuckles\Scribe\Tests\Fixtures\TestUserApiResource
+     * @apiResourceModel Knuckles\Scribe\Tests\Fixtures\TestUser
      */
     public function withEloquentApiResourceCollection()
     {
@@ -176,8 +176,8 @@ class TestController extends Controller
     /**
      * @group Other😎
      *
-     * @apiResourceCollection Mpociot\ApiDoc\Tests\Fixtures\TestUserApiResourceCollection
-     * @apiResourceModel Mpociot\ApiDoc\Tests\Fixtures\TestUser
+     * @apiResourceCollection Knuckles\Scribe\Tests\Fixtures\TestUserApiResourceCollection
+     * @apiResourceModel Knuckles\Scribe\Tests\Fixtures\TestUser
      */
     public function withEloquentApiResourceCollectionClass()
     {
@@ -307,7 +307,7 @@ class TestController extends Controller
     }
 
     /**
-     * @transformer \Mpociot\ApiDoc\Tests\Fixtures\TestTransformer
+     * @transformer \Knuckles\Scribe\Tests\Fixtures\TestTransformer
      */
     public function transformerTag()
     {
@@ -315,7 +315,7 @@ class TestController extends Controller
     }
 
     /**
-     * @transformer 201 \Mpociot\ApiDoc\Tests\Fixtures\TestTransformer
+     * @transformer 201 \Knuckles\Scribe\Tests\Fixtures\TestTransformer
      */
     public function transformerTagWithStatusCode()
     {
@@ -323,8 +323,8 @@ class TestController extends Controller
     }
 
     /**
-     * @transformer \Mpociot\ApiDoc\Tests\Fixtures\TestTransformer
-     * @transformermodel \Mpociot\ApiDoc\Tests\Fixtures\TestModel
+     * @transformer \Knuckles\Scribe\Tests\Fixtures\TestTransformer
+     * @transformermodel \Knuckles\Scribe\Tests\Fixtures\TestModel
      */
     public function transformerTagWithModel()
     {
@@ -332,7 +332,7 @@ class TestController extends Controller
     }
 
     /**
-     * @transformercollection \Mpociot\ApiDoc\Tests\Fixtures\TestTransformer
+     * @transformercollection \Knuckles\Scribe\Tests\Fixtures\TestTransformer
      */
     public function transformerCollectionTag()
     {
@@ -340,8 +340,8 @@ class TestController extends Controller
     }
 
     /**
-     * @transformercollection \Mpociot\ApiDoc\Tests\Fixtures\TestTransformer
-     * @transformermodel \Mpociot\ApiDoc\Tests\Fixtures\TestModel
+     * @transformercollection \Knuckles\Scribe\Tests\Fixtures\TestTransformer
+     * @transformermodel \Knuckles\Scribe\Tests\Fixtures\TestModel
      */
     public function transformerCollectionTagWithModel()
     {

@@ -2,14 +2,10 @@
 
 Automatically generate your API documentation from your existing Laravel/Lumen/[Dingo](https://github.com/dingo/api) routes. [Here's what the output looks like](https://shalvah.me/TheCensorshipAPI/).
 
-`php artisan apidoc:generate`
+`php artisan scribe:generate`
 
-[![Latest Stable Version](https://poser.pugx.org/mpociot/laravel-apidoc-generator/v/stable)](https://packagist.org/packages/mpociot/laravel-apidoc-generator)[![Total Downloads](https://poser.pugx.org/mpociot/laravel-apidoc-generator/downloads)](https://packagist.org/packages/mpociot/laravel-apidoc-generator)
-[![License](https://poser.pugx.org/mpociot/laravel-apidoc-generator/license)](https://packagist.org/packages/mpociot/laravel-apidoc-generator)
-[![codecov.io](https://codecov.io/github/mpociot/laravel-apidoc-generator/coverage.svg?branch=master)](https://codecov.io/github/mpociot/laravel-apidoc-generator?branch=master)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/mpociot/laravel-apidoc-generator/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/mpociot/laravel-apidoc-generator/?branch=master)
-[![Build Status](https://travis-ci.org/mpociot/laravel-apidoc-generator.svg?branch=master)](https://travis-ci.org/mpociot/laravel-apidoc-generator)
-[![StyleCI](https://styleci.io/repos/57999295/shield?style=flat)](https://styleci.io/repos/57999295)
+[![Latest Stable Version](https://poser.pugx.org/knuckleswtf/scribe/v/stable)](https://packagist.org/packages/knuckleswtf/scribe)[![Total Downloads](https://poser.pugx.org/knuckleswtf/scribe/downloads)](https://packagist.org/packages/knuckleswtf/scribe)
+[![Build Status](https://travis-ci.org/knuckleswtf/scribe.svg?branch=master)](https://travis-ci.org/knuckleswtf/scribe)
 
 ## Installation
 PHP 7.2 and Laravel/Lumen 5.7 or higher are required.
@@ -17,34 +13,34 @@ PHP 7.2 and Laravel/Lumen 5.7 or higher are required.
 > If your application does not meet these requirements, you can check out the 3.x branch for older releases.
 
 ```sh
-composer require --dev mpociot/laravel-apidoc-generator
+composer require --dev knuckleswtf/scribe
 ```
 
 ### Laravel
 Publish the config file by running:
 
 ```bash
-php artisan vendor:publish --provider="Mpociot\ApiDoc\ApiDocGeneratorServiceProvider" --tag=apidoc-config
+php artisan vendor:publish --provider="Knuckles\Scribe\ScribeServiceProvider" --tag=scribe-config
 ```
 
-This will create an `apidoc.php` file in your `config` folder.
+This will create a `scribe.php` file in your `config` folder.
 
 ### Lumen
-- When using Lumen, you will need to run `composer require mpociot/laravel-apidoc-generator` instead.
+- When using Lumen, you will need to run `composer require knuckleswtf/scribe` instead.
 - Register the service provider in your `bootstrap/app.php`:
 
 ```php
-$app->register(\Mpociot\ApiDoc\ApiDocGeneratorServiceProvider::class);
+$app->register(\Knuckles\Scribe\ScribeServiceProvider::class);
 ```
 
-- Copy the config file from `vendor/mpociot/laravel-apidoc-generator/config/apidoc.php` to your project as `config/apidoc.php`. Then add to your `bootstrap/app.php`:
+- Copy the config file from `vendor/knuckleswtf/scribe/config/scribe.php` to your project as `config/scribe.php`. Then add to your `bootstrap/app.php`:
 
 ```php
-$app->configure('apidoc');
+$app->configure('scribe');
 ```
 
 ## Documentation
-Check out the documentation at [ReadTheDocs](http://laravel-apidoc-generator.rtfd.io/). Don't forget to check out the [migration guide](https://laravel-apidoc-generator.rtfd.io/en/latest/migrating.html) if you're coming from v3 to v4.
+Check out the documentation at [ReadTheDocs](http://laravel-scribe-generator.rtfd.io/). Don't forget to check out the [migration guide](https://laravel-scribe-generator.rtfd.io/en/latest/migrating.html) if you're coming from v3 to v4.
 
 ### License
 

@@ -1,9 +1,9 @@
 <?php
 
-namespace Mpociot\ApiDoc\Extracting\Strategies\RequestHeaders;
+namespace Knuckles\Scribe\Extracting\Strategies\RequestHeaders;
 
 use Illuminate\Routing\Route;
-use Mpociot\ApiDoc\Extracting\Strategies\Strategy;
+use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use ReflectionClass;
 use ReflectionFunctionAbstract;
 

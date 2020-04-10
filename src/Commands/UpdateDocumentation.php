@@ -1,11 +1,11 @@
 <?php
 
-namespace Mpociot\ApiDoc\Commands;
+namespace Knuckles\Scribe\Commands;
 
 use Illuminate\Console\Command;
-use Mpociot\ApiDoc\Tools\DocumentationConfig;
-use Mpociot\ApiDoc\Tools\Flags;
-use Mpociot\ApiDoc\Writing\Writer;
+use Knuckles\Scribe\Tools\DocumentationConfig;
+use Knuckles\Scribe\Tools\Flags;
+use Knuckles\Scribe\Writing\Writer;
 use Shalvah\Clara\Clara;
 
 class UpdateDocumentation extends Command
@@ -39,7 +39,7 @@ class UpdateDocumentation extends Command
 
         $this->clara->info('Rebuilding API documentation from ' . $sourceOutputPath . '/index.md');
 
-        $writer = new Writer(new DocumentationConfig(config('apidoc')));
+        $writer = new Writer(new DocumentationConfig(config('scribe')));
         $writer->writeHtmlDocs();
     }
 }

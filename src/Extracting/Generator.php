@@ -1,12 +1,12 @@
 <?php
 
-namespace Mpociot\ApiDoc\Extracting;
+namespace Knuckles\Scribe\Extracting;
 
 use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Mpociot\ApiDoc\Tools\DocumentationConfig;
-use Mpociot\ApiDoc\Tools\Utils;
+use Knuckles\Scribe\Tools\DocumentationConfig;
+use Knuckles\Scribe\Tools\Utils;
 use ReflectionClass;
 use ReflectionFunctionAbstract;
 
@@ -20,7 +20,7 @@ class Generator
     public function __construct(DocumentationConfig $config = null)
     {
         // If no config is injected, pull from global
-        $this->config = $config ?: new DocumentationConfig(config('apidoc'));
+        $this->config = $config ?: new DocumentationConfig(config('scribe'));
     }
 
     /**
@@ -139,26 +139,26 @@ class Generator
     {
         $defaultStrategies = [
             'metadata' => [
-                \Mpociot\ApiDoc\Extracting\Strategies\Metadata\GetFromDocBlocks::class,
+                \Knuckles\Scribe\Extracting\Strategies\Metadata\GetFromDocBlocks::class,
             ],
             'urlParameters' => [
-                \Mpociot\ApiDoc\Extracting\Strategies\UrlParameters\GetFromUrlParamTag::class,
+                \Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromUrlParamTag::class,
             ],
             'queryParameters' => [
-                \Mpociot\ApiDoc\Extracting\Strategies\QueryParameters\GetFromQueryParamTag::class,
+                \Knuckles\Scribe\Extracting\Strategies\QueryParameters\GetFromQueryParamTag::class,
             ],
             'headers' => [
-                \Mpociot\ApiDoc\Extracting\Strategies\RequestHeaders\GetFromRouteRules::class,
+                \Knuckles\Scribe\Extracting\Strategies\RequestHeaders\GetFromRouteRules::class,
             ],
             'bodyParameters' => [
-                \Mpociot\ApiDoc\Extracting\Strategies\BodyParameters\GetFromBodyParamTag::class,
+                \Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromBodyParamTag::class,
             ],
             'responses' => [
-                \Mpociot\ApiDoc\Extracting\Strategies\Responses\UseTransformerTags::class,
-                \Mpociot\ApiDoc\Extracting\Strategies\Responses\UseResponseTag::class,
-                \Mpociot\ApiDoc\Extracting\Strategies\Responses\UseResponseFileTag::class,
-                \Mpociot\ApiDoc\Extracting\Strategies\Responses\UseApiResourceTags::class,
-                \Mpociot\ApiDoc\Extracting\Strategies\Responses\ResponseCalls::class,
+                \Knuckles\Scribe\Extracting\Strategies\Responses\UseTransformerTags::class,
+                \Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseTag::class,
+                \Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseFileTag::class,
+                \Knuckles\Scribe\Extracting\Strategies\Responses\UseApiResourceTags::class,
+                \Knuckles\Scribe\Extracting\Strategies\Responses\ResponseCalls::class,
             ],
         ];
 

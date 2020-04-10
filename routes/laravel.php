@@ -2,12 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 
-$prefix = config('apidoc.laravel.docs_url', '/doc');
-$middleware = config('apidoc.laravel.middleware', []);
+$prefix = config('scribe.laravel.docs_url', '/doc');
+$middleware = config('scribe.laravel.middleware', []);
 
-Route::namespace('\Mpociot\ApiDoc\Http')
+Route::namespace('\Knuckles\Scribe\Http')
     ->middleware($middleware)
     ->group(function () use ($prefix) {
-        Route::get($prefix, 'Controller@html')->name('apidoc');
-        Route::get("$prefix.json", 'Controller@json')->name('apidoc.json');
+        Route::get($prefix, 'Controller@html')->name('scribe');
+        Route::get("$prefix.json", 'Controller@json')->name('scribe.json');
     });

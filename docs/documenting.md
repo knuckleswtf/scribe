@@ -234,8 +234,8 @@ Examples:
 ```php
 
 /**
- * @apiResourceCollection Mpociot\ApiDoc\Tests\Fixtures\UserResource
- * @apiResourceModel Mpociot\ApiDoc\Tests\Fixtures\User
+ * @apiResourceCollection Knuckles\Scribe\Tests\Fixtures\UserResource
+ * @apiResourceModel Knuckles\Scribe\Tests\Fixtures\User
  */
 public function listUsers()
 {
@@ -243,8 +243,8 @@ public function listUsers()
 }
 
 /**
- * @apiResourceCollection Mpociot\ApiDoc\Tests\Fixtures\UserCollection
- * @apiResourceModel Mpociot\ApiDoc\Tests\Fixtures\User
+ * @apiResourceCollection Knuckles\Scribe\Tests\Fixtures\UserCollection
+ * @apiResourceModel Knuckles\Scribe\Tests\Fixtures\User
  */
 public function listMoreUsers()
 {
@@ -252,8 +252,8 @@ public function listMoreUsers()
 }
 
 /**
- * @apiResourceCollection Mpociot\ApiDoc\Tests\Fixtures\UserResource
- * @apiResourceModel Mpociot\ApiDoc\Tests\Fixtures\User
+ * @apiResourceCollection Knuckles\Scribe\Tests\Fixtures\UserResource
+ * @apiResourceModel Knuckles\Scribe\Tests\Fixtures\User
  */
 public function showUser(User $user)
 {
@@ -346,7 +346,7 @@ If you don't specify an example response using any of the above means, this pack
 
 - Response calls are done within a database transaction and changes are rolled back afterwards.
 
-- The configuration for response calls is located in the `config/apidoc.php`. They are configured within the `apply.response_calls` section for each route group, allowing you to apply different settings for different sets of routes.
+- The configuration for response calls is located in the `config/scribe.php`. They are configured within the `apply.response_calls` section for each route group, allowing you to apply different settings for different sets of routes.
 
 - By default, response calls are only made for GET routes, but you can configure this. Set the `methods` key to an array of methods or '*' to mean all methods. Leave it as an empty array to turn off response calls for that route group.
 

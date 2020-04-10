@@ -17,13 +17,13 @@ There are a number of strategies included with the package, so you don't have to
 > Note: The included ResponseCalls strategy is designed to stop if a response with a 2xx status code has already been gotten via any other strategy.
 
 ## Strategies
-To create a strategy, create a class that extends `\Mpociot\ApiDoc\Extracting\Strategies\Strategy`.
+To create a strategy, create a class that extends `\Knuckles\Scribe\Extracting\Strategies\Strategy`.
 
 The `__invoke` method of the strategy is where you perform your actions and return data. It receives the following arguments:
 - the route (instance of `\Illuminate\Routing\Route`)
 - the controller class handling the route (`\ReflectionClass`)
 - the controller method (`\ReflectionMethod $method`)
- - the rules specified in the apidoc.php config file for the group this route belongs to, under the `apply` section (array)
+ - the rules specified in the scribe.php config file for the group this route belongs to, under the `apply` section (array)
  - the context. This contains all data for the route that has been parsed thus far in the previous stages. This means, by the `responses` stage, the context will contain the following keys: `metadata`, `bodyParameters` and `queryParameters`.
  
  Here's what your strategy in our example would look like:
@@ -32,7 +32,7 @@ The `__invoke` method of the strategy is where you perform your actions and retu
 <?php
 
 use Illuminate\Routing\Route;
-use Mpociot\ApiDoc\Extracting\Strategies\Strategy;
+use Knuckles\Scribe\Extracting\Strategies\Strategy;
 
 class AddOrganizationIdBodyParameter extends Strategy
 {
@@ -50,32 +50,32 @@ class AddOrganizationIdBodyParameter extends Strategy
 }
 ```
 
-The last thing to do is to register the strategy. Strategies are registered in a `strategies` key in the `apidoc.php` file. Here's what the file looks like by default:
+The last thing to do is to register the strategy. Strategies are registered in a `strategies` key in the `scribe.php` file. Here's what the file looks like by default:
 
 ```php
 ...
     'strategies' => [
         'metadata' => [
-            \Mpociot\ApiDoc\Extracting\Strategies\Metadata\GetFromDocBlocks::class,
+            \Knuckles\Scribe\Extracting\Strategies\Metadata\GetFromDocBlocks::class,
         ],
         'urlParameters' => [
-            \Mpociot\ApiDoc\Extracting\Strategies\UrlParameters\GetFromUrlParamTag::class,
+            \Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromUrlParamTag::class,
         ],
         'queryParameters' => [
-            \Mpociot\ApiDoc\Extracting\Strategies\QueryParameters\GetFromQueryParamTag::class,
+            \Knuckles\Scribe\Extracting\Strategies\QueryParameters\GetFromQueryParamTag::class,
         ],
         'headers' => [
-            \Mpociot\ApiDoc\Extracting\Strategies\RequestHeaders\GetFromRouteRules::class,
+            \Knuckles\Scribe\Extracting\Strategies\RequestHeaders\GetFromRouteRules::class,
         ],
         'bodyParameters' => [
-            \Mpociot\ApiDoc\Extracting\Strategies\BodyParameters\GetFromBodyParamTag::class,
+            \Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromBodyParamTag::class,
         ],
         'responses' => [
-            \Mpociot\ApiDoc\Extracting\Strategies\Responses\UseTransformerTags::class,
-            \Mpociot\ApiDoc\Extracting\Strategies\Responses\UseResponseTag::class,
-            \Mpociot\ApiDoc\Extracting\Strategies\Responses\UseResponseFileTag::class,
-            \Mpociot\ApiDoc\Extracting\Strategies\Responses\UseApiResourceTags::class,
-            \Mpociot\ApiDoc\Extracting\Strategies\Responses\ResponseCalls::class,
+            \Knuckles\Scribe\Extracting\Strategies\Responses\UseTransformerTags::class,
+            \Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseTag::class,
+            \Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseFileTag::class,
+            \Knuckles\Scribe\Extracting\Strategies\Responses\UseApiResourceTags::class,
+            \Knuckles\Scribe\Extracting\Strategies\Responses\ResponseCalls::class,
         ],
     ],
 ...
@@ -86,7 +86,7 @@ You can add, replace or remove strategies from here. In our case, we're adding o
 ```php
 
         'bodyParameters' => [
-            \Mpociot\ApiDoc\Extracting\Strategies\BodyParameters\GetFromBodyParamTag::class,
+            \Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromBodyParamTag::class,
             AddOrganizationIdBodyParameter::class,
         ],
 ```
@@ -120,7 +120,7 @@ public function __invoke(Route $route, \ReflectionClass $controller, \Reflection
 
 > Note: If you would like a parameter (body or query) to be included in the documentation but excluded from examples, set its `value` property to `null`.
 
-The strategy class also has access to the current apidoc configuration via its `config` property. For instance, you can retrieve the default group with `$this->config->get('default_group')`.
+The strategy class also has access to the current scribe configuration via its `config` property. For instance, you can retrieve the default group with `$this->config->get('default_group')`.
 
 You are also provided with the instance pproperty `stage`, which is set to the name of the currently executing stage.
 
@@ -128,9 +128,9 @@ You are also provided with the instance pproperty `stage`, which is set to the n
 ## Utilities
 You have access to a number of tools when developing strategies. They include:
 
-- The `RouteDocBlocker` class (in the `\Mpociot\ApiDoc\Extracting` namespace) has a single public static method, `getDocBlocksFromRoute(Route $route)`. It allows you to retrieve the docblocks for a given route. It returns an array of with two keys: `method` and `class` containing the docblocks for the method and controller handling the route respectively. Both are instances of `\Mpociot\Reflection\DocBlock`.
+- The `RouteDocBlocker` class (in the `\Knuckles\Scribe\Extracting` namespace) has a single public static method, `getDocBlocksFromRoute(Route $route)`. It allows you to retrieve the docblocks for a given route. It returns an array of with two keys: `method` and `class` containing the docblocks for the method and controller handling the route respectively. Both are instances of `\Mpociot\Reflection\DocBlock`.
 
-- The `ParamsHelper` trait (in the `\Mpociot\ApiDoc\Extracting` namespace) can be included in your strategies. It contains a number of useful methods for working with parameters, including type casting and generating dummy values.
+- The `ParamsHelper` trait (in the `\Knuckles\Scribe\Extracting` namespace) can be included in your strategies. It contains a number of useful methods for working with parameters, including type casting and generating dummy values.
 
 ## API
 Each strategy class must implement the __invoke method with the parameters as described above. This method must return the needed data for the intended stage, or `null` to indicate failure.

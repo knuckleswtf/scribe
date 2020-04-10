@@ -1,6 +1,6 @@
 <?php
 
-namespace Mpociot\ApiDoc\Extracting;
+namespace Knuckles\Scribe\Extracting;
 
 use Faker\Factory;
 use stdClass;

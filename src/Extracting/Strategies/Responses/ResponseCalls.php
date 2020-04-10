@@ -1,16 +1,16 @@
 <?php
 
-namespace Mpociot\ApiDoc\Extracting\Strategies\Responses;
+namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 
 use Dingo\Api\Dispatcher;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Str;
-use Mpociot\ApiDoc\Extracting\ParamHelpers;
-use Mpociot\ApiDoc\Extracting\Strategies\Strategy;
-use Mpociot\ApiDoc\Tools\Flags;
-use Mpociot\ApiDoc\Tools\Utils;
+use Knuckles\Scribe\Extracting\ParamHelpers;
+use Knuckles\Scribe\Extracting\Strategies\Strategy;
+use Knuckles\Scribe\Tools\Flags;
+use Knuckles\Scribe\Tools\Utils;
 
 /**
  * Make a call to the route and retrieve its response.
@@ -283,7 +283,7 @@ class ResponseCalls extends Strategy
      */
     protected function makeApiCall(Request $request)
     {
-        if (config('apidoc.router') == 'dingo') {
+        if (config('scribe.router') == 'dingo') {
             $response = $this->callDingoRoute($request);
         } else {
             $response = $this->callLaravelRoute($request);

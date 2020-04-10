@@ -1,11 +1,11 @@
 # Configuration
 
-Before you can generate your documentation, you'll need to configure a few things in your `config/apidoc.php`. If you aren't sure what an option does, it's best to leave it set to the default. If you don't have this config file, see the [installation instructions](index.html#installation).
+Before you can generate your documentation, you'll need to configure a few things in your `config/scribe.php`. If you aren't sure what an option does, it's best to leave it set to the default. If you don't have this config file, see the [installation instructions](index.html#installation).
 
 ## `type`
 This is the type of documentation output to generate.
 - `static` will generate a static HTMl page in the `public/docs` folder, so anyone can visit your documentation page by going to {yourapp.domain}/docs.
-- `laravel` will generate the documentation as a Blade view within the `resources/views/apidoc` folder, so you can add routing and authentication.
+- `laravel` will generate the documentation as a Blade view within the `resources/views/scribe` folder, so you can add routing and authentication.
 
 > In both instances, the source markdown file will be generated in `resources/docs/source`.
 
@@ -34,7 +34,7 @@ The base URL to be used in examples and the Postman collection. By default, this
 ## `postman`
 This package can automatically generate a Postman collection for your routes, along with the documentation. This section is where you can configure (or disable) that.
 - For `static` docs (see [type](#type)), the collection will be created in `public/docs/collection.json`, so it can be accessed by visiting {yourapp.domain}/docs/colllection.json.
-- For `laravel` docs, the collection will be generated to `storage/app/apidoc/collection.json`. The `ApiDoc::routes()` helper will add a `/docs.json` endpoint to fetch it..
+- For `laravel` docs, the collection will be generated to `storage/app/scribe/collection.json`. Setting `laravel.autoload` to true will add a `/docs.json` endpoint to fetch it..
 
 ### `enabled`
 Whether or not to generate a Postman API collection. Default: **true**
@@ -63,7 +63,7 @@ For each endpoint, an example request is shown in each of the languages specifie
 When generating example requests, this package uses fzanninoto/faker to generate random values. If you would like the package to generate the same example values for parameters on each run, set this to any number (eg. 1234). (Note: alternatively, you can set example values for parameters when [documenting them.](documenting.html#specifying-request-parameters))
 
 ## `routeMatcher`
-The route matcher class provides the algorithm that determines what routes should be documented. The default matcher used is the included `\Mpociot\ApiDoc\Matching\RouteMatcher::class`, and you can provide your own custom implementation if you wish to programmatically change the algorithm. The provided matcher must be an instance of the `RouteMatcherInterface`.
+The route matcher class provides the algorithm that determines what routes should be documented. The default matcher used is the included `\Knuckles\Scribe\Matching\RouteMatcher::class`, and you can provide your own custom implementation if you wish to programmatically change the algorithm. The provided matcher must be an instance of the `RouteMatcherInterface`.
        
 ## `fractal`
 This section only applies if you're using [Transformers]() for your API, and documenting responses with `@transformer` and `@transformerCollection`. Here, you configure how responses are transformed.

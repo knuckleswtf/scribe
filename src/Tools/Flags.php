@@ -1,6 +1,6 @@
 <?php
 
-namespace Mpociot\ApiDoc\Tools;
+namespace Knuckles\Scribe\Tools;
 
 class Flags
 {

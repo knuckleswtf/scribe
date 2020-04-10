@@ -1,14 +1,14 @@
 <?php
 
-namespace Mpociot\ApiDoc\Tests\Unit;
+namespace Knuckles\Scribe\Tests\Unit;
 
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Illuminate\Routing\Route;
-use Mpociot\ApiDoc\ApiDocGeneratorServiceProvider;
-use Mpociot\ApiDoc\Extracting\Generator;
-use Mpociot\ApiDoc\Extracting\Strategies\Strategy;
-use Mpociot\ApiDoc\Tests\Fixtures\TestController;
-use Mpociot\ApiDoc\Tools\DocumentationConfig;
+use Knuckles\Scribe\ScribeServiceProvider;
+use Knuckles\Scribe\Extracting\Generator;
+use Knuckles\Scribe\Extracting\Strategies\Strategy;
+use Knuckles\Scribe\Tests\Fixtures\TestController;
+use Knuckles\Scribe\Tools\DocumentationConfig;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -17,14 +17,14 @@ class GeneratorPluginSystemTestCase extends LaravelGeneratorTest
     use ArraySubsetAsserts;
 
     /**
-     * @var \Mpociot\ApiDoc\Extracting\Generator
+     * @var \Knuckles\Scribe\Extracting\Generator
      */
     protected $generator;
 
     protected function getPackageProviders($app)
     {
         return [
-            ApiDocGeneratorServiceProvider::class,
+            ScribeServiceProvider::class,
         ];
     }
 

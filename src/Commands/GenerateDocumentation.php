@@ -1,18 +1,18 @@
 <?php
 
-namespace Mpociot\ApiDoc\Commands;
+namespace Knuckles\Scribe\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\URL;
-use Mpociot\ApiDoc\Extracting\Generator;
-use Mpociot\ApiDoc\Matching\RouteMatcher\Match;
-use Mpociot\ApiDoc\Matching\RouteMatcherInterface;
-use Mpociot\ApiDoc\Tools\DocumentationConfig;
-use Mpociot\ApiDoc\Tools\Flags;
-use Mpociot\ApiDoc\Tools\Utils;
-use Mpociot\ApiDoc\Writing\Writer;
+use Knuckles\Scribe\Extracting\Generator;
+use Knuckles\Scribe\Matching\RouteMatcher\Match;
+use Knuckles\Scribe\Matching\RouteMatcherInterface;
+use Knuckles\Scribe\Tools\DocumentationConfig;
+use Knuckles\Scribe\Tools\Flags;
+use Knuckles\Scribe\Tools\Utils;
+use Knuckles\Scribe\Writing\Writer;
 use Mpociot\Reflection\DocBlock;
 use ReflectionClass;
 use ReflectionException;
@@ -25,7 +25,7 @@ class GenerateDocumentation extends Command
      *
      * @var string
      */
-    protected $signature = 'apidoc:generate
+    protected $signature = 'scribe:generate
                             {--force : Force rewriting of existing routes}
     ';
 
@@ -65,7 +65,7 @@ class GenerateDocumentation extends Command
         Flags::$shouldBeVerbose = $this->option('verbose');
         $this->clara = clara('knuckleswtf/scribe', Flags::$shouldBeVerbose)->only();
 
-        $this->docConfig = new DocumentationConfig(config('apidoc'));
+        $this->docConfig = new DocumentationConfig(config('scribe'));
         $this->baseUrl = $this->docConfig->get('base_url') ?? config('app.url');
 
         URL::forceRootUrl($this->baseUrl);
@@ -89,12 +89,12 @@ class GenerateDocumentation extends Command
     }
 
     /**
-     * @param \Mpociot\ApiDoc\Extracting\Generator $generator
+     * @param \Knuckles\Scribe\Extracting\Generator $generator
      * @param Match[] $routes
      *
-     * @throws \ReflectionException
-     *
      * @return array
+     *@throws \ReflectionException
+     *
      */
     private function processRoutes(Generator $generator, array $routes)
     {

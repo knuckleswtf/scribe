@@ -6,9 +6,9 @@ Note: This isn't meant to be an exhaustive guide to the changes in v4. Please se
 - Laravel/Lumen version: 5.7+
 
 ## Configuration 
-- Rename your old config file (for instance to `apidoc.old.php`). Publish the new config file via `php artisan vendor:publish --provider="Mpociot\ApiDoc\ApiDocGeneratorServiceProvider" --tag=apidoc-config`. Then copy over any changes you've made in the old one and delete it when you're done.
+- Rename your old config file (for instance to `scribe.old.php`). Publish the new config file via `php artisan vendor:publish --provider="Knuckles\Scribe\ScribeServiceProvider" --tag=scribe-config`. Then copy over any changes you've made in the old one and delete it when you're done.
 
-- Remove the `output` key. Source files now go to `resources/docs/source` and generated docs go to either `public/docs/` or `resources/views/apidoc`.
+- Remove the `output` key. Source files now go to `resources/docs/source` and generated docs go to either `public/docs/` or `resources/views/scribe`.
 
 - Make sure the `type` value is set appropriately. See [the docs](config.html#type). 
 
@@ -21,7 +21,7 @@ Note: This isn't meant to be an exhaustive guide to the changes in v4. Please se
 - Remove the `apply.response_calls.headers`. Move any headers you had there to `apply.headers` 
 
 ## Assets
-- If you've published the vendor views, rename them (for instance to `route.old.blade.php`). Publish the new views via `php artisan vendor:publish --provider="Mpociot\ApiDoc\ApiDocGeneratorServiceProvider" --tag=apidoc-views`. Compare the two views and reconcile your changes, then delete the old views. Some of the data being passed to the views (the `$route` object) has changed in either name or format, so things will likely break if you use old views.
+- If you've published the vendor views, rename them (for instance to `route.old.blade.php`). Publish the new views via `php artisan vendor:publish --provider="Knuckles\Scribe\ScribeServiceProvider" --tag=scribe-views`. Compare the two views and reconcile your changes, then delete the old views. Some of the data being passed to the views (the `$route` object) has changed in either name or format, so things will likely break if you use old views.
 The major change here is the introduction of the `urlParameters` section and the collapsing of route `title`, `description`, `groupName`, `groupDescription`, and authentication status (`authenticated` into a `metadata` section.
 
 - The location of the source files for the generated docs has changed. Move any prepend/append files you've created from `public/docs/source` to the new location (`resources/docs/source`)

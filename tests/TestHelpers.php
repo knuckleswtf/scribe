@@ -1,6 +1,6 @@
 <?php
 
-namespace Mpociot\ApiDoc\Tests;
+namespace Knuckles\Scribe\Tests;
 
 use Illuminate\Contracts\Console\Kernel;
 

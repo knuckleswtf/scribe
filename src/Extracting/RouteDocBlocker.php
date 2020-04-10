@@ -1,9 +1,9 @@
 <?php
 
-namespace Mpociot\ApiDoc\Extracting;
+namespace Knuckles\Scribe\Extracting;
 
 use Illuminate\Routing\Route;
-use Mpociot\ApiDoc\Tools\Utils;
+use Knuckles\Scribe\Tools\Utils;
 use Mpociot\Reflection\DocBlock;
 use ReflectionClass;
 

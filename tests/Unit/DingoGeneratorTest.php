@@ -1,10 +1,10 @@
 <?php
 
-namespace Mpociot\ApiDoc\Tests\Unit;
+namespace Knuckles\Scribe\Tests\Unit;
 
 use Dingo\Api\Routing\Router;
-use Mpociot\ApiDoc\ApiDocGeneratorServiceProvider;
-use Mpociot\ApiDoc\Tests\Fixtures\TestController;
+use Knuckles\Scribe\ScribeServiceProvider;
+use Knuckles\Scribe\Tests\Fixtures\TestController;
 
 /**
  * @group dingo
@@ -14,7 +14,7 @@ class DingoGeneratorTest extends GeneratorTestCase
     protected function getPackageProviders($app)
     {
         return [
-            ApiDocGeneratorServiceProvider::class,
+            ScribeServiceProvider::class,
             \Dingo\Api\Provider\LaravelServiceProvider::class,
         ];
     }
@@ -23,7 +23,7 @@ class DingoGeneratorTest extends GeneratorTestCase
     {
         parent::setUp();
 
-        config(['apidoc.router' => 'dingo']);
+        config(['scribe.router' => 'dingo']);
     }
 
     public function createRoute(string $httpMethod, string $path, string $controllerMethod, $register = false, $class = TestController::class)

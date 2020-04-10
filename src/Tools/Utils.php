@@ -1,6 +1,6 @@
 <?php
 
-namespace Mpociot\ApiDoc\Tools;
+namespace Knuckles\Scribe\Tools;
 
 use Illuminate\Routing\Route;
 use League\Flysystem\Adapter\Local;

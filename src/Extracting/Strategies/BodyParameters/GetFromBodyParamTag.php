@@ -1,13 +1,13 @@
 <?php
 
-namespace Mpociot\ApiDoc\Extracting\Strategies\BodyParameters;
+namespace Knuckles\Scribe\Extracting\Strategies\BodyParameters;
 
 use Dingo\Api\Http\FormRequest as DingoFormRequest;
 use Illuminate\Foundation\Http\FormRequest as LaravelFormRequest;
 use Illuminate\Routing\Route;
-use Mpociot\ApiDoc\Extracting\ParamHelpers;
-use Mpociot\ApiDoc\Extracting\RouteDocBlocker;
-use Mpociot\ApiDoc\Extracting\Strategies\Strategy;
+use Knuckles\Scribe\Extracting\ParamHelpers;
+use Knuckles\Scribe\Extracting\RouteDocBlocker;
+use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Mpociot\Reflection\DocBlock;
 use Mpociot\Reflection\DocBlock\Tag;
 use ReflectionClass;

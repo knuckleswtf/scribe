@@ -1,6 +1,6 @@
 <?php
 
-namespace Mpociot\ApiDoc\Matching\RouteMatcher;
+namespace Knuckles\Scribe\Matching;
 
 use Illuminate\Routing\Route;
 

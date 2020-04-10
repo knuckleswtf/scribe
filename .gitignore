@@ -5,7 +5,7 @@ composer.lock
 /vendor/
 public/
 resources/docs/
-resources/views/apidoc/
+resources/views/scribe/
 tests/public/
 .idea/
 coverage.xml

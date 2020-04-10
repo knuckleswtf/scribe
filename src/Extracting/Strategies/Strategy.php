@@ -1,16 +1,16 @@
 <?php
 
-namespace Mpociot\ApiDoc\Extracting\Strategies;
+namespace Knuckles\Scribe\Extracting\Strategies;
 
 use Illuminate\Routing\Route;
-use Mpociot\ApiDoc\Tools\DocumentationConfig;
+use Knuckles\Scribe\Tools\DocumentationConfig;
 use ReflectionClass;
 use ReflectionFunctionAbstract;
 
 abstract class Strategy
 {
     /**
-     * @var DocumentationConfig The apidoc config
+     * @var DocumentationConfig The scribe config
      */
     protected $config;
 

@@ -12,7 +12,7 @@
 > Example request:
 
 @foreach($settings['languages'] as $language)
-@include("apidoc::partials.example-requests.$language")
+@include("scribe::partials.example-requests.$language")
 
 @endforeach
 

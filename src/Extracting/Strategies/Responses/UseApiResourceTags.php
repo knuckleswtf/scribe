@@ -1,6 +1,6 @@
 <?php
 
-namespace Mpociot\ApiDoc\Extracting\Strategies\Responses;
+namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 
 use Exception;
 use Illuminate\Database\Eloquent\Model;
@@ -11,10 +11,10 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use League\Fractal\Resource\Collection;
-use Mpociot\ApiDoc\Extracting\RouteDocBlocker;
-use Mpociot\ApiDoc\Extracting\Strategies\Strategy;
-use Mpociot\ApiDoc\Tools\Flags;
-use Mpociot\ApiDoc\Tools\Utils;
+use Knuckles\Scribe\Extracting\RouteDocBlocker;
+use Knuckles\Scribe\Extracting\Strategies\Strategy;
+use Knuckles\Scribe\Tools\Flags;
+use Knuckles\Scribe\Tools\Utils;
 use Mpociot\Reflection\DocBlock;
 use Mpociot\Reflection\DocBlock\Tag;
 use ReflectionClass;

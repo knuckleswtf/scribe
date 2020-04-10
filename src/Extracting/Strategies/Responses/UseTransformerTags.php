@@ -1,6 +1,6 @@
 <?php
 
-namespace Mpociot\ApiDoc\Extracting\Strategies\Responses;
+namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 
 use Exception;
 use Illuminate\Database\Eloquent\Model;
@@ -10,10 +10,10 @@ use Illuminate\Support\Arr;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
-use Mpociot\ApiDoc\Extracting\RouteDocBlocker;
-use Mpociot\ApiDoc\Extracting\Strategies\Strategy;
-use Mpociot\ApiDoc\Tools\Flags;
-use Mpociot\ApiDoc\Tools\Utils;
+use Knuckles\Scribe\Extracting\RouteDocBlocker;
+use Knuckles\Scribe\Extracting\Strategies\Strategy;
+use Knuckles\Scribe\Tools\Flags;
+use Knuckles\Scribe\Tools\Utils;
 use Mpociot\Reflection\DocBlock;
 use Mpociot\Reflection\DocBlock\Tag;
 use ReflectionClass;
@@ -65,8 +65,8 @@ class UseTransformerTags extends Strategy
 
             $fractal = new Manager();
 
-            if (! is_null(config('apidoc.fractal.serializer'))) {
-                $fractal->setSerializer(app(config('apidoc.fractal.serializer')));
+            if (! is_null(config('scribe.fractal.serializer'))) {
+                $fractal->setSerializer(app(config('scribe.fractal.serializer')));
             }
 
             $resource = (strtolower($transformerTag->getName()) == 'transformercollection')
