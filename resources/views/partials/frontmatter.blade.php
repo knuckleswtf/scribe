@@ -10,4 +10,7 @@ includes:
 logo: {{ $settings['logo'] ?? false }}
 
 toc_footers:
+@if($showPostmanCollectionButton)
+- <a href="{{ $postmanCollectionLink }}">Get Postman Collection</a>
+@endif
 - <a href='http://github.com/knuckleswtf/pastel'>Documentation powered by Pastel</a>

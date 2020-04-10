@@ -96,9 +96,7 @@ class Writer
         $targetFile = $this->sourceOutputPath . '/source/index.md';
         $compareFile = $this->sourceOutputPath . '/source/.compare.md';
 
-        $infoText = view('apidoc::partials.info')
-            ->with('outputPath', 'docs')
-            ->with('showPostmanCollectionButton', $this->shouldGeneratePostmanCollection);
+        $infoText = view('apidoc::partials.info');
 
         $settings = [
             'languages' => $this->config->get('example_languages'),
@@ -108,6 +106,10 @@ class Writer
         $parsedRouteOutput = $this->generateMarkdownOutputForEachRoute($parsedRoutes, $settings);
 
         $frontmatter = view('apidoc::partials.frontmatter')
+            ->with('showPostmanCollectionButton', $this->shouldGeneratePostmanCollection)
+             // This path is wrong for laravel type but will be replaced in post
+            ->with('postmanCollectionLink', './collection.json')
+            ->with('outputPath', 'docs')
             ->with('settings', $settings);
 
         /*
@@ -266,7 +268,7 @@ class Writer
             $contents = str_replace('href="css/style.css"', 'href="/docs/css/style.css"', $contents);
             $contents = str_replace('src="js/all.js"', 'src="/docs/js/all.js"', $contents);
             $contents = str_replace('src="images/', 'src="/docs/images/', $contents);
-            $contents = preg_replace('#href="https?://.+?/docs/collection.json"#', 'href="{{ route("apidoc.json") }}"', $contents);
+            $contents = preg_replace('#href="./collection.json"#', 'href="{{ route("apidoc.json") }}"', $contents);
             file_put_contents("$this->outputPath/index.blade.php", $contents);
     }
 
