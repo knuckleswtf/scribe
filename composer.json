@@ -1,5 +1,5 @@
 {
-    "name": "mpociot/laravel-apidoc-generator",
+    "name": "knuckleswtf/scribe",
     "license": "MIT",
     "description": "Generate beautiful API documentation from your Laravel application",
     "keywords": [
@@ -21,8 +21,8 @@
         "illuminate/console": "^5.7|^6.0|^7.0",
         "illuminate/routing": "^5.7|^6.0|^7.0",
         "illuminate/support": "^5.7|^6.0|^7.0",
+        "knuckleswtf/pastel": "^1.1",
         "league/flysystem": "^1.0",
-        "mpociot/documentarian": "^0.4.0",
         "mpociot/reflection-docblock": "^1.0.1",
         "nunomaduro/collision": "^3.0|^4.0",
         "ramsey/uuid": "^3.8|^4.0",
@@ -59,13 +59,19 @@
             "providers": [
                 "Mpociot\\ApiDoc\\ApiDocGeneratorServiceProvider"
             ]
-        },
-        "branch-alias": {
-            "dev-v4": "4.x-dev"
         }
     },
     "config": {
         "preferred-install": "dist",
         "sort-packages": true
-    }
+    },
+    "replace": {
+        "mpociot/laravel-apidoc-generator": "*"
+    },
+    "funding": [
+        {
+            "type": "patreon",
+            "url": "https://patreon.com/shalvah"
+        }
+    ]
 }

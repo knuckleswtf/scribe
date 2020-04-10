@@ -217,14 +217,15 @@ return [
     ],
 
     /*
-     * Custom logo path. The logo will be copied from this location
-     * during the generate process. Set this to false to use the default logo.
+     * Custom logo path. The will be used as the value of the src attribute for the <img> tag,
+     * so make sure it points to a public URL or path accessible from your web server.
+     * Set this to false to not use a logo.
      *
-     * Change to an absolute path to use your custom logo. For example:
-     * 'logo' => resource_path('views') . '/api/logo.png'
+     * For example, if your logo is in public/img:
+     * - 'logo' => 'img/logo.png' // for `laravel` type
+     * - 'logo' => '../img/logo.png' // for `static` type (output folder is public/docs)
      *
-     * If you want to use this, please be aware of the following rules:
-     * - the image size must be 230 x 52
+     * For best results the image width should be 230px.
      */
     'logo' => false,
 

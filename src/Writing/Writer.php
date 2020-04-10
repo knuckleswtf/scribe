@@ -5,8 +5,8 @@ namespace Mpociot\ApiDoc\Writing;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
+use Knuckles\Pastel\Pastel;
 use Mpociot\ApiDoc\Tools\DocumentationConfig;
-use Mpociot\Documentarian\Documentarian;
 
 class Writer
 {
@@ -36,9 +36,9 @@ class Writer
     private $shouldGeneratePostmanCollection = true;
 
     /**
-     * @var Documentarian
+     * @var Pastel
      */
-    private $documentarian;
+    private $pastel;
 
     /**
      * @var bool
@@ -63,7 +63,7 @@ class Writer
         $this->forceIt = $forceIt;
         $this->output = $output;
         $this->shouldGeneratePostmanCollection = $this->config->get('postman.enabled', false);
-        $this->documentarian = new Documentarian();
+        $this->pastel = new Pastel();
         $this->isStatic = $this->config->get('type') === 'static';
         $this->sourceOutputPath = 'resources/docs';
         $this->outputPath = $this->isStatic ? 'public/docs' : 'resources/views/apidoc';
@@ -98,7 +98,10 @@ class Writer
             ->with('outputPath', 'docs')
             ->with('showPostmanCollectionButton', $this->shouldGeneratePostmanCollection);
 
-        $settings = ['languages' => $this->config->get('example_languages')];
+        $settings = [
+            'languages' => $this->config->get('example_languages'),
+            'logo' => $this->config->get('logo')
+        ];
         // Generate Markdown for each route
         $parsedRouteOutput = $this->generateMarkdownOutputForEachRoute($parsedRoutes, $settings);
 
@@ -146,11 +149,10 @@ class Writer
             ->with('showPostmanCollectionButton', $this->shouldGeneratePostmanCollection)
             ->with('parsedRoutes', $parsedRouteOutput);
 
-        $this->output->info('Writing index.md and source files to: ' . $this->sourceOutputPath);
+        $this->output->info('Writing index.md to: ' . $this->sourceOutputPath);
 
-        if (! is_dir($this->sourceOutputPath)) {
-            $documentarian = new Documentarian();
-            $documentarian->create($this->sourceOutputPath);
+        if (! is_dir($this->sourceOutputPath. '/source')) {
+            mkdir($this->sourceOutputPath . '/source', 0777, true);
         }
 
         // Write output file
@@ -169,7 +171,7 @@ class Writer
 
         file_put_contents($compareFile, $compareMarkdown);
 
-        $this->output->info('Wrote index.md and source files to: ' . $this->sourceOutputPath);
+        $this->output->info('Wrote index.md to: ' . $this->sourceOutputPath);
     }
 
     public function generateMarkdownOutputForEachRoute(Collection $parsedRoutes, array $settings): Collection
@@ -250,34 +252,13 @@ class Writer
         return $appendFileContents;
     }
 
-    protected function copyAssetsFromSourceFolderToPublicFolder(): void
+    protected function moveOutputFromPublicFolderToResourcesFolder(): void
     {
-        $publicPath = 'public/docs';
-        if (! is_dir($publicPath)) {
-            mkdir($publicPath, 0777, true);
-            mkdir("{$publicPath}/css");
-            mkdir("{$publicPath}/js");
-        }
-        copy("{$this->sourceOutputPath}/js/all.js", "{$publicPath}/js/all.js");
-        rcopy("{$this->sourceOutputPath}/images", "{$publicPath}/images");
-        rcopy("{$this->sourceOutputPath}/css", "{$publicPath}/css");
-
-        if ($logo = $this->config->get('logo')) {
-            copy($logo, "{$publicPath}/images/logo.png");
-        }
-    }
-
-    protected function moveOutputFromSourceFolderToTargetFolder(): void
-    {
-        if ($this->isStatic) {
-            // Move output (index.html, css/style.css and js/all.js) to public/docs
-            rename("{$this->sourceOutputPath}/index.html", "{$this->outputPath}/index.html");
-        } else {
             // Move output to resources/views
             if (! is_dir($this->outputPath)) {
                 mkdir($this->outputPath);
             }
-            rename("{$this->sourceOutputPath}/index.html", "$this->outputPath/index.blade.php");
+            rename("public/docs/index.html", "$this->outputPath/index.blade.php");
             $contents = file_get_contents("$this->outputPath/index.blade.php");
             //
             $contents = str_replace('href="css/style.css"', 'href="/docs/css/style.css"', $contents);
@@ -285,19 +266,17 @@ class Writer
             $contents = str_replace('src="images/', 'src="/docs/images/', $contents);
             $contents = preg_replace('#href="https?://.+?/docs/collection.json"#', 'href="{{ route("apidoc.json") }}"', $contents);
             file_put_contents("$this->outputPath/index.blade.php", $contents);
-        }
     }
 
     public function writeHtmlDocs(): void
     {
         $this->output->info('Generating API HTML code');
 
-        $this->documentarian->generate($this->sourceOutputPath);
+        $this->pastel->generate($this->sourceOutputPath. '/source/index.md', 'public/docs');
 
-        // Move assets to public folder
-        $this->copyAssetsFromSourceFolderToPublicFolder();
-
-        $this->moveOutputFromSourceFolderToTargetFolder();
+        if (! $this->isStatic) {
+            $this->moveOutputFromPublicFolderToResourcesFolder();
+        }
 
         $this->output->info("Wrote HTML documentation to: {$this->outputPath}");
     }

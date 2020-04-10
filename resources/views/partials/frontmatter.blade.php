@@ -7,7 +7,7 @@ language_tabs:
 
 includes:
 
-search: true
+logo: {{ $settings['logo'] ?? false }}
 
 toc_footers:
-- <a href='http://github.com/mpociot/documentarian'>Documentation Powered by Documentarian</a>
+- <a href='http://github.com/knuckleswtf/pastel'>Documentation powered by Pastel</a>
