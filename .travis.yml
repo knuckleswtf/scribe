@@ -9,7 +9,7 @@ matrix:
   fast_finish: true
   include:
     - php: 7.4
-      env: COMPOSER=dingo.composer.json
+      env: COMPOSER=composer.dingo.json
       name: "With Dingo router"
     - php: 7.4
       env: SETUP=lint

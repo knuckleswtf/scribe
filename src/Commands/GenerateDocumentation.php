@@ -16,6 +16,7 @@ use Mpociot\ApiDoc\Writing\Writer;
 use Mpociot\Reflection\DocBlock;
 use ReflectionClass;
 use ReflectionException;
+use Shalvah\Clara\Clara;
 
 class GenerateDocumentation extends Command
 {
@@ -46,6 +47,11 @@ class GenerateDocumentation extends Command
     private $baseUrl;
 
     /**
+     * @var Clara
+     */
+    private $clara;
+
+    /**
      * Execute the console command.
      *
      * @param RouteMatcherInterface $routeMatcher
@@ -57,6 +63,7 @@ class GenerateDocumentation extends Command
         // Using a global static variable here, so fuck off if you don't like it.
         // Also, the --verbose option is included with all Artisan commands.
         Flags::$shouldBeVerbose = $this->option('verbose');
+        $this->clara = clara('knuckleswtf/scribe', Flags::$shouldBeVerbose)->only();
 
         $this->docConfig = new DocumentationConfig(config('apidoc'));
         $this->baseUrl = $this->docConfig->get('base_url') ?? config('app.url');
@@ -75,7 +82,6 @@ class GenerateDocumentation extends Command
                 return $group->first()['metadata']['groupName'];
             }, SORT_NATURAL);
         $writer = new Writer(
-            $this,
             $this->docConfig,
             $this->option('force')
         );
@@ -102,25 +108,25 @@ class GenerateDocumentation extends Command
 
             $routeControllerAndMethod = Utils::getRouteClassAndMethodNames($route->getAction());
             if (! $this->isValidRoute($routeControllerAndMethod)) {
-                $this->warn(sprintf($messageFormat, 'Skipping invalid', $routeMethods, $routePath));
+                $this->clara->warn(sprintf($messageFormat, 'Skipping invalid', $routeMethods, $routePath));
                 continue;
             }
 
             if (! $this->doesControllerMethodExist($routeControllerAndMethod)) {
-                $this->warn(sprintf($messageFormat, 'Skipping', $routeMethods, $routePath) . ': Controller method does not exist.');
+                $this->clara->warn(sprintf($messageFormat, 'Skipping', $routeMethods, $routePath) . ': Controller method does not exist.');
                 continue;
             }
 
             if (! $this->isRouteVisibleForDocumentation($routeControllerAndMethod)) {
-                $this->warn(sprintf($messageFormat, 'Skipping', $routeMethods, $routePath) . ': @hideFromAPIDocumentation was specified.');
+                $this->clara->warn(sprintf($messageFormat, 'Skipping', $routeMethods, $routePath) . ': @hideFromAPIDocumentation was specified.');
                 continue;
             }
 
             try {
                 $parsedRoutes[] = $generator->processRoute($route, $routeItem->getRules());
-                $this->info(sprintf($messageFormat, 'Processed', $routeMethods, $routePath));
+                $this->clara->info(sprintf($messageFormat, 'Processed', $routeMethods, $routePath));
             } catch (\Exception $exception) {
-                $this->warn(sprintf($messageFormat, 'Skipping', $routeMethods, $routePath) . '- Exception ' . get_class($exception) . ' encountered : ' . $exception->getMessage());
+                $this->clara->warn(sprintf($messageFormat, 'Skipping', $routeMethods, $routePath) . '- Exception ' . get_class($exception) . ' encountered : ' . $exception->getMessage());
             }
         }
 

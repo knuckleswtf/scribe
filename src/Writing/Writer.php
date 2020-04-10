@@ -7,13 +7,15 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Knuckles\Pastel\Pastel;
 use Mpociot\ApiDoc\Tools\DocumentationConfig;
+use Mpociot\ApiDoc\Tools\Flags;
+use Shalvah\Clara\Clara;
 
 class Writer
 {
     /**
-     * @var Command
+     * @var Clara
      */
-    protected $output;
+    protected $clara;
 
     /**
      * @var DocumentationConfig
@@ -55,13 +57,13 @@ class Writer
      */
     private $outputPath;
 
-    public function __construct(Command $output, DocumentationConfig $config = null, bool $forceIt = false)
+    public function __construct(DocumentationConfig $config = null, bool $forceIt = false)
     {
         // If no config is injected, pull from global
         $this->config = $config ?: new DocumentationConfig(config('apidoc'));
         $this->baseUrl = $this->config->get('base_url') ?? config('app.url');
         $this->forceIt = $forceIt;
-        $this->output = $output;
+        $this->clara = clara('knuckleswtf/scribe',  Flags::$shouldBeVerbose)->only();
         $this->shouldGeneratePostmanCollection = $this->config->get('postman.enabled', false);
         $this->pastel = new Pastel();
         $this->isStatic = $this->config->get('type') === 'static';
@@ -123,10 +125,10 @@ class Writer
                         $routeDocumentationChanged = (preg_match('/<!-- START_' . $route['id'] . ' -->(.*)<!-- END_' . $route['id'] . ' -->/is', $compareDocumentation, $lastDocWeGeneratedForThisRoute) && $lastDocWeGeneratedForThisRoute[1] !== $existingRouteDoc[1]);
                         if ($routeDocumentationChanged === false || $this->forceIt) {
                             if ($routeDocumentationChanged) {
-                                $this->output->warn('Discarded manual changes for route [' . implode(',', $route['methods']) . '] ' . $route['uri']);
+                                $this->clara->warn('Discarded manual changes for route [' . implode(',', $route['methods']) . '] ' . $route['uri']);
                             }
                         } else {
-                            $this->output->warn('Skipping modified route [' . implode(',', $route['methods']) . '] ' . $route['uri']);
+                            $this->clara->warn('Skipping modified route [' . implode(',', $route['methods']) . '] ' . $route['uri']);
                             $route['modified_output'] = $existingRouteDoc[0];
                         }
                     }
@@ -149,7 +151,7 @@ class Writer
             ->with('showPostmanCollectionButton', $this->shouldGeneratePostmanCollection)
             ->with('parsedRoutes', $parsedRouteOutput);
 
-        $this->output->info('Writing index.md to: ' . $this->sourceOutputPath);
+        $this->clara->info('Writing index.md to: ' . $this->sourceOutputPath);
 
         if (! is_dir($this->sourceOutputPath. '/source')) {
             mkdir($this->sourceOutputPath . '/source', 0777, true);
@@ -171,7 +173,7 @@ class Writer
 
         file_put_contents($compareFile, $compareMarkdown);
 
-        $this->output->info('Wrote index.md to: ' . $this->sourceOutputPath);
+        $this->clara->info('Wrote index.md to: ' . $this->sourceOutputPath);
     }
 
     public function generateMarkdownOutputForEachRoute(Collection $parsedRoutes, array $settings): Collection
@@ -201,7 +203,7 @@ class Writer
     protected function writePostmanCollection(Collection $parsedRoutes): void
     {
         if ($this->shouldGeneratePostmanCollection) {
-            $this->output->info('Generating Postman collection');
+            $this->clara->info('Generating Postman collection');
 
             $collection = $this->generatePostmanCollection($parsedRoutes);
             if ($this->isStatic) {
@@ -212,7 +214,7 @@ class Writer
                 $collectionPath = 'storage/app/apidoc/collection.json';
             }
 
-            $this->output->info("Wrote Postman collection to: {$collectionPath}");
+            $this->clara->success("Wrote Postman collection to: {$collectionPath}");
         }
     }
 
@@ -270,7 +272,7 @@ class Writer
 
     public function writeHtmlDocs(): void
     {
-        $this->output->info('Generating API HTML code');
+        $this->clara->info('Generating API HTML code');
 
         $this->pastel->generate($this->sourceOutputPath. '/source/index.md', 'public/docs');
 
@@ -278,6 +280,6 @@ class Writer
             $this->moveOutputFromPublicFolderToResourcesFolder();
         }
 
-        $this->output->info("Wrote HTML documentation to: {$this->outputPath}");
+        $this->clara->success("Wrote HTML documentation to: {$this->outputPath}");
     }
 }

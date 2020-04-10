@@ -26,7 +26,8 @@
         "mpociot/reflection-docblock": "^1.0.1",
         "nunomaduro/collision": "^3.0|^4.0",
         "ramsey/uuid": "^3.8|^4.0",
-        "symfony/var-exporter": "^4.0|^5.0"
+        "symfony/var-exporter": "^4.0|^5.0",
+        "shalvah/clara": "^2.5"
     },
     "require-dev": {
         "dingo/api": "^2.3",
@@ -59,7 +60,7 @@
             "providers": [
                 "Mpociot\\ApiDoc\\ApiDocGeneratorServiceProvider"
             ]
-        },
+        }
     },
     "config": {
         "preferred-install": "dist",
