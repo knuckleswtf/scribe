@@ -98,7 +98,8 @@ class Writer
 
         $settings = [
             'languages' => $this->config->get('example_languages'),
-            'logo' => $this->config->get('logo')
+            'logo' => $this->config->get('logo'),
+            'title' => config('app.name', '').' API Documentation',
         ];
         // Generate Markdown for each route
         $parsedRouteOutput = $this->generateMarkdownOutputForEachRoute($parsedRoutes, $settings);
