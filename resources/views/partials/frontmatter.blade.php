@@ -6,6 +6,10 @@ language_tabs:
 @endforeach
 
 includes:
+- "./1-authentication.md"
+- "./2-endpoints.md"
+- "./3-errors.md"
+- "./extra.md"
 
 logo: {{ $settings['logo'] ?? false }}
 

@@ -96,8 +96,6 @@ class Writer
         $targetFile = $this->sourceOutputPath . '/source/index.md';
         $compareFile = $this->sourceOutputPath . '/source/.compare.md';
 
-        $infoText = view('scribe::partials.info');
-
         $settings = [
             'languages' => $this->config->get('example_languages'),
             'logo' => $this->config->get('logo')
@@ -140,42 +138,38 @@ class Writer
             });
         }
 
-        $prependFileContents = $this->getMarkdownToPrepend();
-        $appendFileContents = $this->getMarkdownToAppend();
 
-        $markdown = view('scribe::pastel')
-            ->with('writeCompareFile', false)
-            ->with('frontmatter', $frontmatter)
-            ->with('infoText', $infoText)
-            ->with('prependMd', $prependFileContents)
-            ->with('appendMd', $appendFileContents)
-            ->with('outputPath', $this->config->get('output'))
-            ->with('showPostmanCollectionButton', $this->shouldGeneratePostmanCollection)
-            ->with('parsedRoutes', $parsedRouteOutput);
+        $this->clara->info('Writing source Markdown files to: ' . $this->sourceOutputPath);
 
-        $this->clara->info('Writing index.md to: ' . $this->sourceOutputPath);
+        $introMarkdown = view('scribe::index')
+            ->with('frontmatter', $frontmatter);
 
         if (! is_dir($this->sourceOutputPath. '/source')) {
             mkdir($this->sourceOutputPath . '/source', 0777, true);
         }
 
-        // Write output file
-        file_put_contents($targetFile, $markdown);
+        file_put_contents($targetFile, $introMarkdown);
+
+        $authMarkdown = view('scribe::1-authentication');
+        file_put_contents($this->sourceOutputPath . '/source/1-authentication.md', $authMarkdown);
+
+        $endpointsMarkdown = view('scribe::2-endpoints')
+            ->with('writeCompareFile', false)
+            ->with('parsedRoutes', $parsedRouteOutput);
+        file_put_contents($this->sourceOutputPath . '/source/2-endpoints.md', $endpointsMarkdown);
+
 
         // Write comparable markdown file
-        $compareMarkdown = view('scribe::pastel')
+        $compareMarkdown = view('scribe::index')
             ->with('writeCompareFile', true)
             ->with('frontmatter', $frontmatter)
-            ->with('infoText', $infoText)
-            ->with('prependMd', $prependFileContents)
-            ->with('appendMd', $appendFileContents)
             ->with('outputPath', $this->config->get('output'))
             ->with('showPostmanCollectionButton', $this->shouldGeneratePostmanCollection)
             ->with('parsedRoutes', $parsedRouteOutput);
 
         file_put_contents($compareFile, $compareMarkdown);
 
-        $this->clara->info('Wrote index.md to: ' . $this->sourceOutputPath);
+        $this->clara->info('Wrote source Markdown files to: ' . $this->sourceOutputPath);
     }
 
     public function generateMarkdownOutputForEachRoute(Collection $parsedRoutes, array $settings): Collection
@@ -236,24 +230,6 @@ class Writer
         );
 
         return $writer->getCollection();
-    }
-
-    protected function getMarkdownToPrepend(): string
-    {
-        $prependFile = $this->sourceOutputPath . '/source/prepend.md';
-        $prependFileContents = file_exists($prependFile)
-            ? file_get_contents($prependFile) . "\n" : '';
-
-        return $prependFileContents;
-    }
-
-    protected function getMarkdownToAppend(): string
-    {
-        $appendFile = $this->sourceOutputPath . '/source/append.md';
-        $appendFileContents = file_exists($appendFile)
-            ? "\n" . file_get_contents($appendFile) : '';
-
-        return $appendFileContents;
     }
 
     protected function moveOutputFromPublicFolderToResourcesFolder(): void
