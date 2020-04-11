@@ -3,8 +3,10 @@
 namespace Knuckles\Scribe\Writing;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Knuckles\Pastel\Pastel;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\Flags;
@@ -73,7 +75,7 @@ class Writer
 
     public function writeDocs(Collection $routes)
     {
-        // The source files (index.md, js/, css/, and images/) always go in resources/docs/source.
+        // The source Markdown files always go in resources/docs/source.
         // The static assets (js/, css/, and images/) always go in public/docs/.
         // For 'static' docs, the output files (index.html, collection.json) go in public/docs/.
         // For 'laravel' docs, the output files (index.blade.php, collection.json)
@@ -93,7 +95,7 @@ class Writer
      */
     public function writeMarkdownAndSourceFiles(Collection $parsedRoutes)
     {
-        $targetFile = $this->sourceOutputPath . '/source/index.md';
+        $indexFile = $this->sourceOutputPath . '/source/index.md';
         $compareFile = $this->sourceOutputPath . '/source/.compare.md';
 
         $settings = [
@@ -101,8 +103,13 @@ class Writer
             'logo' => $this->config->get('logo'),
             'title' => config('app.name', '').' API Documentation',
         ];
-        // Generate Markdown for each route
-        $parsedRouteOutput = $this->generateMarkdownOutputForEachRoute($parsedRoutes, $settings);
+
+        $this->clara->info('Writing source Markdown files to: ' . $this->sourceOutputPath);
+
+
+        if (! is_dir($this->sourceOutputPath. '/source')) {
+            mkdir($this->sourceOutputPath . '/source', 0777, true);
+        }
 
         $frontmatter = view('scribe::partials.frontmatter')
             ->with('showPostmanCollectionButton', $this->shouldGeneratePostmanCollection)
@@ -110,79 +117,54 @@ class Writer
             ->with('postmanCollectionLink', './collection.json')
             ->with('outputPath', 'docs')
             ->with('settings', $settings);
+        $introMarkdown = view('scribe::index')
+            ->with('frontmatter', $frontmatter);
+        file_put_contents($indexFile, $introMarkdown);
 
-        /*
+     /*
          * If the target file already exists,
          * we check if the documentation was modified
          * and skip the modified parts of the routes.
          */
-        if (file_exists($targetFile) && file_exists($compareFile)) {
-            $generatedDocumentation = file_get_contents($targetFile);
-            $compareDocumentation = file_get_contents($compareFile);
 
-            $parsedRouteOutput->transform(function (Collection $routeGroup) use ($generatedDocumentation, $compareDocumentation) {
-                return $routeGroup->transform(function (array $route) use ($generatedDocumentation, $compareDocumentation) {
-                    if (preg_match('/<!-- START_' . $route['id'] . ' -->(.*)<!-- END_' . $route['id'] . ' -->/is', $generatedDocumentation, $existingRouteDoc)) {
-                        $routeDocumentationChanged = (preg_match('/<!-- START_' . $route['id'] . ' -->(.*)<!-- END_' . $route['id'] . ' -->/is', $compareDocumentation, $lastDocWeGeneratedForThisRoute) && $lastDocWeGeneratedForThisRoute[1] !== $existingRouteDoc[1]);
-                        if ($routeDocumentationChanged === false || $this->forceIt) {
-                            if ($routeDocumentationChanged) {
-                                $this->clara->warn('Discarded manual changes for route [' . implode(',', $route['methods']) . '] ' . $route['uri']);
-                            }
-                        } else {
-                            $this->clara->warn('Skipping modified route [' . implode(',', $route['methods']) . '] ' . $route['uri']);
-                            $route['modified_output'] = $existingRouteDoc[0];
-                        }
-                    }
+        $authMarkdown = view('scribe::authentication');
+        file_put_contents($this->sourceOutputPath . '/source/authentication.md', $authMarkdown);
 
-                    return $route;
-                });
-            });
+        if (! is_dir($this->sourceOutputPath. '/source/groups')) {
+            mkdir($this->sourceOutputPath . '/source/groups', 0777, true);
         }
+        // Generate Markdown for each route
+        $parsedRoutesWithOutput = $this->generateMarkdownOutputForEachRoute($parsedRoutes, $settings);
+        $parsedRoutesWithOutput->each(function ($routesInGroup, $groupName) use ($parsedRoutesWithOutput) {
+            $groupDescription = Arr::first($routesInGroup, function ($route) {
+                    return $route['metadata']['groupDescription'] !== '';
+                })['metadata']['groupDescription'] ?? '';
+            $groupMarkdown = view('scribe::partials.group')
+                ->with('groupName', $groupName)
+                ->with('groupDescription', $groupDescription)
+                ->with('routes', $routesInGroup);
 
-
-        $this->clara->info('Writing source Markdown files to: ' . $this->sourceOutputPath);
-
-        $introMarkdown = view('scribe::index')
-            ->with('frontmatter', $frontmatter);
-
-        if (! is_dir($this->sourceOutputPath. '/source')) {
-            mkdir($this->sourceOutputPath . '/source', 0777, true);
-        }
-
-        file_put_contents($targetFile, $introMarkdown);
-
-        $authMarkdown = view('scribe::1-authentication');
-        file_put_contents($this->sourceOutputPath . '/source/1-authentication.md', $authMarkdown);
-
-        $endpointsMarkdown = view('scribe::2-endpoints')
-            ->with('writeCompareFile', false)
-            ->with('parsedRoutes', $parsedRouteOutput);
-        file_put_contents($this->sourceOutputPath . '/source/2-endpoints.md', $endpointsMarkdown);
-
-
-        // Write comparable markdown file
-        $compareMarkdown = view('scribe::index')
-            ->with('writeCompareFile', true)
-            ->with('frontmatter', $frontmatter)
-            ->with('outputPath', $this->config->get('output'))
-            ->with('showPostmanCollectionButton', $this->shouldGeneratePostmanCollection)
-            ->with('parsedRoutes', $parsedRouteOutput);
-
-        file_put_contents($compareFile, $compareMarkdown);
+            static $counter = 0;
+            $routeGroupMarkdownFile = $this->sourceOutputPath . "/source/groups/$counter-".Str::slug($groupName).'.md';
+            $counter++;
+            file_put_contents($routeGroupMarkdownFile, $groupMarkdown);
+        });
 
         $this->clara->info('Wrote source Markdown files to: ' . $this->sourceOutputPath);
     }
 
     public function generateMarkdownOutputForEachRoute(Collection $parsedRoutes, array $settings): Collection
     {
-        $parsedRouteOutput = $parsedRoutes->map(function (Collection $routeGroup) use ($settings) {
+        $routesWithOutput = $parsedRoutes->map(function (Collection $routeGroup) use ($settings) {
             return $routeGroup->map(function (array $route) use ($settings) {
                 if (count($route['cleanBodyParameters']) && ! isset($route['headers']['Content-Type'])) {
                     // Set content type if the user forgot to set it
                     $route['headers']['Content-Type'] = 'application/json';
                 }
 
-                $hasRequestOptions = ! empty($route['headers']) || ! empty($route['cleanQueryParameters']) || ! empty($route['cleanBodyParameters']);
+                $hasRequestOptions = ! empty($route['headers'])
+                    || ! empty($route['cleanQueryParameters'])
+                    || ! empty($route['cleanBodyParameters']);
                 $route['output'] = (string) view('scribe::partials.route')
                     ->with('hasRequestOptions', $hasRequestOptions)
                     ->with('route', $route)
@@ -194,7 +176,7 @@ class Writer
             });
         });
 
-        return $parsedRouteOutput;
+        return $routesWithOutput;
     }
 
     protected function writePostmanCollection(Collection $parsedRoutes): void
@@ -233,19 +215,21 @@ class Writer
         return $writer->getCollection();
     }
 
-    protected function moveOutputFromPublicFolderToResourcesFolder(): void
+    protected function performFinalTasksForLaravelType(): void
     {
-            // Move output to resources/views
+            // Make output a Blade view
             if (! is_dir($this->outputPath)) {
                 mkdir($this->outputPath);
             }
             rename("public/docs/index.html", "$this->outputPath/index.blade.php");
             $contents = file_get_contents("$this->outputPath/index.blade.php");
-            //
+
+            // Rewrite links to go through Laravel
             $contents = str_replace('href="css/style.css"', 'href="/docs/css/style.css"', $contents);
             $contents = str_replace('src="js/all.js"', 'src="/docs/js/all.js"', $contents);
             $contents = str_replace('src="images/', 'src="/docs/images/', $contents);
             $contents = preg_replace('#href="./collection.json"#', 'href="{{ route("scribe.json") }}"', $contents);
+
             file_put_contents("$this->outputPath/index.blade.php", $contents);
     }
 
@@ -256,7 +240,7 @@ class Writer
         $this->pastel->generate($this->sourceOutputPath. '/source/index.md', 'public/docs');
 
         if (! $this->isStatic) {
-            $this->moveOutputFromPublicFolderToResourcesFolder();
+            $this->performFinalTasksForLaravelType();
         }
 
         $this->clara->success("Wrote HTML documentation to: {$this->outputPath}");

@@ -1,11 +1,8 @@
-@if($route['metadata']['title'] != '')## {{ $route['metadata']['title']}}
-@else## {{$route['uri']}}@endif
+## {{ $route['metadata']['title'] ?: $route['uri']}}
 @component('scribe::components.badges.auth', ['authenticated' => $route['metadata']['authenticated']])
 @endcomponent
-@if($route['metadata']['description'])
 
-{!! $route['metadata']['description'] !!}
-@endif
+{!! $route['metadata']['description'] ?: ''!!}
 
 > Example request:
 
