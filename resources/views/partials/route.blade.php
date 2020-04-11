@@ -1,8 +1,7 @@
-<!-- START_{{$route['id']}} -->
 @if($route['metadata']['title'] != '')## {{ $route['metadata']['title']}}
 @else## {{$route['uri']}}@endif
-@if($route['metadata']['authenticated'])
-<small class="badge badge-darkred">REQUIRES AUTHENTICATION</small>@endif
+@component('scribe::components.badges.auth', ['authenticated' => $route['metadata']['authenticated']])
+@endcomponent
 @if($route['metadata']['description'])
 
 {!! $route['metadata']['description'] !!}
@@ -31,49 +30,55 @@
 
 ### Request
 @foreach($route['methods'] as $method)
-<small class="badge badge-{{ \Knuckles\Scribe\Tools\Utils::$httpMethodToCssColour[$method] }}">{{$method}}</small> **`{{$route['uri']}}`**
+@component('scribe::components.badges.http-method', ['method' => $method])@endcomponent **`{{$route['uri']}}`**
 
 @endforeach
 @if(count($route['urlParameters']))
-#### URL Parameters
+<h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
 @foreach($route['urlParameters'] as $attribute => $parameter)
-<p>
-    <code><b>{{ "{".$attribute."}" }}</b></code>&nbsp; @if(!$parameter['required'])<i>optional</i>@endif
-    <br>
-    {!! $parameter['description'] !!}
-</p>
+@component('scribe::components.field-description', [
+  'name' => $attribute,
+  'type' => null,
+  'required' => $parameter['required'] ?? true,
+  'description' => $parameter['description'],
+])
+@endcomponent
 @endforeach
 @endif
 @if(count($route['queryParameters']))
-#### Query Parameters
+<h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
 @foreach($route['queryParameters'] as $attribute => $parameter)
-<p>
-    <code><b>{{$attribute}}</b></code>&nbsp; @if(!$parameter['required'])<i>optional</i>@endif
-    <br>
-    {!! $parameter['description'] !!}
-</p>
+@component('scribe::components.field-description', [
+  'name' => $attribute,
+  'type' => null,
+  'required' => $parameter['required'] ?? true,
+  'description' => $parameter['description'],
+])
+@endcomponent
 @endforeach
 @endif
 @if(count($route['bodyParameters']))
-#### Body Parameters
+<h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
 @foreach($route['bodyParameters'] as $attribute => $parameter)
-<p>
-    <code><b>{{$attribute}}</b></code>&nbsp; <small>{{$parameter['type']}}</small> @if(!$parameter['required'])<i>optional</i>@endif
-    <br>
-    {!! $parameter['description'] !!}
-</p>
-    @endforeach
-@endif
-
-@if(count($route['responseFields'] ?? []))
-### Response Fields
-@foreach($route['responseFields'] as $attribute => $parameter)
-<p>
-    <code><b>{{$attribute}}</b></code>
-    <br>
-    {!! $parameter['description'] !!}
-</p>
+@component('scribe::components.field-description', [
+  'name' => $attribute,
+  'type' => $parameter['type'] ?? null,
+  'required' => $parameter['required'] ?? true,
+  'description' => $parameter['description'],
+])
+@endcomponent
 @endforeach
 @endif
 
-<!-- END_{{$route['id']}} -->
+@if(count($route['responseFields'] ?? []))
+<h4 class="fancy-heading-panel"><b>Response Fields</b></h4>
+@foreach($route['responseFields'] as $attribute => $parameter)
+@component('scribe::components.field-description', [
+  'name' => $attribute,
+  'type' => null,
+  'required' => true,
+  'description' => $parameter['description'],
+])
+@endcomponent
+@endforeach
+@endif
