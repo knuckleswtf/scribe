@@ -4,7 +4,6 @@ namespace Knuckles\Scribe;
 
 use Illuminate\Support\ServiceProvider;
 use Knuckles\Scribe\Commands\GenerateDocumentation;
-use Knuckles\Scribe\Commands\UpdateDocumentation;
 use Knuckles\Scribe\Matching\RouteMatcher;
 use Knuckles\Scribe\Matching\RouteMatcherInterface;
 
@@ -34,7 +33,6 @@ class ScribeServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 GenerateDocumentation::class,
-                UpdateDocumentation::class,
             ]);
         }
 

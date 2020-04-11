@@ -59,18 +59,30 @@ class Writer
      */
     private $outputPath;
 
+    /**
+     * @var string
+     */
+    private $fileModificationTimesFile;
+
+    /**
+     * @var array
+     */
+    private $lastTimesWeModifiedTheseFiles;
+
     public function __construct(DocumentationConfig $config = null, bool $forceIt = false)
     {
         // If no config is injected, pull from global
         $this->config = $config ?: new DocumentationConfig(config('scribe'));
         $this->baseUrl = $this->config->get('base_url') ?? config('app.url');
         $this->forceIt = $forceIt;
-        $this->clara = clara('knuckleswtf/scribe',  Flags::$shouldBeVerbose)->only();
+        $this->clara = clara('knuckleswtf/scribe', Flags::$shouldBeVerbose)->only();
         $this->shouldGeneratePostmanCollection = $this->config->get('postman.enabled', false);
         $this->pastel = new Pastel();
         $this->isStatic = $this->config->get('type') === 'static';
         $this->sourceOutputPath = 'resources/docs';
         $this->outputPath = $this->isStatic ? 'public/docs' : 'resources/views/scribe';
+        $this->fileModificationTimesFile = $this->sourceOutputPath . '/source/.filemtimes';
+        $this->lastTimesWeModifiedTheseFiles = [];
     }
 
     public function writeDocs(Collection $routes)
@@ -89,66 +101,27 @@ class Writer
     }
 
     /**
-     * @param  Collection $parsedRoutes
+     * @param Collection $parsedRoutes
      *
      * @return void
      */
     public function writeMarkdownAndSourceFiles(Collection $parsedRoutes)
     {
-        $indexFile = $this->sourceOutputPath . '/source/index.md';
-        $compareFile = $this->sourceOutputPath . '/source/.compare.md';
-
         $settings = [
             'languages' => $this->config->get('example_languages'),
             'logo' => $this->config->get('logo'),
-            'title' => config('app.name', '').' API Documentation',
+            'title' => config('app.name', '') . ' API Documentation',
         ];
 
         $this->clara->info('Writing source Markdown files to: ' . $this->sourceOutputPath);
 
-
-        if (! is_dir($this->sourceOutputPath. '/source')) {
+        if (!is_dir($this->sourceOutputPath . '/source')) {
             mkdir($this->sourceOutputPath . '/source', 0777, true);
         }
 
-        $frontmatter = view('scribe::partials.frontmatter')
-            ->with('showPostmanCollectionButton', $this->shouldGeneratePostmanCollection)
-             // This path is wrong for laravel type but will be replaced in post
-            ->with('postmanCollectionLink', './collection.json')
-            ->with('outputPath', 'docs')
-            ->with('settings', $settings);
-        $introMarkdown = view('scribe::index')
-            ->with('frontmatter', $frontmatter);
-        file_put_contents($indexFile, $introMarkdown);
-
-     /*
-         * If the target file already exists,
-         * we check if the documentation was modified
-         * and skip the modified parts of the routes.
-         */
-
-        $authMarkdown = view('scribe::authentication');
-        file_put_contents($this->sourceOutputPath . '/source/authentication.md', $authMarkdown);
-
-        if (! is_dir($this->sourceOutputPath. '/source/groups')) {
-            mkdir($this->sourceOutputPath . '/source/groups', 0777, true);
-        }
-        // Generate Markdown for each route
-        $parsedRoutesWithOutput = $this->generateMarkdownOutputForEachRoute($parsedRoutes, $settings);
-        $parsedRoutesWithOutput->each(function ($routesInGroup, $groupName) use ($parsedRoutesWithOutput) {
-            $groupDescription = Arr::first($routesInGroup, function ($route) {
-                    return $route['metadata']['groupDescription'] !== '';
-                })['metadata']['groupDescription'] ?? '';
-            $groupMarkdown = view('scribe::partials.group')
-                ->with('groupName', $groupName)
-                ->with('groupDescription', $groupDescription)
-                ->with('routes', $routesInGroup);
-
-            static $counter = 0;
-            $routeGroupMarkdownFile = $this->sourceOutputPath . "/source/groups/$counter-".Str::slug($groupName).'.md';
-            $counter++;
-            file_put_contents($routeGroupMarkdownFile, $groupMarkdown);
-        });
+        $this->writeIndexMarkdownFile($settings);
+        $this->writeAuthMarkdownFile();
+        $this->writeRoutesMarkdownFile($parsedRoutes, $settings);
 
         $this->clara->info('Wrote source Markdown files to: ' . $this->sourceOutputPath);
     }
@@ -157,15 +130,15 @@ class Writer
     {
         $routesWithOutput = $parsedRoutes->map(function (Collection $routeGroup) use ($settings) {
             return $routeGroup->map(function (array $route) use ($settings) {
-                if (count($route['cleanBodyParameters']) && ! isset($route['headers']['Content-Type'])) {
+                if (count($route['cleanBodyParameters']) && !isset($route['headers']['Content-Type'])) {
                     // Set content type if the user forgot to set it
                     $route['headers']['Content-Type'] = 'application/json';
                 }
 
-                $hasRequestOptions = ! empty($route['headers'])
-                    || ! empty($route['cleanQueryParameters'])
-                    || ! empty($route['cleanBodyParameters']);
-                $route['output'] = (string) view('scribe::partials.route')
+                $hasRequestOptions = !empty($route['headers'])
+                    || !empty($route['cleanQueryParameters'])
+                    || !empty($route['cleanBodyParameters']);
+                $route['output'] = (string)view('scribe::partials.route')
                     ->with('hasRequestOptions', $hasRequestOptions)
                     ->with('route', $route)
                     ->with('settings', $settings)
@@ -217,32 +190,144 @@ class Writer
 
     protected function performFinalTasksForLaravelType(): void
     {
-            // Make output a Blade view
-            if (! is_dir($this->outputPath)) {
-                mkdir($this->outputPath);
-            }
-            rename("public/docs/index.html", "$this->outputPath/index.blade.php");
-            $contents = file_get_contents("$this->outputPath/index.blade.php");
+        // Make output a Blade view
+        if (!is_dir($this->outputPath)) {
+            mkdir($this->outputPath);
+        }
+        rename("public/docs/index.html", "$this->outputPath/index.blade.php");
+        $contents = file_get_contents("$this->outputPath/index.blade.php");
 
-            // Rewrite links to go through Laravel
-            $contents = str_replace('href="css/style.css"', 'href="/docs/css/style.css"', $contents);
-            $contents = str_replace('src="js/all.js"', 'src="/docs/js/all.js"', $contents);
-            $contents = str_replace('src="images/', 'src="/docs/images/', $contents);
-            $contents = preg_replace('#href="./collection.json"#', 'href="{{ route("scribe.json") }}"', $contents);
+        // Rewrite links to go through Laravel
+        $contents = str_replace('href="css/style.css"', 'href="/docs/css/style.css"', $contents);
+        $contents = str_replace('src="js/all.js"', 'src="/docs/js/all.js"', $contents);
+        $contents = str_replace('src="images/', 'src="/docs/images/', $contents);
+        $contents = preg_replace('#href="./collection.json"#', 'href="{{ route("scribe.json") }}"', $contents);
 
-            file_put_contents("$this->outputPath/index.blade.php", $contents);
+        file_put_contents("$this->outputPath/index.blade.php", $contents);
     }
 
     public function writeHtmlDocs(): void
     {
         $this->clara->info('Generating API HTML code');
 
-        $this->pastel->generate($this->sourceOutputPath. '/source/index.md', 'public/docs');
+        $this->pastel->generate($this->sourceOutputPath . '/source/index.md', 'public/docs');
 
-        if (! $this->isStatic) {
+        if (!$this->isStatic) {
             $this->performFinalTasksForLaravelType();
         }
 
         $this->clara->success("Wrote HTML documentation to: {$this->outputPath}");
     }
+
+    protected function writeIndexMarkdownFile(array $settings): void
+    {
+        $frontmatter = view('scribe::partials.frontmatter')
+            ->with('showPostmanCollectionButton', $this->shouldGeneratePostmanCollection)
+            // This path is wrong for laravel type but will be replaced in post
+            ->with('postmanCollectionLink', './collection.json')
+            ->with('outputPath', 'docs')
+            ->with('settings', $settings);
+        $indexFile = $this->sourceOutputPath . '/source/index.md';
+        $introMarkdown = view('scribe::index')
+            ->with('frontmatter', $frontmatter);
+        $this->writeFile($indexFile, $introMarkdown);
+    }
+
+    protected function writeAuthMarkdownFile(): void
+    {
+        $authMarkdown = view('scribe::authentication');
+        $this->writeFile($this->sourceOutputPath . '/source/authentication.md', $authMarkdown);
+    }
+
+    protected function writeRoutesMarkdownFile(Collection $parsedRoutes, array $settings): void
+    {
+        if (!is_dir($this->sourceOutputPath . '/source/groups')) {
+            mkdir($this->sourceOutputPath . '/source/groups', 0777, true);
+        }
+
+        if (file_exists($this->fileModificationTimesFile)) {
+            $this->lastTimesWeModifiedTheseFiles = explode("\n", file_get_contents($this->fileModificationTimesFile));
+            array_shift($this->lastTimesWeModifiedTheseFiles);
+            array_shift($this->lastTimesWeModifiedTheseFiles);
+            $this->lastTimesWeModifiedTheseFiles = collect($this->lastTimesWeModifiedTheseFiles)
+                ->mapWithKeys(function ($line) {
+                    [$filePath, $mtime] = explode("=", $line);
+                    return [$filePath => $mtime];
+                })->toArray();
+        }
+
+        // Generate Markdown for each route. Not using a Blade component bc of some complex logic
+        $parsedRoutesWithOutput = $this->generateMarkdownOutputForEachRoute($parsedRoutes, $settings);
+        $parsedRoutesWithOutput->each(function ($routesInGroup, $groupName) use (
+            $parsedRoutesWithOutput
+        ) {
+            static $counter = 0;
+            $groupId = "$counter-" . Str::slug($groupName);
+            $routeGroupMarkdownFile = $this->sourceOutputPath . "/source/groups/$groupId.md";
+
+            $counter++;
+            if ($this->hasFileBeenModified($routeGroupMarkdownFile)) {
+                if ($this->forceIt) {
+                    $this->clara->warn("Discarded manual changes for file $routeGroupMarkdownFile");
+                } else {
+                    $this->clara->warn("Skipping modified file $routeGroupMarkdownFile");
+                    return;
+                }
+            }
+
+            $groupDescription = Arr::first($routesInGroup, function ($route) {
+                    return $route['metadata']['groupDescription'] !== '';
+                })['metadata']['groupDescription'] ?? '';
+            $groupMarkdown = view('scribe::partials.group')
+                ->with('groupName', $groupName)
+                ->with('groupDescription', $groupDescription)
+                ->with('routes', $routesInGroup);
+
+            $this->writeFile($routeGroupMarkdownFile, $groupMarkdown);
+        });
+
+        $this->writeModificationTimesFile();
+
+    }
+
+    /**
+     */
+    protected function writeFile(string $filePath, $markdown): void
+    {
+        file_put_contents($filePath, $markdown);
+        $this->lastTimesWeModifiedTheseFiles[$filePath] = time();
+    }
+
+    /**
+     */
+    protected function writeModificationTimesFile(): void
+    {
+        $content = "# GENERATED. YOU SHOULDN'T MODIFY OR DELETE THIS FILE.\n";
+        $content .= "# Scribe uses this file to know when you change something manually in your docs.\n";
+        $content .= collect($this->lastTimesWeModifiedTheseFiles)
+            ->map(function ($mtime, $filePath) {
+                return "$filePath=$mtime";
+            })->implode("\n");
+        file_put_contents($this->fileModificationTimesFile, $content);
+    }
+
+    /**
+     */
+    protected function hasFileBeenModified(string $filePath): bool
+    {
+        $oldFileModificationTime = $this->lastTimesWeModifiedTheseFiles[$filePath] ?? null;
+
+        if ($oldFileModificationTime) {
+            var_dump($oldFileModificationTime);
+            $latestFileModifiedTime = filemtime($filePath);
+            var_dump($latestFileModifiedTime);
+            $wasFileModifiedManually = $latestFileModifiedTime > (int)$oldFileModificationTime;
+
+            var_dump($wasFileModifiedManually);
+            return $wasFileModifiedManually;
+        }
+
+        return false;
+    }
+
 }
