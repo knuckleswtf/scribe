@@ -13,7 +13,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## 1.0.0-alpha1 ()
+### Added
+- Support for closures (https://github.com/mpociot/laravel-apidoc-generator/pull/690)
+
+### Changed
+- Switch from Documentarian to Pastel
+- Switch to Clara for output
+- Split documentation across multiple Markdown files
+- Change behaviour of command. Running `generate` will generate afresh, keeping any changes to MD files. Use --force to discard your changes. Implement new system for tracking and responding to modifications to files; remove update command
+- Added ability to include files by creating arbitrary markdown files
+
+Appearance:
+- Move Postman collection -> TOC footer
+- Change default page title
+- Improve output: use badges, drop tables for paragraphs, style headings
+
+### Fixed
+
+### Removed
 
 
 
-https://github.com/mpociot/laravel-apidoc-generator/pull/690
+
+

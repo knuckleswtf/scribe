@@ -620,7 +620,7 @@ abstract class GeneratorTestCase extends TestCase
      */
     public function can_parse_transformer_tag($serializer, $expected)
     {
-        config(['apidoc.fractal.serializer' => $serializer]);
+        config(['scribe.fractal.serializer' => $serializer]);
         $route = $this->createRoute('GET', '/transformerTag', 'transformerTag');
         $parsed = $this->generator->processRoute($route);
         $response = Arr::first($parsed['responses']);

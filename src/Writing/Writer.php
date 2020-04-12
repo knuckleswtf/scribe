@@ -69,13 +69,13 @@ class Writer
      */
     private $lastTimesWeModifiedTheseFiles;
 
-    public function __construct(DocumentationConfig $config = null, bool $forceIt = false)
+    public function __construct(DocumentationConfig $config = null, bool $forceIt = false, $clara = null)
     {
         // If no config is injected, pull from global
         $this->config = $config ?: new DocumentationConfig(config('scribe'));
         $this->baseUrl = $this->config->get('base_url') ?? config('app.url');
         $this->forceIt = $forceIt;
-        $this->clara = clara('knuckleswtf/scribe', Flags::$shouldBeVerbose)->only();
+        $this->clara = $clara ?: clara('knuckleswtf/scribe', Flags::$shouldBeVerbose)->only();
         $this->shouldGeneratePostmanCollection = $this->config->get('postman.enabled', false);
         $this->pastel = new Pastel();
         $this->isStatic = $this->config->get('type') === 'static';

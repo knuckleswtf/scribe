@@ -7,7 +7,7 @@ use Illuminate\Routing\Route;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\URL;
 use Knuckles\Scribe\Extracting\Generator;
-use Knuckles\Scribe\Matching\RouteMatcher\Match;
+use Knuckles\Scribe\Matching\Match;
 use Knuckles\Scribe\Matching\RouteMatcherInterface;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\Flags;
@@ -63,7 +63,10 @@ class GenerateDocumentation extends Command
         // Using a global static variable here, so fuck off if you don't like it.
         // Also, the --verbose option is included with all Artisan commands.
         Flags::$shouldBeVerbose = $this->option('verbose');
-        $this->clara = clara('knuckleswtf/scribe', Flags::$shouldBeVerbose)->only();
+
+        $this->clara = clara('knuckleswtf/scribe', Flags::$shouldBeVerbose)
+            ->useOutput($this->output)
+            ->only();
 
         $this->docConfig = new DocumentationConfig(config('scribe'));
         $this->baseUrl = $this->docConfig->get('base_url') ?? config('app.url');
@@ -83,7 +86,8 @@ class GenerateDocumentation extends Command
             }, SORT_NATURAL);
         $writer = new Writer(
             $this->docConfig,
-            $this->option('force')
+            $this->option('force'),
+            $this->clara
         );
         $writer->writeDocs($groupedRoutes);
     }

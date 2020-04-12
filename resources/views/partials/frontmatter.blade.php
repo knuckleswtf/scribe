@@ -6,10 +6,11 @@ language_tabs:
 @endforeach
 
 includes:
+- "./prepend.md"
 - "./authentication.md"
 - "./groups/*"
 - "./errors.md"
-- "./extra.md"
+- "./append.md"
 
 logo: {{ $settings['logo'] ?? false }}
 
