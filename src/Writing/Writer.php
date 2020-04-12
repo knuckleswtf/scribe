@@ -318,12 +318,9 @@ class Writer
         $oldFileModificationTime = $this->lastTimesWeModifiedTheseFiles[$filePath] ?? null;
 
         if ($oldFileModificationTime) {
-            var_dump($oldFileModificationTime);
             $latestFileModifiedTime = filemtime($filePath);
-            var_dump($latestFileModifiedTime);
             $wasFileModifiedManually = $latestFileModifiedTime > (int)$oldFileModificationTime;
 
-            var_dump($wasFileModifiedManually);
             return $wasFileModifiedManually;
         }
 

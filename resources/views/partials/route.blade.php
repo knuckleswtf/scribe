@@ -18,6 +18,8 @@
 ```json
 @if(is_object($response['content']) || is_array($response['content']))
 {!! json_encode($response['content'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}
+@elseif(\Illuminate\Support\Str::startsWith($response['content'], "<<binary>>"))
+Binary data - {{ str_replace("<<binary>>","",$response['content']) }}
 @else
 {!! json_encode(json_decode($response['content']), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}
 @endif

@@ -2,8 +2,7 @@
 
 Automatically generate your API documentation from your existing Laravel/Lumen/[Dingo](https://github.com/dingo/api) routes. [Here's what the output looks like](https://shalvah.me/TheCensorshipAPI/).
 
-[![Latest Stable Version](https://poser.pugx.org/knuckleswtf/scribe/v/stable)](https://packagist.org/packages/knuckleswtf/scribe)[![Total Downloads](https://poser.pugx.org/knuckleswtf/scribe/downloads)](https://packagist.org/packages/knuckleswtf/scribe)
-[![Build Status](https://travis-ci.org/knuckleswtf/scribe.svg?branch=master)](https://travis-ci.org/knuckleswtf/scribe)
+[![Latest Stable Version](https://poser.pugx.org/knuckleswtf/scribe/v/stable)](https://packagist.org/packages/knuckleswtf/scribe)[![Total Downloads](https://poser.pugx.org/knuckleswtf/scribe/downloads)](https://packagist.org/packages/knuckleswtf/scribe) [![Build Status](https://travis-ci.org/knuckleswtf/scribe.svg?branch=master)](https://travis-ci.org/knuckleswtf/scribe) [![Total Downloads](https://poser.pugx.org/knuckleswtf/scribe/downloads)](https://packagist.org/packages/knuckleswtf/scribe)
 
 ## Installation
 PHP 7.2 and Laravel/Lumen 5.7 or higher are required.

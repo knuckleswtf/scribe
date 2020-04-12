@@ -53,6 +53,7 @@ class UseResponseTag extends Strategy
         }
 
         $responses = array_map(function (Tag $responseTag) {
+            // Status code (optional) followed by response
             preg_match('/^(\d{3})?\s?([\s\S]*)$/', $responseTag->getContent(), $result);
 
             $status = $result[1] ?: 200;
