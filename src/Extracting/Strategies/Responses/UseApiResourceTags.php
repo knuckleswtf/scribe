@@ -120,6 +120,7 @@ class UseApiResourceTags extends Strategy
      * @param array $tags
      *
      * @return string
+     * @throws Exception
      */
     private function getClassToBeTransformed(array $tags): string
     {
@@ -127,10 +128,10 @@ class UseApiResourceTags extends Strategy
             return ($tag instanceof Tag) && strtolower($tag->getName()) == 'apiresourcemodel';
         }));
 
-        $type = $modelTag->getContent();
+        $type = $modelTag ? $modelTag->getContent() : null;
 
         if (empty($type)) {
-            throw new Exception('Failed to detect an Eloquent API resource model. Please specify a model using @apiResourceModel.');
+            throw new Exception("Couldn't detect an Eloquent API resource model from your docblock. Did you remember to specify a model using @apiResourceModel?");
         }
 
         return $type;

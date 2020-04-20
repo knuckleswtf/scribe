@@ -33,7 +33,7 @@
         "knuckleswtf/pastel": "dev-master",
         "league/flysystem": "^1.0",
         "mpociot/reflection-docblock": "^1.0.1",
-        "nunomaduro/collision": "^3.0|^4.0",
+        "nunomaduro/collision": "^4.0",
         "ramsey/uuid": "^3.8|^4.0",
         "shalvah/clara": "^2.6",
         "symfony/var-exporter": "^4.0|^5.0"

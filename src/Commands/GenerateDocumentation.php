@@ -25,9 +25,9 @@ class GenerateDocumentation extends Command
      *
      * @var string
      */
-    protected $signature = 'scribe:generate
-                            {--force : Force rewriting of existing routes}
-    ';
+    protected $signature = "scribe:generate
+                            {--force : Discard any changes you've made to the Markdown files}
+    ";
 
     /**
      * The console command description.

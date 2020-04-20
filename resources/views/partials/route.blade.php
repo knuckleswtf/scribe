@@ -71,12 +71,12 @@ Binary data - {{ str_replace("<<binary>>","",$response['content']) }}
 
 @if(count($route['responseFields'] ?? []))
 <h4 class="fancy-heading-panel"><b>Response Fields</b></h4>
-@foreach($route['responseFields'] as $attribute => $parameter)
+@foreach($route['responseFields'] as $field)
 @component('scribe::components.field-description', [
-  'name' => $attribute,
-  'type' => null,
+  'name' => $field['name'],
+  'type' => $field['type'],
   'required' => true,
-  'description' => $parameter['description'],
+  'description' => $field['description'],
 ])
 @endcomponent
 @endforeach

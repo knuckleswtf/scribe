@@ -137,7 +137,7 @@ class UseTransformerTags extends Strategy
         }
 
         if ($type == null) {
-            throw new Exception('Failed to detect a transformer model. Please specify a model using @transformerModel.');
+            throw new Exception("Couldn't detect a transformer model from your docblock. Did you remember to specify a model using @transformerModel?");
         }
 
         return $type;

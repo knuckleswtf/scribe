@@ -214,6 +214,9 @@ return [
             \Knuckles\Scribe\Extracting\Strategies\Responses\UseApiResourceTags::class,
             \Knuckles\Scribe\Extracting\Strategies\Responses\ResponseCalls::class,
         ],
+        'responseFields' => [
+            \Knuckles\Scribe\Extracting\Strategies\ResponseFields\UseParsedResponses::class,
+        ],
     ],
 
     /*

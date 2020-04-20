@@ -85,6 +85,9 @@ class Generator
         $parsedRoute['responses'] = $responses;
         $parsedRoute['showresponse'] = ! empty($responses);
 
+        $responseFields = $this->fetchResponseFields($controller, $method, $route, $routeRules, $parsedRoute);
+        $parsedRoute['responseFields'] = $responseFields;
+
         return $parsedRoute;
     }
 
@@ -128,6 +131,11 @@ class Generator
         return [];
     }
 
+    protected function fetchResponseFields(ReflectionClass $controller, ReflectionFunctionAbstract $method, Route $route, array $rulesToApply, array $context = [])
+    {
+        return $this->iterateThroughStrategies('responseFields', $context, [$route, $controller, $method, $rulesToApply]);
+    }
+
     protected function fetchRequestHeaders(ReflectionClass $controller, ReflectionFunctionAbstract $method, Route $route, array $rulesToApply, array $context = [])
     {
         $headers = $this->iterateThroughStrategies('headers', $context, [$route, $controller, $method, $rulesToApply]);
@@ -160,6 +168,9 @@ class Generator
                 \Knuckles\Scribe\Extracting\Strategies\Responses\UseApiResourceTags::class,
                 \Knuckles\Scribe\Extracting\Strategies\Responses\ResponseCalls::class,
             ],
+            'responseFields' => [
+                \Knuckles\Scribe\Extracting\Strategies\ResponseFields\UseParsedResponses::class,
+            ],
         ];
 
         // Use the default strategies for the stage, unless they were explicitly set
@@ -173,7 +184,7 @@ class Generator
             if (! is_null($results)) {
                 foreach ($results as $index => $item) {
                     if ($stage == 'responses') {
-                        // Responses are additive
+                        // Responses from different strategies are all added, not overwritten
                         $context[$stage][] = $item;
                         continue;
                     }
