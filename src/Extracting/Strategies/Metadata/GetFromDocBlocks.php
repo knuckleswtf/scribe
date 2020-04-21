@@ -12,6 +12,8 @@ use ReflectionFunctionAbstract;
 
 class GetFromDocBlocks extends Strategy
 {
+    public $stage = 'metadata';
+
     public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $context = [])
     {
         $docBlocks = RouteDocBlocker::getDocBlocksFromRoute($route);

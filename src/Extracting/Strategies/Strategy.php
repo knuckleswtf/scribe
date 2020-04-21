@@ -17,11 +17,10 @@ abstract class Strategy
     /**
      * @var string The current stage of route processing
      */
-    protected $stage;
+    public $stage;
 
-    public function __construct(string $stage, DocumentationConfig $config)
+    public function __construct(DocumentationConfig $config)
     {
-        $this->stage = $stage;
         $this->config = $config;
     }
 

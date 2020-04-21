@@ -215,7 +215,7 @@ return [
             \Knuckles\Scribe\Extracting\Strategies\Responses\ResponseCalls::class,
         ],
         'responseFields' => [
-            \Knuckles\Scribe\Extracting\Strategies\ResponseFields\UseParsedResponses::class,
+            \Knuckles\Scribe\Extracting\Strategies\ResponseFields\GetFromResponseFieldTag::class,
         ],
     ],
 

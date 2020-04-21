@@ -101,7 +101,7 @@ class GenerateDocumentationTest extends TestCase
     }
 
     /** @test */
-    public function can_process__callable_tuple_syntax()
+    public function can_process_callable_tuple_syntax()
     {
         RouteFacade::get('/api/array/test', [TestController::class, 'withEndpointDescription']);
 

@@ -25,6 +25,9 @@
         <testsuite name="Postman Collection Test">
             <file>tests/Unit/PostmanCollectionWriterTest.php</file>
         </testsuite>
+        <testsuite name="Strategies">
+            <file>tests/Strategies/ResponseFields/GetFromResponseFieldTagTest.php</file>
+        </testsuite>
     </testsuites>
     <filter>
         <whitelist>

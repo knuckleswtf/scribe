@@ -45,6 +45,9 @@ abstract class GeneratorTestCase extends TestCase
                 \Knuckles\Scribe\Extracting\Strategies\Responses\UseApiResourceTags::class,
                 \Knuckles\Scribe\Extracting\Strategies\Responses\ResponseCalls::class,
             ],
+            'responseFields' => [
+                \Knuckles\Scribe\Extracting\Strategies\ResponseFields\GetFromResponseFieldTag::class,
+            ],
         ],
         'default_group' => 'general',
     ];

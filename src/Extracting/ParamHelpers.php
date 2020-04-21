@@ -42,6 +42,24 @@ trait ParamHelpers
         return $fakeFactory();
     }
 
+    protected function isSupportedTypeInDocBlocks(string $type)
+    {
+        $types = [
+            'integer',
+            'int',
+            'float',
+            'number',
+            'double',
+            'boolean',
+            'bool',
+            'string',
+            'list',
+            'array',
+            'object',
+        ];
+        return in_array($type, $types);
+    }
+
     /**
      * Cast a value from a string to a specified type.
      *
@@ -77,13 +95,13 @@ trait ParamHelpers
 
     /**
      * Normalizes the stated "type" of a parameter (eg "int", "integer", "double")
-     * to a number of standard types (integer, boolean, float).
+     * to a number of standard types (integer, boolean, float). Will return the input if no match.
      *
      * @param string $type
      *
-     * @return mixed|string
+     * @return string
      */
-    protected function normalizeParameterType(string $type)
+    protected function normalizeParameterType(string $type): string
     {
         $typeMap = [
             'int' => 'integer',

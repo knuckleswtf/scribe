@@ -15,6 +15,8 @@ use ReflectionFunctionAbstract;
 
 class GetFromBodyParamTag extends Strategy
 {
+    public $stage = 'bodyParameters';
+
     use ParamHelpers;
 
     public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $context = [])

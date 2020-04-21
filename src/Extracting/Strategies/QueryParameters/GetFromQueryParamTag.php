@@ -16,6 +16,8 @@ use ReflectionFunctionAbstract;
 
 class GetFromQueryParamTag extends Strategy
 {
+    public $stage = 'queryParameters';
+
     use ParamHelpers;
 
     public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $context = [])

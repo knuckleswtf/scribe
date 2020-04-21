@@ -16,6 +16,8 @@ use ReflectionFunctionAbstract;
 
 class GetFromUrlParamTag extends Strategy
 {
+    public $stage = 'urlParameters';
+
     use ParamHelpers;
 
     public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $context = [])

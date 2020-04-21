@@ -5,6 +5,7 @@ namespace Knuckles\Scribe\Extracting;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\Utils;
 use ReflectionClass;
@@ -169,7 +170,7 @@ class Generator
                 \Knuckles\Scribe\Extracting\Strategies\Responses\ResponseCalls::class,
             ],
             'responseFields' => [
-                \Knuckles\Scribe\Extracting\Strategies\ResponseFields\UseParsedResponses::class,
+                \Knuckles\Scribe\Extracting\Strategies\ResponseFields\GetFromResponseFieldTag::class,
             ],
         ];
 
@@ -177,7 +178,8 @@ class Generator
         $strategies = $this->config->get("strategies.$stage", $defaultStrategies[$stage]);
         $context[$stage] = $context[$stage] ?? [];
         foreach ($strategies as $strategyClass) {
-            $strategy = new $strategyClass($stage, $this->config);
+            /** @var Strategy $strategy */
+            $strategy = new $strategyClass($this->config);
             $strategyArgs = $arguments;
             $strategyArgs[] = $context;
             $results = $strategy(...$strategyArgs);

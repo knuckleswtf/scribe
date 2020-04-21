@@ -145,8 +145,19 @@ class TestController extends Controller
 
     /**
      * @authenticated
+     * @responseField user_id string The ID of the newly created user
+     * @responseField creator_id string The ID of the creator
      */
     public function withAuthenticatedTag()
+    {
+        return '';
+    }
+
+    /**
+     * @responseField user_id string The ID of the newly created user
+     * @responseField creator_id string The ID of the creator
+     */
+    public function withResponseFieldTag()
     {
         return '';
     }
