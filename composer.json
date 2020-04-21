@@ -33,17 +33,18 @@
         "knuckleswtf/pastel": "dev-master",
         "league/flysystem": "^1.0",
         "mpociot/reflection-docblock": "^1.0.1",
-        "nunomaduro/collision": "^4.0",
+        "nunomaduro/collision": "^3.0|^4.0",
         "ramsey/uuid": "^3.8|^4.0",
         "shalvah/clara": "^2.6",
         "symfony/var-exporter": "^4.0|^5.0"
     },
     "require-dev": {
+        "brianium/paratest": "^4.0",
         "dms/phpunit-arraysubset-asserts": "^0.1.0",
         "laravel/lumen-framework": "^5.7|^6.0|^7.0",
         "league/fractal": "^0.19.0",
         "orchestra/testbench": "^3.7|^4.0|^5.0",
-        "phpstan/phpstan": "^0.11.15",
+        "phpstan/phpstan": "^0.12.19",
         "phpunit/phpunit": "^8.0"
     },
     "suggest": {
@@ -62,7 +63,9 @@
     "scripts": {
         "lint": "phpstan analyse -c ./phpstan.neon src",
         "test": "phpunit --stop-on-failure --exclude-group dingo",
-        "test-ci": "phpunit --exclude-group dingo"
+        "test-ci": "phpunit --exclude-group dingo",
+        "test-parallel": "paratest -p3 --stop-on-failure --parallel-suite --exclude-group dingo tests",
+        "test-parallel-ci": "paratest -p3 --parallel-suite --exclude-group dingo tests"
     },
     "extra": {
         "laravel": {
