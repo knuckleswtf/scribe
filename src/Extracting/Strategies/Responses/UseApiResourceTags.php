@@ -33,7 +33,7 @@ class UseApiResourceTags extends Strategy
      * @param array $context
      *
      * @return array|null
-     *@throws Exception
+     * @throws Exception
      *
      */
     public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $rulesToApply, array $context = [])
@@ -42,53 +42,9 @@ class UseApiResourceTags extends Strategy
         /** @var DocBlock $methodDocBlock */
         $methodDocBlock = $docBlocks['method'];
 
-        return $this->getApiResourceResponse($methodDocBlock->getTags(), $route);
-    }
-
-    /**
-     * Get a response from the transformer tags.
-     *
-     * @param array $tags
-     *
-     * @return array|null
-     */
-    protected function getApiResourceResponse(array $tags, Route $route)
-    {
         try {
-            if (empty($apiResourceTag = $this->getApiResourceTag($tags))) {
-                return null;
-            }
+            return $this->getApiResourceResponse($methodDocBlock->getTags(), $route);
 
-            list($statusCode, $apiResourceClass) = $this->getStatusCodeAndApiResourceClass($apiResourceTag);
-            $model = $this->getClassToBeTransformed($tags);
-            $modelInstance = $this->instantiateApiResourceModel($model);
-
-            try {
-                $resource = new $apiResourceClass($modelInstance);
-            } catch (Exception $e) {
-                // If it is a ResourceCollection class, it might throw an error
-                // when trying to instantiate with something other than a collection
-                $resource = new $apiResourceClass(collect([$modelInstance]));
-            }
-            if (strtolower($apiResourceTag->getName()) == 'apiresourcecollection') {
-                // Collections can either use the regular JsonResource class (via `::collection()`,
-                // or a ResourceCollection (via `new`)
-                // See https://laravel.com/docs/5.8/eloquent-resources
-                $models = [$modelInstance, $this->instantiateApiResourceModel($model)];
-                $resource = $resource instanceof ResourceCollection
-                    ? new $apiResourceClass(collect($models))
-                    : $apiResourceClass::collection(collect($models));
-            }
-
-            /** @var Response $response */
-            $response = $resource->toResponse(app(Request::class));
-
-            return [
-                [
-                    'status' => $statusCode ?: $response->getStatusCode(),
-                    'content' => $response->getContent(),
-                ],
-            ];
         } catch (Exception $e) {
             clara('knuckleswtf/scribe')->warn('Exception thrown when fetching Eloquent API resource response for [' . implode(',', $route->methods) . "] {$route->uri}.");
             if (Flags::$shouldBeVerbose) {
@@ -99,6 +55,51 @@ class UseApiResourceTags extends Strategy
 
             return null;
         }
+    }
+
+    /**
+     * Get a response from the @apiResource/@apiResourceCollection and @apiResourceModel tags.
+     *
+     * @param array $tags
+     *
+     * @return array|null
+     */
+    public function getApiResourceResponse(array $tags)
+    {
+        if (empty($apiResourceTag = $this->getApiResourceTag($tags))) {
+            return null;
+        }
+
+        list($statusCode, $apiResourceClass) = $this->getStatusCodeAndApiResourceClass($apiResourceTag);
+        $model = $this->getClassToBeTransformed($tags);
+        $modelInstance = $this->instantiateApiResourceModel($model);
+
+        try {
+            $resource = new $apiResourceClass($modelInstance);
+        } catch (Exception $e) {
+            // If it is a ResourceCollection class, it might throw an error
+            // when trying to instantiate with something other than a collection
+            $resource = new $apiResourceClass(collect([$modelInstance]));
+        }
+        if (strtolower($apiResourceTag->getName()) == 'apiresourcecollection') {
+            // Collections can either use the regular JsonResource class (via `::collection()`,
+            // or a ResourceCollection (via `new`)
+            // See https://laravel.com/docs/5.8/eloquent-resources
+            $models = [$modelInstance, $this->instantiateApiResourceModel($model)];
+            $resource = $resource instanceof ResourceCollection
+                ? new $apiResourceClass(collect($models))
+                : $apiResourceClass::collection(collect($models));
+        }
+
+        /** @var Response $response */
+        $response = $resource->toResponse(app(Request::class));
+
+        return [
+            [
+                'status' => $statusCode ?: $response->getStatusCode(),
+                'content' => $response->getContent(),
+            ],
+        ];
     }
 
     /**

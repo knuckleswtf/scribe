@@ -40,7 +40,7 @@ class UseResponseTag extends Strategy
      *
      * @return array|null
      */
-    protected function getDocBlockResponses(array $tags)
+    public function getDocBlockResponses(array $tags)
     {
         $responseTags = array_values(
             array_filter($tags, function ($tag) {

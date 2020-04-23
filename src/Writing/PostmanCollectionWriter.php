@@ -131,13 +131,14 @@ class PostmanCollectionWriter
             'path' => preg_replace_callback('/\/{(\w+)\??}(?=\/|$)/', function ($matches) {
                 return '/:' . $matches[1];
             }, $route['uri']),
-            'query' => collect($route['queryParameters'])->map(function ($parameter, $key) {
+            'query' => collect($route['queryParameters'] ?? [])->map(function ($parameterData, $key) use ($route) {
+                $key = rtrim($key,".*");
                 return [
                     'key' => $key,
-                    'value' => urlencode($parameter['value']),
-                    'description' => $parameter['description'],
+                    'value' => urlencode($parameterData['value']),
+                    'description' => $parameterData['description'],
                     // Default query params to disabled if they aren't required and have empty values
-                    'disabled' => ! $parameter['required'] && empty($parameter['value']),
+                    'disabled' => !$parameterData['required'] && empty($parameterData['value']),
                 ];
             })->values()->toArray(),
         ];

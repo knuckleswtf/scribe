@@ -34,17 +34,27 @@ class ResponseCalls extends Strategy
      */
     public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $context = [])
     {
+        return $this->makeResponseCallIfEnabledAndNoSuccessResponses($route, $routeRules, $context);
+    }
+
+    public function makeResponseCallIfEnabledAndNoSuccessResponses(Route $route, array $routeRules, array $context)
+    {
         $rulesToApply = $routeRules['response_calls'] ?? [];
-        if (! $this->shouldMakeApiCall($route, $rulesToApply, $context)) {
+        if (!$this->shouldMakeApiCall($route, $rulesToApply, $context)) {
             return null;
         }
 
+        return $this->makeResponseCall($route, $context, $rulesToApply);
+    }
+
+    public function makeResponseCall(Route $route, array $context, array $rulesToApply)
+    {
         $this->configureEnvironment($rulesToApply);
 
         // Mix in parsed parameters with manually specified parameters.
-        $bodyParameters = array_merge($context['cleanBodyParameters'], $rulesToApply['bodyParams'] ?? []);
-        $queryParameters = array_merge($context['cleanQueryParameters'], $rulesToApply['queryParams'] ?? []);
-        $urlParameters = $context['cleanUrlParameters'];
+        $bodyParameters = array_merge($context['cleanBodyParameters'] ?? [], $rulesToApply['bodyParams'] ?? []);
+        $queryParameters = array_merge($context['cleanQueryParameters'] ?? [], $rulesToApply['queryParams'] ?? []);
+        $urlParameters = $context['cleanUrlParameters'] ?? [];
         $request = $this->prepareRequest($route, $rulesToApply, $urlParameters, $bodyParameters, $queryParameters, $context['headers'] ?? []);
 
         try {
@@ -333,7 +343,7 @@ class ResponseCalls extends Strategy
         }
 
         // Don't attempt a response call if there are already successful responses
-        $successResponses = collect($context['responses'])->filter(function ($response) {
+        $successResponses = collect($context['responses'] ?? [])->filter(function ($response) {
             return ((string) $response['status'])[0] == '2';
         })->count();
         if ($successResponses) {

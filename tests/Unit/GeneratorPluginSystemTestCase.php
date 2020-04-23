@@ -57,7 +57,7 @@ class GeneratorPluginSystemTestCase extends LaravelGeneratorTest
     }
 
     /** @test */
-    public function combines_responses_from_different_strategies()
+    public function responses_from_different_strategies_get_added()
     {
         $config = [
             'strategies' => [
@@ -127,7 +127,7 @@ class GeneratorPluginSystemTestCase extends LaravelGeneratorTest
     }
 
     /** @test */
-    public function overwrites_metadat_from_previous_strategies_in_same_stage()
+    public function overwrites_metadata_from_previous_strategies_in_same_stage()
     {
         $config = [
             'strategies' => [

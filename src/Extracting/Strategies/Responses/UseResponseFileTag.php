@@ -40,7 +40,7 @@ class UseResponseFileTag extends Strategy
      *
      * @return array|null
      */
-    protected function getFileResponses(array $tags)
+    public function getFileResponses(array $tags)
     {
         // Avoid "holes" in the keys of the filtered array, by using array_values on the filtered array
         $responseFileTags = array_values(

@@ -103,12 +103,7 @@ class TestController extends Controller
         return '';
     }
 
-    public function withFormRequestParameter(TestRequest $request)
-    {
-        return '';
-    }
-
-    public function withMultipleFormRequestParameters(string $test, TestRequest $request)
+    public function withFormRequestParameter(string $test, TestRequest $request)
     {
         return '';
     }
@@ -125,7 +120,7 @@ class TestController extends Controller
      * @queryParam location_id required The id of the location.
      * @queryParam user_id required The id of the user. Example: me
      * @queryParam page required The page number. Example: 4
-     * @queryParam filters  The filters.
+     * @queryParam filters.* The filters.
      * @queryParam url_encoded  Used for testing that URL parameters will be URL-encoded where needed. Example: + []&=
      */
     public function withQueryParameters()

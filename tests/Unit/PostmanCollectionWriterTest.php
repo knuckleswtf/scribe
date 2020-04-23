@@ -3,6 +3,7 @@
 namespace Knuckles\Scribe\Tests\Unit;
 
 use Illuminate\Support\Collection;
+use Knuckles\Scribe\Extracting\Generator;
 use Knuckles\Scribe\Writing\PostmanCollectionWriter;
 use Orchestra\Testbench\TestCase;
 
@@ -146,7 +147,7 @@ class PostmanCollectionWriterTest extends TestCase
         $variableData = data_get($collection, 'item.0.item.0.request.url.variable');
 
         $this->assertCount(1, $variableData);
-        $this->assertSame([
+        $this->assertEquals([
             'id' => 'param',
             'key' => 'param',
             'value' => 'foobar',
@@ -158,11 +159,19 @@ class PostmanCollectionWriterTest extends TestCase
     {
         $fakeRoute = $this->createMockRouteData('fake/path');
 
-        $fakeRoute['queryParameters'] = ['limit' => [
-            'description' => 'A fake limit for my fake endpoint',
-            'required' => false,
-            'value' => 5,
-        ]];
+        $fakeRoute['queryParameters'] = [
+            'limit' => [
+                'description' => 'A fake limit for my fake endpoint',
+                'required' => true,
+                'value' => 5,
+            ],
+            'filters.*' => [
+                'description' => 'Filters',
+                'required' => true,
+                'value' => '34,12',
+            ],
+        ];
+        $fakeRoute['cleanQueryParameters'] = Generator::cleanParams($fakeRoute['queryParameters']);
 
         $collection = $this->createMockRouteGroup([$fakeRoute]);
         $writer = new PostmanCollectionWriter($collection, 'fake.localhost');
@@ -170,13 +179,19 @@ class PostmanCollectionWriterTest extends TestCase
 
         $variableData = data_get($collection, 'item.0.item.0.request.url.query');
 
-        $this->assertCount(1, $variableData);
-        $this->assertSame([
+        $this->assertCount(2, $variableData);
+        $this->assertEquals([
             'key' => 'limit',
             'value' => '5',
             'description' => 'A fake limit for my fake endpoint',
             'disabled' => false,
         ], $variableData[0]);
+        $this->assertEquals([
+            'key' => 'filters',
+            'value' => urlencode("34,12"),
+            'description' => 'Filters',
+            'disabled' => false,
+        ], $variableData[1]);
     }
 
     public function testUrlParametersAreNotIncludedIfMissingFromPath()
@@ -213,6 +228,7 @@ class PostmanCollectionWriterTest extends TestCase
                 'value' => null,
             ],
         ];
+        $fakeRoute['cleanQueryParameters'] = Generator::cleanParams($fakeRoute['queryParameters']);
 
         $collection = $this->createMockRouteGroup([$fakeRoute]);
         $writer = new PostmanCollectionWriter($collection, 'fake.localhost');

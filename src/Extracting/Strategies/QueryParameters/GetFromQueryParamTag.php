@@ -22,6 +22,11 @@ class GetFromQueryParamTag extends Strategy
 
     public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $context = [])
     {
+        return $this->getQueryParametersFromFormRequestOrMethod($route, $method);
+    }
+
+    public function getQueryParametersFromFormRequestOrMethod(Route $route, ReflectionFunctionAbstract $method): array
+    {
         foreach ($method->getParameters() as $param) {
             $paramType = $param->getType();
             if ($paramType === null) {
@@ -54,7 +59,7 @@ class GetFromQueryParamTag extends Strategy
         return $this->getQueryParametersFromDocBlock($methodDocBlock->getTags());
     }
 
-    private function getQueryParametersFromDocBlock($tags)
+    public function getQueryParametersFromDocBlock($tags)
     {
         $parameters = collect($tags)
             ->filter(function ($tag) {

@@ -41,20 +41,30 @@ class UseTransformerTags extends Strategy
         /** @var DocBlock $methodDocBlock */
         $methodDocBlock = $docBlocks['method'];
 
-        return $this->getTransformerResponse($methodDocBlock->getTags(), $route);
+        try {
+            return $this->getTransformerResponse($methodDocBlock->getTags());
+        } catch (Exception $e) {
+            clara('knuckleswtf/scribe')->warn('Exception thrown when fetching transformer response for [' . implode(',', $route->methods) . "] {$route->uri}.");
+            if (Flags::$shouldBeVerbose) {
+                Utils::dumpException($e);
+            } else {
+                clara('knuckleswtf/scribe')->warn("Run this again with the --verbose flag to see the exception.");
+            }
+
+            return null;
+        }
     }
 
     /**
-     * Get a response from the transformer tags.
+     * Get a response from the @transformer/@transformerCollection and @transformerModel tags.
      *
      * @param array $tags
      * @param Route $route
      *
      * @return array|null
      */
-    protected function getTransformerResponse(array $tags, Route $route)
+    public function getTransformerResponse(array $tags)
     {
-        try {
             if (empty($transformerTag = $this->getTransformerTag($tags))) {
                 return null;
             }
@@ -65,8 +75,8 @@ class UseTransformerTags extends Strategy
 
             $fractal = new Manager();
 
-            if (! is_null(config('scribe.fractal.serializer'))) {
-                $fractal->setSerializer(app(config('scribe.fractal.serializer')));
+            if (! is_null($this->config->get('fractal.serializer'))) {
+                $fractal->setSerializer(app($this->config->get('fractal.serializer')));
             }
 
             $resource = (strtolower($transformerTag->getName()) == 'transformercollection')
@@ -84,16 +94,6 @@ class UseTransformerTags extends Strategy
                     'content' => $response->getContent(),
                 ],
             ];
-        } catch (Exception $e) {
-            clara('knuckleswtf/scribe')->warn('Exception thrown when fetching transformer response for [' . implode(',', $route->methods) . "] {$route->uri}.");
-            if (Flags::$shouldBeVerbose) {
-                Utils::dumpException($e);
-            } else {
-                clara('knuckleswtf/scribe')->warn("Run this again with the --verbose flag to see the exception.");
-            }
-
-            return null;
-        }
     }
 
     /**

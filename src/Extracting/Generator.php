@@ -68,19 +68,19 @@ class Generator
 
         $urlParameters = $this->fetchUrlParameters($controller, $method, $route, $routeRules, $parsedRoute);
         $parsedRoute['urlParameters'] = $urlParameters;
-        $parsedRoute['cleanUrlParameters'] = $this->cleanParams($urlParameters);
+        $parsedRoute['cleanUrlParameters'] = self::cleanParams($urlParameters);
         $parsedRoute['boundUri'] = Utils::getFullUrl($route, $parsedRoute['cleanUrlParameters']);
 
         $queryParameters = $this->fetchQueryParameters($controller, $method, $route, $routeRules, $parsedRoute);
         $parsedRoute['queryParameters'] = $queryParameters;
-        $parsedRoute['cleanQueryParameters'] = $this->cleanParams($queryParameters);
+        $parsedRoute['cleanQueryParameters'] = self::cleanParams($queryParameters);
 
         $headers = $this->fetchRequestHeaders($controller, $method, $route, $routeRules, $parsedRoute);
         $parsedRoute['headers'] = $headers;
 
         $bodyParameters = $this->fetchBodyParameters($controller, $method, $route, $routeRules, $parsedRoute);
         $parsedRoute['bodyParameters'] = $bodyParameters;
-        $parsedRoute['cleanBodyParameters'] = $this->cleanParams($bodyParameters);
+        $parsedRoute['cleanBodyParameters'] = self::cleanParams($bodyParameters);
 
         $responses = $this->fetchResponses($controller, $method, $route, $routeRules, $parsedRoute);
         $parsedRoute['responses'] = $responses;
@@ -157,7 +157,7 @@ class Generator
                 \Knuckles\Scribe\Extracting\Strategies\QueryParameters\GetFromQueryParamTag::class,
             ],
             'headers' => [
-                \Knuckles\Scribe\Extracting\Strategies\RequestHeaders\GetFromRouteRules::class,
+                \Knuckles\Scribe\Extracting\Strategies\Headers\GetFromRouteRules::class,
             ],
             'bodyParameters' => [
                 \Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromBodyParamTag::class,
@@ -215,17 +215,17 @@ class Generator
      *
      * @return array
      */
-    protected function cleanParams(array $params)
+    public static function cleanParams(array $params)
     {
         $values = [];
 
-        // Remove params which have no examples.
+        // Remove params which have no examples and are optional.
         $params = array_filter($params, function ($details) {
-            return ! is_null($details['value']);
+            return ! (is_null($details['value']) && $details['required'] === false);
         });
 
         foreach ($params as $paramName => $details) {
-            $this->generateConcreteSampleForArrayKeys(
+            self::generateConcreteSampleForArrayKeys(
                 $paramName,
                 $details['value'],
                 $values
@@ -245,7 +245,7 @@ class Generator
      *
      * @return void
      */
-    protected function generateConcreteSampleForArrayKeys($paramName, $paramExample, array &$values = [])
+    protected static function generateConcreteSampleForArrayKeys($paramName, $paramExample, array &$values = [])
     {
         if (Str::contains($paramName, '[')) {
             // Replace usages of [] with dot notation

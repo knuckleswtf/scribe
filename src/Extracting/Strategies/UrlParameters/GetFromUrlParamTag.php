@@ -54,7 +54,7 @@ class GetFromUrlParamTag extends Strategy
         return $this->getUrlParametersFromDocBlock($methodDocBlock->getTags());
     }
 
-    private function getUrlParametersFromDocBlock($tags)
+    public function getUrlParametersFromDocBlock($tags)
     {
         $parameters = collect($tags)
             ->filter(function ($tag) {
@@ -64,7 +64,7 @@ class GetFromUrlParamTag extends Strategy
                 // Format:
                 // @urlParam <name> <"required" (optional)> <description>
                 // Examples:
-                // @urlParam id string required The id of the post.
+                // @urlParam id required The id of the post.
                 // @urlParam user_id The ID of the user.
                 preg_match('/(.+?)\s+(required\s+)?(.*)/', $tag->getContent(), $content);
                 $content = preg_replace('/\s?No-example.?/', '', $content);

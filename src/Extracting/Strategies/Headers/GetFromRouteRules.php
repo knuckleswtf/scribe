@@ -1,6 +1,6 @@
 <?php
 
-namespace Knuckles\Scribe\Extracting\Strategies\RequestHeaders;
+namespace Knuckles\Scribe\Extracting\Strategies\Headers;
 
 use Illuminate\Routing\Route;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;

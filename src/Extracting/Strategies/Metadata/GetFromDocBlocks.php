@@ -21,6 +21,11 @@ class GetFromDocBlocks extends Strategy
         $methodDocBlock = $docBlocks['method'];
         $classDocBlock = $docBlocks['class'];
 
+        return $this->getMetadataFromDocBlock($methodDocBlock, $classDocBlock);
+    }
+
+    public function getMetadataFromDocBlock(DocBlock $methodDocBlock, DocBlock $classDocBlock): array
+    {
         list($routeGroupName, $routeGroupDescription, $routeTitle) = $this->getRouteGroupDescriptionAndTitle($methodDocBlock, $classDocBlock);
 
         return [
@@ -28,7 +33,7 @@ class GetFromDocBlocks extends Strategy
             'groupDescription' => $routeGroupDescription,
             'title' => $routeTitle ?: $methodDocBlock->getShortDescription(),
             'description' => $methodDocBlock->getLongDescription()->getContents(),
-            'authenticated' => $this->getAuthStatusFromDocBlock($classDocBlock->getTags())?:$this->getAuthStatusFromDocBlock($methodDocBlock->getTags()),
+            'authenticated' => $this->getAuthStatusFromDocBlock($classDocBlock->getTags()) ?: $this->getAuthStatusFromDocBlock($methodDocBlock->getTags()),
         ];
     }
 

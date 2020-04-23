@@ -11,6 +11,7 @@ use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Mpociot\Reflection\DocBlock;
 use Mpociot\Reflection\DocBlock\Tag;
 use ReflectionClass;
+use ReflectionException;
 use ReflectionFunctionAbstract;
 
 class GetFromBodyParamTag extends Strategy
@@ -20,6 +21,11 @@ class GetFromBodyParamTag extends Strategy
     use ParamHelpers;
 
     public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $context = [])
+    {
+        return $this->getBodyParametersFromFormRequestOrMethod($route, $method);
+    }
+
+    public function getBodyParametersFromFormRequestOrMethod(Route $route, ReflectionFunctionAbstract $method): array
     {
         foreach ($method->getParameters() as $param) {
             $paramType = $param->getType();
@@ -31,7 +37,7 @@ class GetFromBodyParamTag extends Strategy
 
             try {
                 $parameterClass = new ReflectionClass($parameterClassName);
-            } catch (\ReflectionException $e) {
+            } catch (ReflectionException $e) {
                 continue;
             }
 
@@ -53,7 +59,7 @@ class GetFromBodyParamTag extends Strategy
         return $this->getBodyParametersFromDocBlock($methodDocBlock->getTags());
     }
 
-    private function getBodyParametersFromDocBlock($tags)
+    public function getBodyParametersFromDocBlock($tags)
     {
         $parameters = collect($tags)
             ->filter(function ($tag) {
@@ -73,7 +79,7 @@ class GetFromBodyParamTag extends Strategy
                     $required = false;
                     $description = '';
                 } else {
-                    list($_, $name, $type, $required, $description) = $content;
+                    [$_, $name, $type, $required, $description] = $content;
                     $description = trim($description);
                     if ($description == 'required' && empty(trim($required))) {
                         $required = $description;

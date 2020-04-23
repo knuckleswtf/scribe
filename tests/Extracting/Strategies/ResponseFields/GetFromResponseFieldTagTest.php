@@ -1,6 +1,6 @@
 <?php
 
-namespace Knuckles\Scribe\Tests\Strategies\ResponseFields;
+namespace Knuckles\Scribe\Tests\Extracting\Strategies\ResponseFields;
 
 use Knuckles\Scribe\Extracting\Strategies\ResponseFields\GetFromResponseFieldTag;
 use Knuckles\Scribe\Tools\DocumentationConfig;
@@ -12,7 +12,8 @@ class GetFromResponseFieldTagTest extends TestCase
 {
     use ArraySubsetAsserts;
 
-    public function testCanFetchFromResponseFieldTag()
+    /** @test */
+    public function can_fetch_from_responsefield_tag()
     {
         $strategy = new GetFromResponseFieldTag(new DocumentationConfig([]));
         $tags = [
@@ -28,7 +29,8 @@ class GetFromResponseFieldTagTest extends TestCase
         ], $results);
     }
 
-    public function testCanInferTypeFromFirst2xxResponse()
+    /** @test */
+    public function can_infer_type_from_first_2xx_response()
     {
         $strategy = new GetFromResponseFieldTag(new DocumentationConfig([]));
         $tags = [
@@ -58,7 +60,8 @@ class GetFromResponseFieldTagTest extends TestCase
         ], $results);
     }
 
-    public function testCanInferTypeFromFirst2xxResponseForLists()
+    /** @test */
+    public function can_infer_type_from_first_2xx_response_for_lists()
     {
         $strategy = new GetFromResponseFieldTag(new DocumentationConfig([]));
         $tags = [
@@ -80,7 +83,8 @@ class GetFromResponseFieldTagTest extends TestCase
         ], $results);
     }
 
-    public function testDefaultsToNothingWhenTypeInferenceFails()
+    /** @test */
+    public function defaults_to_nothing_when_type_inference_fails()
     {
         $strategy = new GetFromResponseFieldTag(new DocumentationConfig([]));
         $tags = [
