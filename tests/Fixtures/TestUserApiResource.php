@@ -19,6 +19,8 @@ class TestUserApiResource extends JsonResource
             'id' => $this->id,
             'name' => $this->first_name . ' ' . $this->last_name,
             'email' => $this->email,
+            'state1' => $this['state1'],
+            'random-state' => $this['random-state'],
         ];
     }
 }

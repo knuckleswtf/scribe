@@ -36,8 +36,11 @@ class UseApiResourceTagsTest extends TestCase
                 'email' => 'a@b.com',
             ];
         });
+        $factory->state(TestUser::class, 'state1', ["state1" => true]);
+        $factory->state(TestUser::class, 'random-state', ["random-state" => true]);
     }
-        /** @test */
+
+    /** @test */
     public function can_parse_apiresource_tags()
     {
         $config = new DocumentationConfig([]);
@@ -57,6 +60,34 @@ class UseApiResourceTagsTest extends TestCase
                         'id' => 4,
                         'name' => 'Tested Again',
                         'email' => 'a@b.com',
+                    ],
+                ]),
+            ],
+        ], $results);
+    }
+
+    /** @test */
+    public function can_parse_apiresource_tags_with_model_factory_states()
+    {
+        $config = new DocumentationConfig([]);
+
+        $strategy = new UseApiResourceTags($config);
+        $tags = [
+            new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
+            new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser states=state1,random-state'),
+        ];
+        $results = $strategy->getApiResourceResponse($tags);
+
+        $this->assertArraySubset([
+            [
+                'status' => 200,
+                'content' => json_encode([
+                    'data' => [
+                        'id' => 4,
+                        'name' => 'Tested Again',
+                        'email' => 'a@b.com',
+                        'state1' => true,
+                        'random-state' => true,
                     ],
                 ]),
             ],
@@ -132,4 +163,17 @@ class UseApiResourceTagsTest extends TestCase
         ], $results);
     }
 
+    public function dataResources()
+    {
+        return [
+            [
+                null,
+                '{"data":{"id":1,"description":"Welcome on this test versions","name":"TestName"}}',
+            ],
+            [
+                'League\Fractal\Serializer\JsonApiSerializer',
+                '{"data":{"type":null,"id":"1","attributes":{"description":"Welcome on this test versions","name":"TestName"}}}',
+            ],
+        ];
+    }
 }

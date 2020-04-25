@@ -4,6 +4,8 @@ namespace Knuckles\Scribe\Tests\Extracting\Strategies\Responses;
 
 use Knuckles\Scribe\Extracting\Strategies\Responses\UseTransformerTags;
 use Knuckles\Scribe\ScribeServiceProvider;
+use Knuckles\Scribe\Tests\Fixtures\TestModel;
+use Knuckles\Scribe\Tests\Fixtures\TestUser;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Mpociot\Reflection\DocBlock\Tag;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
@@ -64,6 +66,29 @@ class UseTransformerTagsTest extends TestCase
     }
 
     /** @test */
+    public function can_parse_transformer_tag_with_model_and_factory_states()
+    {
+        $factory = app(\Illuminate\Database\Eloquent\Factory::class);
+        $factory->define(TestUser::class, function () { return ['id' => 3, 'name' => 'myname']; });
+        $factory->state(TestUser::class, 'state1', ["state1" => true]);
+        $factory->state(TestUser::class, 'random-state', ["random-state" => true]);
+
+        $strategy = new UseTransformerTags(new DocumentationConfig([]));
+        $tags = [
+            new Tag('transformer', '\Knuckles\Scribe\Tests\Fixtures\TestEloquentTransformer'),
+            new Tag('transformermodel', '\Knuckles\Scribe\Tests\Fixtures\TestUser states=state1,random-state'),
+        ];
+        $results = $strategy->getTransformerResponse($tags);
+
+        $this->assertArraySubset([
+            [
+                'status' => 200,
+                'content' => '{"data":{"id":3,"name":"myname","state1":true,"random-state":true}}',
+            ],
+        ], $results);
+    }
+
+    /** @test */
     public function can_parse_transformer_tag_with_status_code()
     {
         $strategy = new UseTransformerTags(new DocumentationConfig([]));
@@ -119,7 +144,6 @@ class UseTransformerTagsTest extends TestCase
             ],
         ], $results);
     }
-
 
     public function dataResources()
     {

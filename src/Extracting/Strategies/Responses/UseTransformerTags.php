@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Model as IlluminateModel;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
+use Knuckles\Scribe\Tools\AnnotationParser;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
@@ -70,8 +71,8 @@ class UseTransformerTags extends Strategy
             }
 
             [$statusCode, $transformer] = $this->getStatusCodeAndTransformerClass($transformerTag);
-            $model = $this->getClassToBeTransformed($tags, (new ReflectionClass($transformer))->getMethod('transform'));
-            $modelInstance = $this->instantiateTransformerModel($model);
+            [$model, $factoryStates] = $this->getClassToBeTransformed($tags, (new ReflectionClass($transformer))->getMethod('transform'));
+            $modelInstance = $this->instantiateTransformerModel($model, $factoryStates);
 
             $fractal = new Manager();
 
@@ -81,7 +82,7 @@ class UseTransformerTags extends Strategy
 
             $resource = (strtolower($transformerTag->getName()) == 'transformercollection')
                 ? new Collection(
-                    [$modelInstance, $this->instantiateTransformerModel($model)],
+                    [$modelInstance, $this->instantiateTransformerModel($model, $factoryStates)],
                     new $transformer()
                 )
                 : new Item($modelInstance, new $transformer());
@@ -117,17 +118,19 @@ class UseTransformerTags extends Strategy
      *
      * @throws Exception
      *
-     * @return string
+     * @return array
      */
-    private function getClassToBeTransformed(array $tags, ReflectionFunctionAbstract $transformerMethod): string
+    private function getClassToBeTransformed(array $tags, ReflectionFunctionAbstract $transformerMethod): array
     {
         $modelTag = Arr::first(array_filter($tags, function ($tag) {
             return ($tag instanceof Tag) && strtolower($tag->getName()) == 'transformermodel';
         }));
 
         $type = null;
+        $states = [];
         if ($modelTag) {
-            $type = $modelTag->getContent();
+            ['content' => $type, 'attributes' => $attributes] = AnnotationParser::parseIntoContentAndAttributes($modelTag->getContent(), ['states']);
+            $states = explode(',', $attributes['states'] ?? '');
         } else {
             $parameter = Arr::first($transformerMethod->getParameters());
             if ($parameter->hasType() && ! $parameter->getType()->isBuiltin() && class_exists($parameter->getType()->getName())) {
@@ -140,15 +143,10 @@ class UseTransformerTags extends Strategy
             throw new Exception("Couldn't detect a transformer model from your docblock. Did you remember to specify a model using @transformerModel?");
         }
 
-        return $type;
+        return [$type, $states];
     }
 
-    /**
-     * @param string $type
-     *
-     * @return Model|object
-     */
-    protected function instantiateTransformerModel(string $type)
+    protected function instantiateTransformerModel(string $type, array $factoryStates = [])
     {
         try {
             // try Eloquent model factory
@@ -157,7 +155,11 @@ class UseTransformerTags extends Strategy
             // but the user might write it that way in a comment. Let's be safe.
             $type = ltrim($type, '\\');
 
-            return factory($type)->make();
+            $factory = factory($type);
+            if (count($factoryStates)) {
+                $factory->states($factoryStates);
+            }
+            return $factory->make();
         } catch (Exception $e) {
             if (Flags::$shouldBeVerbose) {
                 clara('knuckleswtf/scribe')->warn("Eloquent model factory failed to instantiate {$type}; trying to fetch from database.");

@@ -10,6 +10,7 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
+use Knuckles\Scribe\Tools\AnnotationParser;
 use League\Fractal\Resource\Collection;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
@@ -71,8 +72,8 @@ class UseApiResourceTags extends Strategy
         }
 
         list($statusCode, $apiResourceClass) = $this->getStatusCodeAndApiResourceClass($apiResourceTag);
-        $model = $this->getClassToBeTransformed($tags);
-        $modelInstance = $this->instantiateApiResourceModel($model);
+        [$model, $factoryStates] = $this->getClassToBeTransformed($tags);
+        $modelInstance = $this->instantiateApiResourceModel($model, $factoryStates);
 
         try {
             $resource = new $apiResourceClass($modelInstance);
@@ -85,7 +86,7 @@ class UseApiResourceTags extends Strategy
             // Collections can either use the regular JsonResource class (via `::collection()`,
             // or a ResourceCollection (via `new`)
             // See https://laravel.com/docs/5.8/eloquent-resources
-            $models = [$modelInstance, $this->instantiateApiResourceModel($model)];
+            $models = [$modelInstance, $this->instantiateApiResourceModel($model, $factoryStates)];
             $resource = $resource instanceof ResourceCollection
                 ? new $apiResourceClass(collect($models))
                 : $apiResourceClass::collection(collect($models));
@@ -117,33 +118,34 @@ class UseApiResourceTags extends Strategy
         return [$status, $apiResourceClass];
     }
 
-    /**
-     * @param array $tags
-     *
-     * @return string
-     * @throws Exception
-     */
-    private function getClassToBeTransformed(array $tags): string
+    private function getClassToBeTransformed(array $tags): array
     {
         $modelTag = Arr::first(array_filter($tags, function ($tag) {
             return ($tag instanceof Tag) && strtolower($tag->getName()) == 'apiresourcemodel';
         }));
 
-        $type = $modelTag ? $modelTag->getContent() : null;
+        $type = null;
+        $states = [];
+        if ($modelTag) {
+            ['content' => $type, 'attributes' => $attributes] = AnnotationParser::parseIntoContentAndAttributes($modelTag->getContent(), ['states']);
+            $states = explode(',', $attributes['states'] ?? '');
+        }
 
         if (empty($type)) {
             throw new Exception("Couldn't detect an Eloquent API resource model from your docblock. Did you remember to specify a model using @apiResourceModel?");
         }
 
-        return $type;
+        return [$type, $states];
     }
 
     /**
      * @param string $type
      *
+     * @param array $factoryStates
+     *
      * @return Model|object
      */
-    protected function instantiateApiResourceModel(string $type)
+    protected function instantiateApiResourceModel(string $type, array $factoryStates = [])
     {
         try {
             // Try Eloquent model factory
@@ -152,7 +154,11 @@ class UseApiResourceTags extends Strategy
             // but the user might write it that way in a comment. Let's be safe.
             $type = ltrim($type, '\\');
 
-            return factory($type)->make();
+            $factory = factory($type);
+            if (count($factoryStates)) {
+                $factory->states($factoryStates);
+            }
+            return $factory->make();
         } catch (Exception $e) {
             if (Flags::$shouldBeVerbose) {
                 clara('knuckleswtf/scribe')->warn("Eloquent model factory failed to instantiate {$type}; trying to fetch from database.");
