@@ -5,6 +5,7 @@ namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 use Illuminate\Routing\Route;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
+use Knuckles\Scribe\Tools\AnnotationParser;
 use Mpociot\Reflection\DocBlock;
 use Mpociot\Reflection\DocBlock\Tag;
 
@@ -54,18 +55,30 @@ class UseResponseFileTag extends Strategy
         }
 
         $responses = array_map(function (Tag $responseFileTag) {
-            preg_match('/^(\d{3})?\s?([\S]*[\s]*?)(\{.*\})?$/', $responseFileTag->getContent(), $result);
-            $relativeFilePath = trim($result[2]);
+            preg_match('/^(\d{3})?\s*(.*?)({.*})?$/', $responseFileTag->getContent(), $result);
+            [$_, $status, $mainContent] = $result;
+            $json = $result[3] ?? null;
+
+            ['attributes' => $attributes, 'content' => $relativeFilePath] = AnnotationParser::parseIntoContentAndAttributes($mainContent, ['status', 'scenario']);
+
+            $status = $attributes['status'] ?: ($status ?: 200);
+            $description = $attributes['scenario'] ? "$status, {$attributes['scenario']}" : "$status";
+
             $filePath = storage_path($relativeFilePath);
             if (! file_exists($filePath)) {
                 throw new \Exception('@responseFile ' . $relativeFilePath . ' does not exist');
             }
-            $status = $result[1] ?: 200;
-            $content = $result[2] ? file_get_contents($filePath, true) : '{}';
-            $json = ! empty($result[3]) ? str_replace("'", '"', $result[3]) : '{}';
-            $merged = array_merge(json_decode($content, true), json_decode($json, true));
+            $content = file_get_contents($filePath, true);
+            if ($json) {
+                $json = str_replace("'", '"', $json);
+                $content = json_encode(array_merge(json_decode($content, true), json_decode($json, true)));
+            }
 
-            return ['content' => json_encode($merged), 'status' => (int) $status];
+            return [
+                'content' => $content,
+                'status' => (int) $status,
+                'description' => $description
+            ];
         }, $responseFileTags);
 
         return $responses;

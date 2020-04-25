@@ -20,8 +20,6 @@ class UseResponseTagTest extends TestCase
     {
         $strategy = new UseResponseTag(new DocumentationConfig([]));
         $results = $strategy->getDocBlockResponses($tags);
-var_dump($expected);
-var_dump($results);
 
         $this->assertEquals($expected[0]['status'], $results[0]['status']);
         $this->assertEquals($expected[1]['status'], $results[1]['status']);

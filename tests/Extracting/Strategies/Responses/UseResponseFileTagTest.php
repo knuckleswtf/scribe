@@ -20,51 +20,30 @@ class UseResponseFileTagTest extends TestCase
         ];
     }
 
-    /** @test */
-    public function can_fetch_from_responsefile_tag()
+    /**
+     * @test
+     * @dataProvider responseFileTags
+     */
+    public function allows_multiple_responsefile_tags_for_multiple_statuses_and_scenarios(array $tags, array $expected)
     {
-        $filePath = __DIR__ . '/../../../Fixtures/response_test.json';
-        copy($filePath, storage_path('response_test.json'));
+        $filePath =  __DIR__ . '/../../../Fixtures/response_test.json';
+        $filePath2 =  __DIR__ . '/../../../Fixtures/response_error_test.json';
 
-        $strategy = new UseResponseFileTag(new DocumentationConfig([]));
-        $tags = [
-            new Tag('responseFile', 'response_test.json'),
-        ];
-        $results = $strategy->getFileResponses($tags);
-
-        $fixtureFileJson = file_get_contents($filePath);
-        $this->assertArraySubset([
-            [
-                'status' => 200,
-                'content' => $fixtureFileJson,
-            ],
-        ], $results);
-
-        unlink(storage_path('response_test.json'));
-    }
-
-    /** @test */
-    public function allows_multiple_responsefile_tags_for_multiple_statuses()
-    {
-        $filePath = __DIR__ . '/../../../Fixtures/response_test.json';
-        $filePath2 = __DIR__ . '/../../../Fixtures/response_error_test.json';
         copy($filePath, storage_path('response_test.json'));
         copy($filePath2, storage_path('response_error_test.json'));
 
         $strategy = new UseResponseFileTag(new DocumentationConfig([]));
-        $tags = [
-            new Tag('responseFile', '200 response_test.json'),
-            new Tag('responseFile', '401 response_error_test.json'),
-        ];
         $results = $strategy->getFileResponses($tags);
 
         $this->assertArraySubset([
             [
                 'status' => 200,
+                'description' => $expected[0]['description'],
                 'content' => file_get_contents($filePath),
             ],
             [
                 'status' => 401,
+                'description' => $expected[1]['description'],
                 'content' => file_get_contents($filePath2),
             ],
         ], $results);
@@ -92,5 +71,44 @@ class UseResponseFileTagTest extends TestCase
                 'content' => '{"id":5,"name":"Jessica Jones","gender":"male","message":"Serendipity"}',
             ],
         ], $results);
+    }
+
+    public function responseFileTags()
+    {
+        return [
+            "with status as initial position" => [
+                [
+                    new Tag('responseFile', 'response_test.json'),
+                    new Tag('responseFile', '401 response_error_test.json'),
+                ],
+                [
+                    [
+                        'status' => 200,
+                        'description' => '200',
+                    ],
+                    [
+                        'status' => 401,
+                        'description' => '401',
+                    ],
+                ],
+            ],
+
+            "with attributes" => [
+                [
+                    new Tag('responseFile', 'scenario="success" response_test.json'),
+                    new Tag('responseFile', 'status=401 scenario=\'auth problem\' response_error_test.json'),
+                ],
+                [
+                    [
+                        'status' => 200,
+                        'description' => '200, success',
+                    ],
+                    [
+                        'status' => 401,
+                        'description' => '401, auth problem',
+                    ],
+                ],
+            ],
+        ];
     }
 }

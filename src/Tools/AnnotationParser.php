@@ -31,7 +31,8 @@ class AnnotationParser
         if (count($result) == 1) { // No key-value pairs
             return [
                 'content' => trim($result[0]),
-                'attributes' => $defaults];
+                'attributes' => $defaults
+            ];
         }
 
         // Separate the main content
