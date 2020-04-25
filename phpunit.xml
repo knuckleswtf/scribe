@@ -24,6 +24,7 @@
         </testsuite>
         <testsuite name="Postman Collection Test">
             <file>tests/Unit/PostmanCollectionWriterTest.php</file>
+            <file>tests/Tools/AnnotationParserTest.php</file>
         </testsuite>
         <testsuite name="Strategies">
             <directory>tests/Extracting/Strategies</directory>

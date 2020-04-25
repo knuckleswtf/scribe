@@ -13,7 +13,7 @@
 
 @if(in_array('GET',$route['methods']) || (isset($route['showresponse']) && $route['showresponse']))
 @foreach($route['responses'] as $response)
-> Example response ({{$response['status']}}):
+> Example response ({{$response['description'] ?? $response['status']}}):
 
 ```json
 @if(is_object($response['content']) || is_array($response['content']))

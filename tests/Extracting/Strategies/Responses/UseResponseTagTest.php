@@ -12,63 +12,82 @@ class UseResponseTagTest extends TestCase
 {
     use ArraySubsetAsserts;
 
-    /** @test */
-    public function can_fetch_from_response_tag()
+    /**
+     * @test
+     * @dataProvider responseTags
+     */
+    public function allows_multiple_response_tags_for_multiple_statuses_and_scenarios(array $tags, array $expected)
     {
         $strategy = new UseResponseTag(new DocumentationConfig([]));
-        $tags = [
-            new Tag('response', '{
-        "id": 4,
-        "name": "banana",
-        "color": "red",
-        "weight": "1 kg",
-        "delicious": true,
-        "responseTag": true
-      }'),
-        ];
         $results = $strategy->getDocBlockResponses($tags);
+var_dump($expected);
+var_dump($results);
 
-        $this->assertEquals(200, $results[0]['status']);
-        $this->assertArraySubset([
-            'id' => 4,
-            'name' => 'banana',
-            'color' => 'red',
-            'weight' => '1 kg',
-            'delicious' => true,
-        ], json_decode($results[0]['content'], true));
+        $this->assertEquals($expected[0]['status'], $results[0]['status']);
+        $this->assertEquals($expected[1]['status'], $results[1]['status']);
+        $this->assertEquals($expected[0]['description'], $results[0]['description']);
+        $this->assertEquals($expected[1]['description'], $results[1]['description']);
+        $this->assertEquals($expected[0]['content'], json_decode($results[0]['content'], true));
+        $this->assertEquals($expected[1]['content'], json_decode($results[1]['content'], true));
     }
 
-    /** @test */
-    public function allows_multiple_response_tags_for_multiple_statuses()
+    public function responseTags()
     {
-        $strategy = new UseResponseTag(new DocumentationConfig([]));
-        $tags = [
-            new Tag('response', '{
+        $response1 = '{
        "id": 4,
-       "name": "banana",
-       "color": "red",
-       "weight": "1 kg",
-       "delicious": true,
-       "multipleResponseTagsAndStatusCodes": true
-     }'),
-            new Tag('response', '401 {
-       "message": "Unauthorized"
-     }'),
+       "name": "banana"
+     }';
+        $response2 = '{
+        "message": "Unauthorized"
+     }';
+        return [
+            "with status as initial position" => [
+                [
+                    new Tag('response', $response1),
+                    new Tag('response', "401 $response2"),
+                ],
+                [
+                    [
+                        'status' => 200,
+                        'description' => '200',
+                        'content' => [
+                            'id' => 4,
+                            'name' => 'banana',
+                        ],
+                    ],
+                    [
+                        'status' => 401,
+                        'description' => '401',
+                        'content' => [
+                            'message' => 'Unauthorized',
+                        ],
+                    ],
+                ],
+            ],
+
+            "with attributes" => [
+                [
+                    new Tag('response', "scenario=\"success\" $response1"),
+                    new Tag('response', "status=401 scenario='auth problem' $response2"),
+                ],
+                [
+                    [
+                        'status' => 200,
+                        'description' => '200, success',
+                        'content' => [
+                            'id' => 4,
+                            'name' => 'banana',
+                        ],
+                    ],
+                    [
+                        'status' => 401,
+                        'description' => '401, auth problem',
+                        'content' => [
+                            'message' => 'Unauthorized',
+                        ],
+                    ],
+                ],
+            ],
         ];
-        $results = $strategy->getDocBlockResponses($tags);
-
-        $this->assertEquals(200, $results[0]['status']);
-        $this->assertEquals(401, $results[1]['status']);
-        $this->assertArraySubset([
-            'id' => 4,
-            'name' => 'banana',
-            'color' => 'red',
-            'weight' => '1 kg',
-            'delicious' => true,
-        ], json_decode($results[0]['content'], true));
-        $this->assertArraySubset([
-            'message' => 'Unauthorized',
-        ], json_decode($results[1]['content'], true));
     }
-
 }
