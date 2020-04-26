@@ -25,7 +25,7 @@ class AnnotationParser
      */
     public static function parseIntoContentAndAttributes(string $annotationContent, array $allowedAttributes): array
     {
-        $result = preg_split('/(\w+)=([\S]+|".+?"|\'.+?\')\s*/', trim($annotationContent), -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+        $result = preg_split('/(\w+)=([^\s\'"]+|".+?"|\'.+?\')\s*/', trim($annotationContent), -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 
         $defaults = array_fill_keys($allowedAttributes, null);
         if (count($result) == 1) { // No key-value pairs

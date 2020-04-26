@@ -128,7 +128,7 @@ class UseApiResourceTags extends Strategy
         $states = [];
         if ($modelTag) {
             ['content' => $type, 'attributes' => $attributes] = AnnotationParser::parseIntoContentAndAttributes($modelTag->getContent(), ['states']);
-            $states = explode(',', $attributes['states'] ?? '');
+            $states = $attributes['states'] ? explode(',', $attributes['states']) : [];
         }
 
         if (empty($type)) {

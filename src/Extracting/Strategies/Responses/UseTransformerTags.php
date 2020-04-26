@@ -130,7 +130,7 @@ class UseTransformerTags extends Strategy
         $states = [];
         if ($modelTag) {
             ['content' => $type, 'attributes' => $attributes] = AnnotationParser::parseIntoContentAndAttributes($modelTag->getContent(), ['states']);
-            $states = explode(',', $attributes['states'] ?? '');
+            $states = $attributes['states'] ? explode(',', $attributes['states']) : [];
         } else {
             $parameter = Arr::first($transformerMethod->getParameters());
             if ($parameter->hasType() && ! $parameter->getType()->isBuiltin() && class_exists($parameter->getType()->getName())) {

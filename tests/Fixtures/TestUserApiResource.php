@@ -15,12 +15,17 @@ class TestUserApiResource extends JsonResource
      */
     public function toArray($request)
     {
-        return [
+        $result = [
             'id' => $this->id,
             'name' => $this->first_name . ' ' . $this->last_name,
             'email' => $this->email,
-            'state1' => $this['state1'],
-            'random-state' => $this['random-state'],
         ];
+
+        if ($this['state1'] && $this['random-state']) {
+            $result['state1'] = $this['state1'];
+            $result['random-state'] = $this['random-state'];
+        }
+
+        return $result;
     }
 }

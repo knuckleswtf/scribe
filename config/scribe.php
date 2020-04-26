@@ -4,8 +4,7 @@ return [
     /*
      * The type of documentation output to generate.
      * - "static" will generate a static HTMl page in the /public/docs folder,
-     * - "laravel" will generate the documentation as a Blade view,
-     * so you can add routing and authentication.
+     * - "laravel" will generate the documentation as a Blade view, so you can add routing and authentication.
      */
     'type' => 'static',
 
@@ -17,25 +16,32 @@ return [
          * Whether to automatically create a docs endpoint for you to view your generated docs.
          * If this is false, you can still set up routing manually.
          */
-        'autoload' => false,
+        'add_routes' => true,
 
         /*
-         * URL path to use for the docs endpoint (if `autoload` is true).
-         *
+         * URL path to use for the docs endpoint (if `add_routes` is true).
          * By default, `/doc` opens the HTML page, and `/doc.json` downloads the Postman collection.
          */
-        'docs_url' => '/doc',
+        'url' => '/doc',
 
         /*
-         * Middleware to attach to the docs endpoint (if `autoload` is true).
+         * Middleware to attach to the docs endpoint (if `add_routes` is true).
          */
         'middleware' => [],
     ],
 
     /*
-     * The router to be used (Laravel or Dingo).
+     * Example requests for each endpoint will be shown in each of these languages.
+     * Supported options are: bash, javascript, php, python
+     * You can add a language of your own, but you must publish the package's views
+     * and define a corresponding view for it in the partials/example-requests directory.
+     * See https://scribe.readthedocs.io/en/latest/generating-documentation.html
+     *
      */
-    'router' => 'laravel',
+    'example_languages' => [
+        'bash',
+        'javascript',
+    ],
 
     /*
      * The base URL to be used in examples and the Postman collection.
@@ -73,9 +79,31 @@ return [
     ],
 
     /*
+     * Name for the group of routes which do not have a @group set.
+     */
+    'default_group' => 'Endpoints',
+
+    /*
+     * Custom logo path. The will be used as the value of the src attribute for the <img> tag,
+     * so make sure it points to a public URL or path accessible from your web server. For best results the image width should be 230px.
+     * Set this to false to not use a logo.
+     *
+     * For example, if your logo is in public/img:
+     * - 'logo' => '../img/logo.png' // for `static` type (output folder is public/docs)
+     * - 'logo' => 'img/logo.png' // for `laravel` type
+     *
+     */
+    'logo' => false,
+
+    /*
+     * The router your API is using (Laravel or Dingo).
+     */
+    'router' => 'laravel',
+
+    /*
      * The routes for which documentation should be generated.
      * Each group contains rules defining which routes should be included ('match', 'include' and 'exclude' sections)
-     * and rules which should be applied to them ('apply' section).
+     * and settings which should be applied to them ('apply' section).
      */
     'routes' => [
         [
@@ -84,48 +112,37 @@ return [
              * A route must fulfill ALL conditions to pass.
              */
             'match' => [
-
                 /*
-                 * Match only routes whose domains match this pattern (use * as a wildcard to match any characters).
+                 * Match only routes whose domains match this pattern (use * as a wildcard to match any characters). Example: 'api.*'.
                  */
-                'domains' => [
-                    '*',
-                    // 'domain1.*',
-                ],
+                'domains' => ['*'],
 
                 /*
-                 * Match only routes whose paths match this pattern (use * as a wildcard to match any characters).
+                 * Match only routes whose paths match this pattern (use * as a wildcard to match any characters). Example: 'users/*'.
                  */
-                'prefixes' => [
-                    '*',
-                    // 'users/*',
-                ],
+                'prefixes' => ['*'],
 
                 /*
-                 * Match only routes registered under this version. This option is ignored for Laravel router.
+                 * (Dingo router only) Match only routes registered under this version.
                  * Note that wildcards are not supported.
                  */
-                'versions' => [
-                    'v1',
-                ],
+                'versions' => ['v1'],
             ],
 
             /*
-             * Include these routes when generating documentation,
-             * even if they did not match the rules above.
-             * Note that the route must be referenced by name here (wildcards are supported).
+             * Include these routes when generating documentation, even if they did not match the rules above.
+             * The route can be referenced by name or path here. Wildcards are supported.
              */
             'include' => [
                 // 'users.index', 'healthcheck*'
             ],
 
             /*
-             * Exclude these routes when generating documentation,
-             * even if they matched the rules above.
-             * Note that the route must be referenced by name here (wildcards are supported).
+             * Exclude these routes when generating documentation, even if they matched the rules above.
+             * The route can be referenced by name or path here. Wildcards are supported.
              */
             'exclude' => [
-                // 'users.create', 'admin.*'
+                // '/health', 'admin.*'
             ],
 
             /*
@@ -191,6 +208,23 @@ return [
         ],
     ],
 
+    /*
+     * Configure how responses are transformed using @transformer and @transformerCollection (requires league/fractal package)
+     */
+    'fractal' => [
+        /* If you are using a custom serializer with league/fractal, you can specify it here.
+         * Leave as null to use no serializer or return simple JSON.
+         */
+        'serializer' => null,
+    ],
+
+    /*
+     * If you would like the package to generate the same example values for parameters on each run,
+     * set this to any number (eg. 1234)
+     *
+     */
+    'faker_seed' => null,
+
     'strategies' => [
         'metadata' => [
             \Knuckles\Scribe\Extracting\Strategies\Metadata\GetFromDocBlocks::class,
@@ -220,64 +254,7 @@ return [
     ],
 
     /*
-     * Custom logo path. The will be used as the value of the src attribute for the <img> tag,
-     * so make sure it points to a public URL or path accessible from your web server.
-     * Set this to false to not use a logo.
-     *
-     * For example, if your logo is in public/img:
-     * - 'logo' => 'img/logo.png' // for `laravel` type
-     * - 'logo' => '../img/logo.png' // for `static` type (output folder is public/docs)
-     *
-     * For best results the image width should be 230px.
-     */
-    'logo' => false,
-
-    /*
-     * Name for the group of routes which do not have a @group set.
-     */
-    'default_group' => 'general',
-
-    /*
-     * Example requests for each endpoint will be shown in each of these languages.
-     * Supported options are: bash, javascript, php, python
-     * You can add a language of your own, but you must publish the package's views
-     * and define a corresponding view for it in the partials/example-requests directory.
-     * See https://scribe.readthedocs.io/en/latest/generating-documentation.html
-     *
-     */
-    'example_languages' => [
-        'bash',
-        'javascript',
-    ],
-
-    /*
-     * Configure how responses are transformed using @transformer and @transformerCollection
-     * Requires league/fractal package: composer require league/fractal
-     *
-     */
-    'fractal' => [
-        /* If you are using a custom serializer with league/fractal,
-         * you can specify it here.
-         *
-         * Serializers included with league/fractal:
-         * - \League\Fractal\Serializer\ArraySerializer::class
-         * - \League\Fractal\Serializer\DataArraySerializer::class
-         * - \League\Fractal\Serializer\JsonApiSerializer::class
-         *
-         * Leave as null to use no serializer or return a simple JSON.
-         */
-        'serializer' => null,
-    ],
-
-    /*
-     * If you would like the package to generate the same example values for parameters on each run,
-     * set this to any number (eg. 1234)
-     *
-     */
-    'faker_seed' => null,
-
-    /*
-     * If you would like to customize how routes are matched beyond the route configuration you may
+     * [Advanced usage] If you would like to customize how routes are matched beyond the route configuration you may
      * declare your own implementation of RouteMatcherInterface
      *
      */

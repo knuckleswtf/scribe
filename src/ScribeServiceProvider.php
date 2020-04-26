@@ -47,7 +47,7 @@ class ScribeServiceProvider extends ServiceProvider
     {
         if (
             config('scribe.type', 'static') === 'laravel' &&
-            config('scribe.laravel.autoload', false)
+            config('scribe.laravel.add_routes', false)
         ) {
             $this->loadRoutesFrom(
                 __DIR__ . '/../routes/laravel.php'
