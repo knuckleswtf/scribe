@@ -266,8 +266,8 @@ class Writer
                     $text .= "a **`$parameterName`** header with the value **`\"{your-token}\"`**.";
                     break;
             }
-            $howToFetch = $this->config->get('auth.how_to_fetch', '');
-            $text .= " $howToFetch";
+            $extraInfo = $this->config->get('auth.extra_info', '');
+            $text .= " $extraInfo";
         }
 
         $authMarkdown = view('scribe::authentication', ['isAuthed' => $isAuthed, 'text' => $text]);

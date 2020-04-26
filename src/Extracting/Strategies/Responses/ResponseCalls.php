@@ -52,6 +52,7 @@ class ResponseCalls extends Strategy
         $this->configureEnvironment($rulesToApply);
 
         // Mix in parsed parameters with manually specified parameters.
+        $context = $this->setAuthFieldProperly($context, $context['auth'] ?? null);
         $bodyParameters = array_merge($context['cleanBodyParameters'] ?? [], $rulesToApply['bodyParams'] ?? []);
         $queryParameters = array_merge($context['cleanQueryParameters'] ?? [], $rulesToApply['queryParams'] ?? []);
         $urlParameters = $context['cleanUrlParameters'] ?? [];
@@ -286,6 +287,24 @@ class ResponseCalls extends Strategy
         $request->request->add($body);
 
         return $request;
+    }
+
+    /**
+     * @param array $context
+     * @param string $authInfo in the format "<location>.<paramName>.<value>" eg "headers.Authorization.Bearer ahjuda"
+     *
+     * @return array
+     */
+    private function setAuthFieldProperly(array $context, ?string $authInfo)
+    {
+        if (!$authInfo) {
+            return $context;
+        }
+
+        [$where, $name, $value] = explode('.', $authInfo, 3);
+        $context[$where][$name] = $value;
+
+        return $context;
     }
 
     /**

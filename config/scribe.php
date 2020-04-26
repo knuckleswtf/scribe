@@ -52,14 +52,14 @@ return [
 
         /*
          * The value of the parameter. This will NOT be part of the generated documentation.
-         * Use it to easily auth response calls by this package.
+         * Use it to easily auth response calls by this package. Otherwise, we'll use a random value.
          */
-        'value' => env('SCRIBE_API_KEY'),
+        'use_value' => env('SCRIBE_API_KEY'),
 
         /*
-         * Short text describing to your users where to find (or generate) their auth key.
+         * Any extra info for your users. For instance, you can describe where to find (or generate) their auth credentials.
          */
-        'how_to_fetch' => 'You can retrieve your token by visiting your dashboard and clicking <b>Generate API token</b>.',
+        'extra_info' => 'You can retrieve your token by visiting your dashboard and clicking <b>Generate API token</b>.',
     ],
 
     /*

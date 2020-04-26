@@ -238,6 +238,7 @@ class TestController extends Controller
     }
 
     /**
+     * @authenticated
      * @urlparam $id Example: 3
      */
     public function shouldFetchRouteResponseWithEchoedSettings($id)
@@ -245,6 +246,7 @@ class TestController extends Controller
         return [
             '{id}' => $id,
             'header' => request()->header('header'),
+            'auth' => request()->header('Authorization'),
             'queryParam' => request()->query('queryParam'),
             'bodyParam' => request()->get('bodyParam'),
         ];

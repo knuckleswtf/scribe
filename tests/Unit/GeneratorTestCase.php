@@ -206,6 +206,19 @@ abstract class GeneratorTestCase extends TestCase
         $this->assertNull($response['param4']);
     }
 
+    /**
+     * @test
+     * @dataProvider authRules
+     */
+    public function adds_appropriate_field_based_on_configured_auth_type($config, $expected)
+    {
+        $route = $this->createRoute('POST', '/withAuthenticatedTag', 'withAuthenticatedTag', true);
+        $generator = new Generator(new DocumentationConfig($config));
+        $parsed = $generator->processRoute($route, []);
+        $this->assertNotNull($parsed[$expected['where']][$expected['name']]);
+        $this->assertStringStartsWith("{$expected['where']}.{$expected['name']}.", $parsed['auth']);
+    }
+
     /** @test */
     public function generates_consistent_examples_when_faker_seed_is_set()
     {
@@ -273,4 +286,75 @@ abstract class GeneratorTestCase extends TestCase
     abstract public function createRouteUsesArray(string $httpMethod, string $path, string $controllerMethod, $register = false, $class = TestController::class);
 
     abstract public function createRouteUsesCallable(string $httpMethod, string $path, callable $handler, $register = false);
+
+    public function authRules()
+    {
+        return [
+            [
+                array_merge($this->config, [
+                    'auth' => [
+                        'enabled' => true,
+                        'in' => 'bearer',
+                        'name' => 'dfadb',
+                    ]
+                ]),
+                [
+                    'name' => 'Authorization',
+                    'where' => 'headers',
+                ]
+            ],
+            [
+                array_merge($this->config, [
+                    'auth' => [
+                        'enabled' => true,
+                        'in' => 'basic',
+                        'name' => 'efwr',
+                    ]
+                ]),
+                [
+                    'name' => 'Authorization',
+                    'where' => 'headers',
+                ]
+            ],
+            [
+                array_merge($this->config, [
+                    'auth' => [
+                        'enabled' => true,
+                        'in' => 'header',
+                        'name' => 'Api-Key',
+                    ]
+                ]),
+                [
+                    'name' => 'Api-Key',
+                    'where' => 'headers',
+                ]
+            ],
+            [
+                array_merge($this->config, [
+                    'auth' => [
+                        'enabled' => true,
+                        'in' => 'query',
+                        'name' => 'apiKey',
+                    ]
+                ]),
+                [
+                    'name' => 'apiKey',
+                    'where' => 'cleanQueryParameters',
+                ]
+            ],
+            [
+                array_merge($this->config, [
+                    'auth' => [
+                        'enabled' => true,
+                        'in' => 'body',
+                        'name' => 'access_token',
+                    ]
+                ]),
+                [
+                    'name' => 'access_token',
+                    'where' => 'cleanBodyParameters',
+                ]
+            ],
+        ];
+    }
 }

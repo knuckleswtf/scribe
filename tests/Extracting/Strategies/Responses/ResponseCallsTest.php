@@ -67,6 +67,7 @@ class ResponseCallsTest extends TestCase
             ],
         ];
         $context = [
+            'auth' => 'headers.Authorization.Bearer bearerToken',
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
@@ -83,6 +84,7 @@ class ResponseCallsTest extends TestCase
         $this->assertEquals('queryValue', $responseContent['queryParam']);
         $this->assertEquals('bodyValue', $responseContent['bodyParam']);
         $this->assertEquals('value', $responseContent['header']);
+        $this->assertEquals('Bearer bearerToken', $responseContent['auth']);
     }
 
     /** @test */

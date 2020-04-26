@@ -260,6 +260,7 @@ class Generator
 
     public function addAuthField(array $parsedRoute)
     {
+        $parsedRoute['auth'] = null;
         $isApiAuthed = $this->config->get('auth.enabled', false);
         if (!$isApiAuthed || !$parsedRoute['metadata']['authenticated']) {
             return $parsedRoute;
@@ -273,8 +274,11 @@ class Generator
             $faker->seed($this->config->get('faker_seed'));
         }
         $token = $faker->shuffle('abcdefghkvaZVDPE1864563');
+        $valueToUse = $this->config->get('auth.use_value');
         switch ($strategy) {
             case 'query':
+            case 'query_or_body':
+                $parsedRoute['auth'] = "cleanQueryParameters.$parameterName.".($valueToUse ?: $token);
                 $parsedRoute['queryParameters'][$parameterName] = [
                     'name' => $parameterName,
                     'value' => $token,
@@ -283,6 +287,7 @@ class Generator
                 ];
                 break;
             case 'body':
+                $parsedRoute['auth'] = "cleanBodyParameters.$parameterName.".($valueToUse ?: $token);
                 $parsedRoute['bodyParameters'][$parameterName] = [
                     'name' => $parameterName,
                     'type' => 'string',
@@ -291,21 +296,16 @@ class Generator
                     'required' => true,
                 ];
                 break;
-            case 'query_or_body':
-                $parsedRoute['queryParameters'][$parameterName] = [ // Keep things simple; put only in query
-                    'name' => $parameterName,
-                    'value' => $token,
-                    'description' => '',
-                    'required' => true,
-                ];
-                break;
             case 'bearer':
+                $parsedRoute['auth'] = "headers.Authorization.".($valueToUse ? "Bearer $valueToUse" : "Bearer $token");
                 $parsedRoute['headers']['Authorization'] = "Bearer $token";
                 break;
             case 'basic':
+                $parsedRoute['auth'] = "headers.Authorization.".($valueToUse ? "Basic $valueToUse" : "Basic $token");
                 $parsedRoute['headers']['Authorization'] = "Basic ".base64_encode($token);
                 break;
             case 'header':
+                $parsedRoute['auth'] = "headers.$parameterName.".($valueToUse ?: $token);
                 $parsedRoute['headers'][$parameterName] = $token;
                 break;
         }
