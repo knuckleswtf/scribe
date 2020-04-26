@@ -228,8 +228,11 @@ class Writer
             ->with('outputPath', 'docs')
             ->with('settings', $settings);
         $indexFile = $this->sourceOutputPath . '/source/index.md';
+
+        $introText = $this->config->get('intro_text', '');
         $introMarkdown = view('scribe::index')
-            ->with('frontmatter', $frontmatter);
+            ->with('frontmatter', $frontmatter)
+            ->with('text', $introText);
         $this->writeFile($indexFile, $introMarkdown);
     }
 
