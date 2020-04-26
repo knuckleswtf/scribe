@@ -235,7 +235,42 @@ class Writer
 
     protected function writeAuthMarkdownFile(): void
     {
-        $authMarkdown = view('scribe::authentication');
+        $isAuthed = $this->config->get('auth.enabled', false);
+        $text = '';
+
+        if ($isAuthed) {
+            $strategy = $this->config->get('auth.in');
+            $parameterName = $this->config->get('auth.name');
+            $text = Arr::random([
+                "This API is authenticated by sending ",
+                "To authenticate requests, include ",
+                "Authenticate requests to this API's endpoints by sending ",
+            ]);
+            switch ($strategy) {
+                case 'query':
+                    $text .= "a query parameter **`$parameterName`** in the request.";
+                    break;
+                case 'body':
+                    $text .= "a parameter **`$parameterName`** in the body of the request.";
+                    break;
+                case 'query_or_body':
+                    $text .= "a parameter **`$parameterName`** either in the query string or in the request body.";
+                    break;
+                case 'bearer':
+                    $text .= "an **`Authorization`** header with the value **`\"Bearer {your-token}\"`**.";
+                    break;
+                case 'basic':
+                    $text .= "an **`Authorization`** header in the form **`\"Basic {credentials}\"`**. The value of `{credentials}` should be your username/id and your password, joined with a colon (:), and then base64-encoded.";
+                    break;
+                case 'header':
+                    $text .= "a **`$parameterName`** header with the value **`\"{your-token}\"`**.";
+                    break;
+            }
+            $howToFetch = $this->config->get('auth.how_to_fetch', '');
+            $text .= " $howToFetch";
+        }
+
+        $authMarkdown = view('scribe::authentication', ['isAuthed' => $isAuthed, 'text' => $text]);
         $this->writeFile($this->sourceOutputPath . '/source/authentication.md', $authMarkdown);
     }
 

@@ -31,6 +31,38 @@ return [
     ],
 
     /*
+     * How is your API authenticated? This information will be used in the displayed docs, generated examples and response calls.
+     */
+    'auth' => [
+        /*
+         * Set this to true if your API is authenticated.
+         */
+        'enabled' => false,
+
+        /*
+         * Where is the auth value meant to be sent in a request?
+         * Options: query, body. query_or_body, basic, bearer, header (for custom header)
+         */
+        'in' => 'bearer',
+
+        /*
+         * The name of the parameter (eg token, key, apiKey) or header (eg Authorization, Api-Key).
+         */
+        'name' => 'token',
+
+        /*
+         * The value of the parameter. This will NOT be part of the generated documentation.
+         * Use it to easily auth response calls by this package.
+         */
+        'value' => env('SCRIBE_API_KEY'),
+
+        /*
+         * Short text describing to your users where to find (or generate) their auth key.
+         */
+        'how_to_fetch' => 'You can retrieve your token by visiting your dashboard and clicking <b>Generate API token</b>.',
+    ],
+
+    /*
      * Example requests for each endpoint will be shown in each of these languages.
      * Supported options are: bash, javascript, php, python
      * You can add a language of your own, but you must publish the package's views
