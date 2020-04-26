@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting;
 
+use Faker\Factory;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
@@ -70,6 +71,8 @@ class Generator
         $parsedRoute['urlParameters'] = $urlParameters;
         $parsedRoute['cleanUrlParameters'] = self::cleanParams($urlParameters);
         $parsedRoute['boundUri'] = Utils::getFullUrl($route, $parsedRoute['cleanUrlParameters']);
+
+        $parsedRoute = $this->addAuthField($parsedRoute);
 
         $queryParameters = $this->fetchQueryParameters($controller, $method, $route, $routeRules, $parsedRoute);
         $parsedRoute['queryParameters'] = $queryParameters;
@@ -253,5 +256,62 @@ class Generator
         }
         // Then generate a sample item for the dot notation
         Arr::set($values, str_replace(['.*', '*.'], ['.0','0.'], $paramName), $paramExample);
+    }
+
+    public function addAuthField(array $parsedRoute)
+    {
+        $isApiAuthed = $this->config->get('auth.enabled', false);
+        if (!$isApiAuthed || !$parsedRoute['metadata']['authenticated']) {
+            return $parsedRoute;
+        }
+
+        $strategy = $this->config->get('auth.in');
+        $parameterName = $this->config->get('auth.name');
+
+        $faker = Factory::create();
+        if ($this->config->get('faker_seed')) {
+            $faker->seed($this->config->get('faker_seed'));
+        }
+        $token = $faker->shuffle('abcdefghkvaZVDPE1864563');
+        switch ($strategy) {
+            case 'query':
+                $parsedRoute['queryParameters'][$parameterName] = [
+                    'name' => $parameterName,
+                    'value' => $token,
+                    'description' => '',
+                    'required' => true,
+                ];
+                break;
+            case 'body':
+                $parsedRoute['bodyParameters'][$parameterName] = [
+                    'name' => $parameterName,
+                    'type' => 'string',
+                    'value' => $token,
+                    'description' => '',
+                    'required' => true,
+                ];
+                break;
+            case 'query_or_body':
+                $parsedRoute['queryParameters'][$parameterName] = [ // Keep things simple; put only in query
+                    'name' => $parameterName,
+                    'value' => $token,
+                    'description' => '',
+                    'required' => true,
+                ];
+                break;
+            case 'bearer':
+                $parsedRoute['headers']['Authorization'] = "Bearer $token";
+                break;
+            case 'basic':
+                $parsedRoute['headers']['Authorization'] = "Basic ".base64_encode($token);
+                break;
+            case 'header':
+                $parsedRoute['headers'][$parameterName] = $token;
+                break;
+        }
+
+        return $parsedRoute;
+
+
     }
 }

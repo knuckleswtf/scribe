@@ -138,7 +138,7 @@ class PostmanCollectionWriter
                     'value' => urlencode($parameterData['value']),
                     'description' => $parameterData['description'],
                     // Default query params to disabled if they aren't required and have empty values
-                    'disabled' => !$parameterData['required'] && empty($parameterData['value']),
+                    'disabled' => !($parameterData['required'] ?? false) && empty($parameterData['value']),
                 ];
             })->values()->toArray(),
         ];
