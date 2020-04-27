@@ -299,11 +299,9 @@ class Writer
         $parsedRoutesWithOutput->each(function ($routesInGroup, $groupName) use (
             $parsedRoutesWithOutput
         ) {
-            static $counter = 0;
-            $groupId = "$counter-" . Str::slug($groupName);
+            $groupId = Str::slug($groupName);
             $routeGroupMarkdownFile = $this->sourceOutputPath . "/source/groups/$groupId.md";
 
-            $counter++;
             if ($this->hasFileBeenModified($routeGroupMarkdownFile)) {
                 if ($this->forceIt) {
                     $this->clara->warn("Discarded manual changes for file $routeGroupMarkdownFile");

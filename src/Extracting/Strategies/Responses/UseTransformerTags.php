@@ -71,8 +71,8 @@ class UseTransformerTags extends Strategy
             }
 
             [$statusCode, $transformer] = $this->getStatusCodeAndTransformerClass($transformerTag);
-            [$model, $factoryStates] = $this->getClassToBeTransformed($tags, (new ReflectionClass($transformer))->getMethod('transform'));
-            $modelInstance = $this->instantiateTransformerModel($model, $factoryStates);
+            [$model, $factoryStates, $relations] = $this->getClassToBeTransformed($tags, (new ReflectionClass($transformer))->getMethod('transform'));
+            $modelInstance = $this->instantiateTransformerModel($model, $factoryStates, $relations);
 
             $fractal = new Manager();
 
@@ -82,7 +82,7 @@ class UseTransformerTags extends Strategy
 
             $resource = (strtolower($transformerTag->getName()) == 'transformercollection')
                 ? new Collection(
-                    [$modelInstance, $this->instantiateTransformerModel($model, $factoryStates)],
+                    [$modelInstance, $this->instantiateTransformerModel($model, $factoryStates, $relations)],
                     new $transformer()
                 )
                 : new Item($modelInstance, new $transformer());
@@ -129,8 +129,9 @@ class UseTransformerTags extends Strategy
         $type = null;
         $states = [];
         if ($modelTag) {
-            ['content' => $type, 'attributes' => $attributes] = AnnotationParser::parseIntoContentAndAttributes($modelTag->getContent(), ['states']);
+            ['content' => $type, 'attributes' => $attributes] = AnnotationParser::parseIntoContentAndAttributes($modelTag->getContent(), ['states', 'with']);
             $states = $attributes['states'] ? explode(',', $attributes['states']) : [];
+            $relations = $attributes['with'] ? explode(',', $attributes['with']) : [];
         } else {
             $parameter = Arr::first($transformerMethod->getParameters());
             if ($parameter->hasType() && ! $parameter->getType()->isBuiltin() && class_exists($parameter->getType()->getName())) {
@@ -143,10 +144,10 @@ class UseTransformerTags extends Strategy
             throw new Exception("Couldn't detect a transformer model from your docblock. Did you remember to specify a model using @transformerModel?");
         }
 
-        return [$type, $states];
+        return [$type, $states, $relations];
     }
 
-    protected function instantiateTransformerModel(string $type, array $factoryStates = [])
+    protected function instantiateTransformerModel(string $type, array $factoryStates = [], array $relations = [])
     {
         try {
             // try Eloquent model factory
@@ -169,7 +170,7 @@ class UseTransformerTags extends Strategy
             if ($instance instanceof IlluminateModel) {
                 try {
                     // we can't use a factory but can try to get one from the database
-                    $firstInstance = $type::first();
+                    $firstInstance = $type::with($relations)->first();
                     if ($firstInstance) {
                         return $firstInstance;
                     }

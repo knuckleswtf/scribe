@@ -60,18 +60,7 @@ class GenerateDocumentation extends Command
      */
     public function handle(RouteMatcherInterface $routeMatcher)
     {
-        // Using a global static variable here, so fuck off if you don't like it.
-        // Also, the --verbose option is included with all Artisan commands.
-        Flags::$shouldBeVerbose = $this->option('verbose');
-
-        $this->clara = clara('knuckleswtf/scribe', Flags::$shouldBeVerbose)
-            ->useOutput($this->output)
-            ->only();
-
-        $this->docConfig = new DocumentationConfig(config('scribe'));
-        $this->baseUrl = $this->docConfig->get('base_url') ?? config('app.url');
-
-        URL::forceRootUrl($this->baseUrl);
+        $this->bootstrap();
 
         $routes = $routeMatcher->getRoutes($this->docConfig->get('routes'), $this->docConfig->get('router'));
 
@@ -196,5 +185,22 @@ class GenerateDocumentation extends Command
         }
 
         return true;
+    }
+
+    public function bootstrap(): void
+    {
+        // Using a global static variable here, so fuck off if you don't like it.
+        // Also, the --verbose option is included with all Artisan commands.
+        Flags::$shouldBeVerbose = $this->option('verbose');
+
+        $this->clara = clara('knuckleswtf/scribe', Flags::$shouldBeVerbose)
+            ->useOutput($this->output)
+            ->only();
+
+        $this->docConfig = new DocumentationConfig(config('scribe'));
+        $this->baseUrl = $this->docConfig->get('base_url') ?? config('app.url');
+
+        // Force root URL so it works in Postman collection
+        URL::forceRootUrl($this->baseUrl);
     }
 }

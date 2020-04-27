@@ -70,7 +70,11 @@ class GetFromResponseFieldTag extends Strategy
                         $type = '';
                     } else {
                         $nonexistent = new \stdClass();
-                        $value = $validResponse[$name] ?? $validResponse[0][$name] ?? $nonexistent;
+                        $value = $validResponse[$name]
+                            ?? $validResponse['data'][$name] // Maybe it's a Laravel ApiResource
+                            ?? $validResponse[0][$name] // Maybe it's a list
+                            ?? $validResponse['data'][0][$name] // Maybe an Api Resource Collection
+                            ?? $nonexistent;
                         if ($value !== $nonexistent) {
                             $type =  $this->normalizeParameterType(gettype($value));
                         } else {
