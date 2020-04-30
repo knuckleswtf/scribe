@@ -89,7 +89,6 @@ class ResponseCalls extends Strategy
     private function configureEnvironment(array $rulesToApply)
     {
         $this->startDbTransaction();
-        $this->setEnvironmentVariables($rulesToApply['env'] ?? []);
         $this->setLaravelConfigs($rulesToApply['config'] ?? []);
     }
 
@@ -123,23 +122,6 @@ class ResponseCalls extends Strategy
         $request = $this->addBodyParameters($request, $bodyParams);
 
         return $request;
-    }
-
-    /**
-     * @param array $env
-     *
-     * @return void
-     *
-     * @deprecated Not guaranteed to overwrite application's env. Use Laravel config variables instead.
-     */
-    private function setEnvironmentVariables(array $env)
-    {
-        foreach ($env as $name => $value) {
-            putenv("$name=$value");
-
-            $_ENV[$name] = $value;
-            $_SERVER[$name] = $value;
-        }
     }
 
     /**

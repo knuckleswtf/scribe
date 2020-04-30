@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use Knuckles\Scribe\Tools\AnnotationParser;
@@ -72,7 +74,7 @@ class UseApiResourceTags extends Strategy
         }
 
         list($statusCode, $apiResourceClass) = $this->getStatusCodeAndApiResourceClass($apiResourceTag);
-        [$model, $factoryStates, $relations] = $this->getClassToBeTransformed($tags);
+        [$model, $factoryStates, $relations, $pagination] = $this->getClassToBeTransformedAndAttributes($tags);
         $modelInstance = $this->instantiateApiResourceModel($model, $factoryStates, $relations);
 
         try {
@@ -87,9 +89,25 @@ class UseApiResourceTags extends Strategy
             // or a ResourceCollection (via `new`)
             // See https://laravel.com/docs/5.8/eloquent-resources
             $models = [$modelInstance, $this->instantiateApiResourceModel($model, $factoryStates, $relations)];
+            if (count($pagination) == 1) {
+                $perPage = $pagination[0];
+                $paginator = new LengthAwarePaginator(
+                    // For some reason, the LengthAware paginator needs only first page items to work correctly
+                    collect($models)->slice(0, $perPage),
+                    count($models),
+                    $perPage
+                );
+                $list = $paginator;
+            } else if (count($pagination) == 2 && $pagination[0] == 'simple') {
+                $perPage = $pagination[1];
+                $paginator = new Paginator($models, $perPage);
+                $list = $paginator;
+            } else {
+                $list = collect($models);
+            }
             $resource = $resource instanceof ResourceCollection
-                ? new $apiResourceClass(collect($models))
-                : $apiResourceClass::collection(collect($models));
+                ? new $apiResourceClass($list)
+                : $apiResourceClass::collection($list);
         }
 
         /** @var Response $response */
@@ -118,7 +136,7 @@ class UseApiResourceTags extends Strategy
         return [$status, $apiResourceClass];
     }
 
-    private function getClassToBeTransformed(array $tags): array
+    private function getClassToBeTransformedAndAttributes(array $tags): array
     {
         $modelTag = Arr::first(array_filter($tags, function ($tag) {
             return ($tag instanceof Tag) && strtolower($tag->getName()) == 'apiresourcemodel';
@@ -126,17 +144,20 @@ class UseApiResourceTags extends Strategy
 
         $type = null;
         $states = [];
+        $relations = [];
+        $pagination = [];
         if ($modelTag) {
-            ['content' => $type, 'attributes' => $attributes] = AnnotationParser::parseIntoContentAndAttributes($modelTag->getContent(), ['states', 'with']);
+            ['content' => $type, 'attributes' => $attributes] = AnnotationParser::parseIntoContentAndAttributes($modelTag->getContent(), ['states', 'with', 'paginate']);
             $states = $attributes['states'] ? explode(',', $attributes['states']) : [];
             $relations = $attributes['with'] ? explode(',', $attributes['with']) : [];
+            $pagination = $attributes['paginate'] ? explode(',', $attributes['paginate']) : [];
         }
 
         if (empty($type)) {
             throw new Exception("Couldn't detect an Eloquent API resource model from your docblock. Did you remember to specify a model using @apiResourceModel?");
         }
 
-        return [$type, $states, $relations];
+        return [$type, $states, $relations, $pagination];
     }
 
     /**

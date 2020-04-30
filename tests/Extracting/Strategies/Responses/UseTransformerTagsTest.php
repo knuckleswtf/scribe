@@ -60,7 +60,13 @@ class UseTransformerTagsTest extends TestCase
         $this->assertArraySubset([
             [
                 'status' => 200,
-                'content' => '{"data":{"id":1,"description":"Welcome on this test versions","name":"TestName"}}',
+                'content' => json_encode([
+                    "data" => [
+                        "id" => 1,
+                        "description" => "Welcome on this test versions",
+                        "name" => "TestName",
+                    ],
+                ]),
             ],
         ], $results);
     }
@@ -69,7 +75,9 @@ class UseTransformerTagsTest extends TestCase
     public function can_parse_transformer_tag_with_model_and_factory_states()
     {
         $factory = app(\Illuminate\Database\Eloquent\Factory::class);
-        $factory->define(TestUser::class, function () { return ['id' => 3, 'name' => 'myname']; });
+        $factory->define(TestUser::class, function () {
+            return ['id' => 3, 'name' => 'myname'];
+        });
         $factory->state(TestUser::class, 'state1', ["state1" => true]);
         $factory->state(TestUser::class, 'random-state', ["random-state" => true]);
 
@@ -83,7 +91,14 @@ class UseTransformerTagsTest extends TestCase
         $this->assertArraySubset([
             [
                 'status' => 200,
-                'content' => '{"data":{"id":3,"name":"myname","state1":true,"random-state":true}}',
+                'content' => json_encode([
+                    "data" => [
+                        "id" => 3,
+                        "name" => "myname",
+                        "state1" => true,
+                        "random-state" => true,
+                    ],
+                ]),
             ],
         ], $results);
     }
@@ -100,7 +115,13 @@ class UseTransformerTagsTest extends TestCase
         $this->assertArraySubset([
             [
                 'status' => 201,
-                'content' => '{"data":{"id":1,"description":"Welcome on this test versions","name":"TestName"}}',
+                'content' => json_encode([
+                    "data" => [
+                        "id" => 1,
+                        "description" => "Welcome on this test versions",
+                        "name" => "TestName",
+                    ],
+                ]),
             ],
         ], $results);
 
@@ -118,8 +139,20 @@ class UseTransformerTagsTest extends TestCase
         $this->assertArraySubset([
             [
                 'status' => 200,
-                'content' => '{"data":[{"id":1,"description":"Welcome on this test versions","name":"TestName"},' .
-                    '{"id":1,"description":"Welcome on this test versions","name":"TestName"}]}',
+                'content' => json_encode([
+                    "data" => [
+                        [
+                            "id" => 1,
+                            "description" => "Welcome on this test versions",
+                            "name" => "TestName",
+                        ],
+                        [
+                            "id" => 1,
+                            "description" => "Welcome on this test versions",
+                            "name" => "TestName",
+                        ],
+                    ],
+                ]),
             ],
         ], $results);
 
@@ -139,8 +172,58 @@ class UseTransformerTagsTest extends TestCase
         $this->assertArraySubset([
             [
                 'status' => 200,
-                'content' => '{"data":[{"id":1,"description":"Welcome on this test versions","name":"TestName"},' .
-                    '{"id":1,"description":"Welcome on this test versions","name":"TestName"}]}',
+                'content' => json_encode([
+                    "data" => [
+                        [
+                            "id" => 1,
+                            "description" => "Welcome on this test versions",
+                            "name" => "TestName",
+                        ],
+                        [
+                            "id" => 1,
+                            "description" => "Welcome on this test versions",
+                            "name" => "TestName",
+                        ],
+                    ],
+                ]),
+            ],
+        ], $results);
+    }
+
+    /** @test */
+    public function can_parse_transformercollection_tag_with_model_and_paginator_data()
+    {
+
+        $strategy = new UseTransformerTags(new DocumentationConfig([]));
+        $tags = [
+            new Tag('transformercollection', '\Knuckles\Scribe\Tests\Fixtures\TestTransformer'),
+            new Tag('transformermodel', '\Knuckles\Scribe\Tests\Fixtures\TestModel'),
+            new Tag('transformerpaginator', 'League\Fractal\Pagination\IlluminatePaginatorAdapter 1'),
+        ];
+        $results = $strategy->getTransformerResponse($tags);
+
+        $this->assertArraySubset([
+            [
+                'status' => 200,
+                'content' => json_encode([
+                    "data" => [
+                        [
+                            "id" => 1,
+                            "description" => "Welcome on this test versions",
+                            "name" => "TestName",
+                        ],
+                    ],
+                    'meta' => [
+                        "pagination" => [
+                            "total" => 2,
+                            "count" => 1,
+                            "per_page" => 1,
+                            "current_page" => 1,
+                            "total_pages" => 2,
+                            "links" => ["next" => "/?page=2"],
+                        ],
+                    ],
+                ]),
             ],
         ], $results);
     }
@@ -150,11 +233,26 @@ class UseTransformerTagsTest extends TestCase
         return [
             [
                 null,
-                '{"data":{"id":1,"description":"Welcome on this test versions","name":"TestName"}}',
+                json_encode([
+                    "data" => [
+                        "id" => 1,
+                        "description" => "Welcome on this test versions",
+                        "name" => "TestName",
+                    ],
+                ]),
             ],
             [
                 'League\Fractal\Serializer\JsonApiSerializer',
-                '{"data":{"type":null,"id":"1","attributes":{"description":"Welcome on this test versions","name":"TestName"}}}',
+                json_encode([
+                    "data" => [
+                        "type" => null,
+                        "id" => "1",
+                        "attributes" => [
+                            "description" => "Welcome on this test versions",
+                            "name" => "TestName",
+                        ],
+                    ],
+                ]),
             ],
         ];
     }

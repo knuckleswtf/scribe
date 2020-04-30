@@ -5,6 +5,7 @@ namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Model as IlluminateModel;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use Knuckles\Scribe\Tools\AnnotationParser;
@@ -80,12 +81,22 @@ class UseTransformerTags extends Strategy
                 $fractal->setSerializer(app($this->config->get('fractal.serializer')));
             }
 
-            $resource = (strtolower($transformerTag->getName()) == 'transformercollection')
-                ? new Collection(
-                    [$modelInstance, $this->instantiateTransformerModel($model, $factoryStates, $relations)],
-                    new $transformer()
-                )
-                : new Item($modelInstance, new $transformer());
+        if ((strtolower($transformerTag->getName()) == 'transformercollection')) {
+            $models = [$modelInstance, $this->instantiateTransformerModel($model, $factoryStates, $relations)];
+            $resource = new Collection($models, new $transformer());
+
+            ['adapter' => $paginatorAdapter, 'perPage' => $perPage] = $this->getTransformerPaginatorData($tags);
+            if ($paginatorAdapter) {
+                $total = count($models);
+                // Need to pass only the first page to both adapter and paginator, otherwise they will display ebverything
+                $firstPage = collect($models)->slice(0, $perPage);
+                $resource = new Collection($firstPage, new $transformer());
+                $paginator = new LengthAwarePaginator($firstPage, $total, $perPage);
+                $resource->setPaginator(new $paginatorAdapter($paginator));
+            }
+        } else {
+            $resource = new Item($modelInstance, new $transformer());
+        }
 
             $response = response($fractal->createData($resource)->toJson());
 
@@ -128,6 +139,7 @@ class UseTransformerTags extends Strategy
 
         $type = null;
         $states = [];
+        $relations = [];
         if ($modelTag) {
             ['content' => $type, 'attributes' => $attributes] = AnnotationParser::parseIntoContentAndAttributes($modelTag->getContent(), ['states', 'with']);
             $states = $attributes['states'] ? explode(',', $attributes['states']) : [];
@@ -200,5 +212,31 @@ class UseTransformerTags extends Strategy
         );
 
         return Arr::first($transformerTags);
+    }
+
+    /**
+     * @param array $tags
+     *
+     * @return array
+     */
+    private function getTransformerPaginatorData(array $tags)
+    {
+        $transformerTags = array_values(
+            array_filter($tags, function ($tag) {
+                return ($tag instanceof Tag) && in_array(strtolower($tag->getName()), ['transformerpaginator']);
+            })
+        );
+
+        $tag = Arr::first($transformerTags);
+        if (empty($tag)) {
+            return ['adapter' => null, 'perPage' => null];
+        }
+
+        $content = $tag->getContent();
+        preg_match('/^\s*(.+?)\s+(\d+)?$/', $content, $result);
+        $paginatorAdapter = $result[1];
+        $perPage = $result[2] ?? null;
+
+        return ['adapter' => $paginatorAdapter, 'perPage' => $perPage];
     }
 }

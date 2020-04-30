@@ -95,6 +95,47 @@ class UseApiResourceTagsTest extends TestCase
     }
 
     /** @test */
+    public function loads_specified_relations_for_model()
+    {
+        $factory = app(\Illuminate\Database\Eloquent\Factory::class);
+        $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
+            if ($user->id === 4) {
+                $child = factory(TestUser::class)->make(['id' => 5, 'parent_id' => 4]);
+                $user->setRelation('children', [$child]);
+            }
+        });
+
+        $config = new DocumentationConfig([]);
+
+        $strategy = new UseApiResourceTags($config);
+        $tags = [
+            new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
+            new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser'),
+        ];
+        $results = $strategy->getApiResourceResponse($tags);
+
+        $this->assertArraySubset([
+            [
+                'status' => 200,
+                'content' => json_encode([
+                    'data' => [
+                        'id' => 4,
+                        'name' => 'Tested Again',
+                        'email' => 'a@b.com',
+                        'children' => [
+                            [
+                                'id' => 5,
+                                'name' => 'Tested Again',
+                                'email' => 'a@b.com',
+                            ],
+                        ],
+                    ],
+                ]),
+            ],
+        ], $results);
+    }
+
+    /** @test */
     public function can_parse_apiresourcecollection_tags()
     {
         $config = new DocumentationConfig([]);
@@ -157,6 +198,48 @@ class UseApiResourceTagsTest extends TestCase
                     ],
                     'links' => [
                         'self' => 'link-value',
+                    ],
+                ]),
+            ],
+        ], $results);
+    }
+
+    /** @test */
+    public function can_parse_apiresourcecollection_tags_with_collection_class_and_pagination()
+    {
+        $config = new DocumentationConfig([]);
+
+        $strategy = new UseApiResourceTags($config);
+        $tags = [
+            new Tag('apiResourceCollection', 'Knuckles\Scribe\Tests\Fixtures\TestUserApiResourceCollection'),
+            new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser paginate=simple,1'),
+        ];
+        $results = $strategy->getApiResourceResponse($tags);
+
+        $this->assertArraySubset([
+            [
+                'status' => 200,
+                'content' => json_encode([
+                    'data' => [
+                        [
+                            'id' => 4,
+                            'name' => 'Tested Again',
+                            'email' => 'a@b.com',
+                        ],
+                    ],
+                    'links' => [
+                        'self' => 'link-value',
+                        "first" => '/?page=1',
+                        "last" => null,
+                        "prev" => null,
+                        "next" => '/?page=2',
+                    ],
+                    "meta" => [
+                        "current_page" => 1,
+                        "from" => 1,
+                        "path" => '/',
+                        "per_page" => "1",
+                        "to" => 1,
                     ],
                 ]),
             ],

@@ -354,7 +354,7 @@ class GenerateDocumentationTest extends TestCase
         ]);
         $this->artisan('scribe:generate');
 
-        $generatedMarkdown = $this->getFileContents(__DIR__ . '/../resources/docs/source/groups/0-group-a.md');
+        $generatedMarkdown = $this->getFileContents(__DIR__ . '/../resources/docs/source/groups/group-a.md');
         $this->assertContainsIgnoringWhitespace('"Authorization": "customAuthToken","Custom-Header":"NotSoCustom"', $generatedMarkdown);
     }
 
@@ -366,7 +366,7 @@ class GenerateDocumentationTest extends TestCase
         config(['scribe.routes.0.prefixes' => ['api/*']]);
         $this->artisan('scribe:generate');
 
-        $generatedMarkdown = file_get_contents(__DIR__ . '/../resources/docs/source/groups/0-group-a.md');
+        $generatedMarkdown = file_get_contents(__DIR__ . '/../resources/docs/source/groups/group-a.md');
         $this->assertStringContainsString('Лорем ипсум долор сит амет', $generatedMarkdown);
     }
 
@@ -381,8 +381,8 @@ class GenerateDocumentationTest extends TestCase
         config(['scribe.routes.0.prefixes' => ['api/*']]);
         $this->artisan('scribe:generate');
 
-        $this->assertFileExists(__DIR__ . '/../resources/docs/source/groups/0-1-group-1.md');
-        $this->assertFileExists(__DIR__ . '/../resources/docs/source/groups/1-2-group-2.md');
-        $this->assertFileExists(__DIR__ . '/../resources/docs/source/groups/2-10-group-10.md');
+        $this->assertFileExists(__DIR__ . '/../resources/docs/source/groups/1-group-1.md');
+        $this->assertFileExists(__DIR__ . '/../resources/docs/source/groups/2-group-2.md');
+        $this->assertFileExists(__DIR__ . '/../resources/docs/source/groups/10-group-10.md');
     }
 }

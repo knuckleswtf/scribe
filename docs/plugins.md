@@ -65,7 +65,7 @@ The last thing to do is to register the strategy. Strategies are registered in a
             \Knuckles\Scribe\Extracting\Strategies\QueryParameters\GetFromQueryParamTag::class,
         ],
         'headers' => [
-            \Knuckles\Scribe\Extracting\Strategies\RequestHeaders\GetFromRouteRules::class,
+            \Knuckles\Scribe\Extracting\Strategies\Headers\GetFromRouteRules::class,
         ],
         'bodyParameters' => [
             \Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromBodyParamTag::class,

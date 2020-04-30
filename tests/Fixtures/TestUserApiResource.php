@@ -19,6 +19,9 @@ class TestUserApiResource extends JsonResource
             'id' => $this->id,
             'name' => $this->first_name . ' ' . $this->last_name,
             'email' => $this->email,
+            'children' => $this->whenLoaded('children', function () {
+                return TestUserApiResource::collection($this->children);
+            }),
         ];
 
         if ($this['state1'] && $this['random-state']) {
