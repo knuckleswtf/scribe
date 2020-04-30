@@ -3,11 +3,11 @@
 namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 
 use Exception;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Model as IlluminateModel;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
+use Knuckles\Scribe\Extracting\DatabaseTransactionHelpers;
 use Knuckles\Scribe\Tools\AnnotationParser;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
@@ -26,6 +26,8 @@ use ReflectionFunctionAbstract;
  */
 class UseTransformerTags extends Strategy
 {
+    use DatabaseTransactionHelpers;
+
     /**
      * @param Route $route
      * @param ReflectionClass $controller
@@ -161,6 +163,7 @@ class UseTransformerTags extends Strategy
 
     protected function instantiateTransformerModel(string $type, array $factoryStates = [], array $relations = [])
     {
+        $this->startDbTransaction();
         try {
             // try Eloquent model factory
 
@@ -172,7 +175,13 @@ class UseTransformerTags extends Strategy
             if (count($factoryStates)) {
                 $factory->states($factoryStates);
             }
-            return $factory->make();
+
+            try {
+                return $factory->create();
+            } catch (Exception $e) {
+                // If there was no working database, it would fail.
+                return $factory->make();
+            }
         } catch (Exception $e) {
             if (Flags::$shouldBeVerbose) {
                 clara('knuckleswtf/scribe')->warn("Eloquent model factory failed to instantiate {$type}; trying to fetch from database.");
@@ -193,6 +202,8 @@ class UseTransformerTags extends Strategy
                     }
                 }
             }
+        } finally {
+            $this->endDbTransaction();
         }
 
         return $instance;

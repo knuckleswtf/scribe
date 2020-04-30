@@ -12,6 +12,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
+use Knuckles\Scribe\Extracting\DatabaseTransactionHelpers;
 use Knuckles\Scribe\Tools\AnnotationParser;
 use League\Fractal\Resource\Collection;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
@@ -28,6 +29,8 @@ use ReflectionFunctionAbstract;
  */
 class UseApiResourceTags extends Strategy
 {
+    use DatabaseTransactionHelpers;
+
     /**
      * @param Route $route
      * @param ReflectionClass $controller
@@ -170,6 +173,7 @@ class UseApiResourceTags extends Strategy
      */
     protected function instantiateApiResourceModel(string $type, array $factoryStates = [], array $relations = [])
     {
+        $this->startDbTransaction();
         try {
             // Try Eloquent model factory
 
@@ -181,7 +185,11 @@ class UseApiResourceTags extends Strategy
             if (count($factoryStates)) {
                 $factory->states($factoryStates);
             }
-            return $factory->make();
+            try {
+                return $factory->create();
+            } catch (Exception $e) {
+                return $factory->make();
+            }
         } catch (Exception $e) {
             if (Flags::$shouldBeVerbose) {
                 clara('knuckleswtf/scribe')->warn("Eloquent model factory failed to instantiate {$type}; trying to fetch from database.");
@@ -202,6 +210,8 @@ class UseApiResourceTags extends Strategy
                     }
                 }
             }
+        } finally {
+            $this->endDbTransaction();
         }
 
         return $instance;

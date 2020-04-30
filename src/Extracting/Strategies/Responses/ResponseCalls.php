@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Str;
+use Knuckles\Scribe\Extracting\DatabaseTransactionHelpers;
 use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\Flags;
@@ -21,7 +22,7 @@ use ReflectionFunctionAbstract;
  */
 class ResponseCalls extends Strategy
 {
-    use ParamHelpers;
+    use ParamHelpers, DatabaseTransactionHelpers;
 
     /**
      * @param Route $route
@@ -137,28 +138,6 @@ class ResponseCalls extends Strategy
 
         foreach ($config as $name => $value) {
             config([$name => $value]);
-        }
-    }
-
-    /**
-     * @return void
-     */
-    private function startDbTransaction()
-    {
-        try {
-            app('db')->beginTransaction();
-        } catch (Exception $e) {
-        }
-    }
-
-    /**
-     * @return void
-     */
-    private function endDbTransaction()
-    {
-        try {
-            app('db')->rollBack();
-        } catch (Exception $e) {
         }
     }
 
