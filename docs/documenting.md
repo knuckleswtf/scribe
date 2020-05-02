@@ -355,3 +355,39 @@ If you don't specify an example response using any of the above means, this pack
 - By default, the package will generate dummy values for your documented body and query parameters and send in the request. If you specified example values using `@bodyParam` or `@queryParam`, those will be used instead. You can configure additional parameters or overwrite the existing ones for the request in the `queryParams`, and `bodyParams` sections.
 
 - The `ResponseCalls` strategy will only attempt to fetch a response if there are no responses with a status code of 2xx already.
+
+
+
+## Documenting responses
+ This functionality is provided by default by the `UseResponseFieldTags` strategy. You use it by adding a `@responseField` annotation to your controller method.
+
+```
+@responseField id integer The id of the newly created user
+```
+
+Note that this also works the same way for array responses. So if your response is an array of objects, you should only mention the keys of the objects inside the array. So the above annotation will work fine for both this response:
+
+```
+{
+  "id": 3
+}
+```
+
+and this:
+
+```
+[
+  { "id": 3 }
+]
+```
+
+You can also omit the type of the field. Scribe will try to figure it out from the 2xx responses for that endpoint. So this gives the same result:
+
+```
+@responseField id integer The id of the newly created user
+```
+
+Result:
+
+![](./images/response-fields.png)
+

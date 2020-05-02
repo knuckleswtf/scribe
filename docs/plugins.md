@@ -174,3 +174,10 @@ Each strategy class must implement the __invoke method with the parameters as de
 Responses are _additive_. This means all the responses returned from each stage are added to the `responses` array. But note that the `ResponseCalls` strategy will only attempt to fetch a response if there are no responses with a status code of 2xx already.
 
 - In the `headers` stage, you can return an array of headers. You may also negate existing headers by providing `false` as the header value.
+
+
+
+
+
+## Reworked Strategy API
+- `stage` property.
