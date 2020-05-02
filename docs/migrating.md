@@ -1,28 +1,34 @@
-# Migrating
-Note: This isn't meant to be an exhaustive guide to the changes in v4. Please see the changelog for more details (and full list of new features).
+# Migrating from mpociot/laravel-apidoc-generator to Scribe v1
+There's quite a few changes in Scribe, and this guide aims to show you everything notable, as well as provide direct steps to migrate. Note that if you've customized your installation of mpociot/laravel-apidoc-generator heavily, you might want to copy your changes out and just start afresh, then manually merge your changes in. This guide should show you the key parts you need to change.
 
 ## Requirements
 - PHP version: 7.2+
-- Laravel/Lumen version: 5.7+
+- Laravel/Lumen version: 6+
 
-## Configuration 
-- Rename your old config file (for instance to `scribe.old.php`). Publish the new config file via `php artisan vendor:publish --provider="Knuckles\Scribe\ScribeServiceProvider" --tag=scribe-config`. Then copy over any changes you've made in the old one and delete it when you're done.
+## Before you start
+- If you've modified your generated Markdown or Blad views, I recmmend you copy them out first.
+- Rename your old config file (for instance, from `apidoc.php` to `scribe.old.php`). Then install Scribe and publish the new config file via `php artisan vendor:publish --provider="Knuckles\Scribe\ScribeServiceProvider" --tag=scribe-config`. Then copy over any changes you've made in the old one and delete it when you're done.
 
-- Remove the `output` key. Source files now go to `resources/docs/source` and generated docs go to either `public/docs/` or `resources/views/scribe`.
+## Configuration
+Here are changes to look out for in `scribe.php`:
 
-- Make sure the `type` value is set appropriately. See [the docs](config.html#type). 
+### High impact
+- The `laravel.autoload` key is now `laravel.add_routes`, and is `true` by default.
 
-- Remove the `bindings` section. It has been superseded by the `@urlParam` annotation, which works similarly to the existing `@queryParam` annotation. See [the docs](documenting.html#specifying-request-parameters)
+### Low impact
+- `logo` is now `false` by default, so no logo spot will be shown. Relative paths and URLs are now supported too.
+- We've added some new keys to the config file (`auth`, `info_text`). You might want to leverage them, so take a good look at what's available. 
 
-- Remove the `response_calls.bindings` section. Use the `Example: ` feature of `@urlParam` to specify the value you want to be used in response calls.
+## Class names
+It's a new package with a different name, so a few things have changed. This section is especially important if you've written any custom strategies or extended any of the provided classes.
 
-- Rename the `query` and `body` sections in `response_calls` section to `queryParams` and `bodyParams`
+### High impact
 
-- Remove the `apply.response_calls.headers`. Move any headers you had there to `apply.headers` 
 
 ## Assets
-- If you've published the vendor views, rename them (for instance to `route.old.blade.php`). Publish the new views via `php artisan vendor:publish --provider="Knuckles\Scribe\ScribeServiceProvider" --tag=scribe-views`. Compare the two views and reconcile your changes, then delete the old views. Some of the data being passed to the views (the `$route` object) has changed in either name or format, so things will likely break if you use old views.
-The major change here is the introduction of the `urlParameters` section and the collapsing of route `title`, `description`, `groupName`, `groupDescription`, and authentication status (`authenticated` into a `metadata` section.
+- If you've published the vendor views, rename them (for instance to `route.old.blade.php`). Publish the new views via `php artisan vendor:publish --provider="Knuckles\Scribe\ScribeServiceProvider" --tag=scribe-views`. Compare the two views and reconcile your changes, then delete the old views. 
+
+The major change here is the introduction of the `responseFields` section and the addition of `description` for `responses`.
 
 - The location of the source files for the generated docs has changed. Move any prepend/append files you've created from `public/docs/source` to the new location (`resources/docs/source`)
 

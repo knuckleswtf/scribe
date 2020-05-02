@@ -4,7 +4,7 @@
 Scribe v1 comes with some new features and tweaks aimed at improving the developer experience and the quality of the output documentation. Let's dive in!
 
 ## Improved appearance
-First off, the generated documentation has been given a UI refresh. We've made some cosmetic fixes like changing the custom font, removing the logo by default, switching from tables to explanatory paragraphs. [Here's a walkthrough on what to expect](). Of course, there's still lots of room for improvement. If you can do some sick CSS, consider making a PR to knuckleswtf/pastel, as that's where the templates live.
+First off, the generated documentation has been given a UI refresh. We've made some cosmetic fixes like changing the custom font, removing the logo by default (relative paths and URLs are now supported too😃), switching from tables to explanatory paragraphs. [Here's a walkthrough on what to expect](). Of course, there's still lots of room for improvement. If you can do some sick CSS, consider making a PR to knuckleswtf/pastel, as that's where the templates live.
 
 ## Authentication information 🔐
 Scribe can now add authentication information to your docs! The info you provide will be used in generating a description of the authentication text, as well as adding the needed parameters in the example requests, and in response calls. See more [here]().
@@ -15,10 +15,10 @@ Scribe can now add authentication information to your docs! The info you provide
  Also, you can describe multiple responses with the same (or different) status code, but applying to different scenarios. Check it out [here]().
 
 ## More customization options
-You can now customise the introductory text shown at the start of your documentation.🙌 This is done by setting the `intro_text` key in the config. Full Markdown and HTML support, plus some nice little CSS classes to make thigns pretty. If you want to go even deeper and modify the output templates, we have some nice Blade components you can use. See [the docs]() for details.
+You can now customise the introductory text shown at the start of your documentation🙌. Full Markdown and HTML support, plus some nice little CSS classes to make things pretty. If you want to go even deeper and modify the output templates, we have some nice Blade components you can use. See [the docs]() for details.
 
 ## FormRequest support is back!🎉🎉🎉
-Yes, you've wanted it for a long time, and it's back.😄 We thought long and hard about howwe could leverage what the framework gives to make devs' lives easier, so we decided to bring this back. [Head over to the docs]() to know what you need to do to use this.
+Yes, you've wanted it for a long time, and it's back.😄 We thought long and hard about how we could leverage what the framework gives to make devs' lives easier, and we realized that even though FormRequests are for validation, not documentation, they still contain useful business logic we can extract, so we decided to bring this back (with some conditions, though👀), and we're exploring ways to support other validation approaches. [Head over to the docs]() to know what you need to do to use this.
 
 ## Automatic routing for `laravel` docs
 The `autoload` key in `laravel` config is now `add_routes`, and is `true` by default. This means you don't have to do any extra steps to serve your docs through your Laravel app (if you're using `laravel` type). [Details here]().
