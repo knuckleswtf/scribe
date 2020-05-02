@@ -7,12 +7,20 @@ use stdClass;
 
 trait ParamHelpers
 {
-    protected function generateDummyValue(string $type)
+
+    protected function getFaker()
     {
         $faker = Factory::create();
         if ($this->config->get('faker_seed')) {
             $faker->seed($this->config->get('faker_seed'));
         }
+        return $faker;
+    }
+
+    protected function generateDummyValue(string $type)
+    {
+        $faker = $this->getFaker();
+
         $fakeFactories = [
             'integer' => function () use ($faker) {
                 return $faker->numberBetween(1, 20);
@@ -63,12 +71,12 @@ trait ParamHelpers
     /**
      * Cast a value from a string to a specified type.
      *
-     * @param string $value
+     * @param $value
      * @param string $type
      *
      * @return mixed
      */
-    protected function castToType(string $value, string $type)
+    protected function castToType($value, string $type)
     {
         $casts = [
             'integer' => 'intval',

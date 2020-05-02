@@ -163,6 +163,7 @@ class Generator
                 \Knuckles\Scribe\Extracting\Strategies\Headers\GetFromRouteRules::class,
             ],
             'bodyParameters' => [
+                \Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromFormRequest::class,
                 \Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromBodyParamTag::class,
             ],
             'responses' => [

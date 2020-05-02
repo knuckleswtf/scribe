@@ -3,6 +3,7 @@
 namespace Knuckles\Scribe\Tests\Fixtures;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Knuckles\Scribe\Extracting\BodyParam;
 
 /**
  * @queryParam location_id required The id of the location.
@@ -25,4 +26,23 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class TestRequest extends FormRequest
 {
+    public function rules()
+    {
+        return [
+            'user_id' => BodyParam::description('The id of the user.')
+                ->example(9)->rules('int|required'),
+            'room_id' => BodyParam::description('The id of the room.')->rules(['string']),
+            'forever' => BodyParam::description('Whether to ban the user forever.')
+                ->example(false)->rules('boolean'),
+            'another_one' => BodyParam::description('Just need something here.')->rules('numeric'),
+            'even_more_param' => BodyParam::description('')->rules('array'),
+            'book.name' => BodyParam::description('')->rules('string'),
+            'book.author_id' => BodyParam::description()->rules('integer'),
+            'book[pages_count]' => BodyParam::description()->rules('integer'),
+            'ids.*' => BodyParam::description()->rules('integer'),
+            'users.*.first_name' => BodyParam::description('The first name of the user.')->example('John')->rules(['string']),
+            'users.*.last_name' => BodyParam::description('The last name of the user.')->example('Doe')->rules('string'),
+            'gets_ignored' => 'string',
+        ];
+    }
 }

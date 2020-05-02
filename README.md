@@ -37,7 +37,7 @@ $app->configure('scribe');
 ```
 
 ## Documentation
-Check out the documentation at [ReadTheDocs](http://laravel-scribe-generator.rtfd.io/). Don't forget to check out the [migration guide](https://laravel-scribe-generator.rtfd.io/en/latest/migrating.html) if you're coming from v3 to v4.
+Check out the documentation at [ReadTheDocs](http://scribe.rtfd.io/). Don't forget to check out the [migration guide](https://scribe.rtfd.io/en/latest/migrating.html) if you're coming from v3 to v4.
 
 ### License
 

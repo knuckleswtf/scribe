@@ -2,8 +2,10 @@
 
 namespace Knuckles\Scribe;
 
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 use Knuckles\Scribe\Commands\GenerateDocumentation;
+use Knuckles\Scribe\Extracting\BodyParameterDefinition;
 use Knuckles\Scribe\Matching\RouteMatcher;
 use Knuckles\Scribe\Matching\RouteMatcherInterface;
 
@@ -16,6 +18,9 @@ class ScribeServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        // Ensure our dummy validation rule always passes
+        Validator::extend(BodyParameterDefinition::RULENAME, function () { return true; });
+
         $this->loadViewsFrom(__DIR__ . '/../resources/views/', 'scribe');
 
         $this->publishes([

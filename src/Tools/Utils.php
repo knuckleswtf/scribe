@@ -220,4 +220,20 @@ class Utils
         'PATCH' => 'purple',
         'DELETE' => 'red',
     ];
+
+    public static function getArrayAsFriendlyMarkdownString(array $list = []): string
+    {
+        switch (count($list)) {
+            case 1:
+                return "`{$list[0]}`";
+
+            case 2:
+                return "`{$list[0]}` or `{$list[1]}`";
+
+            default:
+                return "`"
+                    . join('`, `', array_slice($list, 0, -1))
+                    . "`, or `" . end($list) . "`";
+        }
+    }
 }

@@ -22,10 +22,10 @@ class GetFromBodyParamTag extends Strategy
 
     public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $context = [])
     {
-        return $this->getBodyParametersFromFormRequestOrMethod($route, $method);
+        return $this->getBodyParametersFromDocBlockInFormRequestOrMethod($route, $method);
     }
 
-    public function getBodyParametersFromFormRequestOrMethod(Route $route, ReflectionFunctionAbstract $method): array
+    public function getBodyParametersFromDocBlockInFormRequestOrMethod(Route $route, ReflectionFunctionAbstract $method): array
     {
         foreach ($method->getParameters() as $param) {
             $paramType = $param->getType();

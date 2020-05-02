@@ -169,7 +169,7 @@ class GetFromBodyParamTagTest extends TestCase
         $route = new Route(['POST'], "/$methodName", ['uses' => TestController::class . "@$methodName"]);
 
         $strategy = new GetFromBodyParamTag(new DocumentationConfig([]));
-        $results = $strategy->getBodyParametersFromFormRequestOrMethod($route, $method);
+        $results = $strategy->getBodyParametersFromDocBlockInFormRequestOrMethod($route, $method);
 
         $this->assertArraySubset([
             'user_id' => [
@@ -215,7 +215,7 @@ class GetFromBodyParamTagTest extends TestCase
         $route = new Route(['POST'], "/$methodName", ['uses' => TestController::class . "@$methodName"]);
 
         $strategy = new GetFromBodyParamTag(new DocumentationConfig([]));
-        $results = $strategy->getBodyParametersFromFormRequestOrMethod($route, $method);
+        $results = $strategy->getBodyParametersFromDocBlockInFormRequestOrMethod($route, $method);
 
         $this->assertArraySubset([
             'direct_one' => [

@@ -18,7 +18,7 @@ from recommonmark.transform import AutoStructify
 
 # -- Project information -----------------------------------------------------
 
-project = 'laravel-scribe-generator'
+project = 'scribe'
 copyright = '2020, Shalvah'
 author = 'Shalvah'
 
