@@ -1,20 +1,22 @@
 # Overview
 
-Automatically generate your API documentation from your existing Laravel/Lumen/[Dingo](https://github.com/dingo/api) routes. [Here's what the output looks like](https://shalvah.me/TheCensorshipAPI/).
+AGenerate API documentation for humans from your Laravel/Lumen/[Dingo](https://github.com/dingo/api) codebase. [Here's what the output looks like](https://shalvah.me/TheCensorshipAPI/).
 
-`php artisan scribe:generate`
+> Coming from mpociot/laravel-apidoc-generator? Check out [what's new](whats-new.md) and the [migration Guide](migrating.md). Otherwise, check out the [Getting Started guide](guide-getting-started.md).
 
 ## Contents
-* [How This Works](description.md)
+* [Getting started](guide-getting-started.md)
+* [Migrating from mpociot/laravel-apidoc-generator](migrating.md)
 * [Configuration](config.md)
-* [Migrating from v3 to v4](migrating.md)
 * [Generating Documentation](generating-documentation.md)
 * [Documenting Your API](documenting.md)
+* [Helpful Tips](helpful-tips.md)
+* [Advanced Customization](customization.md)
+* [How This Works](description.md)
 * [Extending functionality with plugins](plugins.md)
-* [Internal Architecture](architecture.md)
 
 ## Installation
-> Note: PHP 7 and Laravel 5.5 or higher are required.
+> Note: PHP 7.2 and Laravel 5.8 or higher are required.
 
 ```sh
 composer require knuckleswtf/scribe
@@ -26,7 +28,7 @@ Publish the config file by running:
 ```bash
 php artisan vendor:publish --provider="Knuckles\Scribe\ScribeServiceProvider" --tag=scribe-config
 ```
-This will create an `scribe.php` file in your `config` folder.
+This will create a `scribe.php` file in your `config` folder.
 
 ### Lumen
 - Register the service provider in your `bootstrap/app.php`:

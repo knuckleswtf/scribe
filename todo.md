@@ -1,8 +1,15 @@
 # Documentation tasks
-- Migration guide
 - Contribution guide
 - Set up plugin wiki
-- Rewritten docs
+- Rewritten docs. Some things to document:
+  - formrequests: supported rules
+  - hideFromAPIDocumentation
+  - overwriting with --force
+  - binary responses
+  - troubleshooting: --verbose
+  - plugin api: responses - description, $stage property
+  - --env
+  - Use database transactions and `create()` when instantiating factory models
 
 # Release blocker
 - Port recent changes from old repo

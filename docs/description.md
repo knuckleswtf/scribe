@@ -1,9 +1,16 @@
 # How This Works
+Read this page if you want a deeper understanding of how this works (for instance, for the purpose of contributing).
 
-After installing this package and running the command `php artisan scribe:generate` in your application, here's what happens:
-
-- The package fetches all your application's routes.
-- It looks through your [configuration file](config.md) to filter the routes to the ones you actually want to document. For each route, it retrieves the settings you want to apply to it, if any.
-- It processes each route. "Process" here involves using a number of strategies to extract the route's information: group, title, description, body parameters, query parameters, and a sample response, if possible.
-- After processing the routes, it generates a markdown file describing the routes from the parsed data and passes them to [Pastel](https://github.com/knuckleswtf/pastel), which wraps them in a theme and converts them into HTML and CSS.
-- It generates a Postman API collection for your routes. ([This can be disabled.](config.html#postman))
+- When the `generate` command is run, the Generator fetches all your application's routes from Laravel's (or DIngo's) Route facade.
+- Next, the RouteMatcher uses the rules in your config to determine what routes to generate documentation for, as well as extract any specific configuration for them. This configuration is passed to the next stages.
+- The Generator processes each route. This means fetching the route action (controller, method) and using the configured strategies to extract the following:
+  - route metadata (name, description, group name, group description, auth status)
+  - url parameters
+  - body parameters
+  - query parameters
+  - headers
+  - fields in the response
+  - sample responses
+- Next, the Writer uses information from these parsed routes and other configuration to generate a Markdown file via Blade templating.
+- This Markdown file is passed to [Pastel](https://github.com/knuckleswtf/pastel), which wraps them in a theme and converts them into HTML, CSS and JS.
+- If enabled, a Postman collection is generated as wel, via the PostmanCollectionWriter.

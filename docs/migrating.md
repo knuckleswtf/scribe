@@ -1,41 +1,55 @@
 # Migrating from mpociot/laravel-apidoc-generator to Scribe v1
-There's quite a few changes in Scribe, and this guide aims to show you everything notable, as well as provide direct steps to migrate. Note that if you've customized your installation of mpociot/laravel-apidoc-generator heavily, you might want to copy your changes out and just start afresh, then manually merge your changes in. This guide should show you the key parts you need to change.
+There's quite a few changes in Scribe, and this guide aims to show you the key parts you need to look out for so things don't break. After migrating, you should also check out the [list of new features](./whats-new.html).
 
 ## Requirements
 - PHP version: 7.2+
 - Laravel/Lumen version: 6+
 
 ## Before you start
-- If you've modified your generated Markdown or Blad views, I recmmend you copy them out first.
-- Rename your old config file (for instance, from `apidoc.php` to `scribe.old.php`). Then install Scribe and publish the new config file via `php artisan vendor:publish --provider="Knuckles\Scribe\ScribeServiceProvider" --tag=scribe-config`. Then copy over any changes you've made in the old one and delete it when you're done.
+- Remove the old package and install the new one:
 
-## Configuration
-Here are changes to look out for in `scribe.php`:
+```bash
+composer remove mpociot/laravel-apidoc-generator 
+composer install knuckleswtf/scribe 
+```
 
+- Publish the new config file: 
+
+```bash
+php artisan vendor:publish --provider="Knuckles\Scribe\ScribeServiceProvider" --tag=scribe-config
+```
+
+At this point, you should have _both_ apidoc.php and scribe.php in your config folder. This is good, so ou can easily copy your old config over and delete when you're done.
+
+If you've modified your generated Blade views, you should also publish the new ones:
+
+```bash
+php artisan vendor:publish --provider="Knuckles\Scribe\ScribeServiceProvider" --tag=scribe-views
+```
+
+> ⚠ IMPORTANT: If you've modified the generated Markdown or added prepend/append files, you should copy them to a separate folder (not in `resources/docs`). After generating the new docs, you'll have to manually add your changes in.
+
+_After you've done all of the above_, delete your `resources/docs/` and `public/docs` folders, to prevent any conflicts with the new ones we'll generate. If you're using `laravel` type output, you can also delete `resources/views/apidoc/`.
+
+## Key changes
 ### High impact
 - The `laravel.autoload` key is now `laravel.add_routes`, and is `true` by default.
+- The Markdown output is now a set of files, located in `resources/docs`. The route files are located in `resources/docs/groups` and are split by groups (1 group per file).
+- The `rebuild` command has been removed. By default, when you run `php artisan scribe:generate`, Scribe will not overwrite any Markdown files you've modified. If you want Scribe to do so, run with `--force`. 
 
 ### Low impact
 - `logo` is now `false` by default, so no logo spot will be shown. Relative paths and URLs are now supported too.
-- We've added some new keys to the config file (`auth`, `info_text`). You might want to leverage them, so take a good look at what's available. 
 
-## Class names
+## Advanced users
 It's a new package with a different name, so a few things have changed. This section is especially important if you've written any custom strategies or extended any of the provided classes.
 
-### High impact
+- Replace all occurrences of `Mpociot\ApiDoc\Strategies` with `Knuckles\Scribe\Extracting`
+- Replace all occurrences of `Mpociot\ApiDoc\Strategies\RequestHeaders` with `Knuckles\Scribe\Extracting\Strategies\Headers`
+- Replace all occurrences of `Mpociot\ApiDoc` with `Knuckles\Scribe`
+- For strategies, change the type of the `$method` argument to the `__invoke` method from `ReflectionMethod` to `ReflectionFunctionAbstract`. It's a superclass, so every other thing should work fine.
+- For each strategy, add a `public $stage` property and set it to the name of the stage the strategy belongs to. If you have a constructor defined, remove the `$stage` argument from it. 
+- The `requestHeaders` stage has been renamed to `headers`.
+- If you've published the views, you'll note that they are now in a different format. See the documentation on [customising the views]() to learn the new look.
 
 
-## Assets
-- If you've published the vendor views, rename them (for instance to `route.old.blade.php`). Publish the new views via `php artisan vendor:publish --provider="Knuckles\Scribe\ScribeServiceProvider" --tag=scribe-views`. Compare the two views and reconcile your changes, then delete the old views. 
-
-The major change here is the introduction of the `responseFields` section and the addition of `description` for `responses`.
-
-- The location of the source files for the generated docs has changed. Move any prepend/append files you've created from `public/docs/source` to the new location (`resources/docs/source`)
-
-## API
-- Verify that any custom strategies you've written match the new signatures. See [the docs](plugins.html#strategies). Also note the order of execution and the new stages present.
-
-## Other new features (highlights)
-- [Non-static docs/docs with authentication](config.html#type)
-- [`@apiResource` for Eloquent API resources](documenting.html#apiresource-apiresourcecollection-and-apiresourcemodel)
-- You can now mix and match response strategies and status codes as you like.
+That should be all. Head on to the [list of new features](./whats-new.html) to see what's new. If you come across anything we've missed, please send in a PR!
