@@ -33,7 +33,7 @@ abstract class Strategy
      *
      * @throws \Exception
      *
-     * @return array
+     * @return array|null
      */
     abstract public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $context = []);
 }

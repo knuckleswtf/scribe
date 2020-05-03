@@ -49,7 +49,7 @@ class UseApiResourceTags extends Strategy
         $methodDocBlock = $docBlocks['method'];
 
         try {
-            return $this->getApiResourceResponse($methodDocBlock->getTags(), $route);
+            return $this->getApiResourceResponse($methodDocBlock->getTags());
 
         } catch (Exception $e) {
             clara('knuckleswtf/scribe')->warn('Exception thrown when fetching Eloquent API resource response for [' . implode(',', $route->methods) . "] {$route->uri}.");
@@ -66,7 +66,7 @@ class UseApiResourceTags extends Strategy
     /**
      * Get a response from the @apiResource/@apiResourceCollection and @apiResourceModel tags.
      *
-     * @param array $tags
+     * @param Tag[] $tags
      *
      * @return array|null
      */
@@ -188,6 +188,7 @@ class UseApiResourceTags extends Strategy
             try {
                 return $factory->create();
             } catch (Exception $e) {
+                // If there was no working database, it would fail.
                 return $factory->make();
             }
         } catch (Exception $e) {

@@ -8,32 +8,24 @@ class ValidationRuleDescriptionParser
 
     private $arguments = [];
 
-    const DEFAULT_LOCALE = 'en';
-
     /**
-     * @param $rule
+     * @param string $rule
      */
-    public function __construct($rule = null)
+    public function __construct(string $rule = null)
     {
         $this->rule = $rule;
     }
 
-    /**
-     * @return array|string
-     */
-    public static function getDescription(string $rule, $arguments = [], $type = 'string')
+    public static function getDescription(string $rule, array $arguments = [], $type = 'string'): string
     {
-        $instance = new static($rule);
+        $instance = new self($rule);
 
         $instance->arguments = $arguments;
 
         return $instance->makeDescription($type);
     }
 
-    /**
-     * @return string
-     */
-    protected function makeDescription($type = 'string')
+    protected function makeDescription($type = 'string'): string
     {
         $description = trans("validation.{$this->rule}");
         // For rules that can apply to multiple types (eg 'max' rule), Laravel returns an array of possible messages
@@ -49,12 +41,7 @@ class ValidationRuleDescriptionParser
         return $this->replaceArguments($description);
     }
 
-    /**
-     * @param string $description$
-     *
-     * @return string
-     */
-    protected function replaceArguments($description)
+    protected function replaceArguments(string $description): string
     {
         foreach ($this->arguments as $placeholder => $argument) {
             $description = str_replace($placeholder, $argument, $description);

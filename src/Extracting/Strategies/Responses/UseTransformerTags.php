@@ -62,8 +62,7 @@ class UseTransformerTags extends Strategy
     /**
      * Get a response from the @transformer/@transformerCollection and @transformerModel tags.
      *
-     * @param array $tags
-     * @param Route $route
+     * @param Tag[] $tags
      *
      * @return array|null
      */

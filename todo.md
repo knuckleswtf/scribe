@@ -4,6 +4,9 @@
 - Set up plugin wiki
 - Rewritten docs
 
+# Release blocker
+- Port recent changes from old repo
+
 # Features
 - File upload input: see https://github.com/mpociot/laravel-apidoc-generator/issues/735 . The primitive type `file` has already been added to FormRequest support, but with no example value
 - Command scribe:strategy: It would be nice if we had a make strategy command that can help people generate custom strategies

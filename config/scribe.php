@@ -197,8 +197,6 @@ INTRO,
                 'headers' => [
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json',
-                    // 'Authorization' => 'Bearer {token}',
-                    // 'Api-Version' => 'v2',
                 ],
 
                 /*
@@ -263,10 +261,13 @@ INTRO,
     /*
      * If you would like the package to generate the same example values for parameters on each run,
      * set this to any number (eg. 1234)
-     *
      */
     'faker_seed' => null,
 
+    /**
+     * The strategies Scribe will use to extract information about your routes at each stage.
+     * If you write or install a custom strategy, add it here. Unless you know what you're doing, you shouldn't remove any of the default strategies.
+     */
     'strategies' => [
         'metadata' => [
             \Knuckles\Scribe\Extracting\Strategies\Metadata\GetFromDocBlocks::class,

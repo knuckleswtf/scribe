@@ -81,13 +81,13 @@ class Writer
         $this->isStatic = $this->config->get('type') === 'static';
         $this->sourceOutputPath = 'resources/docs';
         $this->outputPath = $this->isStatic ? 'public/docs' : 'resources/views/scribe';
-        $this->fileModificationTimesFile = $this->sourceOutputPath . '/source/.filemtimes';
+        $this->fileModificationTimesFile = $this->sourceOutputPath . '/.filemtimes';
         $this->lastTimesWeModifiedTheseFiles = [];
     }
 
     public function writeDocs(Collection $routes)
     {
-        // The source Markdown files always go in resources/docs/source.
+        // The source Markdown files always go in resources/docs.
         // The static assets (js/, css/, and images/) always go in public/docs/.
         // For 'static' docs, the output files (index.html, collection.json) go in public/docs/.
         // For 'laravel' docs, the output files (index.blade.php, collection.json)
@@ -115,8 +115,8 @@ class Writer
 
         $this->clara->info('Writing source Markdown files to: ' . $this->sourceOutputPath);
 
-        if (!is_dir($this->sourceOutputPath . '/source')) {
-            mkdir($this->sourceOutputPath . '/source', 0777, true);
+        if (!is_dir($this->sourceOutputPath)) {
+            mkdir($this->sourceOutputPath, 0777, true);
         }
 
         $this->writeIndexMarkdownFile($settings);
@@ -210,7 +210,7 @@ class Writer
     {
         $this->clara->info('Generating API HTML code');
 
-        $this->pastel->generate($this->sourceOutputPath . '/source/index.md', 'public/docs');
+        $this->pastel->generate($this->sourceOutputPath . '/index.md', 'public/docs');
 
         if (!$this->isStatic) {
             $this->performFinalTasksForLaravelType();
@@ -227,7 +227,7 @@ class Writer
             ->with('postmanCollectionLink', './collection.json')
             ->with('outputPath', 'docs')
             ->with('settings', $settings);
-        $indexFile = $this->sourceOutputPath . '/source/index.md';
+        $indexFile = $this->sourceOutputPath . '/index.md';
 
         $introText = $this->config->get('intro_text', '');
         $introMarkdown = view('scribe::index')
@@ -274,13 +274,13 @@ class Writer
         }
 
         $authMarkdown = view('scribe::authentication', ['isAuthed' => $isAuthed, 'text' => $text]);
-        $this->writeFile($this->sourceOutputPath . '/source/authentication.md', $authMarkdown);
+        $this->writeFile($this->sourceOutputPath . '/authentication.md', $authMarkdown);
     }
 
     protected function writeRoutesMarkdownFile(Collection $parsedRoutes, array $settings): void
     {
-        if (!is_dir($this->sourceOutputPath . '/source/groups')) {
-            mkdir($this->sourceOutputPath . '/source/groups', 0777, true);
+        if (!is_dir($this->sourceOutputPath . '/groups')) {
+            mkdir($this->sourceOutputPath . '/groups', 0777, true);
         }
 
         if (file_exists($this->fileModificationTimesFile)) {
@@ -296,11 +296,9 @@ class Writer
 
         // Generate Markdown for each route. Not using a Blade component bc of some complex logic
         $parsedRoutesWithOutput = $this->generateMarkdownOutputForEachRoute($parsedRoutes, $settings);
-        $parsedRoutesWithOutput->each(function ($routesInGroup, $groupName) use (
-            $parsedRoutesWithOutput
-        ) {
+        $parsedRoutesWithOutput->each(function ($routesInGroup, $groupName) {
             $groupId = Str::slug($groupName);
-            $routeGroupMarkdownFile = $this->sourceOutputPath . "/source/groups/$groupId.md";
+            $routeGroupMarkdownFile = $this->sourceOutputPath . "/groups/$groupId.md";
 
             if ($this->hasFileBeenModified($routeGroupMarkdownFile)) {
                 if ($this->forceIt) {

@@ -69,9 +69,9 @@ trait ParamHelpers
     }
 
     /**
-     * Cast a value from a string to a specified type.
+     * Cast a value to a specified type.
      *
-     * @param $value
+     * @param mixed $value
      * @param string $type
      *
      * @return mixed

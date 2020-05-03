@@ -143,7 +143,7 @@ class GetFromFormRequest extends Strategy
      * This method will transform validation rules from:
      * 'param1' => 'int|required'  TO  'param1' => ['int', 'required']
      *
-     * @param $rules
+     * @param array<string,string|string[]> $rules
      *
      * @return mixed
      */
@@ -156,7 +156,7 @@ class GetFromFormRequest extends Strategy
         $values = collect($rules)
             ->filter(function ($value, $key) {
                 return Str::contains($key, '.*');
-            })->mapWithKeys(function ($val, $key) {
+            })->mapWithKeys(function ($value, $key) {
                 if (Str::endsWith($key, '.*')) {
                     // We're dealing with a simple array of primitives
                     return [Str::substr($key, 0, -2) => [Str::random()]];

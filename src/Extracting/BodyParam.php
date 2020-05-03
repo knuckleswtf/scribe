@@ -25,7 +25,7 @@ class BodyParam
 
     public static function description(string $description = '')
     {
-        return new static($description);
+        return new self($description);
     }
 
     public function example($example = null)

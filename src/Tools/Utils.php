@@ -52,6 +52,8 @@ class Utils
                 1 => $action[1],
             ];
         }
+
+        throw new Exception("Couldn't handle route.");
     }
 
     /**

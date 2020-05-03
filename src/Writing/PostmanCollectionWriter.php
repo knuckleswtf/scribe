@@ -123,7 +123,6 @@ class PostmanCollectionWriter
             return Str::contains($route['uri'], '{' . $key . '}');
         });
 
-        /** @var Collection $queryParams */
         $base = [
             'protocol' => $this->protocol,
             'host' => $this->baseUrl,
@@ -131,7 +130,7 @@ class PostmanCollectionWriter
             'path' => preg_replace_callback('/\/{(\w+)\??}(?=\/|$)/', function ($matches) {
                 return '/:' . $matches[1];
             }, $route['uri']),
-            'query' => collect($route['queryParameters'] ?? [])->map(function ($parameterData, $key) use ($route) {
+            'query' => collect($route['queryParameters'] ?? [])->map(function ($parameterData, $key) {
                 $key = rtrim($key,".*");
                 return [
                     'key' => $key,

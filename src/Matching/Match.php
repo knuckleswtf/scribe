@@ -65,7 +65,7 @@ class Match implements \ArrayAccess
      */
     public function offsetSet($offset, $value)
     {
-        return $this->$offset = $value;
+        $this->$offset = $value;
     }
 
     /**
