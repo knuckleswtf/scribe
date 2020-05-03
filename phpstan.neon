@@ -8,6 +8,7 @@ parameters:
         - '#Call to an undefined static method Illuminate\\Support\\Facades\\URL::formatRoot()#'
         - '#Cannot access offset .+ on Illuminate\\Contracts\\Foundation\\Application.#'
         - '#Call to an undefined method Illuminate\\Routing\\Route::versions().#'
+        - '#Call to an undefined method Illuminate\\Contracts\\Validation\\Validator::getRules().#'
         - '#(.*)NunoMaduro\\Collision(.*)#'
         - '#Instantiated class Whoops\\Exception\\Inspector not found\.#'
         - '#.+Dingo.+#'
