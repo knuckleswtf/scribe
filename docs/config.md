@@ -7,7 +7,7 @@ This is the type of documentation output to generate.
 - `static` will generate a static HTMl page in the `public/docs` folder, so anyone can visit your documentation page by going to {yourapp.domain}/docs.
 - `laravel` will generate the documentation as a Blade view within the `resources/views/scribe` folder, so you can add routing and authentication.
 
-> In both instances, the source markdown file will be generated in `resources/docs/source`.
+> In both instances, the source markdown file will be generated in `resources/docs`.
 
 ## `laravel`
 If you're using `laravel` type output, this package can automatically set up an endpoint for you to view your generated docs. You can configure this here.

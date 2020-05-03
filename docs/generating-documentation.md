@@ -23,12 +23,12 @@ The base URL used in the Postman collection will be the value of the `base_url` 
 ## Manually modifying the content of the generated documentation
 If you want to modify the content of your generated documentation without changing the routes, go ahead and edit the generated `index.md` file.
 
-This file is located in the `source` folder of  your `output` directory (see [configuration](config.html#output)), so by default, this is `public/docs/source/index.md`.
+This file is located in the `source` folder of  your `output` directory (see [configuration](config.html#output)), so by default, this is `public/docs/index.md`.
  
 After editing the markdown file, you can use the `scribe:generate` command to rebuild your documentation into HTML.
 
 ## Automatically add markdown to the beginning or end of the documentation
- If you wish to automatically add the same content to the docs every time you generate (for instance, an introduction, a disclaimer or an authenticatino guide), you can add a `prepend.md` and/or `append.md` file to the `source` folder in the source output directory (`resources/docs/source`), and they will be added to the generated documentation. 
+ If you wish to automatically add the same content to the docs every time you generate (for instance, an introduction, a disclaimer or an authenticatino guide), you can add a `prepend.md` and/or `append.md` file to the `source` folder in the source output directory (`resources/docs`), and they will be added to the generated documentation. 
  
  The contents of `prepend.md` will be added after the front matter and info text, while the contents of `append.md` will be added at the end of the document.
  
