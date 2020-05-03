@@ -1,6 +1,6 @@
 # Overview
 
-AGenerate API documentation for humans from your Laravel/Lumen/[Dingo](https://github.com/dingo/api) codebase. [Here's what the output looks like](https://shalvah.me/TheCensorshipAPI/).
+Generate API documentation for humans from your Laravel/Lumen/[Dingo](https://github.com/dingo/api) codebase. [Here's what the output looks like](https://shalvah.me/TheCensorshipAPI/).
 
 > Coming from mpociot/laravel-apidoc-generator? Check out [what's new](whats-new.md) and the [migration Guide](migrating.md). Otherwise, check out the [Getting Started guide](guide-getting-started.md).
 

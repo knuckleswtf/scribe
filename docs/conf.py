@@ -18,7 +18,7 @@ from recommonmark.transform import AutoStructify
 
 # -- Project information -----------------------------------------------------
 
-project = 'scribe'
+project = 'Scribe'
 copyright = '2020, Shalvah'
 author = 'Shalvah'
 
