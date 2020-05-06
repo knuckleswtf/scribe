@@ -3,7 +3,6 @@
 namespace Knuckles\Scribe\Tests\Fixtures;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Knuckles\Scribe\Extracting\BodyParam;
 
 /**
  * @queryParam location_id required The id of the location.
@@ -29,20 +28,51 @@ class TestRequest extends FormRequest
     public function rules()
     {
         return [
-            'user_id' => BodyParam::description('The id of the user.')
-                ->example(9)->rules('int|required'),
-            'room_id' => BodyParam::description('The id of the room.')->rules(['string']),
-            'forever' => BodyParam::description('Whether to ban the user forever.')
-                ->example(false)->rules('boolean'),
-            'another_one' => BodyParam::description('Just need something here.')->rules('numeric'),
-            'even_more_param' => BodyParam::description('')->rules('array'),
-            'book.name' => BodyParam::description('')->rules('string'),
-            'book.author_id' => BodyParam::description()->rules('integer'),
-            'book[pages_count]' => BodyParam::description()->rules('integer'),
-            'ids.*' => BodyParam::description()->rules('integer'),
-            'users.*.first_name' => BodyParam::description('The first name of the user.')->example('John')->rules(['string']),
-            'users.*.last_name' => BodyParam::description('The last name of the user.')->example('Doe')->rules('string'),
-            'gets_ignored' => 'string',
+            'user_id' => 'int|required',
+            'room_id' => ['string'],
+            'forever' => 'boolean',
+            'another_one' => 'numeric',
+            'even_more_param' => 'array',
+            'book.name' => 'string',
+            'book.author_id' => 'integer',
+            'book[pages_count]' => 'integer',
+            'ids.*' => 'integer',
+            'users.*.first_name' => ['string'],
+            'users.*.last_name' => 'string',
+        ];
+    }
+
+    public function bodyParameters()
+    {
+        return [
+            'user_id' => [
+                'description' => 'The id of the user.',
+                'example' => 9,
+            ],
+            'room_id' => [
+                'description' => 'The id of the room.',
+            ],
+            'forever' => [
+                'description' => 'Whether to ban the user forever.',
+                'example' => false,
+            ],
+            'another_one' => [
+                'description' => 'Just need something here.',
+            ],
+            'even_more_param' => [
+                'description' => '',
+            ],
+            'book.name' => [
+                'description' => '',
+            ],
+            'users.*.first_name' => [
+                'description' => 'The first name of the user.',
+                'example' => 'John',
+            ],
+            'users.*.last_name' => [
+                'description' => 'The last name of the user.',
+                'example' => 'Doe',
+            ],
         ];
     }
 }

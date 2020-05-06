@@ -52,25 +52,27 @@ class GetFromFormRequest extends Strategy
             if (
                 (class_exists(LaravelFormRequest::class) && $parameterClass->isSubclassOf(LaravelFormRequest::class))
                 || (class_exists(DingoFormRequest::class) && $parameterClass->isSubclassOf(DingoFormRequest::class))) {
-                $bodyParametersFromDocBlock = $this->getBodyParametersFromValidationRules($this->getRouteValidationRules($parameterClassName));
+                /** @var LaravelFormRequest|DingoFormRequest\ $formRequest */
+                $formRequest = new $parameterClassName;
+                $bodyParametersFromFormRequest = $this->getBodyParametersFromValidationRules(
+                    $this->getRouteValidationRules($formRequest),
+                    $this->getCustomParameterData($formRequest)
+                    );
 
-                return $bodyParametersFromDocBlock;
+                return $bodyParametersFromFormRequest;
             }
         }
 
         return [];
     }
 
-    protected function getRouteValidationRules(string $formRequestClass)
+    /**
+     * @param LaravelFormRequest|DingoFormRequest $formRequest
+     *
+     * @return mixed
+     */
+    protected function getRouteValidationRules($formRequest)
     {
-        /** @var LaravelFormRequest|DingoFormRequest $formRequest */
-        $formRequest = new $formRequestClass;/*
-        // Add route parameter bindings
-        $formRequest->setContainer(app());
-        $formRequest->request->add($bindings);
-        $formRequest->query->add($bindings);
-        $formRequest->setMethod($routeMethods[0]);*/
-
         if (method_exists($formRequest, 'validator')) {
             $validationFactory = app(ValidationFactory::class);
 
@@ -81,38 +83,47 @@ class GetFromFormRequest extends Strategy
         }
     }
 
-    public function getBodyParametersFromValidationRules(array $validationRules)
+    /**
+     * @param LaravelFormRequest|DingoFormRequest $formRequest
+     */
+    protected function getCustomParameterData($formRequest)
+    {
+        if (method_exists($formRequest, 'bodyParameters')) {
+            return call_user_func_array([$formRequest, 'bodyParameters'], []);
+        }
+
+        clara('knuckleswtf/scribe')->warn("No bodyParameters() method found in ".get_class($formRequest)." Scribe will only be able to extract basic information from the rules() method.");
+        return [];
+    }
+
+    public function getBodyParametersFromValidationRules(array $validationRules, array $customParameterData = [])
     {
         self::$MISSING_VALUE = new \stdClass();
         $rules = $this->normaliseRules($validationRules);
 
         $parameters = [];
         foreach ($rules as $parameter => $ruleset) {
+            if (count($customParameterData) && !isset($customParameterData[$parameter])) {
+                clara('knuckleswtf/scribe')->warn("No data found for parameter '$parameter' from your bodyParameters() method. Add an entry for '$parameter' so you can add description and example.");
+            }
+            $parameterInfo = $customParameterData[$parameter] ?? [];
+
             $parameterData = [
                 'required' => false,
                 'type' => null,
                 'value' => self::$MISSING_VALUE,
-                'scribe_value' => self::$MISSING_VALUE,
                 'description' => '',
-                'visible_to_scribe' => false,
             ];
             foreach ($ruleset as $rule) {
                 $this->parseRule($rule, $parameterData);
             }
 
-            // Ignore parameters that didn't use our custom rule
-            if (!$parameterData['visible_to_scribe']) {
-                continue;
-            }
-            unset($parameterData['visible_to_scribe']);
-
             // Make sure the user-specified description comes first.
-            $businessDescription = $parameterData['scribe_description'] ?? '';
+            $businessDescription = $parameterInfo['description'] ?? '';
             $validationDescription = trim($parameterData['description'] ?: '');
             $fullDescription = trim($businessDescription . ' ' .trim($validationDescription));
             // Let's have our sentences end with full stops, like civilized people.🙂
             $parameterData['description'] = $fullDescription ? rtrim($fullDescription, '.').'.' : $fullDescription;
-            unset($parameterData['scribe_description']);
 
             // Set default values for type
             if (is_null($parameterData['type'])) {
@@ -124,10 +135,9 @@ class GetFromFormRequest extends Strategy
             }
 
             // Make sure the user-specified example overwrites others.
-            if ($parameterData['scribe_value'] !== self::$MISSING_VALUE) {
-                $parameterData['value'] = $parameterData['scribe_value'];
+            if (isset($parameterInfo['example'])) {
+                $parameterData['value'] = $parameterInfo['example'];
             }
-            unset($parameterData['scribe_value']);
 
             if (!is_null($parameterData['value']) && $parameterData['value'] !== self::$MISSING_VALUE) {
                 // Cast is important since values had been cast to string when serializing the validator
@@ -202,12 +212,6 @@ class GetFromFormRequest extends Strategy
         // For this reason, only deterministic rules are supported
         // 3. All rules supported must be rules that we can generate a valid dummy value for.
         switch ($rule) {
-            case BodyParameterDefinition::RULENAME:
-                $parameterData['scribe_description'] = $arguments[0];
-                $parameterData['scribe_value'] = $arguments[1] == ''  ? self::$MISSING_VALUE : $arguments[1];
-                $parameterData['visible_to_scribe'] = true;
-                break;
-
             case 'required':
                 $parameterData['required'] = true;
                 break;
@@ -353,9 +357,6 @@ class GetFromFormRequest extends Strategy
             // These rules can have ommas in their arguments, so we don't split on commas
             if (in_array(strtolower($rule), ['regex', 'date', 'date_format'])) {
                 $ruleArguments = [$argumentsString];
-                // For our custom rule, we're using a different delimiter, since descriptions may contain commas.
-            } elseif (strtolower($rule) === BodyParameterDefinition::RULENAME) {
-                $ruleArguments = explode(BodyParameterDefinition::DELIMITER, $argumentsString);
             } else {
                 $ruleArguments = str_getcsv($argumentsString);
             }

@@ -4,7 +4,6 @@ namespace Knuckles\Scribe\Tests\Extracting\Strategies\BodyParameters;
 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
-use Knuckles\Scribe\Extracting\BodyParam;
 use Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromFormRequest;
 use Knuckles\Scribe\ScribeServiceProvider;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
@@ -93,17 +92,16 @@ class GetFromFormRequestTest extends TestCase
                 'value' => 'Doe',
             ],
         ], $results);
-
-        $this->assertArrayNotHasKey('gets_ignored', $results);
     }
+
     /**
      * @test
      * @dataProvider supportedRules
      */
-    public function can_handle_specific_rules($ruleset, $expected)
+    public function can_handle_specific_rules($ruleset, $customInfo, $expected)
     {
         $strategy = new GetFromFormRequest(new DocumentationConfig([]));
-        $results = $strategy->getBodyParametersFromValidationRules($ruleset);
+        $results = $strategy->getBodyParametersFromValidationRules($ruleset, $customInfo);
 
         $parameterName = array_keys($ruleset)[0];
 
@@ -135,104 +133,119 @@ class GetFromFormRequestTest extends TestCase
         $description = 'A description';
         return [
             'required' => [
-                ['required' => BodyParam::description($description)->rules('required')],
+                ['required' => 'required'],
+                ['required' => ['description' => $description]],
                 [
                     'required' => true,
-                ]
+                ],
             ],
             'string' => [
-                ['string' => BodyParam::description($description)->rules('string|required')],
+                ['string' => 'string|required'],
+                ['string' => ['description' => $description]],
                 [
                     'type' => 'string',
-                ]
+                ],
             ],
             'boolean' => [
-                ['boolean' => BodyParam::description($description)->rules('boolean|required')],
+                ['boolean' => 'boolean|required'],
+                ['boolean' => ['description' => $description]],
                 [
                     'type' => 'boolean',
-                ]
+                ],
             ],
             'integer' => [
-                ['integer' => BodyParam::description($description)->rules('integer|required')],
+                ['integer' => 'integer|required'],
+                ['integer' => ['description' => $description]],
                 [
                     'type' => 'integer',
-                ]
+                ],
             ],
             'numeric' => [
-                ['numeric' => BodyParam::description($description)->rules('numeric|required')],
+                ['numeric' => 'numeric|required'],
+                ['numeric' => ['description' => $description]],
                 [
                     'type' => 'number',
-                ]
+                ],
             ],
             'array' => [
-                ['array' => BodyParam::description($description)->rules('array|required')],
+                ['array' => 'array|required'],
+                ['array' => ['description' => $description]],
                 [
                     'type' => 'array',
-                ]
+                ],
             ],
 
             /* Ignore file fo now until we figure out how to support it
             'file' => [
-                ['file' => BodyParam::description($description)->rules('file|required')],
+                ['file' => 'file|required'],
+['file' => ['description' => $description]],
                 [
                     'type' => 'file',
                 ]
             ],*/
             'timezone' => [
-                ['timezone' => BodyParam::description($description)->rules('timezone|required')],
+                ['timezone' => 'timezone|required'],
+                ['timezone' => ['description' => $description]],
                 [
                     'description' => 'The value must be a valid time zone, such as `Africa/Accra`.',
                     'type' => 'string',
-                ]
+                ],
             ],
             'email' => [
-                ['email' => BodyParam::description($description)->rules('email|required')],
+                ['email' => 'email|required'],
+                ['email' => ['description' => $description]],
                 [
                     'description' => 'The value must be a valid email address.',
                     'type' => 'string',
-                ]
+                ],
             ],
             'url' => [
-                ['url' => BodyParam::description($description)->rules('url|required')],
+                ['url' => 'url|required'],
+                ['url' => ['description' => $description]],
                 [
                     'description' => 'The value must be a valid URL.',
                     'type' => 'string',
-                ]
+                ],
             ],
             'ip' => [
-                ['ip' => BodyParam::description($description)->rules('ip|required')],
+                ['ip' => 'ip|required'],
+                ['ip' => ['description' => $description]],
                 [
                     'description' => 'The value must be a valid IP address.',
                     'type' => 'string',
-                ]
+                ],
             ],
             'json' => [
-                ['json' => BodyParam::description($description)->rules('json|required')],
+                ['json' => 'json|required'],
+                ['json' => ['description' => $description]],
                 [
                     'description' => 'The value must be a valid JSON string.',
                     'type' => 'string',
-                ]
+                ],
             ],
             'date' => [
-                ['date' => BodyParam::description($description)->rules('date|required')],
+                ['date' => 'date|required'],
+                ['date' => ['description' => $description]],
                 [
                     'description' => 'The value must be a valid date.',
                     'type' => 'string',
-                ]
+                ],
             ],
             'date_format' => [
-                ['date_format' => BodyParam::description($description)->rules('date_format:Y-m-d|required')],
+                ['date_format' => 'date_format:Y-m-d|required'],
+                ['date_format' => ['description' => $description]],
                 [
                     'description' => 'The value must be a valid date in the format Y-m-d.',
                     'type' => 'string',
-                ]
+                ],
             ],
             'in' => [
-                ['in' => BodyParam::description($description)->rules('in:3,5,6|required')],
+                ['in' => 'in:3,5,6|required'],
+                ['in' => ['description' => $description]],
                 [
                     'description' => 'The value must be one of `3`, `5`, or `6`.',
                     'type' => 'string',
-                ]
+                ],
             ],
         ];
     }
