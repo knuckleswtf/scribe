@@ -8,6 +8,7 @@ use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Route;
+use Dingo\Api\Routing\Route as DingoRoute;
 use Illuminate\Support\Str;
 use Knuckles\Scribe\Extracting\DatabaseTransactionHelpers;
 use Knuckles\Scribe\Extracting\ParamHelpers;
@@ -60,7 +61,7 @@ class ResponseCalls extends Strategy
         $request = $this->prepareRequest($route, $rulesToApply, $urlParameters, $bodyParameters, $queryParameters, $context['headers'] ?? []);
 
         try {
-            $response = $this->makeApiCall($request);
+            $response = $this->makeApiCall($request, $route);
             $response = [
                 [
                     'status' => $response->getStatusCode(),
@@ -154,11 +155,13 @@ class ResponseCalls extends Strategy
      *
      * @return \Illuminate\Http\JsonResponse|mixed
      */
-    public function callDingoRoute(Request $request)
+    public function callDingoRoute(Request $request, Route $route)
     {
         /** @var Dispatcher $dispatcher */
         $dispatcher = app(\Dingo\Api\Dispatcher::class);
 
+        /** @var DingoRoute $route */
+        $dispatcher->version($route->versions()[0]);
         foreach ($request->headers as $header => $value) {
             $dispatcher->header($header, $value);
         }
@@ -173,7 +176,11 @@ class ResponseCalls extends Strategy
         if (! empty($query)) {
             $uri .= "?$query";
         }
-        $response = call_user_func_array([$dispatcher, strtolower($request->method())], [$uri]);
+
+        $response = call_user_func_array(
+            [$dispatcher, strtolower($request->method())],
+            [$uri]
+        );
 
         // the response from the Dingo dispatcher is the 'raw' response from the controller,
         // so we have to ensure it's JSON first
@@ -271,14 +278,15 @@ class ResponseCalls extends Strategy
     /**
      * @param Request $request
      *
-     * @throws Exception
+     * @param Route $route
      *
      * @return \Illuminate\Http\JsonResponse|mixed|\Symfony\Component\HttpFoundation\Response
+     * @throws Exception
      */
-    protected function makeApiCall(Request $request)
+    protected function makeApiCall(Request $request, Route $route)
     {
-        if (config('scribe.router') == 'dingo') {
-            $response = $this->callDingoRoute($request);
+        if ($this->config->get('router') == 'dingo') {
+            $response = $this->callDingoRoute($request, $route);
         } else {
             $response = $this->callLaravelRoute($request);
         }

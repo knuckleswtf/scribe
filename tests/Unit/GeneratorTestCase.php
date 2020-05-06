@@ -8,6 +8,7 @@ use Knuckles\Scribe\ScribeServiceProvider;
 use Knuckles\Scribe\Extracting\Generator;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
+use Knuckles\Scribe\Tools\Flags;
 use Orchestra\Testbench\TestCase;
 
 abstract class GeneratorTestCase extends TestCase
@@ -18,7 +19,7 @@ abstract class GeneratorTestCase extends TestCase
      * @var \Knuckles\Scribe\Extracting\Generator
      */
     protected $generator;
-    private $config = [
+    protected $config = [
         'strategies' => [
             'metadata' => [
                 \Knuckles\Scribe\Extracting\Strategies\Metadata\GetFromDocBlocks::class,
@@ -53,9 +54,13 @@ abstract class GeneratorTestCase extends TestCase
 
     protected function getPackageProviders($app)
     {
-        return [
+        $providers = [
             ScribeServiceProvider::class,
         ];
+        if (class_exists(\Dingo\Api\Provider\LaravelServiceProvider::class)) {
+            $providers[] = \Dingo\Api\Provider\LaravelServiceProvider::class;
+        }
+        return $providers;
     }
 
     /**

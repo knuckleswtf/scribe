@@ -2,11 +2,14 @@
 
 namespace Knuckles\Scribe\Tests\Extracting\Strategies\Responses;
 
+use Dingo\Api\Routing\Router;
+use Illuminate\Routing\Route;
 use Knuckles\Scribe\Extracting\Strategies\Responses\ResponseCalls;
 use Knuckles\Scribe\ScribeServiceProvider;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
+use Knuckles\Scribe\Tools\Flags;
 use Orchestra\Testbench\TestCase;
 use Illuminate\Support\Facades\Route as LaravelRouteFacade;
 use Dingo\Api\Routing\Router as DingoRouter;
@@ -17,9 +20,13 @@ class ResponseCallsTest extends TestCase
 
     protected function getPackageProviders($app)
     {
-        return [
+        $providers = [
             ScribeServiceProvider::class,
         ];
+        if (class_exists(\Dingo\Api\Provider\LaravelServiceProvider::class)) {
+            $providers[] = \Dingo\Api\Provider\LaravelServiceProvider::class;
+        }
+        return $providers;
     }
 
     /** @test */
@@ -136,7 +143,7 @@ class ResponseCallsTest extends TestCase
             ],
         ];
 
-        $strategy = new ResponseCalls(new DocumentationConfig([]));
+        $strategy = new ResponseCalls(new DocumentationConfig(['router' => 'dingo']));
         $results = $strategy->makeResponseCallIfEnabledAndNoSuccessResponses($route, $rules, []);
 
         $this->assertEquals(200, $results[0]['status']);
@@ -176,7 +183,7 @@ class ResponseCallsTest extends TestCase
             ],
         ];
 
-        $strategy = new ResponseCalls(new DocumentationConfig([]));
+        $strategy = new ResponseCalls(new DocumentationConfig(['router' => 'dingo']));
         $results = $strategy->makeResponseCallIfEnabledAndNoSuccessResponses($route, $rules, $context);
 
         $this->assertEquals(200, $results[0]['status']);
@@ -201,7 +208,7 @@ class ResponseCallsTest extends TestCase
             ],
         ];
 
-        $strategy = new ResponseCalls(new DocumentationConfig([]));
+        $strategy = new ResponseCalls(new DocumentationConfig(['router' => 'dingo']));
         $results = $strategy->makeResponseCallIfEnabledAndNoSuccessResponses($route, $rules, []);
         $originalValue = json_decode($results[0]['content'], true)['app.env'];
 
@@ -251,13 +258,20 @@ class ResponseCallsTest extends TestCase
 
     public function registerDingoRoute(string $httpMethod, string $path, string $controllerMethod)
     {
-        $route = null;
-        /** @var DingoRouter $api */
-        $api = app(DingoRouter::class);
-        $api->version('v1', function (DingoRouter $api) use ($controllerMethod, $path, $httpMethod, &$route) {
-            $route = $api->$httpMethod($path, [TestController::class . $controllerMethod]);
+        $desiredRoute = null;
+        /** @var Router $api */
+        $api = app(Router::class);
+        $api->version('v1', function (Router $api) use ($controllerMethod, $path, $httpMethod, &$desiredRoute) {
+            $desiredRoute = $api->$httpMethod($path, [TestController::class, $controllerMethod]);
         });
+        $routes = app(\Dingo\Api\Routing\Router::class)->getRoutes('v1');
 
-        return $route;
+        /*
+         * Doing this bc we want an instance of Dingo\Api\Routing\Route, not Illuminate\Routing\Route, which the method above returns
+         */
+        return collect($routes)
+            ->first(function (Route $route) use ($desiredRoute) {
+                return $route->uri() === $desiredRoute->uri();
+            });
     }
 }

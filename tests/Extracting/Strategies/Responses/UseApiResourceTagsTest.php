@@ -18,9 +18,13 @@ class UseApiResourceTagsTest extends TestCase
 
     protected function getPackageProviders($app)
     {
-        return [
+        $providers = [
             ScribeServiceProvider::class,
         ];
+        if (class_exists(\Dingo\Api\Provider\LaravelServiceProvider::class)) {
+            $providers[] = \Dingo\Api\Provider\LaravelServiceProvider::class;
+        }
+        return $providers;
     }
 
     public function setUp(): void

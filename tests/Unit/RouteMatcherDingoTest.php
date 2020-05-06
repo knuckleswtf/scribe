@@ -15,7 +15,7 @@ class RouteMatcherDingoTest extends TestCase
     protected function getPackageProviders($app)
     {
         return [
-            "\Dingo\Api\Provider\LaravelServiceProvider",
+            \Dingo\Api\Provider\LaravelServiceProvider::class,
         ];
     }
 

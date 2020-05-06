@@ -48,9 +48,13 @@ class GenerateDocumentationTest extends TestCase
      */
     protected function getPackageProviders($app)
     {
-        return [
+        $providers = [
             ScribeServiceProvider::class,
         ];
+        if (class_exists(\Dingo\Api\Provider\LaravelServiceProvider::class)) {
+            $providers[] = \Dingo\Api\Provider\LaravelServiceProvider::class;
+        }
+        return $providers;
     }
 
     /** @test */
@@ -163,7 +167,7 @@ class GenerateDocumentationTest extends TestCase
     public function can_parse_partial_resource_routes()
     {
         RouteFacade::resource('/api/users', TestResourceController::class)
-                ->only(['index', 'store']);
+            ->only(['index', 'store']);
 
         config(['scribe.routes.0.match.prefixes' => ['api/*']]);
         config([
@@ -181,7 +185,7 @@ class GenerateDocumentationTest extends TestCase
         $this->assertStringNotContainsString('Processed route: [DELETE] api/users/{user}', $output);
 
         RouteFacade::apiResource('/api/users', TestResourceController::class)
-                ->only(['index', 'store']);
+            ->only(['index', 'store']);
         $output = $this->artisan('scribe:generate');
 
         $this->assertStringContainsString('Processed route: [GET] api/users', $output);

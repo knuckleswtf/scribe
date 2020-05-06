@@ -11,9 +11,13 @@ class LaravelGeneratorTest extends GeneratorTestCase
 {
     protected function getPackageProviders($app)
     {
-        return [
+        $providers = [
             ScribeServiceProvider::class,
         ];
+        if (class_exists(\Dingo\Api\Provider\LaravelServiceProvider::class)) {
+            $providers[] = \Dingo\Api\Provider\LaravelServiceProvider::class;
+        }
+        return $providers;
     }
 
     public function createRoute(string $httpMethod, string $path, string $controllerMethod, $register = false, $class = TestController::class)
