@@ -103,7 +103,7 @@ class UseTransformerTags extends Strategy
 
             return [
                 [
-                    'status' => $statusCode ?: $response->getStatusCode(),
+                    'status' => $statusCode ?: 200,
                     'content' => $response->getContent(),
                 ],
             ];

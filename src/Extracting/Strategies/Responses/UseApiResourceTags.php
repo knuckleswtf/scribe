@@ -108,6 +108,7 @@ class UseApiResourceTags extends Strategy
             } else {
                 $list = collect($models);
             }
+            /** @var JsonResource $resource */
             $resource = $resource instanceof ResourceCollection
                 ? new $apiResourceClass($list)
                 : $apiResourceClass::collection($list);
@@ -118,7 +119,7 @@ class UseApiResourceTags extends Strategy
 
         return [
             [
-                'status' => $statusCode ?: $response->getStatusCode(),
+                'status' => $statusCode ?: 200,
                 'content' => $response->getContent(),
             ],
         ];
