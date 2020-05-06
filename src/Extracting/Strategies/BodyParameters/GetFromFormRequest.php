@@ -8,6 +8,7 @@ use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Contracts\Validation\Rule;
 use Knuckles\Scribe\Extracting\BodyParameterDefinition;
 use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
@@ -332,20 +333,20 @@ class GetFromFormRequest extends Strategy
      * Arguments are separated by commas.
      * For instance the rule "max:3" states that the value may only be three letters.
      *
-     * @param  string  $rule
+     * @param string|Rule $rule
      *
      * @return array
      */
     protected function parseStringRuleIntoRuleAndArguments($rule)
     {
         $ruleArguments = [];
-        
+
         // Convert any Rule objects to strings
-        if ($rule instanceof \Illuminate\Contracts\Validation\Rule) {
+        if ($rule instanceof Rule) {
             $className = substr(strrchr(get_class($rule), "\\"), 1);
             return [$className, []];
         }
-        
+
         if (strpos($rule, ':') !== false) {
             [$rule, $argumentsString] = explode(':', $rule, 2);
 
