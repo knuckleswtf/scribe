@@ -101,7 +101,7 @@ class UseApiResourceTagsTest extends TestCase
         $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
             if ($user->id === 4) {
                 $child = factory(TestUser::class)->make(['id' => 5, 'parent_id' => 4]);
-                $user->setRelation('children', [$child]);
+                $user->setRelation('children', collect($child));
             }
         });
 

@@ -234,7 +234,7 @@ class Utils
 
             default:
                 return "`"
-                    . join('`, `', array_slice($list, 0, -1))
+                    . implode('`, `', array_slice($list, 0, -1))
                     . "`, or `" . end($list) . "`";
         }
     }
