@@ -19,7 +19,7 @@ composer install knuckleswtf/scribe
 php artisan vendor:publish --provider="Knuckles\Scribe\ScribeServiceProvider" --tag=scribe-config
 ```
 
-At this point, you should have _both_ apidoc.php and scribe.php in your config folder. This is good, so ou can easily copy your old config over and delete when you're done.
+At this point, you should have _both_ apidoc.php and scribe.php in your config folder. This is good, so you can easily copy your old config over and delete when you're done.
 
 If you've modified your generated Blade views, you should also publish the new ones:
 
@@ -43,7 +43,7 @@ _After you've done all of the above_, delete your `resources/docs/` and `public/
 ## Advanced users
 It's a new package with a different name, so a few things have changed. This section is especially important if you've written any custom strategies or extended any of the provided classes.
 
-- Replace all occurrences of `Mpociot\ApiDoc\Strategies` with `Knuckles\Scribe\Extracting`
+- Replace all occurrences of `Mpociot\ApiDoc\Strategies` with `Knuckles\Scribe\Extracting\Strategies`
 - Replace all occurrences of `Mpociot\ApiDoc\Strategies\RequestHeaders` with `Knuckles\Scribe\Extracting\Strategies\Headers`
 - Replace all occurrences of `Mpociot\ApiDoc` with `Knuckles\Scribe`
 - For strategies, change the type of the `$method` argument to the `__invoke` method from `ReflectionMethod` to `ReflectionFunctionAbstract`. It's a superclass, so every other thing should work fine.

@@ -339,7 +339,13 @@ class GetFromFormRequest extends Strategy
     protected function parseStringRuleIntoRuleAndArguments($rule)
     {
         $ruleArguments = [];
-
+        
+        // Convert any Rule objects to strings
+        if ($rule instanceof \Illuminate\Contracts\Validation\Rule) {
+            $className = substr(strrchr(get_class($rule), "\\"), 1);
+            return [$className, []];
+        }
+        
         if (strpos($rule, ':') !== false) {
             [$rule, $argumentsString] = explode(':', $rule, 2);
 
