@@ -11,11 +11,15 @@ trait DatabaseTransactionHelpers
      *
      * @return void
      */
-    private function startDbTransaction(String $connection = null)
+    private function startDbTransaction()
     {
-        try {
-            app('db')->connection($connection)->beginTransaction();
-        } catch (Exception $e) {
+        $connections = array_keys(config('database.connections', []));
+
+        foreach ($connections as $conn) {
+            try {
+                app('db')->connection($conn)->beginTransaction();
+            } catch (Exception $e) {
+            }
         }
     }
 
@@ -24,11 +28,15 @@ trait DatabaseTransactionHelpers
      *
      * @return void
      */
-    private function endDbTransaction(String $connection = null)
+    private function endDbTransaction()
     {
-        try {
-            app('db')->connection($connection)->rollBack();
-        } catch (Exception $e) {
+        $connections = array_keys(config('database.connections', []));
+
+        foreach ($connections as $conn) {
+            try {
+                app('db')->connection($conn)->rollBack();
+            } catch (Exception $e) {
+            }
         }
     }
 }

@@ -162,9 +162,7 @@ class UseTransformerTags extends Strategy
 
     protected function instantiateTransformerModel(string $type, array $factoryStates = [], array $relations = [])
     {
-        $connection = app($type)->getConnectionName();
-
-        $this->startDbTransaction($connection);
+        $this->startDbTransaction();
         try {
             // try Eloquent model factory
 
@@ -204,7 +202,7 @@ class UseTransformerTags extends Strategy
                 }
             }
         } finally {
-            $this->endDbTransaction($connection);
+            $this->endDbTransaction();
         }
 
         return $instance;

@@ -173,9 +173,7 @@ class UseApiResourceTags extends Strategy
      */
     protected function instantiateApiResourceModel(string $type, array $factoryStates = [], array $relations = [])
     {
-        $connection = app($type)->getConnectionName();
-
-        $this->startDbTransaction($connection);
+        $this->startDbTransaction();
         try {
             // Try Eloquent model factory
 
@@ -214,7 +212,7 @@ class UseApiResourceTags extends Strategy
                 }
             }
         } finally {
-            $this->endDbTransaction($connection);
+            $this->endDbTransaction();
         }
 
         return $instance;
