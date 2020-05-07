@@ -7,8 +7,6 @@ use Exception;
 trait DatabaseTransactionHelpers
 {
     /**
-     * @param string $connection
-     *
      * @return void
      */
     private function startDbTransaction()
@@ -24,8 +22,6 @@ trait DatabaseTransactionHelpers
     }
 
     /**
-     * @param string $connection
-     *
      * @return void
      */
     private function endDbTransaction()
