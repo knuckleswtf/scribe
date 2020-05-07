@@ -9,6 +9,7 @@ Route processing is performed in six stages:
 - headers (headers to be added to example request and response calls)
 - bodyParameters
 - responses
+- responseFields
 
 For each stage, the Generator attempts the specified strategies to fetch data. The Generator will call of the strategies configured, progressively combining their results together before to produce the final output of that stage.
 
@@ -176,6 +177,7 @@ Responses are _additive_. This means all the responses returned from each stage 
 - In the `headers` stage, you can return an array of headers. You may also negate existing headers by providing `false` as the header value.
 
 
+Check out our [community wiki](https://github.com/knuckleswtf/scribe/wiki/Helpful-strategies-(snippets)) for a list of helpful extraction strategies.
 
 
 
