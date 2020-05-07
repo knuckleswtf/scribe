@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @author Tobias van Beek <t.vanbeek@tjvb.nl>
  */
-class TestModel extends Model
+class TestModel
 {
     public $id = 1;
 
