@@ -90,7 +90,11 @@ class ResponseCalls extends Strategy
      */
     private function configureEnvironment(array $rulesToApply)
     {
-        $this->startDbTransaction();
+        // Start transactions for all connections since we don't know wich one is used
+        $connections = array_keys(config('database.connections'));
+        foreach ($connections as $conn) {
+            $this->startDbTransaction($conn);
+        }
         $this->setLaravelConfigs($rulesToApply['config'] ?? []);
     }
 
@@ -147,7 +151,11 @@ class ResponseCalls extends Strategy
      */
     private function finish()
     {
-        $this->endDbTransaction();
+        // Stop transactions for all connections since we started all of them.
+        $connections = array_keys(config('database.connections'));
+        foreach ($connections as $conn) {
+            $this->endDbTransaction($conn);
+        }
     }
 
     /**
