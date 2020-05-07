@@ -1,6 +1,5 @@
 # Documentation tasks
 - Contribution guide
-- Set up plugin wiki
 - Rewritten docs. Some things to document:
   - formrequests: supported rules
   - hideFromAPIDocumentation
