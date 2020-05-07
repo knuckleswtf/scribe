@@ -6,7 +6,7 @@ Generate API documentation for humans from your Laravel/Lumen/[Dingo](https://gi
 
 ## Contents
 * [Getting started](guide-getting-started.md)
-* [What's new](whats-new.md)
+* [What\'s new](whats-new.md)
 * [Migrating from mpociot/laravel-apidoc-generator](migrating.md)
 * [Configuration](config.md)
 * [Generating Documentation](generating-documentation.md)
