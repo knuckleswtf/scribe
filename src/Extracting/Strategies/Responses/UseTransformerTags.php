@@ -8,14 +8,14 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use Knuckles\Scribe\Extracting\DatabaseTransactionHelpers;
+use Knuckles\Scribe\Extracting\RouteDocBlocker;
+use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\AnnotationParser;
+use Knuckles\Scribe\Tools\Flags;
+use Knuckles\Scribe\Tools\Utils;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
-use Knuckles\Scribe\Extracting\RouteDocBlocker;
-use Knuckles\Scribe\Extracting\Strategies\Strategy;
-use Knuckles\Scribe\Tools\Flags;
-use Knuckles\Scribe\Tools\Utils;
 use Mpociot\Reflection\DocBlock;
 use Mpociot\Reflection\DocBlock\Tag;
 use ReflectionClass;
@@ -68,19 +68,19 @@ class UseTransformerTags extends Strategy
      */
     public function getTransformerResponse(array $tags)
     {
-            if (empty($transformerTag = $this->getTransformerTag($tags))) {
-                return null;
-            }
+        if (empty($transformerTag = $this->getTransformerTag($tags))) {
+            return null;
+        }
 
-            [$statusCode, $transformer] = $this->getStatusCodeAndTransformerClass($transformerTag);
-            [$model, $factoryStates, $relations] = $this->getClassToBeTransformed($tags, (new ReflectionClass($transformer))->getMethod('transform'));
-            $modelInstance = $this->instantiateTransformerModel($model, $factoryStates, $relations);
+        [$statusCode, $transformer] = $this->getStatusCodeAndTransformerClass($transformerTag);
+        [$model, $factoryStates, $relations] = $this->getClassToBeTransformed($tags, (new ReflectionClass($transformer))->getMethod('transform'));
+        $modelInstance = $this->instantiateTransformerModel($model, $factoryStates, $relations);
 
-            $fractal = new Manager();
+        $fractal = new Manager();
 
-            if (! is_null($this->config->get('fractal.serializer'))) {
-                $fractal->setSerializer(app($this->config->get('fractal.serializer')));
-            }
+        if (! is_null($this->config->get('fractal.serializer'))) {
+            $fractal->setSerializer(app($this->config->get('fractal.serializer')));
+        }
 
         if ((strtolower($transformerTag->getName()) == 'transformercollection')) {
             $models = [$modelInstance, $this->instantiateTransformerModel($model, $factoryStates, $relations)];
@@ -99,9 +99,9 @@ class UseTransformerTags extends Strategy
             $resource = new Item($modelInstance, new $transformer());
         }
 
-            $response = response($fractal->createData($resource)->toJson());
+        $response = response($fractal->createData($resource)->toJson());
 
-            return [
+        return [
                 [
                     'status' => $statusCode ?: 200,
                     'content' => $response->getContent(),
@@ -162,7 +162,9 @@ class UseTransformerTags extends Strategy
 
     protected function instantiateTransformerModel(string $type, array $factoryStates = [], array $relations = [])
     {
-        $this->startDbTransaction();
+        $connection = app($type)->getConnectionName();
+
+        $this->startDbTransaction($connection);
         try {
             // try Eloquent model factory
 
@@ -202,7 +204,7 @@ class UseTransformerTags extends Strategy
                 }
             }
         } finally {
-            $this->endDbTransaction();
+            $this->endDbTransaction($connection);
         }
 
         return $instance;

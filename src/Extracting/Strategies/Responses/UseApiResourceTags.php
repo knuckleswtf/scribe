@@ -13,12 +13,12 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use Knuckles\Scribe\Extracting\DatabaseTransactionHelpers;
-use Knuckles\Scribe\Tools\AnnotationParser;
-use League\Fractal\Resource\Collection;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
+use Knuckles\Scribe\Tools\AnnotationParser;
 use Knuckles\Scribe\Tools\Flags;
 use Knuckles\Scribe\Tools\Utils;
+use League\Fractal\Resource\Collection;
 use Mpociot\Reflection\DocBlock;
 use Mpociot\Reflection\DocBlock\Tag;
 use ReflectionClass;
@@ -50,7 +50,6 @@ class UseApiResourceTags extends Strategy
 
         try {
             return $this->getApiResourceResponse($methodDocBlock->getTags());
-
         } catch (Exception $e) {
             clara('knuckleswtf/scribe')->warn('Exception thrown when fetching Eloquent API resource response for [' . implode(',', $route->methods) . "] {$route->uri}.");
             if (Flags::$shouldBeVerbose) {
@@ -101,7 +100,7 @@ class UseApiResourceTags extends Strategy
                     $perPage
                 );
                 $list = $paginator;
-            } else if (count($pagination) == 2 && $pagination[0] == 'simple') {
+            } elseif (count($pagination) == 2 && $pagination[0] == 'simple') {
                 $perPage = $pagination[1];
                 $paginator = new Paginator($models, $perPage);
                 $list = $paginator;
@@ -174,7 +173,9 @@ class UseApiResourceTags extends Strategy
      */
     protected function instantiateApiResourceModel(string $type, array $factoryStates = [], array $relations = [])
     {
-        $this->startDbTransaction();
+        $connection = app($type)->getConnectionName();
+
+        $this->startDbTransaction($connection);
         try {
             // Try Eloquent model factory
 
@@ -213,7 +214,7 @@ class UseApiResourceTags extends Strategy
                 }
             }
         } finally {
-            $this->endDbTransaction();
+            $this->endDbTransaction($connection);
         }
 
         return $instance;
