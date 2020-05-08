@@ -79,9 +79,9 @@ Now, let's do a test run. Run the command to generate your docs.
 php artisan scribe:generate
 ```
 
-Open up your docs in your browser. If you're using `static` type, just find the `docs/index.html` file in your public/ folder. If you're using `laravel` type, start your app (`php artisan serve`), then visit `/doc`. You should see your docs show up nicely.
+Open up your docs in your browser. If you're using `static` type, just find the `docs/index.html` file in your public/ folder. If you're using `laravel` type, start your app (`php artisan serve`), then visit `/docs`. You should see your docs show up nicely.
 
-There's also a Postman collection generated for you by default. You can get it by visiting `/docs/collection.json` for `static` type, and `/doc.json` for `laravel` type.
+There's also a Postman collection generated for you by default. You can get it by visiting `/docs/collection.json` for `static` type, and `/docs.json` for `laravel` type.
 
 ## Add information about your API
 Now you can add more detail to your documentation. Here are some things you can customise:

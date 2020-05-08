@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-$prefix = config('scribe.laravel.docs_url', '/doc');
+$prefix = config('scribe.laravel.docs_url', '/docs');
 $middleware = config('scribe.laravel.middleware', []);
 
 Route::namespace('\Knuckles\Scribe\Http')

@@ -20,9 +20,9 @@ return [
 
         /*
          * URL path to use for the docs endpoint (if `add_routes` is true).
-         * By default, `/doc` opens the HTML page, and `/doc.json` downloads the Postman collection.
+         * By default, `/docs` opens the HTML page, and `/docs.json` downloads the Postman collection.
          */
-        'url' => '/doc',
+        'url' => '/docs',
 
         /*
          * Middleware to attach to the docs endpoint (if `add_routes` is true).

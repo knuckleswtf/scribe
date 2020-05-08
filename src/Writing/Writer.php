@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use Knuckles\Pastel\Pastel;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\Flags;
+use Knuckles\Scribe\Tools\Utils;
 use Shalvah\Clara\Clara;
 
 class Writer
@@ -194,14 +195,18 @@ class Writer
         if (!is_dir($this->outputPath)) {
             mkdir($this->outputPath);
         }
+
         rename("public/docs/index.html", "$this->outputPath/index.blade.php");
+        // Move assets from public/docs to public/vendor/scribe
+        Utils::deleteDirectoryAndContents("public/vendor/scribe/", getcwd());
+        rename("public/docs/", "public/vendor/scribe/");
+
         $contents = file_get_contents("$this->outputPath/index.blade.php");
 
         // Rewrite links to go through Laravel
-        $contents = str_replace('href="css/style.css"', 'href="/docs/css/style.css"', $contents);
-        $contents = str_replace('src="js/all.js"', 'src="/docs/js/all.js"', $contents);
-        $contents = str_replace('src="images/', 'src="/docs/images/', $contents);
-        $contents = preg_replace('#href="./collection.json"#', 'href="{{ route("scribe.json") }}"', $contents);
+        $contents = preg_replace('#href="css/(.+?)"#', 'href="{{ asset("vendor/scribe/css/$1") }}"', $contents);
+        $contents = preg_replace('#src="(js|images)/(.+?)"#', 'src="{{ asset("vendor/scribe/$1/$2") }}"', $contents);
+        $contents = str_replace('href="./collection.json"', 'href="{{ route("scribe.json") }}"', $contents);
 
         file_put_contents("$this->outputPath/index.blade.php", $contents);
     }

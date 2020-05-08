@@ -16,9 +16,7 @@ If you're using `laravel` type output, this package can automatically set up an 
 Set this to `true` if you want the documentation endpoint to be automatically set up for you. Of course, you can use your own routing instead, by setting this to `false`.
 
 ### `docs_url`
-The path for the documentation endpoint (if `add_routes` is true). Your Postman collection (if you have that enabled) will be at this path + '.json' (eg `/doc.json`). Default: `/doc`
-
-> Note: There is currently a known issue with using `/docs` as the path for `laravel` docs. You should not use it, as it conflicts with the folder structure in the `public` folder and may confuse the webserver.
+The path for the documentation endpoint (if `add_routes` is true). Your Postman collection (if you have that enabled) will be at this path + '.json' (eg `/docs.json`). Default: `/docs`
 
 ### `middleware`
 Here, you can specify middleware to be attached to the documentation endpoint (if `add_routes` is true).
@@ -32,7 +30,7 @@ The base URL to be used in examples and the Postman collection. By default, this
 ## `postman`
 This package can automatically generate a Postman collection for your routes, along with the documentation. This section is where you can configure (or disable) that.
 - For `static` docs (see [type](#type)), the collection will be created in `public/docs/collection.json`, so it can be accessed by visiting {yourapp.domain}/docs/colllection.json.
-- For `laravel` docs, the collection will be generated to `storage/app/scribe/collection.json`. Setting `laravel.add_routes` to true will add a `/doc.json` endpoint to fetch it..
+- For `laravel` docs, the collection will be generated to `storage/app/scribe/collection.json`. Setting `laravel.add_routes` to true will add a `/docs.json` endpoint to fetch it..
 
 ### `enabled`
 Whether or not to generate a Postman API collection. Default: **true**
