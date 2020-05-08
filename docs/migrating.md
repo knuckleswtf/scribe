@@ -39,7 +39,12 @@ _After you've done all of the above_, delete your `resources/docs/` and `public/
 - The `rebuild` command has been removed. By default, when you run `php artisan scribe:generate`, Scribe will not overwrite any Markdown files you've modified. If you want Scribe to do so, run with `--force`. 
 
 ### Low impact
-- `logo` is now `false` by default, so no logo spot will be shown. Relative paths and URLs are now supported too.
+- `logo` is now `false` by default, so no logo spot will be shown. Also, if you specify a logo, it will no longer be copied to the docs folder. Rather, the path to be logo will be used as-is as the `src` for the `<img>` tag in the generated doc. This means that you must use a path that's publicly accessible. 
+For example, if your logo is in `public/img`:
+- set `'logo' => '../img/logo.png'` for `static` type (output folder is `public/docs`)
+- set `'logo' => 'img/logo.png'` for `laravel` type
+
+You can also use a URL.
 
 ## Advanced users
 It's a new package with a different name, so a few things have changed. This section is especially important if you've written any custom strategies or extended any of the provided classes.
