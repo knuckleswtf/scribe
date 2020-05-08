@@ -16,6 +16,3 @@
 - Command scribe:strategy: It would be nice if we had a make strategy command that can help people generate custom strategies
 - Possible feature: https://github.com/mpociot/laravel-apidoc-generator/issues/731
 
-# Tests
-- Add tests that verify the overwriting behaviour of the command when --force is used
-

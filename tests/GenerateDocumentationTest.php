@@ -389,4 +389,31 @@ class GenerateDocumentationTest extends TestCase
         $this->assertFileExists(__DIR__ . '/../resources/docs/groups/2-group-2.md');
         $this->assertFileExists(__DIR__ . '/../resources/docs/groups/10-group-10.md');
     }
+
+    /** @test */
+    public function will_not_overwrite_modified_markdown_file_unless_force_option_is_set()
+    {
+        RouteFacade::get('/api/action1', TestGroupController::class . '@action1');
+        RouteFacade::get('/api/action1b', TestGroupController::class . '@action1b');
+        RouteFacade::get('/api/action2', TestGroupController::class . '@action2');
+
+        config(['scribe.routes.0.prefixes' => ['api/*']]);
+
+        $this->artisan('scribe:generate');
+
+        $file1MtimeAfterFirstGeneration = filemtime(__DIR__ . '/../resources/docs/groups/1-group-1.md');
+        $file2MtimeAfterFirstGeneration = filemtime(__DIR__ . '/../resources/docs/groups/2-group-2.md');
+
+        sleep(1);
+        touch(__DIR__ . '/../resources/docs/groups/1-group-1.md');
+        $file1MtimeAfterManualModification = filemtime(__DIR__ . '/../resources/docs/groups/1-group-1.md');
+        $this->assertGreaterThan($file1MtimeAfterFirstGeneration, $file1MtimeAfterManualModification);
+
+        $this->artisan('scribe:generate');
+
+        $file1MtimeAfterSecondGeneration = filemtime(__DIR__ . '/../resources/docs/groups/1-group-1.md');
+        $file2MtimeAfterSecondGeneration = filemtime(__DIR__ . '/../resources/docs/groups/2-group-2.md');
+        $this->assertEquals($file1MtimeAfterManualModification, $file1MtimeAfterSecondGeneration);
+        $this->assertNotEquals($file2MtimeAfterFirstGeneration, $file2MtimeAfterSecondGeneration);
+    }
 }
