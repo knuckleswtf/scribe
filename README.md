@@ -36,3 +36,5 @@ $app->configure('scribe');
 
 ## Documentation
 Check out the documentation at [ReadTheDocs](http://scribe.rtfd.io/). Don't forget to check out the [migration guide](https://scribe.rtfd.io/en/latest/migrating.html) if you're coming from mpociot/laravel-apidoc-generator.
+
+To learn how to contribute, see our [contribution guide](https://scribe.rtfd.io/en/latest/contributing.html).

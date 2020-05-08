@@ -1,5 +1,4 @@
 # Documentation tasks
-- Contribution guide
 - Rewritten docs. Some things to document:
   - formrequests: supported rules
   - hideFromAPIDocumentation
