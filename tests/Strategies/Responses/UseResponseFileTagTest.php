@@ -1,6 +1,6 @@
 <?php
 
-namespace Knuckles\Scribe\Tests\Extracting\Strategies\Responses;
+namespace Knuckles\Scribe\Tests\Strategies\Responses;
 
 use Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseFileTag;
 use Knuckles\Scribe\ScribeServiceProvider;
@@ -30,8 +30,8 @@ class UseResponseFileTagTest extends TestCase
      */
     public function allows_multiple_responsefile_tags_for_multiple_statuses_and_scenarios(array $tags, array $expected)
     {
-        $filePath =  __DIR__ . '/../../../Fixtures/response_test.json';
-        $filePath2 =  __DIR__ . '/../../../Fixtures/response_error_test.json';
+        $filePath =  __DIR__ . '/../../Fixtures/response_test.json';
+        $filePath2 =  __DIR__ . '/../../Fixtures/response_error_test.json';
 
         copy($filePath, storage_path('response_test.json'));
         copy($filePath2, storage_path('response_error_test.json'));
@@ -60,7 +60,7 @@ class UseResponseFileTagTest extends TestCase
     public function can_add_or_replace_key_value_pair_in_response_file()
     {
 
-        $filePath = __DIR__ . '/../../../Fixtures/response_test.json';
+        $filePath = __DIR__ . '/../../Fixtures/response_test.json';
         copy($filePath, storage_path('response_test.json'));
 
         $strategy = new UseResponseFileTag(new DocumentationConfig([]));

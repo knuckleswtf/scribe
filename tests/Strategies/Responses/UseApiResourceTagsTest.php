@@ -1,10 +1,8 @@
 <?php
 
-namespace Knuckles\Scribe\Tests\Extracting\Strategies\Responses;
+namespace Knuckles\Scribe\Tests\Strategies\Responses;
 
-use Knuckles\Scribe\Extracting\Generator;
 use Knuckles\Scribe\Extracting\Strategies\Responses\UseApiResourceTags;
-use Knuckles\Scribe\Extracting\Strategies\Responses\UseTransformerTags;
 use Knuckles\Scribe\ScribeServiceProvider;
 use Knuckles\Scribe\Tests\Fixtures\TestUser;
 use Knuckles\Scribe\Tools\DocumentationConfig;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Knuckles\Scribe\Tests\Extracting\Strategies\UrlParameters;
+namespace Knuckles\Scribe\Tests\Strategies\UrlParameters;
 
 use Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromUrlParamTag;
 use Knuckles\Scribe\Tools\DocumentationConfig;

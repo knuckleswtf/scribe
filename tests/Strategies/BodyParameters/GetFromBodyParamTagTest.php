@@ -1,6 +1,6 @@
 <?php
 
-namespace Knuckles\Scribe\Tests\Extracting\Strategies\BodyParameters;
+namespace Knuckles\Scribe\Tests\Strategies\BodyParameters;
 
 use Illuminate\Routing\Route;
 use Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromBodyParamTag;

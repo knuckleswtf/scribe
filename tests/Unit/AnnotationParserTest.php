@@ -1,7 +1,8 @@
 <?php
 
-namespace Knuckles\Scribe\Tools;
+namespace Knuckles\Scribe\Tests\Unit;
 
+use Knuckles\Scribe\Tools\AnnotationParser;
 use PHPUnit\Framework\TestCase;
 
 class AnnotationParserTest extends TestCase

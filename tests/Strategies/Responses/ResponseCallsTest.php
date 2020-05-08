@@ -1,6 +1,6 @@
 <?php
 
-namespace Knuckles\Scribe\Tests\Extracting\Strategies\Responses;
+namespace Knuckles\Scribe\Tests\Strategies\Responses;
 
 use Dingo\Api\Routing\Router;
 use Illuminate\Routing\Route;
@@ -9,10 +9,8 @@ use Knuckles\Scribe\ScribeServiceProvider;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
-use Knuckles\Scribe\Tools\Flags;
 use Orchestra\Testbench\TestCase;
 use Illuminate\Support\Facades\Route as LaravelRouteFacade;
-use Dingo\Api\Routing\Router as DingoRouter;
 
 class ResponseCallsTest extends TestCase
 {

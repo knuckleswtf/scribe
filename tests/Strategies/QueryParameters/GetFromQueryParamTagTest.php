@@ -1,6 +1,6 @@
 <?php
 
-namespace Knuckles\Scribe\Tests\Extracting\Strategies\QueryParameters;
+namespace Knuckles\Scribe\Tests\Strategies\QueryParameters;
 
 use Illuminate\Routing\Route;
 use Knuckles\Scribe\Extracting\Strategies\QueryParameters\GetFromQueryParamTag;

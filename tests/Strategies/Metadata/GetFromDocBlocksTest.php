@@ -1,6 +1,6 @@
 <?php
 
-namespace Knuckles\Scribe\Tests\Extracting\Strategies\Metadata;
+namespace Knuckles\Scribe\Tests\Strategies\Metadata;
 
 use Knuckles\Scribe\Extracting\Strategies\Metadata\GetFromDocBlocks;
 use Knuckles\Scribe\Tools\DocumentationConfig;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Knuckles\Scribe\Tests\Extracting\Strategies\Responses;
+namespace Knuckles\Scribe\Tests\Strategies\Responses;
 
 use Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseTag;
 use Knuckles\Scribe\Tools\DocumentationConfig;

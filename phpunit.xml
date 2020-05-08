@@ -10,24 +10,24 @@
          processIsolation="false"
          stopOnFailure="false">
     <testsuites>
+        <testsuite name="Full Test">
+            <file>tests/GenerateDocumentationTest.php</file>
+        </testsuite>
         <testsuite name="Generator Tests">
             <file>tests/Unit/DingoGeneratorTest.php</file>
             <file>tests/Unit/LaravelGeneratorTest.php</file>
             <file>tests/Unit/GeneratorPluginSystemTest.php</file>
         </testsuite>
+        <testsuite name="Strategies">
+            <directory>tests/Strategies</directory>
+        </testsuite>
         <testsuite name="RouteMatcher Tests">
             <file>tests/Unit/RouteMatcherDingoTest.php</file>
             <file>tests/Unit/RouteMatcherTest.php</file>
         </testsuite>
-        <testsuite name="Full Test">
-            <file>tests/GenerateDocumentationTest.php</file>
-        </testsuite>
-        <testsuite name="Postman Collection Test">
+        <testsuite name="Other Unit Tests">
             <file>tests/Unit/PostmanCollectionWriterTest.php</file>
-            <file>tests/Tools/AnnotationParserTest.php</file>
-        </testsuite>
-        <testsuite name="Strategies">
-            <directory>tests/Extracting/Strategies</directory>
+            <file>tests/Unit/AnnotationParserTest.php</file>
         </testsuite>
     </testsuites>
     <filter>

@@ -1,6 +1,6 @@
 <?php
 
-namespace Knuckles\Scribe\Tests\Extracting\Strategies\ResponseFields;
+namespace Knuckles\Scribe\Tests\Strategies\ResponseFields;
 
 use Knuckles\Scribe\Extracting\Strategies\ResponseFields\GetFromResponseFieldTag;
 use Knuckles\Scribe\Tools\DocumentationConfig;

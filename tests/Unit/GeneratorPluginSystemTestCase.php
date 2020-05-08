@@ -4,13 +4,11 @@ namespace Knuckles\Scribe\Tests\Unit;
 
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Illuminate\Routing\Route;
-use Knuckles\Scribe\ScribeServiceProvider;
 use Knuckles\Scribe\Extracting\Generator;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
+use Knuckles\Scribe\ScribeServiceProvider;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
-use ReflectionClass;
-use ReflectionMethod;
 
 class GeneratorPluginSystemTestCase extends LaravelGeneratorTest
 {
@@ -166,6 +164,7 @@ class GeneratorPluginSystemTestCase extends LaravelGeneratorTest
         ];
     }
 }
+
 
 class EmptyStrategy1 extends Strategy
 {
