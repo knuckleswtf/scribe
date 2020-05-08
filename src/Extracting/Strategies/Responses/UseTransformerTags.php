@@ -11,6 +11,7 @@ use Knuckles\Scribe\Extracting\DatabaseTransactionHelpers;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\AnnotationParser;
+use Knuckles\Scribe\Tools\ErrorHandlingUtils;
 use Knuckles\Scribe\Tools\Flags;
 use Knuckles\Scribe\Tools\Utils;
 use League\Fractal\Manager;
@@ -50,7 +51,7 @@ class UseTransformerTags extends Strategy
         } catch (Exception $e) {
             clara('knuckleswtf/scribe')->warn('Exception thrown when fetching transformer response for [' . implode(',', $route->methods) . "] {$route->uri}.");
             if (Flags::$shouldBeVerbose) {
-                Utils::dumpException($e);
+                ErrorHandlingUtils::dumpException($e);
             } else {
                 clara('knuckleswtf/scribe')->warn("Run this again with the --verbose flag to see the exception.");
             }

@@ -14,6 +14,7 @@ use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Extracting\ValidationRuleDescriptionParser as Description;
 use Knuckles\Scribe\Tools\Utils;
+use Knuckles\Scribe\Tools\WritingUtils;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionFunctionAbstract;
@@ -320,7 +321,7 @@ class GetFromFormRequest extends Strategy
              */
             case 'in':
                 // Not using the rule description here because it only says "The attribute is invalid"
-                $description = 'The value must be one of '.Utils::getArrayAsFriendlyMarkdownString($arguments);
+                $description = 'The value must be one of '.WritingUtils::getListOfValuesAsFriendlyHtmlString($arguments);
                 $parameterData['description'] .= $description.' ';
                 $parameterData['value'] = Arr::random($arguments);
                 break;

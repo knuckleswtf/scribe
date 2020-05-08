@@ -64,8 +64,7 @@ class GenerateDocumentation extends Command
 
         $routes = $routeMatcher->getRoutes($this->docConfig->get('routes'), $this->docConfig->get('router'));
 
-        $generator = new Generator($this->docConfig);
-        $parsedRoutes = $this->processRoutes($generator, $routes);
+        $parsedRoutes = $this->processRoutes($routes);
 
         $groupedRoutes = collect($parsedRoutes)
             ->groupBy('metadata.groupName')
@@ -82,15 +81,15 @@ class GenerateDocumentation extends Command
     }
 
     /**
-     * @param \Knuckles\Scribe\Extracting\Generator $generator
      * @param Match[] $routes
      *
      * @return array
      *@throws \ReflectionException
      *
      */
-    private function processRoutes(Generator $generator, array $routes)
+    private function processRoutes(array $routes)
     {
+        $generator = new Generator($this->docConfig);
         $parsedRoutes = [];
         foreach ($routes as $routeItem) {
             $route = $routeItem->getRoute();
@@ -110,7 +109,7 @@ class GenerateDocumentation extends Command
                 continue;
             }
 
-            if (! $this->isRouteVisibleForDocumentation($routeControllerAndMethod)) {
+            if ($this->isRouteHiddenFromDocumentation($routeControllerAndMethod)) {
                 $this->clara->warn(sprintf($messageFormat, 'Skipping', $routeMethods, $routePath) . ': @hideFromAPIDocumentation was specified.');
                 continue;
             }
@@ -170,7 +169,7 @@ class GenerateDocumentation extends Command
      *
      * @return bool
      */
-    private function isRouteVisibleForDocumentation(array $routeControllerAndMethod)
+    private function isRouteHiddenFromDocumentation(array $routeControllerAndMethod)
     {
         $comment = Utils::reflectRouteMethod($routeControllerAndMethod)->getDocComment();
 

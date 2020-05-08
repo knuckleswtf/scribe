@@ -1,5 +1,5 @@
 @component('scribe::components.badges.base', [
-    'colour' => \Knuckles\Scribe\Tools\Utils::$httpMethodToCssColour[$method],
+    'colour' => \Knuckles\Scribe\Tools\WritingUtils::$httpMethodToCssColour[$method],
     'text' => $method,
     ])
 @endcomponent
