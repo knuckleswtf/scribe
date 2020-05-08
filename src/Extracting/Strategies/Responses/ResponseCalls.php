@@ -3,12 +3,12 @@
 namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 
 use Dingo\Api\Dispatcher;
+use Dingo\Api\Routing\Route as DingoRoute;
 use Exception;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Route;
-use Dingo\Api\Routing\Route as DingoRoute;
 use Illuminate\Support\Str;
 use Knuckles\Scribe\Extracting\DatabaseTransactionHelpers;
 use Knuckles\Scribe\Extracting\ParamHelpers;
