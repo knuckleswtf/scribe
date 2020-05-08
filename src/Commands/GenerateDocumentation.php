@@ -29,7 +29,7 @@ class GenerateDocumentation extends Command
      * @var string
      */
     protected $signature = "scribe:generate
-                            {--force : Discard any changes you've made to the Markdown files}
+                            {--force: Discard any changes you've made to the Markdown files}
     ";
 
     /**
@@ -37,7 +37,7 @@ class GenerateDocumentation extends Command
      *
      * @var string
      */
-    protected $description = 'Generate your API documentation from existing Laravel routes.';
+    protected $description = 'Generate API documentation from your Laravel/Dingo routes.';
 
     /**
      * @var DocumentationConfig

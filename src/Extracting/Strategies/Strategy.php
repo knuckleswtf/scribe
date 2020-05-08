@@ -25,13 +25,11 @@ abstract class Strategy
     }
 
     /**
-     * @param Route $route
-     * @param ReflectionClass $controller
-     * @param ReflectionFunctionAbstract $method
+     * @param Route $route The route which we are currently extracting information for.
+     * @param ReflectionClass $controller The class handling the current route.
+     * @param ReflectionFunctionAbstract $method The method/closure handling the current route.
      * @param array $routeRules Array of rules for the ruleset which this route belongs to.
      * @param array $context Results from the previous stages
-     *
-     * @throws \Exception
      *
      * @return array|null
      */

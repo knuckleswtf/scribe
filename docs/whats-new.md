@@ -35,7 +35,7 @@ Okay, this isn't actually new, but we thought we'd draw your attention to it. Yo
 ## Reworked Strategy API
 The API for creating strategies has been improved. Each strategy now has a `stage` property that describes the stage it belongs to (previously, this value was passed via the constructor, which didn't make sense). There's a new stage, `responseFields`, and the `responses` stage now supports another field, `description`. The `requestHeaders` stage has been renamed to `headers`.
 
-[Coming soon] Plus, there's also a new `scribe:strategy` command that can help you easily generate strategies. And we now have a wiki containing a list of useful strategies contributed by community members. See [the docs on plugins]().
+Plus, there's also a new `scribe:strategy` command that can help you easily generate strategies. And we now have a wiki containing a list of useful strategies contributed by community members. See [the docs on plugins]().
 
 ## Other changes
 A few other things that might interest some folk:
