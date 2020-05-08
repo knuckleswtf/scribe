@@ -2,8 +2,6 @@
 
 namespace Knuckles\Scribe\Tests\Fixtures;
 
-use Illuminate\Database\Eloquent\Model;
-
 /**
  * A demo test model.
  *
