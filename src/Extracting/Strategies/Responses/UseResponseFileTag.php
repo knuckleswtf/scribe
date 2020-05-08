@@ -5,7 +5,8 @@ namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 use Illuminate\Routing\Route;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
-use Knuckles\Scribe\Tools\AnnotationParser;
+use Knuckles\Scribe\Tools\AnnotationParser as a;
+use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Mpociot\Reflection\DocBlock;
 use Mpociot\Reflection\DocBlock\Tag;
 
@@ -59,14 +60,14 @@ class UseResponseFileTag extends Strategy
             [$_, $status, $mainContent] = $result;
             $json = $result[3] ?? null;
 
-            ['attributes' => $attributes, 'content' => $relativeFilePath] = AnnotationParser::parseIntoContentAndAttributes($mainContent, ['status', 'scenario']);
+            ['attributes' => $attributes, 'content' => $relativeFilePath] = a::parseIntoContentAndAttributes($mainContent, ['status', 'scenario']);
 
             $status = $attributes['status'] ?: ($status ?: 200);
             $description = $attributes['scenario'] ? "$status, {$attributes['scenario']}" : "$status";
 
             $filePath = storage_path($relativeFilePath);
             if (! file_exists($filePath)) {
-                throw new \Exception('@responseFile ' . $relativeFilePath . ' does not exist');
+                c::warn("@responseFile {$relativeFilePath} does not exist");
             }
             $content = file_get_contents($filePath, true);
             if ($json) {

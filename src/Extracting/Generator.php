@@ -8,7 +8,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\DocumentationConfig;
-use Knuckles\Scribe\Tools\Utils;
+use Knuckles\Scribe\Tools\Utils as u;
 use ReflectionClass;
 use ReflectionFunctionAbstract;
 
@@ -55,9 +55,9 @@ class Generator
      */
     public function processRoute(Route $route, array $routeRules = [])
     {
-        [$controllerName, $methodName] = Utils::getRouteClassAndMethodNames($route->getAction());
+        [$controllerName, $methodName] = u::getRouteClassAndMethodNames($route);
         $controller = new ReflectionClass($controllerName);
-        $method = Utils::reflectRouteMethod([$controllerName, $methodName]);
+        $method = u::reflectRouteMethod([$controllerName, $methodName]);
 
         $parsedRoute = [
             'id' => md5($this->getUri($route) . ':' . implode($this->getMethods($route))),
@@ -70,7 +70,7 @@ class Generator
         $urlParameters = $this->fetchUrlParameters($controller, $method, $route, $routeRules, $parsedRoute);
         $parsedRoute['urlParameters'] = $urlParameters;
         $parsedRoute['cleanUrlParameters'] = self::cleanParams($urlParameters);
-        $parsedRoute['boundUri'] = Utils::getFullUrl($route, $parsedRoute['cleanUrlParameters']);
+        $parsedRoute['boundUri'] = u::getFullUrl($route, $parsedRoute['cleanUrlParameters']);
 
         $parsedRoute = $this->addAuthField($parsedRoute);
 

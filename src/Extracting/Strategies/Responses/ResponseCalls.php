@@ -13,8 +13,8 @@ use Illuminate\Support\Str;
 use Knuckles\Scribe\Extracting\DatabaseTransactionHelpers;
 use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
-use Knuckles\Scribe\Tools\ErrorHandlingUtils;
-use Knuckles\Scribe\Tools\Flags;
+use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
+use Knuckles\Scribe\Tools\ErrorHandlingUtils as e;
 use Knuckles\Scribe\Tools\Utils;
 use ReflectionClass;
 use ReflectionFunctionAbstract;
@@ -70,12 +70,9 @@ class ResponseCalls extends Strategy
                 ],
             ];
         } catch (Exception $e) {
-            clara('knuckleswtf/scribe')->warn('Exception thrown during response call for [' . implode(',', $route->methods) . "] {$route->uri}.");
-            if (Flags::$shouldBeVerbose) {
-                ErrorHandlingUtils::dumpException($e);
-            } else {
-                clara('knuckleswtf/scribe')->warn("Run this again with the --verbose flag to see the exception.");
-            }
+            c::warn('Exception thrown during response call for [' . implode(',', $route->methods) . "] {$route->uri}.");
+            e::dumpExceptionIfVerbose($e);
+
             $response = null;
         } finally {
             $this->finish();

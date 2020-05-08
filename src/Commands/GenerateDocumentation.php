@@ -6,17 +6,20 @@ use Illuminate\Console\Command;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
 use Knuckles\Scribe\Extracting\Generator;
 use Knuckles\Scribe\Matching\Match;
 use Knuckles\Scribe\Matching\RouteMatcherInterface;
+use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\DocumentationConfig;
+use Knuckles\Scribe\Tools\ErrorHandlingUtils as e;
 use Knuckles\Scribe\Tools\Flags;
-use Knuckles\Scribe\Tools\Utils;
+use Knuckles\Scribe\Tools\Utils as u;
 use Knuckles\Scribe\Writing\Writer;
 use Mpociot\Reflection\DocBlock;
+use Mpociot\Reflection\DocBlock\Tag;
 use ReflectionClass;
 use ReflectionException;
-use Shalvah\Clara\Clara;
 
 class GenerateDocumentation extends Command
 {
@@ -47,11 +50,6 @@ class GenerateDocumentation extends Command
     private $baseUrl;
 
     /**
-     * @var Clara
-     */
-    private $clara;
-
-    /**
      * Execute the console command.
      *
      * @param RouteMatcherInterface $routeMatcher
@@ -72,53 +70,48 @@ class GenerateDocumentation extends Command
                 /* @var $group Collection */
                 return $group->first()['metadata']['groupName'];
             }, SORT_NATURAL);
-        $writer = new Writer(
-            $this->docConfig,
-            $this->option('force'),
-            $this->clara
-        );
+
+        $writer = new Writer($this->docConfig, $this->option('force'));
         $writer->writeDocs($groupedRoutes);
     }
 
     /**
-     * @param Match[] $routes
+     * @param Match[] $matches
      *
      * @return array
      *@throws \ReflectionException
      *
      */
-    private function processRoutes(array $routes)
+    private function processRoutes(array $matches)
     {
         $generator = new Generator($this->docConfig);
         $parsedRoutes = [];
-        foreach ($routes as $routeItem) {
-            $route = $routeItem->getRoute();
+        foreach ($matches as $routeItem) {
             /** @var Route $route */
-            $messageFormat = '%s route: [%s] %s';
-            $routeMethods = implode(',', $generator->getMethods($route));
-            $routePath = $generator->getUri($route);
+            $route = $routeItem->getRoute();
 
-            $routeControllerAndMethod = Utils::getRouteClassAndMethodNames($route->getAction());
+            $routeControllerAndMethod = u::getRouteClassAndMethodNames($route);
             if (! $this->isValidRoute($routeControllerAndMethod)) {
-                $this->clara->warn(sprintf($messageFormat, 'Skipping invalid', $routeMethods, $routePath));
+                c::warn('Skipping invalid route: '. c::getRouteRepresentation($route));
                 continue;
             }
 
             if (! $this->doesControllerMethodExist($routeControllerAndMethod)) {
-                $this->clara->warn(sprintf($messageFormat, 'Skipping', $routeMethods, $routePath) . ': Controller method does not exist.');
+                c::warn('Skipping route: '. c::getRouteRepresentation($route).' - Controller method does not exist.');
                 continue;
             }
 
             if ($this->isRouteHiddenFromDocumentation($routeControllerAndMethod)) {
-                $this->clara->warn(sprintf($messageFormat, 'Skipping', $routeMethods, $routePath) . ': @hideFromAPIDocumentation was specified.');
+                c::warn('Skipping route: '. c::getRouteRepresentation($route). ': @hideFromAPIDocumentation was specified.');
                 continue;
             }
 
             try {
                 $parsedRoutes[] = $generator->processRoute($route, $routeItem->getRules());
-                $this->clara->info(sprintf($messageFormat, 'Processed', $routeMethods, $routePath));
+                c::info('Processed route: '. c::getRouteRepresentation($route));
             } catch (\Exception $exception) {
-                $this->clara->warn(sprintf($messageFormat, 'Skipping', $routeMethods, $routePath) . '- Exception ' . get_class($exception) . ' encountered : ' . $exception->getMessage());
+                c::warn('Skipping route: '. c::getRouteRepresentation($route) . ' - Exception encountered.');
+                e::dumpExceptionIfVerbose($exception);
             }
         }
 
@@ -134,7 +127,7 @@ class GenerateDocumentation extends Command
     {
         if (is_array($routeControllerAndMethod)) {
             [$classOrObject, $method] = $routeControllerAndMethod;
-            if (Utils::isInvokableObject($classOrObject)) {
+            if (u::isInvokableObject($classOrObject)) {
                 return true;
             }
             $routeControllerAndMethod = $classOrObject . '@' . $method;
@@ -155,11 +148,11 @@ class GenerateDocumentation extends Command
         [$class, $method] = $routeControllerAndMethod;
         $reflection = new ReflectionClass($class);
 
-        if (! $reflection->hasMethod($method)) {
-            return false;
+        if ($reflection->hasMethod($method)) {
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     /**
@@ -171,30 +164,27 @@ class GenerateDocumentation extends Command
      */
     private function isRouteHiddenFromDocumentation(array $routeControllerAndMethod)
     {
-        $comment = Utils::reflectRouteMethod($routeControllerAndMethod)->getDocComment();
+        $comment = u::reflectRouteMethod($routeControllerAndMethod)->getDocComment();
 
-        if ($comment) {
-            $phpdoc = new DocBlock($comment);
-
-            return collect($phpdoc->getTags())
-                ->filter(function ($tag) {
-                    return $tag->getName() === 'hideFromAPIDocumentation';
-                })
-                ->isEmpty();
+        if (!$comment) {
+            return false;
         }
 
-        return true;
+        $phpdoc = new DocBlock($comment);
+
+        return collect($phpdoc->getTags())
+            ->filter(function (Tag $tag) {
+                return Str::lower($tag->getName()) === 'hidefromapidocumentation';
+            })->isNotEmpty();
     }
 
     public function bootstrap(): void
     {
-        // Using a global static variable here, so fuck off if you don't like it.
+        // Using a global static variable here, so 🙄 if you don't like it.
         // Also, the --verbose option is included with all Artisan commands.
         Flags::$shouldBeVerbose = $this->option('verbose');
 
-        $this->clara = clara('knuckleswtf/scribe', Flags::$shouldBeVerbose)
-            ->useOutput($this->output)
-            ->only();
+        c::bootstrapOutput($this->output);
 
         $this->docConfig = new DocumentationConfig(config('scribe'));
         $this->baseUrl = $this->docConfig->get('base_url') ?? config('app.url');

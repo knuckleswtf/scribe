@@ -10,10 +10,9 @@ use Illuminate\Support\Arr;
 use Knuckles\Scribe\Extracting\DatabaseTransactionHelpers;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
-use Knuckles\Scribe\Tools\AnnotationParser;
-use Knuckles\Scribe\Tools\ErrorHandlingUtils;
-use Knuckles\Scribe\Tools\Flags;
-use Knuckles\Scribe\Tools\Utils;
+use Knuckles\Scribe\Tools\AnnotationParser as a;
+use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
+use Knuckles\Scribe\Tools\ErrorHandlingUtils as e;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
@@ -36,9 +35,9 @@ class UseTransformerTags extends Strategy
      * @param array $rulesToApply
      * @param array $context
      *
+     * @return array|null
      * @throws \Exception
      *
-     * @return array|null
      */
     public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $rulesToApply, array $context = [])
     {
@@ -49,12 +48,8 @@ class UseTransformerTags extends Strategy
         try {
             return $this->getTransformerResponse($methodDocBlock->getTags());
         } catch (Exception $e) {
-            clara('knuckleswtf/scribe')->warn('Exception thrown when fetching transformer response for [' . implode(',', $route->methods) . "] {$route->uri}.");
-            if (Flags::$shouldBeVerbose) {
-                ErrorHandlingUtils::dumpException($e);
-            } else {
-                clara('knuckleswtf/scribe')->warn("Run this again with the --verbose flag to see the exception.");
-            }
+            c::warn('Exception thrown when fetching transformer response for [' . implode(',', $route->methods) . "] {$route->uri}.");
+            e::dumpExceptionIfVerbose($e);
 
             return null;
         }
@@ -79,7 +74,7 @@ class UseTransformerTags extends Strategy
 
         $fractal = new Manager();
 
-        if (! is_null($this->config->get('fractal.serializer'))) {
+        if (!is_null($this->config->get('fractal.serializer'))) {
             $fractal->setSerializer(app($this->config->get('fractal.serializer')));
         }
 
@@ -103,11 +98,11 @@ class UseTransformerTags extends Strategy
         $response = response($fractal->createData($resource)->toJson());
 
         return [
-                [
-                    'status' => $statusCode ?: 200,
-                    'content' => $response->getContent(),
-                ],
-            ];
+            [
+                'status' => $statusCode ?: 200,
+                'content' => $response->getContent(),
+            ],
+        ];
     }
 
     /**
@@ -129,9 +124,9 @@ class UseTransformerTags extends Strategy
      * @param array $tags
      * @param ReflectionFunctionAbstract $transformerMethod
      *
+     * @return array
      * @throws Exception
      *
-     * @return array
      */
     private function getClassToBeTransformed(array $tags, ReflectionFunctionAbstract $transformerMethod): array
     {
@@ -143,12 +138,12 @@ class UseTransformerTags extends Strategy
         $states = [];
         $relations = [];
         if ($modelTag) {
-            ['content' => $type, 'attributes' => $attributes] = AnnotationParser::parseIntoContentAndAttributes($modelTag->getContent(), ['states', 'with']);
+            ['content' => $type, 'attributes' => $attributes] = a::parseIntoContentAndAttributes($modelTag->getContent(), ['states', 'with']);
             $states = $attributes['states'] ? explode(',', $attributes['states']) : [];
             $relations = $attributes['with'] ? explode(',', $attributes['with']) : [];
         } else {
             $parameter = Arr::first($transformerMethod->getParameters());
-            if ($parameter->hasType() && ! $parameter->getType()->isBuiltin() && class_exists($parameter->getType()->getName())) {
+            if ($parameter->hasType() && !$parameter->getType()->isBuiltin() && class_exists($parameter->getType()->getName())) {
                 // Ladies and gentlemen, we have a type!
                 $type = $parameter->getType()->getName();
             }
@@ -183,9 +178,8 @@ class UseTransformerTags extends Strategy
                 return $factory->make();
             }
         } catch (Exception $e) {
-            if (Flags::$shouldBeVerbose) {
-                clara('knuckleswtf/scribe')->warn("Eloquent model factory failed to instantiate {$type}; trying to fetch from database.");
-            }
+            c::debug("Eloquent model factory failed to instantiate {$type}; trying to fetch from database.");
+            e::dumpExceptionIfVerbose($e);
 
             $instance = new $type();
             if ($instance instanceof IlluminateModel) {
@@ -197,9 +191,8 @@ class UseTransformerTags extends Strategy
                     }
                 } catch (Exception $e) {
                     // okay, we'll stick with `new`
-                    if (Flags::$shouldBeVerbose) {
-                        clara('knuckleswtf/scribe')->warn("Failed to fetch first {$type} from database; using `new` to instantiate.");
-                    }
+                    c::debug("Failed to fetch first {$type} from database; using `new` to instantiate.");
+                    e::dumpExceptionIfVerbose($e);
                 }
             }
         } finally {

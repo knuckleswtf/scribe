@@ -191,7 +191,7 @@ class GetFromFormRequestTest extends TestCase
                 ['timezone' => 'timezone|required'],
                 ['timezone' => ['description' => $description]],
                 [
-                    'description' => 'The value must be a valid time zone, such as `Africa/Accra`.',
+                    'description' => 'The value must be a valid time zone, such as <code>Africa/Accra</code>.',
                     'type' => 'string',
                 ],
             ],
@@ -247,7 +247,7 @@ class GetFromFormRequestTest extends TestCase
                 ['in' => 'in:3,5,6|required'],
                 ['in' => ['description' => $description]],
                 [
-                    'description' => 'The value must be one of `3`, `5`, or `6`.',
+                    'description' => 'The value must be one of <code>3</code>, <code>5</code>, or <code>6</code>.',
                     'type' => 'string',
                 ],
             ],

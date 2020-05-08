@@ -14,9 +14,11 @@ trait TestHelpers
      */
     public function artisan($command, $parameters = [])
     {
-        $this->app[Kernel::class]->call($command, $parameters);
+        /** @var Kernel $kernel */
+        $kernel = $this->app[Kernel::class];
+        $kernel->call($command, $parameters);
 
-        return $this->app[Kernel::class]->output();
+        return $kernel->output();
     }
 
     private function assertFilesHaveSameContent($pathToExpected, $pathToActual)

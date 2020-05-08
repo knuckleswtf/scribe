@@ -2,24 +2,17 @@
 
 namespace Knuckles\Scribe\Writing;
 
-use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Knuckles\Pastel\Pastel;
+use Knuckles\Scribe\Tools\ConsoleOutputUtils;
 use Knuckles\Scribe\Tools\DocumentationConfig;
-use Knuckles\Scribe\Tools\Flags;
 use Knuckles\Scribe\Tools\Utils;
-use Shalvah\Clara\Clara;
 
 class Writer
 {
-    /**
-     * @var Clara
-     */
-    protected $clara;
-
     /**
      * @var DocumentationConfig
      */
@@ -70,13 +63,12 @@ class Writer
      */
     private $lastTimesWeModifiedTheseFiles;
 
-    public function __construct(DocumentationConfig $config = null, bool $forceIt = false, $clara = null)
+    public function __construct(DocumentationConfig $config = null, bool $forceIt = false)
     {
         // If no config is injected, pull from global
         $this->config = $config ?: new DocumentationConfig(config('scribe'));
         $this->baseUrl = $this->config->get('base_url') ?? config('app.url');
         $this->forceIt = $forceIt;
-        $this->clara = $clara ?: clara('knuckleswtf/scribe', Flags::$shouldBeVerbose)->only();
         $this->shouldGeneratePostmanCollection = $this->config->get('postman.enabled', false);
         $this->pastel = new Pastel();
         $this->isStatic = $this->config->get('type') === 'static';
@@ -114,7 +106,7 @@ class Writer
             'title' => config('app.name', '') . ' API Documentation',
         ];
 
-        $this->clara->info('Writing source Markdown files to: ' . $this->sourceOutputPath);
+        ConsoleOutputUtils::info('Writing source Markdown files to: ' . $this->sourceOutputPath);
 
         if (!is_dir($this->sourceOutputPath)) {
             mkdir($this->sourceOutputPath, 0777, true);
@@ -124,7 +116,7 @@ class Writer
         $this->writeAuthMarkdownFile();
         $this->writeRoutesMarkdownFile($parsedRoutes, $settings);
 
-        $this->clara->info('Wrote source Markdown files to: ' . $this->sourceOutputPath);
+        ConsoleOutputUtils::info('Wrote source Markdown files to: ' . $this->sourceOutputPath);
     }
 
     public function generateMarkdownOutputForEachRoute(Collection $parsedRoutes, array $settings): Collection
@@ -156,7 +148,7 @@ class Writer
     protected function writePostmanCollection(Collection $parsedRoutes): void
     {
         if ($this->shouldGeneratePostmanCollection) {
-            $this->clara->info('Generating Postman collection');
+            ConsoleOutputUtils::info('Generating Postman collection');
 
             $collection = $this->generatePostmanCollection($parsedRoutes);
             if ($this->isStatic) {
@@ -167,7 +159,7 @@ class Writer
                 $collectionPath = 'storage/app/scribe/collection.json';
             }
 
-            $this->clara->success("Wrote Postman collection to: {$collectionPath}");
+            ConsoleOutputUtils::success("Wrote Postman collection to: {$collectionPath}");
         }
     }
 
@@ -213,7 +205,7 @@ class Writer
 
     public function writeHtmlDocs(): void
     {
-        $this->clara->info('Generating API HTML code');
+        ConsoleOutputUtils::info('Generating API HTML code');
 
         $this->pastel->generate($this->sourceOutputPath . '/index.md', 'public/docs');
 
@@ -221,7 +213,7 @@ class Writer
             $this->performFinalTasksForLaravelType();
         }
 
-        $this->clara->success("Wrote HTML documentation to: {$this->outputPath}");
+        ConsoleOutputUtils::success("Wrote HTML documentation to: {$this->outputPath}");
     }
 
     protected function writeIndexMarkdownFile(array $settings): void
@@ -307,9 +299,9 @@ class Writer
 
             if ($this->hasFileBeenModified($routeGroupMarkdownFile)) {
                 if ($this->forceIt) {
-                    $this->clara->warn("Discarded manual changes for file $routeGroupMarkdownFile");
+                    ConsoleOutputUtils::warn("Discarded manual changes for file $routeGroupMarkdownFile");
                 } else {
-                    $this->clara->warn("Skipping modified file $routeGroupMarkdownFile");
+                    ConsoleOutputUtils::warn("Skipping modified file $routeGroupMarkdownFile");
                     return;
                 }
             }

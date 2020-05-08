@@ -5,7 +5,7 @@ namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 use Illuminate\Routing\Route;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
-use Knuckles\Scribe\Tools\AnnotationParser;
+use Knuckles\Scribe\Tools\AnnotationParser as a;
 use Mpociot\Reflection\DocBlock;
 use Mpociot\Reflection\DocBlock\Tag;
 
@@ -60,7 +60,7 @@ class UseResponseTag extends Strategy
             $status = $result[1] ?: 200;
             $content = $result[2] ?: '{}';
 
-            ['attributes' => $attributes, 'content' => $content] = AnnotationParser::parseIntoContentAndAttributes($content, ['status', 'scenario']);
+            ['attributes' => $attributes, 'content' => $content] = a::parseIntoContentAndAttributes($content, ['status', 'scenario']);
 
             $status = $attributes['status'] ?: $status;
             $description = $attributes['scenario'] ? "$status, {$attributes['scenario']}" : $status;

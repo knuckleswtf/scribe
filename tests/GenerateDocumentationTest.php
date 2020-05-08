@@ -129,7 +129,7 @@ class GenerateDocumentationTest extends TestCase
     }
 
     /** @test */
-    public function can_skip_non_existent_response_files()
+    public function can_skip_nonexistent_response_files()
     {
         RouteFacade::get('/api/non-existent', TestController::class . '@withNonExistentResponseFile');
 

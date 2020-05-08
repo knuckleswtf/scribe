@@ -7,14 +7,19 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ErrorHandlingUtils
 {
-    public static function dumpException(\Throwable $e): void
+    public static function dumpExceptionIfVerbose(\Throwable $e): void
     {
-        if (!class_exists(\NunoMaduro\Collision\Handler::class)) {
-            dump($e);
-            ConsoleOutputUtils::info("You can get better exception output by installing the library nunomaduro/collision.");
-            return;
+        if (Flags::$shouldBeVerbose) {
+            self::dumpException($e);
+        } else {
+            ConsoleOutputUtils::warn(get_class($e) . ': ' . $e->getMessage());
+            ConsoleOutputUtils::warn('Run again with --verbose for a full stacktrace');
         }
 
+    }
+
+    public static function dumpException(\Throwable $e): void
+    {
         $output = new ConsoleOutput(OutputInterface::VERBOSITY_VERBOSE);
         try {
             $handler = new \NunoMaduro\Collision\Handler(new \NunoMaduro\Collision\Writer(null, $output));

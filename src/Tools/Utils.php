@@ -5,15 +5,13 @@ namespace Knuckles\Scribe\Tools;
 use Closure;
 use Exception;
 use Illuminate\Routing\Route;
+use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionFunction;
 use ReflectionFunctionAbstract;
-use Symfony\Component\Console\Output\ConsoleOutput;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\VarExporter\VarExporter;
 
 class Utils
 {
@@ -24,16 +22,9 @@ class Utils
         return self::replaceUrlParameterPlaceholdersWithValues($uri, $urlParameters);
     }
 
-    /**
-     * @param array|Route $routeOrAction
-     *
-     * @return array|null
-     */
-    public static function getRouteClassAndMethodNames($routeOrAction)
+    public static function getRouteClassAndMethodNames(Route $route): array
     {
-        $action = $routeOrAction instanceof Route
-            ? $routeOrAction->getAction()
-            : $routeOrAction;
+        $action = $route->getAction();
 
         $uses = $action['uses'];
 
@@ -53,7 +44,7 @@ class Utils
             ];
         }
 
-        throw new Exception("Couldn't handle route.");
+        throw new Exception("Couldn't get class and method names for route ". c::getRouteRepresentation($route).'.');
     }
 
     /**

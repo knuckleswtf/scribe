@@ -15,11 +15,9 @@ use Illuminate\Support\Arr;
 use Knuckles\Scribe\Extracting\DatabaseTransactionHelpers;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
-use Knuckles\Scribe\Tools\AnnotationParser;
-use Knuckles\Scribe\Tools\ErrorHandlingUtils;
-use Knuckles\Scribe\Tools\Flags;
-use Knuckles\Scribe\Tools\Utils;
-use League\Fractal\Resource\Collection;
+use Knuckles\Scribe\Tools\AnnotationParser as a;
+use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
+use Knuckles\Scribe\Tools\ErrorHandlingUtils as e;
 use Mpociot\Reflection\DocBlock;
 use Mpociot\Reflection\DocBlock\Tag;
 use ReflectionClass;
@@ -52,13 +50,8 @@ class UseApiResourceTags extends Strategy
         try {
             return $this->getApiResourceResponse($methodDocBlock->getTags());
         } catch (Exception $e) {
-            clara('knuckleswtf/scribe')->warn('Exception thrown when fetching Eloquent API resource response for [' . implode(',', $route->methods) . "] {$route->uri}.");
-            if (Flags::$shouldBeVerbose) {
-                ErrorHandlingUtils::dumpException($e);
-            } else {
-                clara('knuckleswtf/scribe')->warn("Run this again with the --verbose flag to see the exception.");
-            }
-
+            c::warn('Exception thrown when fetching Eloquent API resource response for [' . implode(',', $route->methods) . "] {$route->uri}.");
+            e::dumpExceptionIfVerbose($e);
             return null;
         }
     }
@@ -95,7 +88,7 @@ class UseApiResourceTags extends Strategy
             if (count($pagination) == 1) {
                 $perPage = $pagination[0];
                 $paginator = new LengthAwarePaginator(
-                    // For some reason, the LengthAware paginator needs only first page items to work correctly
+                // For some reason, the LengthAware paginator needs only first page items to work correctly
                     collect($models)->slice(0, $perPage),
                     count($models),
                     $perPage
@@ -151,7 +144,7 @@ class UseApiResourceTags extends Strategy
         $relations = [];
         $pagination = [];
         if ($modelTag) {
-            ['content' => $type, 'attributes' => $attributes] = AnnotationParser::parseIntoContentAndAttributes($modelTag->getContent(), ['states', 'with', 'paginate']);
+            ['content' => $type, 'attributes' => $attributes] = a::parseIntoContentAndAttributes($modelTag->getContent(), ['states', 'with', 'paginate']);
             $states = $attributes['states'] ? explode(',', $attributes['states']) : [];
             $relations = $attributes['with'] ? explode(',', $attributes['with']) : [];
             $pagination = $attributes['paginate'] ? explode(',', $attributes['paginate']) : [];
@@ -193,9 +186,8 @@ class UseApiResourceTags extends Strategy
                 return $factory->make();
             }
         } catch (Exception $e) {
-            if (Flags::$shouldBeVerbose) {
-                clara('knuckleswtf/scribe')->warn("Eloquent model factory failed to instantiate {$type}; trying to fetch from database.");
-            }
+            c::debug("Eloquent model factory failed to instantiate {$type}; trying to fetch from database.");
+            e::dumpExceptionIfVerbose($e);
 
             $instance = new $type();
             if ($instance instanceof \Illuminate\Database\Eloquent\Model) {
@@ -207,9 +199,8 @@ class UseApiResourceTags extends Strategy
                     }
                 } catch (Exception $e) {
                     // okay, we'll stick with `new`
-                    if (Flags::$shouldBeVerbose) {
-                        clara('knuckleswtf/scribe')->warn("Failed to fetch first {$type} from database; using `new` to instantiate.");
-                    }
+                    c::debug("Failed to fetch first {$type} from database; using `new` to instantiate.");
+                    e::dumpExceptionIfVerbose($e);
                 }
             }
         } finally {

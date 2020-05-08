@@ -254,6 +254,23 @@ class ResponseCallsTest extends TestCase
         $this->assertNull($results);
     }
 
+    /** @test */
+    public function does_not_make_response_call_if_forbidden_by_config()
+    {
+        $route = LaravelRouteFacade::post('/shouldFetchRouteResponse', [TestController::class, 'shouldFetchRouteResponse']);
+
+        $rules = [
+            'response_calls' => [
+                'methods' => [],
+            ],
+        ];
+        $context = ['responses' => []];
+        $strategy = new ResponseCalls(new DocumentationConfig([]));
+        $results = $strategy->makeResponseCallIfEnabledAndNoSuccessResponses($route, $rules, $context);
+
+        $this->assertNull($results);
+    }
+
     public function registerDingoRoute(string $httpMethod, string $path, string $controllerMethod)
     {
         $desiredRoute = null;

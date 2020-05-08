@@ -9,12 +9,11 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Contracts\Validation\Rule;
-use Knuckles\Scribe\Extracting\BodyParameterDefinition;
 use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
-use Knuckles\Scribe\Extracting\ValidationRuleDescriptionParser as Description;
-use Knuckles\Scribe\Tools\Utils;
-use Knuckles\Scribe\Tools\WritingUtils;
+use Knuckles\Scribe\Extracting\ValidationRuleDescriptionParser as d;
+use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
+use Knuckles\Scribe\Tools\WritingUtils as w;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionFunctionAbstract;
@@ -93,7 +92,8 @@ class GetFromFormRequest extends Strategy
             return call_user_func_array([$formRequest, 'bodyParameters'], []);
         }
 
-        clara('knuckleswtf/scribe')->warn("No bodyParameters() method found in ".get_class($formRequest)." Scribe will only be able to extract basic information from the rules() method.");
+        c::warn("No bodyParameters() method found in ".get_class($formRequest)." Scribe will only be able to extract basic information from the rules() method.");
+
         return [];
     }
 
@@ -105,7 +105,7 @@ class GetFromFormRequest extends Strategy
         $parameters = [];
         foreach ($rules as $parameter => $ruleset) {
             if (count($customParameterData) && !isset($customParameterData[$parameter])) {
-                clara('knuckleswtf/scribe')->warn("No data found for parameter '$parameter' from your bodyParameters() method. Add an entry for '$parameter' so you can add description and example.");
+                c::debug("No data found for parameter '$parameter' from your bodyParameters() method. Add an entry for '$parameter' so you can add description and example.");
             }
             $parameterInfo = $customParameterData[$parameter] ?? [];
 
@@ -251,11 +251,11 @@ class GetFromFormRequest extends Strategy
              */
             case 'timezone':
                 // Laravel's message merely says "The value must be a valid zone"
-                $parameterData['description'] .= "The value must be a valid time zone, such as `Africa/Accra`. ";
+                $parameterData['description'] .= "The value must be a valid time zone, such as <code>Africa/Accra</code>. ";
                 $parameterData['value'] = $this->getFaker()->timezone;
                 break;
             case 'email':
-                $parameterData['description'] .= Description::getDescription($rule).' ';
+                $parameterData['description'] .= d::getDescription($rule).' ';
                 $parameterData['value'] = $this->getFaker()->safeEmail;
                 $parameterData['type'] = 'string';
                 break;
@@ -266,18 +266,18 @@ class GetFromFormRequest extends Strategy
                 $parameterData['description'] .= "The value must be a valid URL. ";
                 break;
             case 'ip':
-                $parameterData['description'] .= Description::getDescription($rule).' ';
+                $parameterData['description'] .= d::getDescription($rule).' ';
                 $parameterData['value'] = $this->getFaker()->ipv4;
                 $parameterData['type'] = 'string';
                 break;
             case 'json':
                 $parameterData['type'] = 'string';
-                $parameterData['description'] .= Description::getDescription($rule).' ';
+                $parameterData['description'] .= d::getDescription($rule).' ';
                 $parameterData['value'] = json_encode([$this->getFaker()->word, $this->getFaker()->word,]);
                 break;
             case 'date':
                 $parameterData['type'] = 'string';
-                $parameterData['description'] .= Description::getDescription($rule).' ';
+                $parameterData['description'] .= d::getDescription($rule).' ';
                 $parameterData['value'] = date(\DateTime::ISO8601, time());
                 break;
             case 'date_format':
@@ -313,7 +313,7 @@ class GetFromFormRequest extends Strategy
              */
             case 'image':
                 $parameterData['type'] = 'file';
-                $parameterData['description'] .= Description::getDescription($rule).' ';
+                $parameterData['description'] .= d::getDescription($rule).' ';
                 break;
 
             /**
@@ -321,7 +321,7 @@ class GetFromFormRequest extends Strategy
              */
             case 'in':
                 // Not using the rule description here because it only says "The attribute is invalid"
-                $description = 'The value must be one of '.WritingUtils::getListOfValuesAsFriendlyHtmlString($arguments);
+                $description = 'The value must be one of '. w::getListOfValuesAsFriendlyHtmlString($arguments);
                 $parameterData['description'] .= $description.' ';
                 $parameterData['value'] = Arr::random($arguments);
                 break;

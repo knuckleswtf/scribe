@@ -3,7 +3,8 @@
 namespace Knuckles\Scribe\Extracting;
 
 use Illuminate\Routing\Route;
-use Knuckles\Scribe\Tools\Utils;
+use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
+use Knuckles\Scribe\Tools\Utils as u;
 use Mpociot\Reflection\DocBlock;
 use ReflectionClass;
 
@@ -26,7 +27,7 @@ class RouteDocBlocker
      */
     public static function getDocBlocksFromRoute(Route $route): array
     {
-        list($className, $methodName) = Utils::getRouteClassAndMethodNames($route);
+        [$className, $methodName] = u::getRouteClassAndMethodNames($route);
         $normalizedClassName = static::normalizeClassName($className);
         $docBlocks = self::getCachedDocBlock($route, $normalizedClassName, $methodName);
 
@@ -37,10 +38,10 @@ class RouteDocBlocker
         $class = new ReflectionClass($className);
 
         if (! $class->hasMethod($methodName)) {
-            throw new \Exception("Error while fetching docblock for route: Class $className does not contain method $methodName");
+            throw new \Exception("Error while fetching docblock for route ". c::getRouteRepresentation($route).": Class $className does not contain method $methodName");
         }
 
-        $method = Utils::reflectRouteMethod([$className, $methodName]);
+        $method = u::reflectRouteMethod([$className, $methodName]);
 
         $docBlocks = [
             'method' => new DocBlock($method->getDocComment() ?: ''),
