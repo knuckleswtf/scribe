@@ -19,7 +19,7 @@ class WritingUtils
     /**
      * Print a value as valid PHP, handling arrays and proper indentation.
      *
-     * @param $value
+     * @param mixed $value
      * @param int $indentationLevel
      *
      * @return string
