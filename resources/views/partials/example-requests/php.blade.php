@@ -6,7 +6,7 @@ $response = $client->{{ strtolower($route['methods'][0]) }}(
     '{{ rtrim($baseUrl, '/') . '/' . ltrim($route['boundUri'], '/') }}',
     [
 @if(!empty($route['headers']))
-        'headers' => {!! \Knuckles\Scribe\Tools\WritingUtils::printPhpArray($route['headers'], 8) !!},
+        'headers' => {!! \Knuckles\Scribe\Tools\WritingUtils::printPhpValue($route['headers'], 8) !!},
 @endif
 @if(!empty($route['cleanQueryParameters']))
         'query' => {!! \Knuckles\Scribe\Tools\WritingUtils::printQueryParamsAsKeyValue($route['cleanQueryParameters'], "'", "=>", 12, "[]", 8) !!},
@@ -29,7 +29,7 @@ $response = $client->{{ strtolower($route['methods'][0]) }}(
 @endforeach
         ],
 @elseif(!empty($route['cleanBodyParameters']))
-        'json' => {!! \Knuckles\Scribe\Tools\WritingUtils::printPhpArray($route['cleanBodyParameters'], 8) !!},
+        'json' => {!! \Knuckles\Scribe\Tools\WritingUtils::printPhpValue($route['cleanBodyParameters'], 8) !!},
 @endif
     ]
 );

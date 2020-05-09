@@ -17,14 +17,16 @@ class WritingUtils
     ];
 
     /**
-     * @param array $value
+     * Print a value as valid PHP, handling arrays and proper indentation.
+     *
+     * @param $value
      * @param int $indentationLevel
      *
      * @return string
      * @throws \Symfony\Component\VarExporter\Exception\ExceptionInterface
      *
      */
-    public static function printPhpArray($value, int $indentationLevel = 0): string
+    public static function printPhpValue($value, int $indentationLevel = 0): string
     {
         $output = VarExporter::export($value);
         // Padding with x spaces so they align

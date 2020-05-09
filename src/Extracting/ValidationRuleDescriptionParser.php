@@ -25,14 +25,14 @@ class ValidationRuleDescriptionParser
         return $instance->makeDescription($type);
     }
 
-    protected function makeDescription($type = 'string'): string
+    protected function makeDescription($baseType = 'string'): string
     {
         $description = trans("validation.{$this->rule}");
         // For rules that can apply to multiple types (eg 'max' rule), Laravel returns an array of possible messages
         // 'numeric' => 'The :attribute must not be greater than :max'
         // 'file' => 'The :attribute must have a size less than :max kilobytes'
         if (is_array($description)) {
-            $description = $description[$type];
+            $description = $description[$baseType];
         }
 
         // Convert messages from failure type ("The value is not a valid date.") to info ("The value must be a valid date.")
