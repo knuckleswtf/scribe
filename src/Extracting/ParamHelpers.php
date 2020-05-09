@@ -3,6 +3,7 @@
 namespace Knuckles\Scribe\Extracting;
 
 use Faker\Factory;
+use Illuminate\Http\UploadedFile;
 use stdClass;
 
 trait ParamHelpers
@@ -42,6 +43,10 @@ trait ParamHelpers
             },
             'object' => function () {
                 return new stdClass();
+            },
+            'file' => function () use ($faker) {
+                $file = UploadedFile::fake()->create('test.jpg')->size(10);
+                return $file;
             },
         ];
 
@@ -89,7 +94,7 @@ trait ParamHelpers
         ];
 
         // First, we handle booleans. We can't use a regular cast,
-        //because PHP considers string 'false' as true.
+        // because PHP considers string 'false' as true.
         if ($value == 'false' && ($type == 'boolean' || $type == 'bool')) {
             return false;
         }
@@ -98,6 +103,7 @@ trait ParamHelpers
             return $casts[$type]($value);
         }
 
+        // Return the value unchanged if there's no applicable cast
         return $value;
     }
 
@@ -152,7 +158,7 @@ trait ParamHelpers
         if (preg_match('/(.*)\bExample:\s*(.+)\s*/', $description, $content)) {
             $description = trim($content[1]);
 
-            // examples are parsed as strings by default, we need to cast them properly
+            // Examples are parsed as strings by default, we need to cast them properly
             $example = $this->castToType($content[2], $type);
         }
 

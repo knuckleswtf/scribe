@@ -3,6 +3,7 @@
 namespace Knuckles\Scribe\Extracting;
 
 use Faker\Factory;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
@@ -84,6 +85,18 @@ class Generator
         $bodyParameters = $this->fetchBodyParameters($controller, $method, $route, $routeRules, $parsedRoute);
         $parsedRoute['bodyParameters'] = $bodyParameters;
         $parsedRoute['cleanBodyParameters'] = self::cleanParams($bodyParameters);
+        if (count($parsedRoute['cleanBodyParameters']) && !isset($parsedRoute['headers']['Content-Type'])) {
+            // Set content type if the user forgot to set it
+            $parsedRoute['headers']['Content-Type'] = 'application/json';
+        }
+        [$files, $regularParameters] = collect($parsedRoute['cleanBodyParameters'])->partition(function ($example) {
+            return $example instanceof UploadedFile;
+        });
+        if (count($files)) {
+            $parsedRoute['headers']['Content-Type'] = 'multipart/form-data';
+        }
+        $parsedRoute['fileParameters'] = $files->toArray();
+        $parsedRoute['cleanBodyParameters'] = $regularParameters->toArray();
 
         $responses = $this->fetchResponses($controller, $method, $route, $routeRules, $parsedRoute);
         $parsedRoute['responses'] = $responses;
@@ -194,9 +207,8 @@ class Generator
                         $context[$stage][] = $item;
                         continue;
                     }
-                    // Using a for loop rather than array_merge or +=
-                    // so it does not renumber numeric keys
-                    // and also allows values to be overwritten
+                    // We're using a for loop rather than array_merge or +=
+                    // so it does not renumber numeric keys and also allows values to be overwritten
 
                     // Don't allow overwriting if an empty value is trying to replace a set one
                     if (! in_array($context[$stage], [null, ''], true) && in_array($item, [null, ''], true)) {
@@ -214,6 +226,7 @@ class Generator
     /**
      * Create samples at index 0 for array parameters.
      * Also filter out parameters which were excluded from having examples.
+     * And convert all file params that have string examples to actual files
      *
      * @param array $params
      *
@@ -221,7 +234,7 @@ class Generator
      */
     public static function cleanParams(array $params)
     {
-        $values = [];
+        $cleanParams = [];
 
         // Remove params which have no examples and are optional.
         $params = array_filter($params, function ($details) {
@@ -229,14 +242,22 @@ class Generator
         });
 
         foreach ($params as $paramName => $details) {
+            if (($details['type'] ?? '') === 'file' && is_string($details['value'])) {
+                // Convert any string file examples to instances of UploadedFile
+                $filePath = $details['value'];
+                $fileName = basename($filePath);
+                $details['value'] = new UploadedFile(
+                    $filePath, $fileName, mime_content_type($filePath), 0,false
+                );
+            }
             self::generateConcreteSampleForArrayKeys(
                 $paramName,
                 $details['value'],
-                $values
+                $cleanParams
             );
         }
 
-        return $values;
+        return $cleanParams;
     }
 
     /**
@@ -245,18 +266,18 @@ class Generator
      *
      * @param string $paramName
      * @param mixed $paramExample
-     * @param array $values The array that holds the result
+     * @param array $cleanParams The array that holds the result
      *
      * @return void
      */
-    protected static function generateConcreteSampleForArrayKeys($paramName, $paramExample, array &$values = [])
+    protected static function generateConcreteSampleForArrayKeys($paramName, $paramExample, array &$cleanParams = [])
     {
         if (Str::contains($paramName, '[')) {
             // Replace usages of [] with dot notation
             $paramName = str_replace(['][', '[', ']', '..'], ['.', '.', '', '.*.'], $paramName);
         }
         // Then generate a sample item for the dot notation
-        Arr::set($values, str_replace(['.*', '*.'], ['.0','0.'], $paramName), $paramExample);
+        Arr::set($cleanParams, str_replace(['.*', '*.'], ['.0','0.'], $paramName), $paramExample);
     }
 
     public function addAuthField(array $parsedRoute)

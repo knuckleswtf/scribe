@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Str;
 use Knuckles\Scribe\Extracting\DatabaseTransactionHelpers;
@@ -59,7 +60,17 @@ class ResponseCalls extends Strategy
         $bodyParameters = array_merge($context['cleanBodyParameters'] ?? [], $rulesToApply['bodyParams'] ?? []);
         $queryParameters = array_merge($context['cleanQueryParameters'] ?? [], $rulesToApply['queryParams'] ?? []);
         $urlParameters = $context['cleanUrlParameters'] ?? [];
-        $request = $this->prepareRequest($route, $rulesToApply, $urlParameters, $bodyParameters, $queryParameters, $context['headers'] ?? []);
+
+        $hardcodedFileParams = $rulesToApply['fileParams'] ?? [];
+        $hardcodedFileParams = collect($hardcodedFileParams)->map(function ($filePath) {
+            $fileName = basename($filePath);
+            return new UploadedFile(
+                $filePath, $fileName, mime_content_type($filePath), 0,false
+            );
+        })->toArray();
+        $fileParameters = array_merge($context['fileParameters'] ?? [], $hardcodedFileParams);
+
+        $request = $this->prepareRequest($route, $rulesToApply, $urlParameters, $bodyParameters, $queryParameters, $fileParameters, $context['headers'] ?? []);
 
         try {
             $response = $this->makeApiCall($request, $route);
@@ -95,12 +106,16 @@ class ResponseCalls extends Strategy
     /**
      * @param Route $route
      * @param array $rulesToApply
+     * @param array $urlParams
      * @param array $bodyParams
      * @param array $queryParams
      *
+     * @param array $fileParameters
+     * @param array $headers
+     *
      * @return Request
      */
-    protected function prepareRequest(Route $route, array $rulesToApply, array $urlParams, array $bodyParams, array $queryParams, array $headers)
+    protected function prepareRequest(Route $route, array $rulesToApply, array $urlParams, array $bodyParams, array $queryParams, array $fileParameters, array $headers)
     {
         $uri = Utils::getFullUrl($route, $urlParams);
         $routeMethods = $this->getMethods($route);
@@ -114,7 +129,7 @@ class ResponseCalls extends Strategy
         // The second is so they get added to the request bag
         // (where Symfony usually reads from and Laravel sometimes does)
         // Adding to both ensures consistency
-        $request = Request::create($uri, $method, [], $cookies, [], $this->transformHeadersToServerVars($headers), json_encode($bodyParams));
+        $request = Request::create($uri, $method, [], $cookies, $fileParameters, $this->transformHeadersToServerVars($headers), json_encode($bodyParams));
         // Doing it again to catch any ones we didn't transform properly.
         $request = $this->addHeaders($request, $route, $headers);
 

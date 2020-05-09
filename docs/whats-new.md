@@ -41,7 +41,7 @@ Plus, there's also a new `scribe:strategy` command that can help you easily gene
 A few other things that might interest some folk:
 - [Closure routes can now be documented]()
 - [Binary responses can now be indicated]()
-- [Coming soo] [File upload inputs are supported, too]()
+- [File upload inputs are supported, too]()
 - The output Markdown is now split across multiple files.
 - The default group is now called "Endpoints".
 - If you're interested in contributing, we've also added a [guide for that](). We've reworked the tests structure as well to make it easier to maintain.
