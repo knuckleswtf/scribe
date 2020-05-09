@@ -44,7 +44,7 @@ trait ParamHelpers
             'object' => function () {
                 return new stdClass();
             },
-            'file' => function () use ($faker) {
+            'file' => function () {
                 $file = UploadedFile::fake()->create('test.jpg')->size(10);
                 return $file;
             },

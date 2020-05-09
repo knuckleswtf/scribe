@@ -34,7 +34,7 @@ before_install:
 install:
   - if [[ $SETUP = 'stable' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-stable --no-suggest; fi
   - if [[ $SETUP = 'lowest' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-lowest --prefer-stable --no-suggest; fi
-  - if [[ $SETUP = 'lint' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-stable --no-suggest; travis_retry composer lint; fi
+  - if [[ $SETUP = 'lint' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-stable --no-suggest; composer lint; fi
 
 script:
   - if [[ $SETUP = 'lint' ]]; then exit 0; fi; composer test-ci;
