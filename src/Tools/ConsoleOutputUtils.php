@@ -9,9 +9,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ConsoleOutputUtils
 {
     /**
-     * @var \Shalvah\Clara\Clara
+     * @var \Shalvah\Clara\Clara|null
      */
-    private static $clara;
+    private static $clara = null;
 
     public static function bootstrapOutput(OutputInterface $outputInterface)
     {
