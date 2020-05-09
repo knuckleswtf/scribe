@@ -11,7 +11,24 @@ $response = $client->{{ strtolower($route['methods'][0]) }}(
 @if(!empty($route['cleanQueryParameters']))
         'query' => {!! \Knuckles\Scribe\Tools\WritingUtils::printQueryParamsAsKeyValue($route['cleanQueryParameters'], "'", "=>", 12, "[]", 8) !!},
 @endif
-@if(!empty($route['cleanBodyParameters']))
+@if(count($route['fileParameters']))
+        'multipart' => [
+@foreach($route['cleanBodyParameters'] as $parameter => $value)
+@foreach( \Knuckles\Scribe\Tools\WritingUtils::getParameterNamesAndValuesForFormData($parameter,$value) as $key => $actualValue)
+            [
+                'name' => '{!! $key !!}',
+                'contents' => '{!! $actualValue !!}'
+            ],
+@endforeach
+@endforeach
+@foreach($route['fileParameters'] as $parameter => $file)
+            [
+                'name' => '{!!  $parameter !!}',
+                'contents' => fopen('{!! $file->path() !!}', 'r')
+            ],
+@endforeach
+        ],
+@elseif(!empty($route['cleanBodyParameters']))
         'json' => {!! \Knuckles\Scribe\Tools\WritingUtils::printPhpArray($route['cleanBodyParameters'], 8) !!},
 @endif
     ]

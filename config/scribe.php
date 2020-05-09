@@ -244,6 +244,13 @@ INTRO
                     'bodyParams' => [
                         // 'key' => 'value',
                     ],
+
+                    /*
+                     * Files which should be sent with the API call.
+                     */
+                    'fileParams' => [
+                        // 'key' => '/home/me/image.png',
+                    ],
                 ],
             ],
         ],

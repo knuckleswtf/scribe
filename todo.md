@@ -11,7 +11,9 @@
 # Release blocker
 - Port recent changes from old repo
 
+# Improvements
+- Speed
+
 # Features
-- File upload input: see https://github.com/mpociot/laravel-apidoc-generator/issues/735 . The primitive type `file` has already been added to FormRequest support, but with no example value
 - Possible feature: https://github.com/mpociot/laravel-apidoc-generator/issues/731
 

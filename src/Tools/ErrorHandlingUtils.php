@@ -12,7 +12,17 @@ class ErrorHandlingUtils
         if (Flags::$shouldBeVerbose) {
             self::dumpException($e);
         } else {
-            ConsoleOutputUtils::warn(get_class($e) . ': ' . $e->getMessage());
+            [$firstFrame, $secondFrame] = $e->getTrace();
+
+            try {
+                ['file' => $file, 'line' => $line] = $firstFrame;
+            } catch (\Exception $_) {
+                ['file' => $file, 'line' => $line] = $secondFrame;
+            }
+            $exceptionType = get_class($e);
+            $message = $e->getMessage();
+            $message = "$exceptionType in $file at line $line: $message";
+            ConsoleOutputUtils::warn($message);
             ConsoleOutputUtils::warn('Run again with --verbose for a full stacktrace');
         }
 

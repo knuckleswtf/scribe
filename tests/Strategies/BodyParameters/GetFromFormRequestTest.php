@@ -137,115 +137,114 @@ class GetFromFormRequestTest extends TestCase
         $description = 'A description';
         return [
             'required' => [
-                ['required' => 'required'],
-                ['required' => ['description' => $description]],
+                ['required_param' => 'required'],
+                ['required_param' => ['description' => $description]],
                 [
                     'required' => true,
                 ],
             ],
             'string' => [
-                ['string' => 'string|required'],
-                ['string' => ['description' => $description]],
+                ['string_param' => 'string|required'],
+                ['string_param' => ['description' => $description]],
                 [
                     'type' => 'string',
                 ],
             ],
             'boolean' => [
-                ['boolean' => 'boolean|required'],
-                ['boolean' => ['description' => $description]],
+                ['boolean_param' => 'boolean|required'],
+                ['boolean_param' => ['description' => $description]],
                 [
                     'type' => 'boolean',
                 ],
             ],
             'integer' => [
-                ['integer' => 'integer|required'],
-                ['integer' => ['description' => $description]],
+                ['integer_param' => 'integer|required'],
+                ['integer_param' => ['description' => $description]],
                 [
                     'type' => 'integer',
                 ],
             ],
             'numeric' => [
-                ['numeric' => 'numeric|required'],
-                ['numeric' => ['description' => $description]],
+                ['numeric_param' => 'numeric|required'],
+                ['numeric_param' => ['description' => $description]],
                 [
                     'type' => 'number',
                 ],
             ],
             'array' => [
-                ['array' => 'array|required'],
-                ['array' => ['description' => $description]],
+                ['array_param' => 'array|required'],
+                ['array_param' => ['description' => $description]],
                 [
                     'type' => 'array',
                 ],
             ],
-
-            /* Ignore file fo now until we figure out how to support it
             'file' => [
-                ['file' => 'file|required'],
-['file' => ['description' => $description]],
+                ['file_param' => 'file|required'],
+                ['file_param' => ['description' => $description]],
                 [
+                    'description' => 'The value must be a file.',
                     'type' => 'file',
-                ]
-            ],*/
+                ],
+            ],
             'timezone' => [
-                ['timezone' => 'timezone|required'],
-                ['timezone' => ['description' => $description]],
+                ['timezone_param' => 'timezone|required'],
+                ['timezone_param' => ['description' => $description]],
                 [
                     'description' => 'The value must be a valid time zone, such as <code>Africa/Accra</code>.',
                     'type' => 'string',
                 ],
             ],
             'email' => [
-                ['email' => 'email|required'],
-                ['email' => ['description' => $description]],
+                ['email_param' => 'email|required'],
+                ['email_param' => ['description' => $description]],
                 [
                     'description' => 'The value must be a valid email address.',
                     'type' => 'string',
                 ],
             ],
             'url' => [
-                ['url' => 'url|required'],
-                ['url' => ['description' => $description]],
+                ['url_param' => 'url|required'],
+                ['url_param' => ['description' => $description]],
                 [
                     'description' => 'The value must be a valid URL.',
                     'type' => 'string',
                 ],
             ],
             'ip' => [
-                ['ip' => 'ip|required'],
-                ['ip' => ['description' => $description]],
+                ['ip_param' => 'ip|required'],
+                ['ip_param' => ['description' => $description]],
                 [
                     'description' => 'The value must be a valid IP address.',
                     'type' => 'string',
                 ],
             ],
             'json' => [
-                ['json' => 'json|required'],
-                ['json' => ['description' => $description]],
+                ['json_param' => 'json|required'],
+                ['json_param' => ['description' => $description]],
                 [
                     'description' => 'The value must be a valid JSON string.',
                     'type' => 'string',
                 ],
             ],
             'date' => [
-                ['date' => 'date|required'],
-                ['date' => ['description' => $description]],
+                ['date_param' => 'date|required'],
+                ['date_param' => ['description' => $description]],
                 [
                     'description' => 'The value must be a valid date.',
                     'type' => 'string',
                 ],
             ],
             'date_format' => [
-                ['date_format' => 'date_format:Y-m-d|required'],
-                ['date_format' => ['description' => $description]],
+                ['date_format_param' => 'date_format:Y-m-d|required'],
+                ['date_format_param' => ['description' => $description]],
                 [
                     'description' => 'The value must be a valid date in the format Y-m-d.',
                     'type' => 'string',
                 ],
             ],
             'in' => [
-                ['in' => 'in:3,5,6|required'],
-                ['in' => ['description' => $description]],
+                ['in_param' => 'in:3,5,6|required'],
+                ['in_param' => ['description' => $description]],
                 [
                     'description' => 'The value must be one of <code>3</code>, <code>5</code>, or <code>6</code>.',
                     'type' => 'string',

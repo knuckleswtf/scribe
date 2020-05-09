@@ -123,11 +123,6 @@ class Writer
     {
         $routesWithOutput = $parsedRoutes->map(function (Collection $routeGroup) use ($settings) {
             return $routeGroup->map(function (array $route) use ($settings) {
-                if (count($route['cleanBodyParameters']) && !isset($route['headers']['Content-Type'])) {
-                    // Set content type if the user forgot to set it
-                    $route['headers']['Content-Type'] = 'application/json';
-                }
-
                 $hasRequestOptions = !empty($route['headers'])
                     || !empty($route['cleanQueryParameters'])
                     || !empty($route['cleanBodyParameters']);
