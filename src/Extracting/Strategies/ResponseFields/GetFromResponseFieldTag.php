@@ -46,10 +46,10 @@ class GetFromResponseFieldTag extends Strategy
                 preg_match('/(.+?)\s+(.+?)\s+(.*)/', $tag->getContent(), $content);
                 if (empty($content)) {
                     // this means only name and type were supplied
-                    list($name, $type) = preg_split('/\s+/', $tag->getContent());
+                    [$name, $type] = preg_split('/\s+/', $tag->getContent());
                     $description = '';
                 } else {
-                    list($_, $name, $type, $description) = $content;
+                    [$_, $name, $type, $description] = $content;
                     $description = trim($description);
                 }
 

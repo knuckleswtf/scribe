@@ -29,7 +29,7 @@ class GenerateDocumentation extends Command
      * @var string
      */
     protected $signature = "scribe:generate
-                            {--force: Discard any changes you've made to the Markdown files}
+                            {--force : Discard any changes you've made to the Markdown files}
     ";
 
     /**

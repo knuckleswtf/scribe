@@ -69,7 +69,7 @@ class UseApiResourceTags extends Strategy
             return null;
         }
 
-        list($statusCode, $apiResourceClass) = $this->getStatusCodeAndApiResourceClass($apiResourceTag);
+        [$statusCode, $apiResourceClass] = $this->getStatusCodeAndApiResourceClass($apiResourceTag);
         [$model, $factoryStates, $relations, $pagination] = $this->getClassToBeTransformedAndAttributes($tags);
         $modelInstance = $this->instantiateApiResourceModel($model, $factoryStates, $relations);
 

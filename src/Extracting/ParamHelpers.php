@@ -111,13 +111,17 @@ trait ParamHelpers
      */
     protected function normalizeParameterType(string $type): string
     {
+        if (!$type) {
+            return 'string';
+        }
+
         $typeMap = [
             'int' => 'integer',
             'bool' => 'boolean',
             'double' => 'float',
         ];
 
-        return $type ? ($typeMap[$type] ?? $type) : 'string';
+        return $typeMap[$type] ?? $type;
     }
 
     /**

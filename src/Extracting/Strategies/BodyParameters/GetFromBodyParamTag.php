@@ -75,7 +75,7 @@ class GetFromBodyParamTag extends Strategy
                 $content = preg_replace('/\s?No-example.?/', '', $content);
                 if (empty($content)) {
                     // this means only name and type were supplied
-                    list($name, $type) = preg_split('/\s+/', $tag->getContent());
+                    [$name, $type] = preg_split('/\s+/', $tag->getContent());
                     $required = false;
                     $description = '';
                 } else {
@@ -89,7 +89,7 @@ class GetFromBodyParamTag extends Strategy
                 }
 
                 $type = $this->normalizeParameterType($type);
-                list($description, $example) = $this->parseParamDescription($description, $type);
+                [$description, $example] = $this->parseParamDescription($description, $type);
                 $value = is_null($example) && ! $this->shouldExcludeExample($tag->getContent())
                     ? $this->generateDummyValue($type)
                     : $example;

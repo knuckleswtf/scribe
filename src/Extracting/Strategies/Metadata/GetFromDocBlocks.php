@@ -26,7 +26,7 @@ class GetFromDocBlocks extends Strategy
 
     public function getMetadataFromDocBlock(DocBlock $methodDocBlock, DocBlock $classDocBlock): array
     {
-        list($routeGroupName, $routeGroupDescription, $routeTitle) = $this->getRouteGroupDescriptionAndTitle($methodDocBlock, $classDocBlock);
+        [$routeGroupName, $routeGroupDescription, $routeTitle] = $this->getRouteGroupDescriptionAndTitle($methodDocBlock, $classDocBlock);
 
         return [
             'groupName' => $routeGroupName,

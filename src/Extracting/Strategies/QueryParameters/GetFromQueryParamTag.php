@@ -75,11 +75,11 @@ class GetFromQueryParamTag extends Strategy
                 $content = preg_replace('/\s?No-example.?/', '', $content);
                 if (empty($content)) {
                     // this means only name was supplied
-                    list($name) = preg_split('/\s+/', $tag->getContent());
+                    [$name] = preg_split('/\s+/', $tag->getContent());
                     $required = false;
                     $description = '';
                 } else {
-                    list($_, $name, $required, $description) = $content;
+                    [$_, $name, $required, $description] = $content;
                     $description = trim($description);
                     if ($description == 'required' && empty(trim($required))) {
                         $required = $description;
@@ -88,7 +88,7 @@ class GetFromQueryParamTag extends Strategy
                     $required = trim($required) == 'required' ? true : false;
                 }
 
-                list($description, $value) = $this->parseParamDescription($description, 'string');
+                [$description, $value] = $this->parseParamDescription($description, 'string');
                 if (is_null($value) && ! $this->shouldExcludeExample($tag->getContent())) {
                     $value = Str::contains($description, ['number', 'count', 'page'])
                         ? $this->generateDummyValue('integer')
