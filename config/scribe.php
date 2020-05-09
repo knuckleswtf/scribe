@@ -75,14 +75,14 @@ INTRO
 
     /*
      * Example requests for each endpoint will be shown in each of these languages.
-     * Supported options are: bash, javascript, php, python
+     * Supported options are: curl, javascript, php, python
      * You can add a language of your own, but you must publish the package's views
      * and define a corresponding view for it in the partials/example-requests directory.
      * See https://scribe.readthedocs.io/en/latest/generating-documentation.html
      *
      */
     'example_languages' => [
-        'bash',
+        'curl',
         'javascript',
     ],
 
