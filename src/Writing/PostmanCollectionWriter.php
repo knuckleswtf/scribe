@@ -48,7 +48,7 @@ class PostmanCollectionWriter
         $collection = [
             'variables' => [],
             'info' => [
-                'name' => config('scribe.postman.name') ?: config('app.name') . ' API',
+                'name' => config('scribe.title') ?: config('app.name') . ' API',
                 '_postman_id' => Uuid::uuid4()->toString(),
                 'description' => config('scribe.postman.description') ?: '',
                 'schema' => 'https://schema.getpostman.com/json/collection/v2.0.0/collection.json',

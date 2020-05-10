@@ -54,7 +54,7 @@ return [
          * The value of the parameter. This will NOT be part of the generated documentation.
          * Use it to easily auth response calls by this package. Otherwise, we'll use a random value.
          */
-        'use_value' => env('SCRIBE_API_KEY'),
+        'use_value' => env('SCRIBE_AUTH_KEY'),
 
         /*
          * Any extra info for your users. For instance, you can describe where to find (or generate) their auth credentials.
@@ -88,9 +88,15 @@ INTRO
 
     /*
      * The base URL to be used in examples and the Postman collection.
-     * By default, this will be the value of config('app.url').
+     * If this is null, Scribe will use the value of config('app.url').
      */
     'base_url' => null,
+
+    /*
+     * The HTML <title> for the generated documentation, and the name of the generated Postman collection.
+     * If this is null, Scribe will infer it from config('app.name').
+     */
+    'title' => null,
 
     /*
      * Generate a Postman collection in addition to HTML docs.
@@ -103,11 +109,6 @@ INTRO
          * Specify whether the Postman collection should be generated.
          */
         'enabled' => true,
-
-        /*
-         * The name for the exported Postman collection. Default: config('app.name')." API"
-         */
-        'name' => null,
 
         /*
          * The description for the exported Postman collection.

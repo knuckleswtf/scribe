@@ -1,4 +1,8 @@
-## Scribe ✍
+<h1 align="center">Scribe</h1>
+
+<p align="center">
+  <img src="logo-scribe.png"><br>
+</p>
 
 Generate API documentation for humans from your Laravel codebase. [Here's what the output looks like](https://shalvah.me/TheCensorshipAPI/).
 

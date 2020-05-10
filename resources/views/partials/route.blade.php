@@ -1,4 +1,5 @@
 ## {{ $route['metadata']['title'] ?: $route['uri']}}
+
 @component('scribe::components.badges.auth', ['authenticated' => $route['metadata']['authenticated']])
 @endcomponent
 

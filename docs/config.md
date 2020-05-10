@@ -1,4 +1,5 @@
 # Configuration
+[IN PROGRESS]
 
 Before you can generate your documentation, you'll need to configure a few things in your `config/scribe.php`. If you aren't sure what an option does, it's best to leave it set to the default. If you don't have this config file, see the [installation instructions](index.html#installation).
 
@@ -75,9 +76,7 @@ If you are using a custom serializer with league/fractal,  you can specify it he
 Leave this as null to use no serializer or return a simple JSON.
 
 ## `routes`
-The `routes` section is an array of items, describing what routes in your application that should have documentation generated for them. Each item in the array contains rules about what routes belong in that group, and what rules to apply to them. This allows you to apply different settings to different routes.
-
-> Note: This package does not work with Closure-based routes. If you want your route to be captured by this package, you need a controller.
+The `routes` section is an array of items, describing what routes in your application that should be included in the generated documentation. Each item in the array contains rules about what routes belong in that group, and what rules to apply to them. This allows you to apply different settings to different routes.
 
 Each item in the `routes` array (a route group) has keys which are explained below. We'll use this sample route definition for a Laravel app to demonstrate them:
 

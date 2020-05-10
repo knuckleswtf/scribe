@@ -1,4 +1,5 @@
 # Generating Documentation
+[IN PROGRESS]
 
 To generate your API documentation, use the `scribe:generate` artisan command.
 

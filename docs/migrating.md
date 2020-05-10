@@ -33,6 +33,7 @@ _After you've done all of the above_, delete your `resources/docs/` and `public/
 
 ## Key changes
 ### High impact
+- The `postman.name` key has been removed instead. Use the `title` key, which will set both Postman collection name and the generated doc's HTMl title.
 - The `laravel.autoload` key is now `laravel.add_routes`, and is `true` by default.
 - The `laravel.docs_url` key is now `/docs` by default (no longer `/doc`). This means if you're using `laravel` docs type, your docs will be at <your-app>/docs and <your-app>/docs.json.
 - The Markdown output is now a set of files, located in `resources/docs`. The route files are located in `resources/docs/groups` and are split by groups (1 group per file).
