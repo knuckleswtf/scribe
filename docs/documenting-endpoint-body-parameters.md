@@ -102,23 +102,22 @@ If you're using Laravel or Dingo FormRequests in your controller method, Scribe 
 - `image`
 - `in`
 
-Custom rules are not supported.
+Custom rules are not supported. Scribe will ignore any rules it does not support.
 
 For each parameter in `rules()` it encounters, Scribe will:
 - generate an example value that passes all the supported rules. Note that if you have rules that are not supported, the generated value might not pass them. You can get around that by specifying an example in the `bodyParameters()` method.
-- generate a description that combines the validation rules with any description you specify in `bodyParameters()` 
+- generate a description that combines the supported validation rules with any description you specify in `bodyParameters()` 
 
 Here's an example:
 
 ```php
-
 class CreatePostRequest extends FormRequest
 {
     public function rules()
     {
         return [
-            'content' => 'string|required',
-            'title' => 'string|required',
+            'content' => 'string|required|min:100',
+            'title' => 'string|required|max:400',
             'author_display_name' => 'string',
             'author_homepage' => 'url',
             'author_timezone' => 'timezone',
