@@ -86,7 +86,7 @@ For files, your example should be the absolute path to a file that exists on you
 ```php
 /**
  * @bodyParam caption string The image caption
- * @bodyParam image required file The image.
+ * @bodyParam image file required The image.
  */
 ```
 
