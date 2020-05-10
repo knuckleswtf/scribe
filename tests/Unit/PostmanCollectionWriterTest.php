@@ -11,14 +11,12 @@ class PostmanCollectionWriterTest extends TestCase
 {
     public function testNameIsPresentInCollection()
     {
-        \Config::set('scribe.postman', [
-            'name' => 'Test collection',
-        ]);
+        \Config::set('scribe.title', 'Test API');
 
         $writer = new PostmanCollectionWriter(new Collection(), '');
         $collection = $writer->getCollection();
 
-        $this->assertSame('Test collection', json_decode($collection)->info->name);
+        $this->assertSame('Test API', json_decode($collection)->info->name);
     }
 
     public function testFallbackCollectionNameIsUsed()
