@@ -8,8 +8,7 @@ The `@bodyParam` annotation takes the name of the parameter, its type, an option
 - `string`
 - `number` / `float`
 - `boolean`
-- `array`
-- `object`
+- `array`, `object` (see [Handling array and object parameters](#handling-array-and-object-parameters) below)
 - `file` (see [Documenting File Uploads](#documenting-file-uploads) below)
 
 By default, Scribe will generate a random value for each parameter, to be used in the example requests and response calls. If you'd like to use a specific example value, you can do so by adding `Example: your-example-here` to the end of your description.
