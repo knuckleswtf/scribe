@@ -1,5 +1,4 @@
-
-# Documenting endpoint responses
+# Documenting responses from an endpoint
 [IN PROGRESS]
 
 ## Providing an example response

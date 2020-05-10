@@ -1,11 +1,11 @@
-# Documenting parameters for an endpoint
+# Documenting query and URL parameters for an endpoint
 
 ## Specifying query parameters
-To describe query parameters for your endpoint, use the `@queryParam` annotation.
+To describe query parameters for your endpoint, use the `@queryParam` annotation on the method handling it.
 
 The `@queryParam` annotation takes the name of the parameter, an optional "required" label, and a description.
 
-Examples:
+Here's an example:
 
 ```php
 /**
@@ -20,7 +20,7 @@ public function listPosts()
 }
 ```
 
-They will be included in the generated documentation text and example requests:
+The query parameters will be included in the generated documentation text and example requests:
 
 ![](images/endpoint-queryparams-1.png)
 
@@ -31,24 +31,24 @@ If you're using a FormRequwst in your controller, you can also add the `@queryPa
 
 ```php
 /**
- * @queryParam user_id required The id of the user. Example: me
+ * @queryParam user_id required The id of the user.
  */
-class MyRequest extends \Illuminate\Foundation\Http\FormRequest
+class CreatePostRequest extends \Illuminate\Foundation\Http\FormRequest
 {
 
 }
 
 // in your controller...
-public function createPost(MyRequest $request)
+public function createPost(CreatePostRequest $request)
 {
     // ...
 }
 ```
 
 ## Specifying example values
-By default, Scribe will generate a random value for each parameter to be used in the example requests and response calls. If you'd like to use a specific example value, you can do so by adding `Example: your-example` to the end of your description.
+By default, Scribe will generate a random value for each parameter, to be used in the example requests and response calls. If you'd like to use a specific example value, you can do so by adding `Example: your-example-here` to the end of your description.
 
-You can also exclude a particular parameter from the generated examples by ending with `No-example` instead. This will also prevent the parameter from being sent along in response calls.
+You can also exclude a particular parameter from the generated examples by ending with `No-example` instead. This will also prevent the parameter from being sent along in response calls. The parameter will still be included in the text of the documentation.
 
 For instance:
 
