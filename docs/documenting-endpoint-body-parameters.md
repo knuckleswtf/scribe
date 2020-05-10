@@ -1,6 +1,9 @@
 # Documenting body and file parameters for an endpoint
+Scribe can get information about your endpoint's body parameters in two ways:
+- the fully-manual way (using the `@bodyParam` annotation)
+- the mostly-automatic way (using FormRequests)
 
-## Specifying body parameters
+## The manual way: Specifying body parameters with @bodyParam
 To describe body parameters for your endpoint, use the `@bodyParam` annotation on the method handling it.
 
 The `@bodyParam` annotation takes the name of the parameter, its type, an optional "required" label, and then its description. Valid types:
@@ -54,7 +57,7 @@ public function createPost(CreatePostRequest $request)
 }
 ```
 
-## Handling array and object parameters
+### Handling array and object parameters
 Sometimes you have body parameters that are arrays ir ibjects. To handle them in `@bodyparam`, Scribe follows Laravel's convention:
 - For arrays: use `<name>.*`
 - For objects: use `<name>.<key>`.
@@ -78,8 +81,80 @@ You can also add a "parent" description if you like, by using `@bodyParam` with 
 ![](images/endpoint-bodyparams-2.png)
 
 
+## Using FormRequests
+If you're using Laravel or Dingo FormRequests in your controller method, Scribe can extract information about your parameters from your validation rules. Since these rules only describe validation logic, you can also add a `bodyParameters` method where you can add a description and example for each parameter.
+
+**Not all rules are supported.** Here are the supported rules:
+- `required`
+- `bool`
+- `string`
+- `int`
+- `numeric`
+- `array`
+- `file`
+- `timezone`
+- `email`
+- `url`
+- `ip`
+- `json`
+- `date`
+- `date_format`
+- `image`
+- `in`
+
+Custom rules are not supported.
+
+For each parameter in `rules()` it encounters, Scribe will:
+- generate an example value that passes all the supported rules. Note that if you have rules that are not supported, the generated value might not pass them. You can get around that by specifying an example in the `bodyParameters()` method.
+- generate a description that combines the validation rules with any description you specify in `bodyParameters()` 
+
+Here's an example:
+
+```php
+
+class CreatePostRequest extends FormRequest
+{
+    public function rules()
+    {
+        return [
+            'content' => 'string|required',
+            'title' => 'string|required',
+            'author_display_name' => 'string',
+            'author_homepage' => 'url',
+            'author_timezone' => 'timezone',
+            'author_email' => 'email|required',
+            'publication_date' => 'date_format:Y-m-d',
+            'category' => ['in:news,opinion,quiz', 'required'],
+        ];
+    }
+
+    public function bodyParameters()
+    {
+        return [
+            'content' => [
+                'description' => 'Contents of the post',
+            ],
+            'title' => [
+                'description' => 'The title of the post.',
+                'example' => 'My First Post',
+            ],
+            'publication_date' => [
+                'description' => 'Date to be used as the publication date.',
+            ],
+            'category' => [
+                'description' => 'Category the post belongs to.',
+            ],
+        ];
+    }
+}
+```
+
+This gives:
+
+![](images/endpoint-bodyparams-3.png) 
+
 ## Documenting file uploads
-You can document file inputs by using `@bodyParam` with a type `file`. You can add a description and example as usual. 
+You can document file inputs by using `@bodyParam` or FormRequest rules with a type `file`. You can add a description and example as usual. 
 
 For files, your example should be the absolute path to a file that exists on your machine. If you don't specify an example, Scribe will generate a fake file for example requests and response calls.
 
@@ -90,6 +165,6 @@ For files, your example should be the absolute path to a file that exists on you
  */
 ```
 
-![](images/endpoint-bodyparams-3.png) 
+![](images/endpoint-bodyparams-4.png) 
 
 > Note: Adding a file parameter will automatically set the 'Content-Type' header in example requests and response calls to `multipart/form-data`.

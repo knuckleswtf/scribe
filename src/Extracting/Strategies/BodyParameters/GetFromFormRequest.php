@@ -45,6 +45,8 @@ class GetFromFormRequest extends Strategy
             try {
                 $parameterClass = new ReflectionClass($parameterClassName);
             } catch (ReflectionException $e) {
+
+                dump($e->getMessage());
                 continue;
             }
 
@@ -349,6 +351,10 @@ class GetFromFormRequest extends Strategy
             case 'image':
                 $parameterData['type'] = 'file';
                 $parameterData['description'] .= d::getDescription($rule) . ' ';
+                $parameterData['setter'] = function () {
+                    // This is fine because the file example generator generates an image
+                    return $this->generateDummyValue('file');
+                };
                 break;
 
             /**
