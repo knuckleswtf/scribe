@@ -58,7 +58,7 @@ class UserController extends Controller
 }
 ``` 
 
-![Doc block result](images/endpoint-groups.png)
+![](images/endpoint-groups.png)
 
 Grouping endpoints is optional. Any endpoints not in a group will be placed in a default group, "Endpoints".
 

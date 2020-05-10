@@ -57,5 +57,6 @@ master_doc = 'index'
 def setup(app):
     app.add_config_value('recommonmark_config', {
         'auto_toc_tree_section': 'Contents',
+        'auto_toc_maxdepth': 3,
     }, True)
     app.add_transform(AutoStructify)
