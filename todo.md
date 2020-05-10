@@ -1,6 +1,5 @@
 # Documentation tasks
 - Rewritten docs. Some things to document:
-  - formrequests: supported rules
   - hideFromAPIDocumentation
   - overwriting with --force
   - binary responses
