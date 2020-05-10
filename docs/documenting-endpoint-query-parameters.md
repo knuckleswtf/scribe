@@ -27,7 +27,7 @@ The query parameters will be included in the generated documentation text and ex
 ![](images/endpoint-queryparams-2.png)
 
 
-If you're using a FormRequwst in your controller, you can also add the `@queryParam` annotation there instead, and Scribe will fetch it.
+If you're using a FormRequest in your controller, you can also add the `@queryParam` annotation there instead, and Scribe will fetch it.
 
 ```php
 /**

@@ -1,7 +1,7 @@
 # Documenting body and file parameters for an endpoint
 
 ## Specifying body parameters
-To describe query parameters for your endpoint, use the `@bodyParam` annotation on the method handling it.
+To describe body parameters for your endpoint, use the `@bodyParam` annotation on the method handling it.
 
 The `@bodyParam` annotation takes the name of the parameter, its type, an optional "required" label, and then its description. Valid types:
 - `int` / `integer`
@@ -36,7 +36,7 @@ The body parameters will be included in the generated documentation text and exa
 ![](images/endpoint-bodyparams-1.png)
 
 
-You can also add the `@queryParam` and `@bodyParam` annotations to a `\Illuminate\Foundation\Http\FormRequest` subclass instead, if you are using one in your controller method
+If you're using a FormRequest in your controller, you can also add the `@bodyParam` annotation there instead, and Scribe will fetch it.
 
 ```php
 /**
