@@ -304,7 +304,7 @@ class Writer
 
         // Generate Markdown for each route. Not using a Blade component bc of some complex logic
         $parsedRoutesWithOutput = $this->generateMarkdownOutputForEachRoute($parsedRoutes, $settings);
-        $parsedRoutesWithOutput->each(function ($routesInGroup, $groupName) {
+        $groupFileNames = $parsedRoutesWithOutput->map(function ($routesInGroup, $groupName) {
             $groupId = Str::slug($groupName);
             $routeGroupMarkdownFile = $this->sourceOutputPath . "/groups/$groupId.md";
 
@@ -326,8 +326,23 @@ class Writer
                 ->with('routes', $routesInGroup);
 
             $this->writeFile($routeGroupMarkdownFile, $groupMarkdown);
-        });
+            return "$groupId.md";
+        })->toArray();
 
+        // Now, we need to delete any other Markdown files in the groups/ directory.
+        // Why? Because, if we don't, if a user renames a group, the old file will still exist,
+        // so the docs will have those endpoints repeated under the two groups.
+        $filesInGroupFolder = scandir($this->sourceOutputPath . "/groups");
+        $filesNotPresentInThisRun = collect($filesInGroupFolder)->filter(function ($fileName) use ($groupFileNames) {
+            if (in_array($fileName, ['.', '..'])) {
+                return false;
+            }
+
+           return !Str::is($groupFileNames, $fileName);
+        });
+        $filesNotPresentInThisRun->each(function ($fileName) {
+            unlink($this->sourceOutputPath . "/groups/$fileName");
+        });
     }
 
     /**
@@ -355,6 +370,10 @@ class Writer
      */
     protected function hasFileBeenModified(string $filePath): bool
     {
+        if (!file_exists($filePath)) {
+            return false;
+        }
+
         $oldFileModificationTime = $this->lastTimesWeModifiedTheseFiles[$filePath] ?? null;
 
         if ($oldFileModificationTime) {

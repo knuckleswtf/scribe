@@ -8,7 +8,7 @@ Generate API documentation for humans from your Laravel/Lumen/[Dingo](https://gi
 * [Getting started](guide-getting-started.md)
 * [Whats new](whats-new.md)
 * [Migrating from mpociot/laravel-apidoc-generator](migrating.md)
-* [Documenting Your API](documenting.md)
+* [Documenting your API](documenting.md)
 * [Adding general information about your API](documenting-api-information.md)
 * [Documenting endpoint metadata](documenting-endpoint-metadata.md)
 * [Specifying headers to be sent in requests to the endpoint](documenting-endpoint-headers.md)
@@ -28,7 +28,7 @@ Generate API documentation for humans from your Laravel/Lumen/[Dingo](https://gi
 > Note: PHP 7.2 and Laravel 5.8 or higher are required.
 
 ```sh
-composer require knuckleswtf/scribe
+composer require --dev knuckleswtf/scribe
 ```
 
 ### Laravel
