@@ -1,66 +1,39 @@
 # Generating Documentation
-[IN PROGRESS]
 
 To generate your API documentation, use the `scribe:generate` artisan command.
 
 ```sh
 php artisan scribe:generate
-
 ```
 
-It will generate documentation using your specified configuration. The documentation will be generated as static HTML and CSS assets within the specified output folder.
+This will:
+- extract information about your API and endpoints
+- generate documentation about them as a series of Markdown files
+- pass these Markdown files to [Pastel](https://github.com/knuckleswtf/pastel), which wraps the Markdown files in a HTML, CSS and JavaScript template. 
 
-## Regenerating
-When you make changes to your routes, you can safely regenerate your documentation by running the `generate` command. This will rewrite the documentation for only the routes you have changed. You can use the `force` option to force the regeneration of existing/unmodified API routes.
+Accessing your generated docs depends on the `type` you specified in `scribe.php`:
+- If you're using `static` type, find the `docs/index.html` file in your `public/` folder and open that in your browser.
+- If you're using `laravel` type, start your app (`php artisan serve`), then visit `/docs`.
 
 ## Postman collections
+By default, a Postman collection file, which you can import into API clients like Postman or Insomnia is generated alongside your docs. You can get it by visiting `public/docs/collection.json` for `static` type, and `<your-app>/docs.json` for `laravel` type.
 
-The generator automatically creates a Postman collection file, which you can import to use within your [Postman app](https://www.getpostman.com/apps) for even simpler API testing and usage.
+You can configure Postman collection generation in the `postman` section of your `scribe.php` file.
 
-If you don't want to create a Postman collection, set the `postman.enabled` config option to false.
+- To turn it off, set the `postman.enabled` config option to false.
 
-The base URL used in the Postman collection will be the value of the `base_url` key in your Laravel `config/scribe.php` file. 
+- The base URL used in the Postman collection is the value of `config('app.url')` by default. To change this, set the value of the `postman.base_url` key.
 
-## Manually modifying the content of the generated documentation
-If you want to modify the content of your generated documentation without changing the routes, go ahead and edit the generated `index.md` file.
+- The name of the Postman collection will be derived from `config('app.name')` by default. To change this, set the value of the `title` key (not in the `postman` array). This will also set the title for your docs HTML page.
 
-This file is located in the `source` folder of  your `output` directory (see [configuration](config.html#output)), so by default, this is `public/docs/index.md`.
- 
-After editing the markdown file, you can use the `scribe:generate` command to rebuild your documentation into HTML.
-
-## Automatically add markdown to the beginning or end of the documentation
- If you wish to automatically add the same content to the docs every time you generate (for instance, an introduction, a disclaimer or an authenticatino guide), you can add a `prepend.md` and/or `append.md` file to the `source` folder in the source output directory (`resources/docs`), and they will be added to the generated documentation. 
- 
- The contents of `prepend.md` will be added after the front matter and info text, while the contents of `append.md` will be added at the end of the document.
- 
- ## Specifying language for examples
- For each endpoint, an example request is shown in [each language configured](config.html#example-languages). To add a language which is not supported by this package, you'll have to create your own view for how an example should render. Here's how:
- 
- - Publish the vendor views by running:
- 
- ```bash
- php artisan vendor:publish --provider="Knuckles\Scribe\ScribeServiceProvider" --tag=scribe-views
- ```
- 
- This will copy the views files to `\resources\views\vendor\scribe`.
- 
- - Next, create a file called {language-name}.blade.php (for example, ruby.blade.php) in the partials/example-requests directory. You can then write Markdown with Blade templating that describes how the example request for the language should be rendered. You have the `$route` variable available to you. This variable is an array with the following keys:
-- `methods`: an array of the HTTP methods for that route
-- `boundUri`: the complete URL for the route, with any url parameters replaced (/users/{id} -> /users/1)
-- `headers`: key-value array of headers to be sent with route (according to your configuration)
-- `cleanQueryParameters`: key-value array of query parameters with example values to be sent with the request. Parameters which have been excluded from the example requests (see [Example Parameters](documenting.html#example-parameters)) will not be present here.
-- `cleanBodyParameters`: key-value array of body parameters with example values to be sent with the request. Parameters which have been excluded from the example requests (see [Example Parameters](documenting.html#example-parameters)) will not be present here.
-
-- Add the language to the `example_languages` array in the package config.
-
-- Generate your documentation 
-
-To customise existing language templates you can perform the `vendor:publish` command above, then modify the blade templates in `resources/` as necessary.
+- You can add descriptions and auth information for the collection in the `postman.description` and `postman.auth` keys. 
 
 ## Memory Limitations
+Generating docs for large APIs can be memory intensive. If you run into memory limits, consider running PHP with an increased memory limit (either by updating your CLI php.ini file or using a CLI flag):
 
-Generating docs for large APIs can be memory intensive. If you run into memory limits, consider running PHP with command line flags to increase memory limit or update your CLI php.ini file:
-
-```
+```sh
 php -d memory_limit=1G artisan scribe:generate
 ```
+
+## Further customization
+Sometimes you need to modify the documentation after it has been generated. See [the guide on customization](customization.html) for help on doing that.

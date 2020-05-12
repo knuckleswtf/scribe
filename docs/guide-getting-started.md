@@ -30,9 +30,11 @@ Now, let's do a test run. Run the command to generate your docs.
 php artisan scribe:generate
 ```
 
-Open up your docs in your browser. If you're using `static` type, just find the `docs/index.html` file in your `public/` folder. If you're using `laravel` type, start your app (`php artisan serve`), then visit `/docs`. You should see your docs show up nicely.
+Visit your newly generated docs:
+- If you're using `static` type, find the `docs/index.html` file in your `public/` folder and open it in your browser.
+- If you're using `laravel` type, start your app (`php artisan serve`), then visit `/docs`.
 
-There's also a Postman collection generated for you by default. You can get it by visiting `docs/collection.json` for `static` type, and `/docs.json` for `laravel` type.
+There's also a Postman collection generated for you by default. You can get it by visiting `public/docs/collection.json` for `static` type, and `<your-app>/docs.json` for `laravel` type.
 
 Great! You've seen what Scribe can do. Now, let's refine our docs to match what we want.
 

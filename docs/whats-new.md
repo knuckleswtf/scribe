@@ -1,7 +1,7 @@
 # What's new in Scribe
 > This page is written for those coming from mpociot/laravel-apidoc-generator. It should give you an overview of what's new in Scribe, and point you to the relevant documentation on each. Once you're ready to migrate, check out [the migration guide](migrating.html).
 
-Scribe v1 comes with some new features and tweaks aimed at improving the developer experience and the quality of the output documentation. Let's dive in!
+Scribe v1 comews with some new features and tweaks aimed at improving the developer experience and the quality of the output documentation. Let's dive in!
 
 ## Improved appearance
 First off, the generated documentation has been given a UI refresh. We've made some cosmetic fixes like changing the custom font, removing the logo by default (relative paths and URLs are now supported too😃), switching from tables to explanatory paragraphs. You can check out the new look [here](https://shalvah.me/TheCensorshipAPI). Of course, there's still lots of room for improvement. If you can do some sick CSS, consider making a PR to knuckleswtf/pastel, as that's where the templates live.
@@ -14,7 +14,7 @@ Scribe can now add authentication information to your docs! The info you provide
  
  Also, you can describe multiple responses with the same (or different) status code, but applying to different scenarios. See more details [here](documenting-endpoint-responses.html).
 
-## More customization options
+## Ability to add general API information
 You can now customise the documentation title and the introductory text shown at the start of your documentation🙌. Full Markdown and HTML support, plus some nice little CSS classes to make things pretty. If you want to go even deeper and modify the output templates, we have some nice Blade components you can use. See [the docs](documenting-api-information.html) for details.
 
 ## FormRequest support is back!🎉🎉🎉
@@ -43,6 +43,7 @@ A few other things that might interest some folk:
 - [Binary responses can now be indicated](documenting-endpoint-responses.html)
 - [File upload inputs are supported, too](documenting-endpoint-body-parameters.html#documenting-file-uploads)
 - The output Markdown is now split across multiple files.
+- There are now [a lot more ways](customization.html) to customize the generated docs.
 - The default group is now called "Endpoints".
 - If you're interested in contributing, we've also added a [guide for that](contributing.html). We've reworked the tests structure as well to make it easier to maintain.
 
