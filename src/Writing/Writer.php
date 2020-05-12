@@ -26,7 +26,7 @@ class Writer
     /**
      * @var bool
      */
-    private $forceIt;
+    private $shouldOverwrite;
 
     /**
      * @var bool
@@ -63,12 +63,12 @@ class Writer
      */
     private $lastTimesWeModifiedTheseFiles;
 
-    public function __construct(DocumentationConfig $config = null, bool $forceIt = false)
+    public function __construct(DocumentationConfig $config = null, bool $shouldOverwrite = false)
     {
         // If no config is injected, pull from global
         $this->config = $config ?: new DocumentationConfig(config('scribe'));
         $this->baseUrl = $this->config->get('base_url') ?? config('app.url');
-        $this->forceIt = $forceIt;
+        $this->shouldOverwrite = $shouldOverwrite;
         $this->shouldGeneratePostmanCollection = $this->config->get('postman.enabled', false);
         $this->pastel = new Pastel();
         $this->isStatic = $this->config->get('type') === 'static';
@@ -78,7 +78,7 @@ class Writer
         $this->lastTimesWeModifiedTheseFiles = [];
     }
 
-    public function writeDocs(Collection $routes)
+    public function writeDocs(Collection $routes = null)
     {
         // The source Markdown files always go in resources/docs.
         // The static assets (js/, css/, and images/) always go in public/docs/.
@@ -86,11 +86,11 @@ class Writer
         // For 'laravel' docs, the output files (index.blade.php, collection.json)
         // go in resources/views/scribe/ and storage/app/scribe/ respectively.
 
-        $this->writeMarkdownAndSourceFiles($routes);
+        $routes && $this->writeMarkdownAndSourceFiles($routes);
 
         $this->writeHtmlDocs();
 
-        $this->writePostmanCollection($routes);
+        $routes && $this->writePostmanCollection($routes);
     }
 
     /**
@@ -112,9 +112,9 @@ class Writer
             mkdir($this->sourceOutputPath, 0777, true);
         }
 
+        $this->writeRoutesMarkdownFile($parsedRoutes, $settings);
         $this->writeIndexMarkdownFile($settings);
         $this->writeAuthMarkdownFile();
-        $this->writeRoutesMarkdownFile($parsedRoutes, $settings);
 
         ConsoleOutputUtils::info('Wrote source Markdown files to: ' . $this->sourceOutputPath);
     }
@@ -213,23 +213,42 @@ class Writer
 
     protected function writeIndexMarkdownFile(array $settings): void
     {
+        $indexMarkdownFile = $this->sourceOutputPath . '/index.md';
+        if ($this->hasFileBeenModified($indexMarkdownFile)) {
+            if ($this->shouldOverwrite) {
+                ConsoleOutputUtils::warn("Discarding manual changes for file $indexMarkdownFile because you specified --force");
+            } else {
+                ConsoleOutputUtils::warn("Skipping modified file $indexMarkdownFile");
+                return;
+            }
+        }
+
         $frontmatter = view('scribe::partials.frontmatter')
             ->with('showPostmanCollectionButton', $this->shouldGeneratePostmanCollection)
             // This path is wrong for laravel type but will be replaced in post
             ->with('postmanCollectionLink', './collection.json')
             ->with('outputPath', 'docs')
             ->with('settings', $settings);
-        $indexFile = $this->sourceOutputPath . '/index.md';
 
         $introText = $this->config->get('intro_text', '');
         $introMarkdown = view('scribe::index')
             ->with('frontmatter', $frontmatter)
             ->with('introText', $introText);
-        $this->writeFile($indexFile, $introMarkdown);
+        $this->writeFile($indexMarkdownFile, $introMarkdown);
     }
 
     protected function writeAuthMarkdownFile(): void
     {
+        $authMarkdownFile = $this->sourceOutputPath . '/authentication.md';
+        if ($this->hasFileBeenModified($authMarkdownFile)) {
+            if ($this->shouldOverwrite) {
+                ConsoleOutputUtils::warn("Discarding manual changes for file $authMarkdownFile because you specified --force");
+            } else {
+                ConsoleOutputUtils::warn("Skipping modified file $authMarkdownFile");
+                return;
+            }
+        }
+
         $isAuthed = $this->config->get('auth.enabled', false);
         $text = '';
         $extraInfo = '';
@@ -270,7 +289,7 @@ class Writer
             'authDescription' => $text,
             'extraAuthInfo' => $extraInfo,
         ]);
-        $this->writeFile($this->sourceOutputPath . '/authentication.md', $authMarkdown);
+        $this->writeFile($authMarkdownFile, $authMarkdown);
     }
 
     protected function writeRoutesMarkdownFile(Collection $parsedRoutes, array $settings): void
@@ -297,8 +316,8 @@ class Writer
             $routeGroupMarkdownFile = $this->sourceOutputPath . "/groups/$groupId.md";
 
             if ($this->hasFileBeenModified($routeGroupMarkdownFile)) {
-                if ($this->forceIt) {
-                    ConsoleOutputUtils::warn("Discarded manual changes for file $routeGroupMarkdownFile");
+                if ($this->shouldOverwrite) {
+                    ConsoleOutputUtils::warn("Discarding manual changes for file $routeGroupMarkdownFile because you specified --force");
                 } else {
                     ConsoleOutputUtils::warn("Skipping modified file $routeGroupMarkdownFile");
                     return;

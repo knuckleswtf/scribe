@@ -30,6 +30,7 @@ class GenerateDocumentation extends Command
      */
     protected $signature = "scribe:generate
                             {--force : Discard any changes you've made to the Markdown files}
+                            {--no-extraction : Skip extraction of route info and just transform the Markdown files}
     ";
 
     /**
@@ -59,6 +60,13 @@ class GenerateDocumentation extends Command
     public function handle(RouteMatcherInterface $routeMatcher)
     {
         $this->bootstrap();
+
+        $noExtraction = $this->option('no-extraction');
+        if ($noExtraction) {
+            $writer = new Writer($this->docConfig);
+            $writer->writeDocs();
+            return;
+        }
 
         $routes = $routeMatcher->getRoutes($this->docConfig->get('routes'), $this->docConfig->get('router'));
 
