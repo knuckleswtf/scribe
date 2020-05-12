@@ -36,7 +36,7 @@ Binary data - {{ str_replace("<<binary>>","",$response['content']) }}
 @if(count($route['urlParameters']))
 <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
 @foreach($route['urlParameters'] as $attribute => $parameter)
-@component('scribe::components.field-description', [
+@component('scribe::components.field-details', [
   'name' => $attribute,
   'type' => null,
   'required' => $parameter['required'] ?? true,
@@ -48,7 +48,7 @@ Binary data - {{ str_replace("<<binary>>","",$response['content']) }}
 @if(count($route['queryParameters']))
 <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
 @foreach($route['queryParameters'] as $attribute => $parameter)
-@component('scribe::components.field-description', [
+@component('scribe::components.field-details', [
   'name' => $attribute,
   'type' => null,
   'required' => $parameter['required'] ?? true,
@@ -60,7 +60,7 @@ Binary data - {{ str_replace("<<binary>>","",$response['content']) }}
 @if(count($route['bodyParameters']))
 <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
 @foreach($route['bodyParameters'] as $attribute => $parameter)
-@component('scribe::components.field-description', [
+@component('scribe::components.field-details', [
   'name' => $attribute,
   'type' => $parameter['type'] ?? null,
   'required' => $parameter['required'] ?? true,
@@ -73,7 +73,7 @@ Binary data - {{ str_replace("<<binary>>","",$response['content']) }}
 @if(count($route['responseFields'] ?? []))
 <h4 class="fancy-heading-panel"><b>Response Fields</b></h4>
 @foreach($route['responseFields'] as $field)
-@component('scribe::components.field-description', [
+@component('scribe::components.field-details', [
   'name' => $field['name'],
   'type' => $field['type'],
   'required' => true,

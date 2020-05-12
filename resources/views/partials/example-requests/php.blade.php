@@ -14,7 +14,7 @@ $response = $client->{{ strtolower($route['methods'][0]) }}(
 @if(count($route['fileParameters']))
         'multipart' => [
 @foreach($route['cleanBodyParameters'] as $parameter => $value)
-@foreach( \Knuckles\Scribe\Tools\WritingUtils::getParameterNamesAndValuesForFormData($parameter,$value) as $key => $actualValue)
+@foreach(\Knuckles\Scribe\Tools\WritingUtils::getParameterNamesAndValuesForFormData($parameter,$value) as $key => $actualValue)
             [
                 'name' => '{!! $key !!}',
                 'contents' => '{!! $actualValue !!}'

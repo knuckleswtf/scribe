@@ -224,7 +224,7 @@ class Writer
         $introText = $this->config->get('intro_text', '');
         $introMarkdown = view('scribe::index')
             ->with('frontmatter', $frontmatter)
-            ->with('text', $introText);
+            ->with('introText', $introText);
         $this->writeFile($indexFile, $introMarkdown);
     }
 
@@ -232,6 +232,7 @@ class Writer
     {
         $isAuthed = $this->config->get('auth.enabled', false);
         $text = '';
+        $extraInfo = '';
 
         if ($isAuthed) {
             $strategy = $this->config->get('auth.in');
@@ -262,10 +263,13 @@ class Writer
                     break;
             }
             $extraInfo = $this->config->get('auth.extra_info', '');
-            $text .= " $extraInfo";
         }
 
-        $authMarkdown = view('scribe::authentication', ['isAuthed' => $isAuthed, 'text' => $text]);
+        $authMarkdown = view('scribe::authentication', [
+            'isAuthed' => $isAuthed,
+            'authDescription' => $text,
+            'extraAuthInfo' => $extraInfo,
+        ]);
         $this->writeFile($this->sourceOutputPath . '/authentication.md', $authMarkdown);
     }
 

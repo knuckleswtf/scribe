@@ -4,4 +4,4 @@
 
 # Introduction
 
-{!! $text !!}
+{!! $introText !!}

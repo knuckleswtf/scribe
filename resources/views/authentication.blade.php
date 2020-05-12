@@ -3,5 +3,7 @@
 @if(!$isAuthed)
 This API is not authenticated.
 @else
-{!! $text !!}
+{!! $authDescription !!}
+
+{!! $extraAuthInfo !!}
 @endif

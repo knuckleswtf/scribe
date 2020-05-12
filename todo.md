@@ -1,7 +1,6 @@
 # Documentation tasks
 - Rewritten docs. Some things to document:
   - hideFromAPIDocumentation
-  - overwriting with --force
   - binary responses
   - plugin api: responses - description, $stage property, scribe:strategy
   - --env
@@ -12,7 +11,10 @@
 - Port recent changes from old repo
 
 # Features
+- @header
+- --no-extraction
 - Possible feature: https://github.com/mpociot/laravel-apidoc-generator/issues/731
+- file input python
 
 # Fixes
 - When groups are removed, the markdown files persist, so they remain in the doc
