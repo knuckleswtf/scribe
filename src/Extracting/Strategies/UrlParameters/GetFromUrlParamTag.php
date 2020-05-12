@@ -40,10 +40,10 @@ class GetFromUrlParamTag extends Strategy
             if (class_exists(LaravelFormRequest::class) && $parameterClass->isSubclassOf(LaravelFormRequest::class)
                 || class_exists(DingoFormRequest::class) && $parameterClass->isSubclassOf(DingoFormRequest::class)) {
                 $formRequestDocBlock = new DocBlock($parameterClass->getDocComment());
-                $queryParametersFromDocBlock = $this->getUrlParametersFromDocBlock($formRequestDocBlock->getTags());
+                $urlParametersFromDocBlock = $this->getUrlParametersFromDocBlock($formRequestDocBlock->getTags());
 
-                if (count($queryParametersFromDocBlock)) {
-                    return $queryParametersFromDocBlock;
+                if (count($urlParametersFromDocBlock)) {
+                    return $urlParametersFromDocBlock;
                 }
             }
         }

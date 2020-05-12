@@ -17,3 +17,12 @@ To specify headers to be added to your endpoints, use the `apply.headers` sectio
 ```
 
 All endpoints that start with `v2/` will have the header `Api-Version: v2` included in their example requests and response calls.
+
+Alternatively, you can use the `@header` doc block tag, in the format `@header <name> <optional example>`:
+
+```php
+/**
+ * @header X-Api-Version v1
+ */
+
+```

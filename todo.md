@@ -11,8 +11,6 @@
 - Port recent changes from old repo
 
 # Features
-- @header
-- --no-extraction
 - Possible feature: https://github.com/mpociot/laravel-apidoc-generator/issues/731
 - file input python
 
