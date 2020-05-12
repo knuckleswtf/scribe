@@ -391,7 +391,7 @@ class GenerateDocumentationTest extends TestCase
     }
 
     /** @test */
-    public function will_not_overwrite_modified_markdown_file_unless_force_option_is_set()
+    public function will_not_overwrite_manually_modified_markdown_files_unless_force_flag_is_set()
     {
         RouteFacade::get('/api/action1', TestGroupController::class . '@action1');
         RouteFacade::get('/api/action1b', TestGroupController::class . '@action1b');
@@ -401,19 +401,30 @@ class GenerateDocumentationTest extends TestCase
 
         $this->artisan('scribe:generate');
 
-        $file1MtimeAfterFirstGeneration = filemtime(__DIR__ . '/../resources/docs/groups/1-group-1.md');
-        $file2MtimeAfterFirstGeneration = filemtime(__DIR__ . '/../resources/docs/groups/2-group-2.md');
+        $group1FilePath = __DIR__ . '/../resources/docs/groups/1-group-1.md';
+        $group2FilePath = __DIR__ . '/../resources/docs/groups/2-group-2.md';
+        $authFilePath = __DIR__ . '/../resources/docs/authentication.md';
+
+        $file1MtimeAfterFirstGeneration = filemtime($group1FilePath);
+        $file2MtimeAfterFirstGeneration = filemtime($group2FilePath);
+        $authFileMtimeAfterFirstGeneration = filemtime($authFilePath);
 
         sleep(1);
-        touch(__DIR__ . '/../resources/docs/groups/1-group-1.md');
-        $file1MtimeAfterManualModification = filemtime(__DIR__ . '/../resources/docs/groups/1-group-1.md');
+        touch($group1FilePath);
+        touch($authFilePath);
+        $file1MtimeAfterManualModification = filemtime($group1FilePath);
+        $authFileMtimeAfterManualModification = filemtime($authFilePath);
         $this->assertGreaterThan($file1MtimeAfterFirstGeneration, $file1MtimeAfterManualModification);
+        $this->assertGreaterThan($authFileMtimeAfterFirstGeneration, $authFileMtimeAfterManualModification);
 
         $this->artisan('scribe:generate');
 
-        $file1MtimeAfterSecondGeneration = filemtime(__DIR__ . '/../resources/docs/groups/1-group-1.md');
-        $file2MtimeAfterSecondGeneration = filemtime(__DIR__ . '/../resources/docs/groups/2-group-2.md');
+        $file1MtimeAfterSecondGeneration = filemtime($group1FilePath);
+        $file2MtimeAfterSecondGeneration = filemtime($group2FilePath);
+        $authFileMtimeAfterSecondGeneration = filemtime($authFilePath);
+
         $this->assertEquals($file1MtimeAfterManualModification, $file1MtimeAfterSecondGeneration);
         $this->assertNotEquals($file2MtimeAfterFirstGeneration, $file2MtimeAfterSecondGeneration);
+        $this->assertNotEquals($authFileMtimeAfterFirstGeneration, $authFileMtimeAfterSecondGeneration);
     }
 }

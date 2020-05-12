@@ -13,3 +13,4 @@ parameters:
         - '#(.*)NunoMaduro\\Collision(.*)#'
         - '#Instantiated class Whoops\\Exception\\Inspector not found\.#'
         - '#.+Dingo.+#'
+        - '#Right side of && is always false.#'

@@ -61,7 +61,7 @@ class Writer
     /**
      * @var array
      */
-    private $lastTimesWeModifiedTheseFiles;
+    private $lastTimesWeModifiedTheseFiles = [];
 
     public function __construct(DocumentationConfig $config = null, bool $shouldOverwrite = false)
     {
@@ -112,9 +112,13 @@ class Writer
             mkdir($this->sourceOutputPath, 0777, true);
         }
 
+        $this->fetchLastTimeWeModifiedFilesFromTrackingFile();
+
         $this->writeRoutesMarkdownFile($parsedRoutes, $settings);
         $this->writeIndexMarkdownFile($settings);
         $this->writeAuthMarkdownFile();
+
+        $this->writeModificationTimesTrackingFile();
 
         ConsoleOutputUtils::info('Wrote source Markdown files to: ' . $this->sourceOutputPath);
     }
@@ -298,17 +302,6 @@ class Writer
             mkdir($this->sourceOutputPath . '/groups', 0777, true);
         }
 
-        if (file_exists($this->fileModificationTimesFile)) {
-            $this->lastTimesWeModifiedTheseFiles = explode("\n", file_get_contents($this->fileModificationTimesFile));
-            array_shift($this->lastTimesWeModifiedTheseFiles);
-            array_shift($this->lastTimesWeModifiedTheseFiles);
-            $this->lastTimesWeModifiedTheseFiles = collect($this->lastTimesWeModifiedTheseFiles)
-                ->mapWithKeys(function ($line) {
-                    [$filePath, $mtime] = explode("=", $line);
-                    return [$filePath => $mtime];
-                })->toArray();
-        }
-
         // Generate Markdown for each route. Not using a Blade component bc of some complex logic
         $parsedRoutesWithOutput = $this->generateMarkdownOutputForEachRoute($parsedRoutes, $settings);
         $parsedRoutesWithOutput->each(function ($routesInGroup, $groupName) {
@@ -335,8 +328,6 @@ class Writer
             $this->writeFile($routeGroupMarkdownFile, $groupMarkdown);
         });
 
-        $this->writeModificationTimesFile();
-
     }
 
     /**
@@ -349,7 +340,7 @@ class Writer
 
     /**
      */
-    protected function writeModificationTimesFile(): void
+    protected function writeModificationTimesTrackingFile(): void
     {
         $content = "# GENERATED. YOU SHOULDN'T MODIFY OR DELETE THIS FILE.\n";
         $content .= "# Scribe uses this file to know when you change something manually in your docs.\n";
@@ -374,6 +365,21 @@ class Writer
         }
 
         return false;
+    }
+
+    protected function fetchLastTimeWeModifiedFilesFromTrackingFile()
+    {
+        if (file_exists($this->fileModificationTimesFile)) {
+            $lastTimesWeModifiedTheseFiles = explode("\n", file_get_contents($this->fileModificationTimesFile));
+            // First two lines are comments
+            array_shift($lastTimesWeModifiedTheseFiles);
+            array_shift($lastTimesWeModifiedTheseFiles);
+            $this->lastTimesWeModifiedTheseFiles = collect($lastTimesWeModifiedTheseFiles)
+                ->mapWithKeys(function ($line) {
+                    [$filePath, $mtime] = explode("=", $line);
+                    return [$filePath => $mtime];
+                })->toArray();
+        }
     }
 
 }
