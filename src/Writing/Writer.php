@@ -313,7 +313,7 @@ class Writer
                     ConsoleOutputUtils::warn("Discarding manual changes for file $routeGroupMarkdownFile because you specified --force");
                 } else {
                     ConsoleOutputUtils::warn("Skipping modified file $routeGroupMarkdownFile");
-                    return;
+                    return "$groupId.md";
                 }
             }
 

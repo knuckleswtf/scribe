@@ -419,7 +419,6 @@ class GenerateDocumentationTest extends TestCase
 
         $this->artisan('scribe:generate');
 
-        dump($group1FilePath);
         $file1MtimeAfterSecondGeneration = filemtime($group1FilePath);
         $file2MtimeAfterSecondGeneration = filemtime($group2FilePath);
         $authFileMtimeAfterSecondGeneration = filemtime($authFilePath);
