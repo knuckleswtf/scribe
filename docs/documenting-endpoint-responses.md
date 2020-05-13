@@ -175,7 +175,7 @@ Scribe will generate an instance (or instances) of the model and pass the model(
 
 
 ```eval_rst
-.. Tip:: To understand how Scribe generates an instance of your model and how you can customize that, you should check out the section on [How model instances are generated](#how-model-instances-are-generated).
+.. Tip:: To understand how Scribe generates an instance of your model and how you can customize that, you should check out the section on `How model instances are generated`_
 ```
 
 ### Pagination
