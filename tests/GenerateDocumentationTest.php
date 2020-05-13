@@ -401,9 +401,9 @@ class GenerateDocumentationTest extends TestCase
 
         $this->artisan('scribe:generate');
 
-        $group1FilePath = __DIR__ . '/../resources/docs/groups/1-group-1.md';
-        $group2FilePath = __DIR__ . '/../resources/docs/groups/2-group-2.md';
-        $authFilePath = __DIR__ . '/../resources/docs/authentication.md';
+        $group1FilePath = realpath(__DIR__ . '/../resources/docs/groups/1-group-1.md');
+        $group2FilePath = realpath(__DIR__ . '/../resources/docs/groups/2-group-2.md');
+        $authFilePath = realpath(__DIR__ . '/../resources/docs/authentication.md');
 
         $file1MtimeAfterFirstGeneration = filemtime($group1FilePath);
         $file2MtimeAfterFirstGeneration = filemtime($group2FilePath);
@@ -419,6 +419,7 @@ class GenerateDocumentationTest extends TestCase
 
         $this->artisan('scribe:generate');
 
+        dump($group1FilePath);
         $file1MtimeAfterSecondGeneration = filemtime($group1FilePath);
         $file2MtimeAfterSecondGeneration = filemtime($group2FilePath);
         $authFileMtimeAfterSecondGeneration = filemtime($authFilePath);
