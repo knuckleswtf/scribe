@@ -85,6 +85,9 @@ class UseApiResourceTags extends Strategy
             // or a ResourceCollection (via `new`)
             // See https://laravel.com/docs/5.8/eloquent-resources
             $models = [$modelInstance, $this->instantiateApiResourceModel($model, $factoryStates, $relations)];
+            // Pagination can be in two forms:
+            // [15] : means ::paginate(15)
+            // [15, 'simple'] : means ::simplePaginate(15)
             if (count($pagination) == 1) {
                 $perPage = $pagination[0];
                 $paginator = new LengthAwarePaginator(

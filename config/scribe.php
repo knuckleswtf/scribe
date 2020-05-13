@@ -248,6 +248,7 @@ INTRO
 
                     /*
                      * Files which should be sent with the API call.
+                     * Each value should be a valid absolute path to a file on this machine.
                      */
                     'fileParams' => [
                         // 'key' => '/home/me/image.png',

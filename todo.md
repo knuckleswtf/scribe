@@ -1,8 +1,6 @@
 # Documentation tasks
 - Rewritten docs. Some things to document:
-  - binary responses
   - plugin api: responses - description, $stage property, scribe:strategy
-  - Use database transactions and `create()` when instantiating factory models
   - fileParams
 
 # Release blocker

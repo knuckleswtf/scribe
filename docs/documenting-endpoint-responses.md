@@ -1,11 +1,30 @@
 # Documenting responses from an endpoint
-[IN PROGRESS]
+It's helpful if your API's consumers can see what a response should be like before writing any code. There are multiple ways to provide example responses for your endpoint:
+- letting Scribe generate the response by making a "response call"
+- describing the response using the `@response` tag
+- specifying a file containing the response using the `@responseFile` tag
+- letting Scribe generate the response from the `@apiResource` tags (if you're using [Eloquent API resources](https://laravel.com/docs/eloquent-resources))
+- letting Scribe generate the response from the `@transformer` tags (if you're using Transformers)
 
-## Providing an example response
-You can provide an example response for a route. This will be displayed in the examples section. There are several ways of doing this.
+You can use all of these strategies within the same endpoint. Scribe will display all the responses it finds.
 
-### @response
-You can provide an example response for a route by using the `@response` annotation with valid JSON:
+## Generating responses automatically via response calls
+If you don't specify an example response using any of the means described below, Scribe will attempt to get a sample response by making a HTTP request to the local endpoint (known as a "response call"). There are a few ruls that apply to response calls:
+
+- The configuration for response calls is located in the `apply.response_calls` section for each route group in `/scribe.php`. You can apply different settings for different sets of routes.
+
+- Response calls are done within a database transaction and changes are rolled back afterwards, so no data is persisted.
+
+- By default, response calls are only made for GET routes, but you can configure this. Set the `response_calls.methods` key to an array of methods (e.g. `['GET', 'PUT']`). Set it to `['*']` to mean all methods. Leave it as an empty array to turn off response calls for that route group.
+
+- You can specify Laravel config variables to be modified for the response call. This is useful so you can prevent external services like notifications from being triggered. By default the `app.env` is set to 'documentation'. You can add more variables in the `config` key. You can also modify the environment directly by using a `.env.docs` file and running `scribe:generate` with `--env docs`.
+
+- By default, the package will generate dummy values for your documented query, body and file parameters and send in the request. If you specified example values using `@bodyParam` or `@queryParam`, those will be used instead. You can configure additional parameters or overwrite the existing ones for the request in the `response_calls.queryParams`, `response_calls.bodyParams`, and `response_calls.fileParams` sections. For file parameters, each value should be a valid absolute path to a file on the machine.
+
+- Unlike the other approaches described below, the `ResponseCalls` strategy will only attempt to fetch a response if there are no responses with a status code of 2xx already.
+
+## `@response`
+You can provide an example response for an endpoint by using the `@response` annotation with valid JSON:
 
 ```php
 /**
@@ -13,24 +32,6 @@ You can provide an example response for a route by using the `@response` annotat
  *  "id": 4,
  *  "name": "Jessica Jones",
  *  "roles": ["admin"]
- * }
- */
-public function show($id)
-{
-    return User::find($id);
-}
-```
-
-Moreover, you can define multiple `@response` tags as well as the HTTP status code related to a particular response (if no status code set, `200` will be assumed):
-```php
-/**
- * @response {
- *  "id": 4,
- *  "name": "Jessica Jones",
- *  "roles": ["admin"]
- * }
- * @response 404 {
- *  "message": "No query results for model [\App\User]"
  * }
  */
 public function show($id)
@@ -39,18 +40,121 @@ public function show($id)
 }
 ```
 
-### @apiResource, @apiResourceCollection, and @apiResourceModel
-If your controller method uses [Eloquent API resources](https://laravel.com/docs/5.8/eloquent-resources), you can use the apiResource annotations to guide the package when generating a sample response. The `@apiResource` tag specifies the name of the resource. Use `@apiResourceCollection` instead if the route returns a list. This works with both regular `JsonResource` objects and `ResourceCollection` objects.
- 
- The `@apiResourceModel` specifies the Eloquent model to be passed to the resource. The package will attempt to generate an instance of the model for the resource from the Eloquent model factory. If that fails, the package will call `::first()` to retrieve the first model from the database. If that fails, it will create an instance using `new`.
+![](images/endpoint-responses-1.png)
+
+You can also specify a status code (otherwise 200 will be assumed):
+
+```php
+/**
+ * @response 201 {
+ *  "id": 4,
+ *  "name": "Jessica Jones"
+ * }
+ */
+```
+
+You can define multiple possible responses from the same endpoint using `@response`. To distinguish these responses, you can use the `status` and `scenario` attributes.
+
+```php
+/**
+ * @response scenario=success {
+ *  "id": 4,
+ *  "name": "Jessica Jones"
+ * }
+ * @response status=404 scenario="user not found" {
+ *  "message": "User not found"
+ * }
+ */
+```
+
+![](images/endpoint-responses-2.png)
+
+You can also indicate a binary response by using `<<binary>>` as the value of the response, followed by a description.
+
+```php
+/**
+ * @response <<binary>> The resized image
+ */
+```
+
+![](images/endpoint-responses-3.png)
+
+## `@responseFile`
+`@responseFile` works similarly to `@response`, but instead of inlining the response, you pass a file containing your JSON response. This can be helpful if your response body is large. 
+
+To use `@responseFile`, place the response as a JSON string in a file within your Laravel storage directory and specify the relative path to it. For instance, we can put this response in a file named `users.get.json` in `storage/responses/`:
+
+```
+{"id":4,"name":"Jessica Jones"}
+```
+
+Then in the controller:
+
+```php
+/**
+ * @responseFile responses/users.get.json
+ */
+public function getUser(int $id)
+{
+  // ...
+}
+```
+
+You can also have multiple `@responseFile` tags on a single method, distinguished by status code and/or scenarios.
+
+```php
+/**
+ * @responseFile responses/users.get.json
+ * @responseFile status=200 scenario="when authenticated as admin" responses/user.get.admin.json
+ * @responseFile status=404 responses/model.not.found.json
+ */
+```
+
+`@responseFile` also allows you to overwrite parts of the response from the file with some data of your own. To do this, add the JSON you want to merge after the file path. For instance, supposing our generic "not found" response located in `storage/responses/model.not.found.json` says:
+
+```json
+{
+  "type": "Model",
+  "result": "not found"
+}
+```
+
+We can change the `type` to `User` on the fly like this:
+
+```php
+/**
+ * @responseFile responses/users.get.json
+ * @responseFile status=200 scenario="When authenticated as admin" responses/user.get.admin.json
+ * @responseFile status=404 responses/model.not.found.json {"type": "User"}
+ */
+```
+
+This JSON string will be parsed and merged with the response from the file.
+
+![](images/endpoint-responses-4.png)
+
+## `@apiResource`, `@apiResourceCollection`, and `@apiResourceModel`
+If your endpoint uses [Eloquent API resources](https://laravel.com/docs/eloquent-resources) to generate its response, you can use the `@apiResource` annotations to guide Scribe when generating a sample response. There are three available annotations:
+
+- The `@apiResource` tag, which specifies the name of the resource.
+- The `@apiResourceCollection`, which should be used instead of `@apiResource` if the route returns a list, either via `YourResource::collection()` or`new YourResourceCollection`). Here you'll specify the name of the resource or resource collection.
+- The `@apiResourceModel`, which specifies the Eloquent model to be passed to the resource. You should use `@apiResourceModel` alongside either of the other two.
 
 Examples:
 
 ```php
+/**
+ * @apiResource App\Resources\UserResource
+ * @apiResourceModel App\Models\User
+ */
+public function showUser(User $user)
+{
+    return new UserResource($user);
+}
 
 /**
- * @apiResourceCollection Knuckles\Scribe\Tests\Fixtures\UserResource
- * @apiResourceModel Knuckles\Scribe\Tests\Fixtures\User
+ * @apiResourceCollection App\Resources\UserResource
+ * @apiResourceModel App\Models\User
  */
 public function listUsers()
 {
@@ -58,151 +162,160 @@ public function listUsers()
 }
 
 /**
- * @apiResourceCollection Knuckles\Scribe\Tests\Fixtures\UserCollection
- * @apiResourceModel Knuckles\Scribe\Tests\Fixtures\User
+ * @apiResourceCollection App\Resources\UserCollection
+ * @apiResourceModel App\Models\User
  */
 public function listMoreUsers()
 {
     return new UserCollection(User::all());
 }
+```
+
+Scribe will generate an instance (or instances) of the model and pass the model(s) to the resource transformer to get the example response.
+
+> 💡 TIP: To understand how Scribe generates an instance of your model and how you can customize that, you should check out the section on [How model instances are generated](#how-model-instances-are-generated).
+
+### Pagination
+If your endpoint passes paginated results to the resource, you can tell Scribe to paginate by using the `paginate` attribute on `@apiResourceModel`.
+
+```php
+/**
+ * @apiResourceCollection App\Resources\UserCollection
+ * @apiResourceModel App\Models\User paginate=15
+ */
+public function listMoreUsers()
+{
+    return new UserCollection(User::paginate(10));
+}
 
 /**
- * @apiResourceCollection Knuckles\Scribe\Tests\Fixtures\UserResource
- * @apiResourceModel Knuckles\Scribe\Tests\Fixtures\User
+ * @apiResourceCollection App\Resources\UserCollection
+ * @apiResourceModel App\Models\User paginate=15,simple
  */
-public function showUser(User $user)
+public function listMoreUsers()
 {
-    return new UserResource($user);
+    return new UserCollection(User::simplePaginate(15));
 }
 ```
 
-### @transformer, @transformerCollection, and @transformerModel
-You can define the transformer that is used for the result of the route using the `@transformer` tag (or `@transformerCollection` if the route returns a list). The package will attempt to generate an instance of the model to be transformed using the following steps, stopping at the first successful one:
+## `@transformer, @transformerCollection, and @transformerModel`
+If you're using transformers (via the league/fractal package), you can tell Scribe how to generate a sample response by using the transformer annotations. There are three available annotations:
+ 
+ - The `@transformer` tag, which specifies the name of the Transformer class.
+ - The `@transformerCollection`, which should be used instead of `@transformer` if the route returns a list.
+ - The `@transformerModel`, which specifies the Eloquent model to be passed to the transformer. You should use `@transformerModel` alongside either of the other two.
+ 
+Specifying `@transformerModel` is optional. If you don't specify it, Scribe will attempt to use the class of the first parameter to the transformer's `transform()` method.
 
-1. Check if there is a `@transformerModel` tag to define the model being transformed. If there is none, use the class of the first parameter to the transformer's `transform()` method.
-2. Get an instance of the model from the Eloquent model factory
-2. If the parameter is an Eloquent model, load the first from the database.
-3. Create an instance using `new`.
-
-Finally, it will pass in the model to the transformer and display the result of that as the example response.
+Scribe will generate an instance (or instances) of the model (see [How model instances are generated](#how-model-instances-are-generated)) and pass the model(s) to the transformer to get the example response.
 
 For example:
 
 ```php
 /**
- * @transformercollection \App\Transformers\UserTransformer
- * @transformerModel \App\User
- */
-public function listUsers()
-{
-    //...
-}
-
-/**
- * @transformer \App\Transformers\UserTransformer
- */
-public function showUser(User $user)
-{
-    //...
-}
-
-/**
- * @transformer \App\Transformers\UserTransformer
- * @transformerModel \App\User
+ * @transformer App\Transformers\UserTransformer
+ * @transformerModel App\Models\User
  */
 public function showUser(int $id)
 {
     // ...
 }
-```
-For the first route above, this package will generate a set of two users then pass it through the transformer. For the last two, it will generate a single user and then pass it through the transformer.
 
-> Note: for transformer support, you need to install the league/fractal package
-
-```bash
-composer require league/fractal
-```
-
-### @responseFile
-
-For large response bodies, you may want to use a dump of an actual response. You can put this response in a file (as a JSON string) within your Laravel storage directory and link to it. For instance, we can put this response in a file named `users.get.json` in `storage/responses`:
-
-```
-{"id":5,"name":"Jessica Jones","gender":"female"}
-```
-
-Then in your controller, link to it by:
-
-```php
 /**
- * @responseFile responses/users.get.json
+ * @transformerCollection App\Transformers\UserTransformer
+ * @transformerModel App\Models\User
  */
-public function getUser(int $id)
+public function listUsers()
 {
-  // ...
-}
-```
-The package will parse this response and display in the examples for this route.
-
-Similarly to `@response` tag, you can provide multiple `@responseFile` tags along with the HTTP status code of the response:
-```php
-/**
- * @responseFile responses/users.get.json
- * @responseFile 404 responses/model.not.found.json
- */
-public function getUser(int $id)
-{
-  // ...
+    //...
 }
 ```
 
-## Generating responses automatically
-If you don't specify an example response using any of the above means, this package will attempt to get a sample response by making a request to the route (a "response call"). A few things to note about response calls:
+### Pagination
+If your endpoint uses a paginator with the transformer, you can tell Scribe how to paginate via a separate tag, `@transformerPaginator`.
 
-- Response calls are done within a database transaction and changes are rolled back afterwards.
+```php
+/**
+ * @transformerCollection App\Transformers\UserTransformer
+ * @transformerModel App\Models\User
+ * @transformerPaginator League\Fractal\Pagination\IlluminatePaginatorAdapter 15
+ */
+public function listMoreUsers()
+{
+  $paginator = User::paginate(15);
+  $users = $paginator->getCollection();
 
-- The configuration for response calls is located in the `config/scribe.php`. They are configured within the `apply.response_calls` section for each route group, allowing you to apply different settings for different sets of routes.
+    $transformer = new Collection($users, new UserTransformer(), 'data');
+    $transformer->setPaginator(new IlluminatePaginatorAdapter($users));
+    
+    return $fractal->createData($users)->toArray();
+}
+```
 
-- By default, response calls are only made for GET routes, but you can configure this. Set the `methods` key to an array of methods or '*' to mean all methods. Leave it as an empty array to turn off response calls for that route group.
+## How model instances are generated
+When generating responses from `@apiResource` and `@transformer` tags, Scribe needs to generate a sample model to pass to the resource or transformer. Here's the process Scribe follows:
+ 
+1. First, it tries the Eloquent model factory: `factory(YourModel::class)->create()`. It uses `create()`, but runs it in a database transaction which is rolled back afterwards, so no data is persisted.
 
-- You can set Laravel config variables. This is useful so you can prevent external services like notifications from being triggered. By default the `app.env` is set to 'documentation'. You can add more variables in the `config` key.
+2. If that fails, Scribe calls `YourModel::first()` to retrieve the first model from the database. 
 
-- By default, the package will generate dummy values for your documented body and query parameters and send in the request. If you specified example values using `@bodyParam` or `@queryParam`, those will be used instead. You can configure additional parameters or overwrite the existing ones for the request in the `queryParams`, and `bodyParams` sections.
+3. If that fails, Scribe creates an instance using `new YourModel()`.
 
-- The `ResponseCalls` strategy will only attempt to fetch a response if there are no responses with a status code of 2xx already.
+### Applying factory states
+If you want specific states to be applied to your model when instantiating via `factory(YourModel::class)`, you can use the `states` attribute on `@apiResourceModel` or `@transformerModel`. Separate multiple states with a comma.
+
+```php
+/**
+ * @apiResourceCollection App\Resources\UserCollection
+ * @apiResourceModel App\Models\User states=student,verified
+ */
+```
+
+### Loading specific relations
+If you want specific relations to be loaded to your model when instantiating via `YourModel::first()`, you can use the `with` attribute on `@apiResourceModel` or `@transformerModel`. Separate multiple relations with a comma.
+
+```php
+/**
+ * @apiResourceCollection App\Resources\UserCollection
+ * @apiResourceModel App\Models\User relations=teacher,classmates
+ */
+```
+
+## Adding descriptions for fields in the responses
+You can add descriptions for fields in your response by adding a `@responseField` annotation to your controller method.
+
+```
+@responseField id The id of the newly created user
+```
+
+Scribe figures out the type of the field from the 2xx responses for that endpoint. Note that this also works even if the field is inside an array of objects or wrapped in pagination data. This means that the above annotation will work fine for all of these responses:
+
+ ```json 
+ { "id": 3 }
+ ```
+
+ ```json
+ [
+   { "id": 3 }
+ ]
+ ```
+
+ ```json
+ {
+    "data": [
+      { "id": 3 }
+    ]
+ }
+ ```
+
+![](./images/response-fields-1.png)
+
+![](./images/response-fields-2.png)
 
 
-
-## Documenting responses
- This functionality is provided by default by the `UseResponseFieldTags` strategy. You use it by adding a `@responseField` annotation to your controller method.
+If you wish, you can also specify the type of the parameter:
 
 ```
 @responseField id integer The id of the newly created user
 ```
-
-Note that this also works the same way for array responses. So if your response is an array of objects, you should only mention the keys of the objects inside the array. So the above annotation will work fine for both this response:
-
-```
-{
-  "id": 3
-}
-```
-
-and this:
-
-```
-[
-  { "id": 3 }
-]
-```
-
-You can also omit the type of the field. Scribe will try to figure it out from the 2xx responses for that endpoint. So this gives the same result:
-
-```
-@responseField id integer The id of the newly created user
-```
-
-Result:
-
-![](./images/response-fields.png)
 
