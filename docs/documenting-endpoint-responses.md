@@ -173,7 +173,10 @@ public function listMoreUsers()
 
 Scribe will generate an instance (or instances) of the model and pass the model(s) to the resource transformer to get the example response.
 
-> 💡 TIP: To understand how Scribe generates an instance of your model and how you can customize that, you should check out the section on [How model instances are generated](#how-model-instances-are-generated).
+
+```eval_rst
+.. Tip:: To understand how Scribe generates an instance of your model and how you can customize that, you should check out the section on [How model instances are generated](#how-model-instances-are-generated).
+```
 
 ### Pagination
 If your endpoint passes paginated results to the resource, you can tell Scribe to paginate by using the `paginate` attribute on `@apiResourceModel`.
