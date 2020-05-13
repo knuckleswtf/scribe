@@ -8,3 +8,6 @@ Here's some of the information you can customise:
 - [Query parameters and URL parameters to be sent in requests to the endpoint](documenting-endpoint-query-parameters.html)
 - [Body parameters and files to be sent in requests to the endpoint](documenting-endpoint-body-parameters.html)
 - [Example responses returned from the endpoint](documenting-endpoint-responses.html)
+
+## Excluding endpoints from the documentation
+You can exclude endpoints from the documentation by using the `@hideFromAPIDocumentation` tag in the method's doc block. Scribe will not extract any information about the route or add it to the generated docs.
