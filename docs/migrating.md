@@ -27,7 +27,7 @@ If you've modified your generated Blade views, you should also publish the new o
 php artisan vendor:publish --provider="Knuckles\Scribe\ScribeServiceProvider" --tag=scribe-views
 ```
 
-``` important:: If you've modified the generated Markdown or added prepend/append files, you should copy them to a separate folder (not in `resources/docs`). After generating the new docs, you'll have to manually add your changes in.
+```important:: If you've modified the generated Markdown or added prepend/append files, you should copy them to a separate folder (not in `resources/docs`). After generating the new docs, you'll have to manually add your changes in.
 ```
 
 _After you've done all of the above_, delete your `resources/docs/` and `public/docs` folders, to prevent any conflicts with the new ones we'll generate. If you're using `laravel` type output, you can also delete `resources/views/apidoc/`.
