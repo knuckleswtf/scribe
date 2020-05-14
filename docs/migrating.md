@@ -2,8 +2,8 @@
 There's quite a few changes in Scribe, and this guide aims to show you the key parts you need to look out for so things don't break. After migrating, you should also check out the [list of new features](./whats-new.html).
 
 ## Requirements
-- PHP version: 7.2+
-- Laravel/Lumen version: 6+
+- PHP version: 7.2.5+
+- Laravel/Lumen version: 5.8+
 
 ## Before you start
 - Remove the old package and install the new one:
@@ -52,13 +52,12 @@ You can also use a URL.
 ## Advanced users
 It's a new package with a different name, so a few things have changed. This section is especially important if you've written any custom strategies or extended any of the provided classes.
 
-- Replace all occurrences of `Mpociot\ApiDoc\Strategies` with `Knuckles\Scribe\Extracting\Strategies`
-- Replace all occurrences of `Mpociot\ApiDoc\Strategies\RequestHeaders` with `Knuckles\Scribe\Extracting\Strategies\Headers`
+- Replace all occurrences of `Mpociot\ApiDoc\Extracting\Strategies\RequestHeaders` with `Knuckles\Scribe\Extracting\Strategies\Headers`
 - Replace all occurrences of `Mpociot\ApiDoc` with `Knuckles\Scribe`
 - For strategies, change the type of the `$method` argument to the `__invoke` method from `ReflectionMethod` to `ReflectionFunctionAbstract`. It's a superclass, so every other thing should work fine.
 - For each strategy, add a `public $stage` property and set it to the name of the stage the strategy belongs to. If you have a constructor defined, remove the `$stage` argument from it. 
 - The `requestHeaders` stage has been renamed to `headers`.
-- If you've published the views, you'll note that they are now in a different format. See the documentation on [customising the views]() to learn the new look.
+- If you've published the views, you'll note that they are now in a different format. See the documentation on [customising the views](customization.html#changing-the-markdown-templates) to learn the new look.
 
 
 That should be all. Head on to the [list of new features](./whats-new.html) to see what's new. If you come across anything we've missed, please send in a PR!

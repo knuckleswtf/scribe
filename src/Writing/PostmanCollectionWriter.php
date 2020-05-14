@@ -106,7 +106,8 @@ class PostmanCollectionWriter
                 'Accept' => 'application/json',
             ])
             ->map(function ($value, $header) {
-                // Fix so in config we can have @{{ for blade views but it'll use {{ for postman for env vars. 
+                // Allow users to write ['header' => '@{{value}}'] in config
+                // and have it rendered properly as {{value}} in the Postman collection.
                 $value = str_replace('@{{', '{{', $value);
                 return [
                     'key' => $header,

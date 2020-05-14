@@ -2,7 +2,11 @@
 
 Generate API documentation for humans from your Laravel/Lumen/[Dingo](https://github.com/dingo/api) codebase. [Here's what the output looks like](https://shalvah.me/TheCensorshipAPI/).
 
-> Coming from mpociot/laravel-apidoc-generator? Check out [what's new](whats-new.md) and the [migration guide](migrating.md). Otherwise, check out the [Getting Started guide](guide-getting-started.md).
+
+```eval_rst
+.. admonition:: Wondering where to get started?
+If you're coming from mpociot/laravel-apidoc-generator, check out `what's new <whats-new.md>`_ and the `migration guide <migrating.md>`_. Otherwise, check out the `Getting Started guide <guide-getting-started.md>`_.
+```
 
 ## Contents
 * [Getting started](guide-getting-started.md)
@@ -14,7 +18,7 @@ Generate API documentation for humans from your Laravel/Lumen/[Dingo](https://gi
 * [Specifying headers to be sent in requests to the endpoint](documenting-endpoint-headers.md)
 * [Documenting query parameters and URL parameters to be sent in requests to the endpoint](documenting-endpoint-query-parameters.md)
 * [Documenting body parameters and files to be sent in requests to the endpoint](documenting-endpoint-body-parameters.md)
-* [Documenting example responses returned from the endpoint](documenting-endpoint-responses.md)
+* [Documenting possible responses returned from the endpoint](documenting-endpoint-responses.md)
 * [Generating Documentation](generating-documentation.md)
 * [Configuration](config.md)
 * [Helpful Tips](helpful-tips.md)

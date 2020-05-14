@@ -108,3 +108,6 @@ There are also a number of included components that you can utilize in your Blad
 ![](images/customization-methods-badge-2.png) 
 
 - `badges/base.blade.php`: The base badge component, used by `auth` and `http-method`. Takes in `colour` and `text` attributes, and uses Pastel's badge classes to create a badge.
+
+## Changing the CSS styles
+The CSS styling is provided by Pastel, which currently supports only one template. Consider making a pull request to add your alternative styles.

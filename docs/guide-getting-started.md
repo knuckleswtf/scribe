@@ -45,7 +45,7 @@ First, let's add some general info about the API. Here are some things you can c
 - Languages for the example requests
 - A logo to show in your docs.
 
-For details, check out []().
+For details, check out [Documenting API information](documenting-api-information.html).
 
 ## Choose your routes
 Next up, decide what routes you want to document. This is configured in the `routes` key of `scribe.php`. By default, Scribe will try to document all of your routes, so if you're okay with that, you can leave it at that.
@@ -96,13 +96,11 @@ If you'd like to exclude some routes, there are two ways:
     ],
 ```
 
-With Scribe, you split up your routes into route groups. Each entry in the `routes` array is a single group. The main purpose of these groups is so you can apply different settings to multiple endpoints in one go. For instance, for some routes, you'd like an `Api-Version` header to be added to some routes, but not others, you can easily configure that here. You can also configure [response calls](documenting-endpoint-responses.html#response-calls) in here.
+With Scribe, you split up your routes into route groups. Each entry in the `routes` array is a single group. The main purpose of these groups is so you can apply different settings to multiple endpoints in one go. For instance, for some routes, you'd like an `Api-Version` header to be added to some routes, but not others, you can easily configure that here. You can also configure [response calls](documenting-endpoint-responses.html#generating-responses-automatically-via-response-calls) in here.
 
 By default, all your routes are in a single group, and we recommend leaving them like that. You can split your routes later if you realise you need to. 
 
 [Here's the full documentation on configuring routes](config.html#routes).
-
-The last important setting to take note of is `apply.response_calls`. A "response call" is Scribe hitting your API to try to generate an example response to display in your docs. The package tries to play it safe by using database transactions (so no data is modified). Additionally, response calls are only enabled for `GET` requests by default. You can configure the behaviour of response calls here. For now, we can leave them as on for GETs only.
 
 ## Add information to your routes
 Scribe tries to figure out information about your routes, but it needs more help from you to go far. Here's some information you can enrich:
@@ -122,4 +120,4 @@ After making changes as needed, you can run `php artisan scribe:generate` as man
 When you're happy with how your documentation looks, you're good to go. You can add the generated documentation to your version control and deploy as normal, and your users will be able to access it as you've configured.
 
 ## Need advanced customization?
-Don't like how the template looks? Want to change how things are arranged, or add a custom language for the examples? Thinking of custom ways to extract more information about your routes?  Check out the guide on [advanced customization](customization.html).
+Don't like how the template looks? Want to change how things are organized, or add a custom language for the examples? Thinking of custom ways to extract more information about your routes?  Check out the guide on [advanced customization](customization.html).

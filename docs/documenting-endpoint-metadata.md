@@ -1,7 +1,7 @@
 # Specifying metadata about an endpoint
 
 ## Endpoint title and description
-To set an endpoint's title and description, just write in the method's docblock. The first paragraph will be used as the title, the rest as the description. Custom formatting (such as `<aside>` tags) is also supported (see the [Pastel docs](http://github.com/knuckleswtf/pastel))
+To set an endpoint's title and description, just write in the method's docblock. The first paragraph will be used as the title, the rest as the description. Custom formatting (such as `<aside>` tags) is also supported (see the [Pastel docs](http://github.com/knuckleswtf/pastel)).
 
 For instance, this:
 
@@ -27,7 +27,10 @@ All endpoints are grouped for easy navigation.
 
 To add all endpoints in a controller to a group, use `@group` in the controller docblock, followed by the group's title. You can also add a description below the group.
 
+```eval_rst
+.. Tip:: 
 You can also specify an `@group` on a single method to override the group defined at the controller level.
+```
 
 ```php
 /**
@@ -65,7 +68,9 @@ Grouping endpoints is optional. Any endpoints not in a group will be placed in a
 ## Indicating authentication status
 You can use the `@authenticated` annotation on a method to indicate if the endpoint is authenticated. A "Requires authentication" badge will be added to that route in the generated documentation. 
 
-If all the routes in a controller are authenticated, you can specify `@authenticated` in the controller doc block instead. 
+```eval_rst
+.. Tip:: If all the routes in a controller are authenticated, you can specify `@authenticated` in the controller doc block instead. 
+```
 
 ```php
     /**
