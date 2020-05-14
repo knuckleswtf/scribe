@@ -54,10 +54,10 @@ It's a new package with a different name, so a few things have changed. This sec
 
 - Replace all occurrences of `Mpociot\ApiDoc\Extracting\Strategies\RequestHeaders` with `Knuckles\Scribe\Extracting\Strategies\Headers`
 - Replace all occurrences of `Mpociot\ApiDoc` with `Knuckles\Scribe`
-- For strategies, change the type of the `$method` argument to the `__invoke` method from `ReflectionMethod` to `ReflectionFunctionAbstract`. It's a superclass, so every other thing should work fine.
+- For strategies, change the type of the `$method` argument to the `__invoke` method from `ReflectionMethod` to `ReflectionFunctionAbstract` to enable support for Closure routes. It's a superclass of `ReflectionMethod`, so every other thing should work fine.
 - For each strategy, add a `public $stage` property and set it to the name of the stage the strategy belongs to. If you have a constructor defined, remove the `$stage` argument from it. 
 - The `requestHeaders` stage has been renamed to `headers`.
-- If you've published the views, you'll note that they are now in a different format. See the documentation on [customising the views](customization.html#changing-the-markdown-templates) to learn the new look.
+- If you've published the views, you'll note that they are now in a different format. See the documentation on [customising the views](customization.html#changing-the-markdown-templates) to see how things are organised now.
 
 
 That should be all. Head on to the [list of new features](./whats-new.html) to see what's new. If you come across anything we've missed, please send in a PR!

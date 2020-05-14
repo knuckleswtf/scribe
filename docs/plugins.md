@@ -180,7 +180,7 @@ To use your strategy, you need to register it in the `strategies` key in the `sc
 ```
 
 ```eval_rst
-.. Tip:: You can also install strategies from Packagist via :code:`composer require` and then register them here. 
+.. Tip:: You can also publish your strategy to Packagist. Then others can install them via :code:`composer require` and register them in their own configs. 
 ```
 
 And we're done! Now, when we run `php artisan scribe:generate`, all our GET routes that end with `.index` will have the pagination parameters added.

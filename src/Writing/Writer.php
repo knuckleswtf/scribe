@@ -114,7 +114,7 @@ class Writer
 
         $this->fetchLastTimeWeModifiedFilesFromTrackingFile();
 
-        $this->writeRoutesMarkdownFile($parsedRoutes, $settings);
+        $this->writeEndpointsMarkdownFile($parsedRoutes, $settings);
         $this->writeIndexMarkdownFile($settings);
         $this->writeAuthMarkdownFile();
 
@@ -130,7 +130,7 @@ class Writer
                 $hasRequestOptions = !empty($route['headers'])
                     || !empty($route['cleanQueryParameters'])
                     || !empty($route['cleanBodyParameters']);
-                $route['output'] = (string)view('scribe::partials.route')
+                $route['output'] = (string)view('scribe::partials.endpoint')
                     ->with('hasRequestOptions', $hasRequestOptions)
                     ->with('route', $route)
                     ->with('settings', $settings)
@@ -296,7 +296,7 @@ class Writer
         $this->writeFile($authMarkdownFile, $authMarkdown);
     }
 
-    protected function writeRoutesMarkdownFile(Collection $parsedRoutes, array $settings): void
+    protected function writeEndpointsMarkdownFile(Collection $parsedRoutes, array $settings): void
     {
         if (!is_dir($this->sourceOutputPath . '/groups')) {
             mkdir($this->sourceOutputPath . '/groups', 0777, true);

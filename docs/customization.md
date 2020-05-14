@@ -107,7 +107,7 @@ The following Blade files are present in the `partials` directory:
    - `$groupDescription`, and
    - `$routes`, an array containing routes in that group. Each item here contains the route information described in [the plugin API](plugins.html#api), plus an `output` item that contains the Markdown for that route.
    
-- `route.blade.php`: This is the template for a single endpoint. For each endpoint, it gets rendered and passed back to the `Writer` class, which sets it as the `output` key in the `$route` variable before passing to the group template. It has access to the following variables:
+- `endpoint.blade.php`: This is the template for a single endpoint. For each endpoint, it gets rendered and passed back to the `Writer` class, which sets it as the `output` key in the `$route` variable before passing to the group template. It has access to the following variables:
    - `$settings` (the same settings variable passed to frontmatter),
    - `$route`: an array which contains the information extracted from the various stages (see [the plugin API](plugins.html#api) for details).
    
