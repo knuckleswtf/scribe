@@ -1,6 +1,6 @@
 # What's new in Scribe
 ```eval_rst
-.. Note:: This page is written for devs coming from mpociot/laravel-apidoc-generator. It should give you an overview of what's new in Scribe, and point you to the relevant documentation on each. Once you're ready to migrate, check out `the migration guide <migrating.html>`_.
+.. Note:: This page is aimed at users coming from mpociot/laravel-apidoc-generator. It should give you an overview of what's new in Scribe, and point you to the relevant documentation on each. Once you're ready to migrate, check out `the migration guide <migrating.html>`_.
 ```
 
 Scribe v1 comews with some new features and tweaks aimed at improving the developer experience and the quality of the output documentation. Let's dive in!

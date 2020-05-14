@@ -67,7 +67,7 @@ For instance:
 To describe parameters in the URL, use the `@urlParam` annotation. For instance, if you defined your Laravel route like this:
 
 ```php
-Route::get("/post/{id}/{lang?}")
+Route::get("/post/{id}/{lang?}");
 ```
 
 you can use this annotation to describe the `id` and `lang` parameters as shown below. The annotation takes the name of the parameter, an optional "required" label, and then its description. Like with `@queryParams`, a random value will be generated, but you can specify the value to be used in examples and response calls using the `Example: ` syntax.
@@ -85,7 +85,9 @@ public function getPost()
 
 ![](images/endpoint-urlparams-1.png)
 
- If you specify `No-example` for a parameter that's optional (`lang` in our example), Scribe will omit that parameter in requests and response calls.
+```eval_rst
+.. Important:: If you want Scribe to omit an optional parameter (`lang` in our example) in requests and response calls, specify `No-example` for the parameter.
+```
 
 ```php
 /**
