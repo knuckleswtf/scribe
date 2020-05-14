@@ -11,6 +11,10 @@ use Knuckles\Scribe\Extracting\Strategies\Strategy;
 
 class DummyClass extends Strategy
 {
+    /**
+     * The stage the strategy belongs to.
+     * One of "metadata", "urlParameters", "queryParameters", "bodyParameters", "headers", "responses", "responseFields".
+     */
     public $stage = 'dummyStage';
 
     /**
