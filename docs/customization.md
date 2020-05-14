@@ -21,7 +21,7 @@ Pastel will combine these files in this order (you can also see it described in 
 - `append.md`
 
 ```eval_rst
-.. Note:: You shouldn't create any files manually in the :code:`groups/` folder, as they will be deleted on each run,
+.. Warning:: You shouldn't create any files manually in the :code:`groups/` folder, as they will be deleted on each run,
 ```
 
 After editing the Markdown files, you can use the `scribe:generate` command to rebuild your docs. 

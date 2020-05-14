@@ -6,7 +6,7 @@ Generate API documentation for humans from your Laravel/Lumen/[Dingo](https://gi
 ```eval_rst
 .. admonition:: Wondering where to get started?
    
-   If you're coming from mpociot/laravel-apidoc-generator, check out `what's new <whats-new.html>`_ and the `migration guide <migrating.html>`_. Otherwise, check out the `Getting Started guide <guide-getting-started.html>`_.
+   If you're coming from mpociot/laravel-apidoc-generator, check out `what's new <whats-new.html>`_ and the `migration guide <migrating.html>`_. Otherwise, check out the `getting started guide <guide-getting-started.html>`_.
 ```
 
 ## Contents
@@ -20,17 +20,17 @@ Generate API documentation for humans from your Laravel/Lumen/[Dingo](https://gi
 * [Documenting query parameters and URL parameters to be sent in requests to the endpoint](documenting-endpoint-query-parameters.md)
 * [Documenting body parameters and files to be sent in requests to the endpoint](documenting-endpoint-body-parameters.md)
 * [Documenting possible responses returned from the endpoint](documenting-endpoint-responses.md)
-* [Generating Documentation](generating-documentation.md)
+* [Generating documentation](generating-documentation.md)
 * [Configuration](config.md)
 * [Helpful Tips](helpful-tips.md)
 * [Troubleshooting and Debugging](troubleshooting.md)
-* [Advanced Customization](customization.md)
-* [How This Works](description.md)
+* [Advanced customization](customization.md)
+* [How this works](description.md)
 * [Extending functionality with plugins](plugins.md)
 * [Contributing to Scribe](contributing.md)
 
 ## Installation
-> Note: PHP 7.2.5 and Laravel/Lumen 5.8 or higher are required.
+PHP 7.2.5 and Laravel/Lumen 5.8 or higher are required.
 
 ```sh
 composer require --dev knuckleswtf/scribe

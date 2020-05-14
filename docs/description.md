@@ -1,5 +1,5 @@
-# How This Works
-Read this page if you want a deeper understanding of how this works (for instance, for the purpose of contributing).
+# How Scribe works
+Read this page if you want a deeper understanding of how Scribe works (for instance, for the purpose of contributing).
 
 - When the `generate` command is run, the Generator fetches all your application's routes from Laravel's (or DIngo's) Route facade.
 - Next, the RouteMatcher uses the rules in your config to determine what routes to generate documentation for, as well as extract any specific configuration for them. This configuration is passed to the next stages.
