@@ -27,6 +27,10 @@ To link to a page inside another, you can use Markdown links, but then replace t
 .. Note:: The rest of this document is only important if you're making code changes.
 ```
 
+```eval_rst
+.. Tip:: You can check out `How Scribe works <architecture.html>`_ to gain a deeper understanding that can help you when contributing. 
+```
+
 ## Installing dependencies
 Installing dependencies comes in two forms.
 - To install the regular Laravel dependencies, run `composer install`.  

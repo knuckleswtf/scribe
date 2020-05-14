@@ -24,7 +24,7 @@ Generate API documentation for humans from your Laravel/Lumen/[Dingo](https://gi
 * [Configuration](config.md)
 * [Troubleshooting and Debugging](troubleshooting.md)
 * [Advanced customization](customization.md)
-* [How this works](description.md)
+* [How Scribe works](architecture.md)
 * [Extending functionality with plugins](plugins.md)
 * [Contributing to Scribe](contributing.md)
 
