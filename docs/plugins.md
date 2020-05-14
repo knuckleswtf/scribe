@@ -1,5 +1,5 @@
 # Extending functionality with plugins
-You can use plugins to alter Scribe's behaviour when extracting info about your endpoints. For instance, suppose all your listing endpoints support pagination query parameters `ageSize` and `page`, and yopu don't want toannotate with `@queryParam` on each method. You can create a plugin that adds this to all your query parameters. Let's see how to do this.
+You can use plugins to alter Scribe's behaviour when extracting info about your endpoints. For instance, suppose all your listing endpoints support pagination query parameters `pageSize` and `page`, and you don't want to annotate with `@queryParam` on each method. You can create a plugin that adds this to all your query parameters. Let's see how to do this.
 
 ## The stages of route processing
 Route processing is performed in the following stages, in this order:
