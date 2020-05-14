@@ -122,7 +122,7 @@ This JSON string will be parsed and merged with the response from the file.
 If you don't specify an example response using any of the other means described in this document, Scribe will attempt to get a sample response by making a HTTP request to the local endpoint (known as a "response call").
 
 ```eval_rst
-.. Important:: Response calls are done within a database transaction and changes are rolled back afterwards, so no data is persisted.
+.. Note:: Response calls are done within a database transaction and changes are rolled back afterwards, so no data is persisted.
 ```
 
 The configuration for response calls is located in the `apply.response_calls` section for each route group in `config/scribe.php`. This means that You can apply different settings for different sets of routes. Here are some important things to note:
@@ -142,7 +142,7 @@ The configuration for response calls is located in the `apply.response_calls` se
 ```
 
 ```eval_rst
-.. Note:: Unlike the other approaches described in this document, the `ResponseCalls` strategy will only attempt to fetch a response if there are no responses with a status code of 2xx already.
+.. Note:: Unlike the other approaches described in this document, the :code:`ResponseCalls` strategy will only attempt to fetch a response if there are no responses with a status code of 2xx already.
 ```
 
 ## `@apiResource`, `@apiResourceCollection`, and `@apiResourceModel`
@@ -222,7 +222,7 @@ If you're using transformers (via the league/fractal package), you can tell Scri
  
 
 ```eval_rst
-.. Tip:: Specifying `@transformerModel` is optional. If you don't specify it, Scribe will attempt to use the class of the first parameter to the transformer's `transform()` method.
+.. Tip:: Specifying :code:`@transformerModel` is optional. If you don't specify it, Scribe will attempt to use the class of the first parameter to the transformer's :code:`transform()` method.
 ```
 
 For example:
@@ -321,15 +321,18 @@ Scribe figures out the type of the field from the 2xx responses for that endpoin
 ```eval_rst
 .. Tip:: You don't need to specify the full field path if the field is inside an array of objects or wrapped in pagination data. For instance, the above annotation will work fine for all of these responses:
 
-   .. code:: json 
+  .. code:: json 
+  
      { "id": 3 }
 
-   .. code:: json 
+  .. code:: json 
+
       [
         { "id": 3 }
       ]
 
-   .. code:: json 
+  .. code:: json 
+
       {
          "data": [
            { "id": 3 }

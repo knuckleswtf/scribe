@@ -17,7 +17,7 @@ Accessing your generated docs depends on the `type` you specified in `scribe.php
 - If you're using `laravel` type, start your app (`php artisan serve`), then visit `/docs`.
 
 ## Postman collection generation
-By default, a Postman collection file, which you can import into API clients like Postman or Insomnia is generated alongside your docs. You can get it by visiting `public/docs/collection.json` for `static` type, and `<your-app>/docs.json` for `laravel` type.
+By default, a Postman collection file which you can import into API clients like Postman or Insomnia is generated alongside your docs. You can view it by visiting `public/docs/collection.json` for `static` type, and `<your-app>/docs.json` for `laravel` type. This link will also be added to the sidebar of your docs.
 
 You can configure Postman collection generation in the `postman` section of your `scribe.php` file.
 
