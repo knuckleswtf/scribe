@@ -27,10 +27,10 @@ Pastel will combine these files in this order (you can also see it described in 
 After editing the Markdown files, you can use the `scribe:generate` command to rebuild your docs. 
 
 ```eval_rst
-.. Tip:: You can pass the `--no-extraction` flag to tell Scribe to skip the extraction phase and go straight to converting your Markdown to HTML.
+.. Tip:: You can pass the :code:`--no-extraction` flag to tell Scribe to skip the extraction phase and go straight to converting your Markdown to HTML.
 ```
  
-If you run the `generate` command after modifying any of the generated Markdown files (even without the `--no-extraction`) flag, Scribe _will not overwrite your changes to that file_. To force Scribe to overwrite them, use the `--force` flag. 
+If you run the `generate` command after modifying any of the generated Markdown files (even without the `--no-extraction`) flag, Scribe **will not** overwrite your changes to that file. To force Scribe to overwrite them, use the `--force` flag. 
 
 This means that if, for instance, you modify the `groups/user-management.md` file, the information about your endpoints in the "User management" group will remain the same until you use the `--force` option.
 
