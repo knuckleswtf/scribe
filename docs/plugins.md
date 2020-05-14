@@ -14,7 +14,7 @@ Route processing is performed in the following stages, in this order:
 For each stage, the Generator attempts to use various "strategies" to fetch data. The Generator will call all of the strategies configured in `scribe.php`, progressively combining their results together to produce the final output of that stage.
 
 ```eval_rst
-.. Note:: Unlike other stages, the `responses` stage is additive. This means that all responses from all strategies in that stage will be saved. Responses cannot overwrite each other, even if they have the same status code. By comparison, if you return a value for a body parameter from one strategy, it will overwrite any other values for that parameter gotten from previous strategies.
+.. Note:: Unlike other stages, the `responses` stage is additive. This means that all responses from all strategies in that stage will be saved. Responses cannot overwrite each other, even if they have the same status code. By contrast, if you return a value for a body parameter from one strategy, it will overwrite any other values for that parameter gotten from previous strategies.
 ```
 
 There are a number of strategies included with the package, so you don't have to set up anything to get it working. Here's what's included in `scribe.php` by default:
