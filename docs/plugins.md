@@ -2,7 +2,7 @@
 You can use plugins to alter Scribe's behaviour when extracting info about your endpoints. For instance, suppose all your listing endpoints support pagination query parameters `ageSize` and `page`, and yopu don't want toannotate with `@queryParam` on each method. You can create a plugin that adds this to all your query parameters. Let's see how to do this.
 
 ## The stages of route processing
-Route processing is performed in six stages, in this order:
+Route processing is performed in the following stages, in this order:
 - metadata (this includes `title`, `description`, `groupName`, `groupDescription`, and authentication status (`authenticated`))
 - urlParameters
 - queryParameters
@@ -116,7 +116,7 @@ class AddPaginationParameters extends Strategy
 }
 ```
 
-Alternatively, if you're creating a strategy that you'd like people to download and install via Composer, you can generate one from [this GitHub template](). 
+Alternatively, if you're creating a strategy that you'd like people to download and install via Composer, you can generate one from [this GitHub template](https://github.com/shalvah/scribe-plugin-template). 
 
 ## Writing strategies
 Let's take a look at the contents of our Strategy class.
