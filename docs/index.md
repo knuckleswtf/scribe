@@ -27,7 +27,7 @@ Generate API documentation for humans from your Laravel/Lumen/[Dingo](https://gi
 * [Advanced Customization](customization.md)
 * [How This Works](description.md)
 * [Extending functionality with plugins](plugins.md)
-* [Contribution guide](contributing.md)
+* [Contributing to Scribe](contributing.md)
 
 ## Installation
 > Note: PHP 7.2 and Laravel 5.8 or higher are required.

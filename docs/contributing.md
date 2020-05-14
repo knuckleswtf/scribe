@@ -1,23 +1,31 @@
 # Contributing to Scribe
-> ⚠ Please read this guide before sending in your contribution! There aren't many rules, just a few guidelines to help everyone.😄
+```eval_rst
+.. Important:: Please read this guide before sending in your contribution! There aren't many rules, just a few guidelines to help everyone.😄
+```
 
 ## Principles
 - You don't have to be friendly, but please be polite.
 - Remember that people have other things to deal with in their lives, so don't expect the maintainers to respond to your PRs and issues instantly.
 - Don't submit sloppy work.
 
-> 💡TIP: Before contributing: if you're making a code change, look through open pull requests to see if there's an open one for the feature/fix already.
+```eval_rst
+.. Tip:: Before contributing: if you're making a code change, look through open pull requests to see if there's an open one for the feature/fix already.
+```
 
 ## Updating documentation
-> 💡TIP: Don't forget to update the documentation if your contribution changes some user-facing behaviour!
+```eval_rst
+.. Important:: Don't forget to update the documentation if your contribution changes some user-facing behaviour!
+```
 
 Documentation is powered by [ReadTheDocs](https://ReadTheDocs.org) and lives as Markdown files in the docs/ folder. You can take a look at the Table of Contents in the index.md file to see what files are included. If you add a new file, please include it at a suitable position in the Table of Contents.
 
-For screenshots and other images, you can put them in the docs/images folder and reference them via Markdown links (ie "!\[alt text]\(images/image.png)").
+For screenshots and other images, you can put them in the docs/images folder and reference them via Markdown links (ie `![alt text](images/image.png)`).
 
-To link to a page inside another, you can use Markdown links, but then replace the ".md" with ".html". For instance, [this link](guide-getting-started.html#need-advanced-customization)) should take you to the "Need Advanced Customization?" section on the Getting Started guide. 
+To link to a page inside another, you can use Markdown links, but then replace the ".md" with ".html". For instance, [this link](guide-getting-started.html#need-advanced-customization)) should take you to the "Need Advanced Customization?" section on the Getting Started guide.
 
-> The rest of this document is only important if you're making code changes.
+```eval_rst
+.. Note:: The rest of this document is only important if you're making code changes.
+```
 
 ## Installing dependencies
 Installing dependencies comes in two forms.

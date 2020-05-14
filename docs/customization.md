@@ -9,7 +9,9 @@ The Markdown files are located in your `resources/docs` folder and include the f
 - `authentication.md`: This contains the Authentication section
 - `groups/`: This folder contains your endpoints. Each Markdown file here represents a group of endpoints (the ones you specified by using `@group`). 
  
-[You can also add `append.md` and `prepend.md` files in this directory](#specifying-content-to-be-added-to-the-beginning-or-end-of-the-documentation).
+```eval_rst
+.. Tip:: You can also add :code:`append.md` and :code:`prepend.md` files in this directory. See `Specifying content to be added to the beginning or end of the documentation`_.
+```
  
 Pastel will combine these files in this order (you can also see it described in the front matter of the `index.md`):
 - `index.md`
@@ -18,14 +20,22 @@ Pastel will combine these files in this order (you can also see it described in 
 - `groups/*` (the files here will be included in alphabetical order)
 - `append.md`
 
-After editing the Markdown files as you like, you can use the `scribe:generate` command to rebuild your docs. You can pass the `--no-extraction` flag to tell Scribe to skip the extraction phase and go straight to converting your Markdown to HTML.
+```eval_rst
+.. Note:: You shouldn't create any files manually in the :code:`groups/` folder, as they will be deleted on each run,
+```
+
+After editing the Markdown files, you can use the `scribe:generate` command to rebuild your docs. 
+
+```eval_rst
+.. Tip:: You can pass the `--no-extraction` flag to tell Scribe to skip the extraction phase and go straight to converting your Markdown to HTML.
+```
  
 If you run the `generate` command after modifying any of the generated Markdown files (even without the `--no-extraction`) flag, Scribe _will not overwrite your changes to that file_. To force Scribe to overwrite them, use the `--force` flag. 
 
 This means that if, for instance, you modify the `groups/user-management.md` file, the information about your endpoints in the "User management" group will remain the same until you use the `--force` option.
 
 ## Specifying content to be added to the beginning or end of the documentation
-If you wish to automatically add the same content to the docs every time you generate (for instance, a longer introduction, a disclaimer or a list of possible errors), you can add a `prepend.md` or `append.md` file to the `resources/docs` folder. They will be included in the generated documentation in the order described above.
+If you wish to automatically add the same content to the docs every time you generate (for instance, a longer introduction, a disclaimer or a list of possible error responses), you can add a `prepend.md` or `append.md` file to the `resources/docs` folder. They will be included in the generated documentation in the order described above.
  
 The contents of `prepend.md` will be added after the Introduction section, while the contents of `append.md` will show up at the end of the document.
  
@@ -41,7 +51,7 @@ First, publish the vendor views by running:
  
 This will copy the views to `resources/views/vendor/scribe`.
  
-Next, create a file called {language-name}.blade.php (for example, `ruby.blade.php`) in the `partials/example-requests` directory. 
+Next, create a file called `{language-name}.blade.php` (for example, `ruby.blade.php`) in the `partials/example-requests` directory. 
 
 You can then use Blade templates to write Markdown that describes how the example request for the language should be rendered. 
 
@@ -53,9 +63,13 @@ In the template, you have the `$baseUrl` and `$route` variables available to you
 - `methods`: an array of the HTTP methods for that route
 - `boundUri`: the complete URL for the route, with any url parameters replaced (`/users/{id}` -> `/users/1`)
 - `headers`: key-value array of headers to be sent with route (according to your configuration)
-- `cleanQueryParameters`: key-value array of query parameters with example values to be sent with the request. Parameters which have been excluded from the example requests (see [Specifying Example Values](documenting-endpoint-query-parameters.html#specifying-example-values) will not be present here.
-- `cleanBodyParameters`: key-value array of body parameters with example values to be sent with the request. [Parameters which have been excluded from the example requests](documenting-endpoint-body-parameters.html) will not be present here.
-- `fileParameters`: key-value array of file parameters with example values to be sent with the request. Each example value is an instance of `\Illuminate\Http\UploadedFile`. Parameters which have been excluded from the example requests will not be present here.
+- `cleanQueryParameters`: key-value array of query parameters with example values to be sent with the request.
+- `cleanBodyParameters`: key-value array of body parameters with example values to be sent with the request.
+- `fileParameters`: key-value array of file parameters with example values to be sent with the request. Each example value is an instance of `\Illuminate\Http\UploadedFile`.
+
+```eval_rst
+.. Important:: Parameters which have been excluded from the example requests (see `Specifying Example Values <documenting-endpoint-query-parameters.html#specifying-example-values>`_) will not be present in :code:`cleanQueryParameters`, :code:`cleanBodyParameters`, or :code:`fileParameters`.
+```
 
 You can also make use of some utilities in the class `\Knuckles\Scribe\Tools\WritingUtils` to help you easily output data in various forms (such as in key=value format or as a PHP array). Please take a look at that class and its usages in the included example request templates for details.
 
