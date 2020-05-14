@@ -34,10 +34,11 @@ The text to place in the "Introduction" section. Markdown and HTML are supported
 The HTML `<title>` for the generated documentation, and the name of the generated Postman collection. If this is `null`, Scribe will infer it from `config('app.name')`.
 
 ### `logo`
-Path to an image file to use as your logo in the generated docs. This will be used as the value of the src attribute for the `<img>` tag, so make sure it points to a public URL or path accessible from your web server. For best results the image width should be 230px. Set this to `false` to not use a logo.
+Path to an image file to use as your logo in the generated docs. This will be used as the value of the src attribute for the `<img>` tag, so make sure it points to a public URL or path accessible from your web server. For best results, the image width should be 230px. Set this to `false` if you're not using a logo. Default: `false`.
 
 ```eval_rst
 .. Important:: If you're using a relative path, remember to make it relative to your docs output location (:code:`static` type) or app URL (:code:`laravel` type). For example, if your logo is in public/img:
+
    - for :code:`static` type (output folder is public/docs), use '../img/logo.png'
    - for :code:`laravel` type, use 'img/logo.png'
 ```
@@ -131,7 +132,7 @@ Each item in the `routes` array is a _route group_, an array containing rules de
 - `prefixes`: The prefixes key is similar to the `domains` key, but is based on URL path prefixes (ie. what the part starts with, after the domain name). Defaults to `[*]` (all routes, regardless of path).
  
 ```eval_rst
-.. Important:: The `domains` and `prefixes` keys are required for all route groups.
+.. Important:: The :code:`domains` and :code:`prefixes` keys are required for all route groups.
 ```
 
 - `versions`: This only applies when `router` is `dingo`. When using Dingo router, all routes must be specified inside versions. This means that you must specify the versions to be matched along with the domains and prefixes when describing a route group.
@@ -147,12 +148,7 @@ For instance, supposing our routes are set up like this:
 
 ```php
 Route::group(['domain' => 'v2-api.acme.co'], function () {
-  Route::get('/apps', 'AppController@listApps')
-    ->name('apps.list');
-  Route::get('/apps/{id}', 'AppController@getApp')
-    ->name('apps.get');
-  Route::post('/apps', 'AppController@createApp')
-    ->name('apps.create');
+  Route::resource('/apps', 'AppController@listApps');
   Route::get('/users', 'UserController@listUsers')
     ->name('users.list');
   Route::get('/users/{id}', 'UserController@getUser')
@@ -169,7 +165,7 @@ Route::group(['domain' => 'api.acme.co'], function () {
 });
 ```
 
-Supposing we only want to match endpoints on the `v2-api.acme.co` domain and we want to exclude the `/status` route but include the metrics route from `api.acme.co`, we could use this configuration:
+If we only want to match endpoints on the `v2-api.acme.co` domain and we want to exclude the `/status` route but include the metrics route from `api.acme.co`, we could use this configuration:
 
 ```php
     'match' => [
@@ -181,7 +177,7 @@ Supposing we only want to match endpoints on the `v2-api.acme.co` domain and we 
 ```
 
 ```eval_rst
-.. Tip:: You can use :code:`*` as a wildcard in :code:`domains, :code:`prefixes`, :code:`include` and :code:`exclude`. For instance, `:code:'exclude' => ['users/*']` will exclude all routes with URLs starting with 'users/'.
+.. Tip:: You can use :code:`*` as a wildcard in :code:`domains, :code:`prefixes`, :code:`include` and :code:`exclude`. For instance, :code:`'exclude' => ['users/*']` will exclude all routes with URLs starting with 'users/'.
 ```
 
 - `apply`: The `apply` section of the route group is where you specify any additional settings to be applied to those routes when generating documentation. There are a number of settings you can tweak here:
@@ -198,11 +194,11 @@ Supposing we only want to match endpoints on the `v2-api.acme.co` domain and we 
 When generating example requests, this package uses the fzanninoto/faker package to generate random values. If you would like the package to generate the same example values for parameters on each run, set this to any number (eg. 1234).
 
 ```eval_rst
-.. Tip:: Alternatively, you can set example values for parameters when [documenting them](documenting.html)).
+.. Tip:: Alternatively, you can set example values for parameters when `documenting them <documenting.html>`_.
 ```
 
 ### `routeMatcher`
-The route matcher class provides the algorithm that determines what routes should be documented. The default matcher used is the included `\Knuckles\Scribe\Matching\RouteMatcher::class`, and you can provide your own custom implementation if you wish to programmatically change the algorithm. The provided matcher should be an instance of the `RouteMatcherInterface`.
+The route matcher class provides the algorithm that determines what routes should be documented. The default matcher used is the included `\Knuckles\Scribe\Matching\RouteMatcher::class`, and you can provide your own custom implementation if you wish to programmatically change the algorithm. The provided matcher should be an instance of `\Knuckles\Scribe\Matching\RouteMatcherInterface`.
 
 ### `fractal`
 This section only applies if you're using [transformers](https://fractal.thephpleague.com/transformers/) for your API (via the league/fractal package), and documenting responses with `@transformer` and `@transformerCollection`. Here, you configure how responses are transformed.

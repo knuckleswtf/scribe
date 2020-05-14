@@ -130,7 +130,7 @@ INTRO
 
     /*
      * Custom logo path. This will be used as the value of the src attribute for the <img> tag,
-     * so make sure it points to a public URL or path accessible from your web server. For best results the image width should be 230px.
+     * so make sure it points to a public URL or path accessible from your web server. For best results, the image width should be 230px.
      * Set this to false to not use a logo.
      *
      * For example, if your logo is in public/img:
