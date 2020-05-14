@@ -71,15 +71,17 @@ In the template, you have the `$baseUrl` and `$route` variables available to you
 .. Important:: Parameters which have been excluded from the example requests (see `Specifying Example Values <documenting-endpoint-query-parameters.html#specifying-example-values>`_) will not be present in :code:`cleanQueryParameters`, :code:`cleanBodyParameters`, or :code:`fileParameters`.
 ```
 
-You can also make use of some utilities in the class `\Knuckles\Scribe\Tools\WritingUtils` to help you easily output data in various forms (such as in key=value format or as a PHP array). Please take a look at that class and its usages in the included example request templates for details.
+```eval_rst
+.. Tip:: You can make use of some utilities in the class :code:`\Knuckles\Scribe\Tools\WritingUtils` to help you easily output data in various forms (such as in key=value format or as a PHP array). Please take a look at that class and its usages in the included example request templates for details.
+```
 
 Finally, add the language to the `example_languages` array in your config and generate your documentation as usual. 
 
 ## Customizing the code used in examples
-Customise existing language templates, follows the same process as described above: publish assets, then modify the Blade templates in `resources/views/vendor/scribe/partials/example-requests` as necessary.
+Customising existing language templates follows the same process as described above: publish assets, then modify the Blade templates in `resources/views/vendor/scribe/partials/example-requests` as necessary.
 
 ## Changing the Markdown templates
-If you'd like to do even more, you can take a look at editing the other Blade views.
+If you need to go even further, you can take a look at editing the included Blade views.
 
 ### Included views
 You should see the following Blade files when you publish views:
@@ -96,7 +98,9 @@ The following Blade files are present in the `partials` directory:
    - the `$postmanCollectionLink` string that contains the URL to the Postman file (typically `./collection.json`), and
    - the `$settings` array that contains `logo`, `languages` and `title`.
 
-> IMPORTANT: These Blade files are all configured for generating Markdown which is then turned into static HTML (by Pastel). Therefore, hardcoded and relative links are used (eg `<a href="./collection.json">`). For users using `laravel` type documentation, these links are then replaced in the generated HTML file with the correct helpers (eg `<a href="{{ url('docs.json') }}" >`).
+```eval_rst
+.. Important::  These Blade files are all configured for generating Markdown which is then turned into static HTML (by Pastel). Therefore, hardcoded and relative links are used (eg :code:`<a href="./collection.json">`). For users using :code:`laravel` type documentation, these links are afterwards replaced in the generated HTML file with the correct Blade helpers (eg :code:`<a href="{{ url('docs.json') }}" >`).
+```
 
 - `group.blade.php`: This is the template for a group of endpoints. For each group of endpoints, this file is rendered, and gets transformed into the corresponding group file (for instance, endpoints with group "User Management" are passed through this template to create the file `groups/user-management.md`). It has access to the following variables:
    - `$groupName`,
