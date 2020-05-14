@@ -33,13 +33,13 @@ class UseTransformerTags extends Strategy
      * @param ReflectionClass $controller
      * @param ReflectionFunctionAbstract $method
      * @param array $rulesToApply
-     * @param array $context
+     * @param array $alreadyExtractedData
      *
      * @return array|null
      * @throws \Exception
      *
      */
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $rulesToApply, array $context = [])
+    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $rulesToApply, array $alreadyExtractedData = [])
     {
         $docBlocks = RouteDocBlocker::getDocBlocksFromRoute($route);
         /** @var DocBlock $methodDocBlock */

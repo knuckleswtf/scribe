@@ -19,7 +19,7 @@ class GetFromHeaderTag extends Strategy
 
     use ParamHelpers;
 
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $context = [])
+    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
     {
         foreach ($method->getParameters() as $param) {
             $paramType = $param->getType();

@@ -11,7 +11,7 @@ class GetFromRouteRules extends Strategy
 {
     public $stage = 'headers';
 
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $context = [])
+    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
     {
         return $routeRules['headers'] ?? [];
     }

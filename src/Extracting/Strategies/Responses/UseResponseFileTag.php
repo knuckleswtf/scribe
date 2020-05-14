@@ -20,13 +20,13 @@ class UseResponseFileTag extends Strategy
      * @param \ReflectionClass $controller
      * @param \ReflectionFunctionAbstract $method
      * @param array $routeRules
-     * @param array $context
-     *
-     * @throws \Exception If the response file does not exist
+     * @param array $alreadyExtractedData
      *
      * @return array|null
+     *@throws \Exception If the response file does not exist
+     *
      */
-    public function __invoke(Route $route, \ReflectionClass $controller, \ReflectionFunctionAbstract $method, array $routeRules, array $context = [])
+    public function __invoke(Route $route, \ReflectionClass $controller, \ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
     {
         $docBlocks = RouteDocBlocker::getDocBlocksFromRoute($route);
         /** @var DocBlock $methodDocBlock */

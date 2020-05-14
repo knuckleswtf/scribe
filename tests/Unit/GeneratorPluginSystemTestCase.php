@@ -170,7 +170,7 @@ class EmptyStrategy1 extends Strategy
 {
     public static $called = [];
 
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionMethod $method, array $routeRules, array $context = [])
+    public function __invoke(Route $route, ReflectionClass $controller, ReflectionMethod $method, array $routeRules, array $alreadyExtractedData = [])
     {
         static::$called[$this->stage] = true;
     }
@@ -180,7 +180,7 @@ class EmptyStrategy2 extends Strategy
 {
     public static $called = [];
 
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionMethod $method, array $routeRules, array $context = [])
+    public function __invoke(Route $route, ReflectionClass $controller, ReflectionMethod $method, array $routeRules, array $alreadyExtractedData = [])
     {
         static::$called[$this->stage] = true;
     }
@@ -188,7 +188,7 @@ class EmptyStrategy2 extends Strategy
 
 class NotDummyMetadataStrategy extends Strategy
 {
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionMethod $method, array $routeRules, array $context = [])
+    public function __invoke(Route $route, ReflectionClass $controller, ReflectionMethod $method, array $routeRules, array $alreadyExtractedData = [])
     {
         return [
             'groupName' => 'notdummy',
@@ -202,7 +202,7 @@ class NotDummyMetadataStrategy extends Strategy
 
 class PartialDummyMetadataStrategy1 extends Strategy
 {
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionMethod $method, array $routeRules, array $context = [])
+    public function __invoke(Route $route, ReflectionClass $controller, ReflectionMethod $method, array $routeRules, array $alreadyExtractedData = [])
     {
         return [
             'groupName' => 'dummy',
@@ -215,7 +215,7 @@ class PartialDummyMetadataStrategy1 extends Strategy
 
 class PartialDummyMetadataStrategy2 extends Strategy
 {
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionMethod $method, array $routeRules, array $context = [])
+    public function __invoke(Route $route, ReflectionClass $controller, ReflectionMethod $method, array $routeRules, array $alreadyExtractedData = [])
     {
         return [
             'description' => 'dummy',
@@ -226,7 +226,7 @@ class PartialDummyMetadataStrategy2 extends Strategy
 
 class DummyResponseStrategy200 extends Strategy
 {
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionMethod $method, array $routeRules, array $context = [])
+    public function __invoke(Route $route, ReflectionClass $controller, ReflectionMethod $method, array $routeRules, array $alreadyExtractedData = [])
     {
         return [['status' => 200, 'content' => 'dummy']];
     }
@@ -234,7 +234,7 @@ class DummyResponseStrategy200 extends Strategy
 
 class DummyResponseStrategy400 extends Strategy
 {
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionMethod $method, array $routeRules, array $context = [])
+    public function __invoke(Route $route, ReflectionClass $controller, ReflectionMethod $method, array $routeRules, array $alreadyExtractedData = [])
     {
         return [['status' => 400, 'content' => 'dummy2']];
     }

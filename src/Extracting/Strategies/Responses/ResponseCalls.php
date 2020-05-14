@@ -32,13 +32,13 @@ class ResponseCalls extends Strategy
      * @param ReflectionClass $controller
      * @param ReflectionFunctionAbstract $method
      * @param array $routeRules
-     * @param array $context
+     * @param array $alreadyExtractedData
      *
      * @return array|null
      */
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $context = [])
+    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
     {
-        return $this->makeResponseCallIfEnabledAndNoSuccessResponses($route, $routeRules, $context);
+        return $this->makeResponseCallIfEnabledAndNoSuccessResponses($route, $routeRules, $alreadyExtractedData);
     }
 
     public function makeResponseCallIfEnabledAndNoSuccessResponses(Route $route, array $routeRules, array $context)

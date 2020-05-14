@@ -17,12 +17,12 @@ class GetFromResponseFieldTag extends Strategy
 
     use ParamHelpers;
 
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $context = [])
+    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
     {
         /** @var DocBlock $methodDocBlock */
         $methodDocBlock = RouteDocBlocker::getDocBlocksFromRoute($route)['method'];
 
-        return $this->getResponseFieldsFromDocBlock($methodDocBlock->getTags(), $context['responses']);
+        return $this->getResponseFieldsFromDocBlock($methodDocBlock->getTags(), $alreadyExtractedData['responses']);
     }
 
     /**

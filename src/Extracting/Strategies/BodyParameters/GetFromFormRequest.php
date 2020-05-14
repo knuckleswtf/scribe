@@ -27,7 +27,7 @@ class GetFromFormRequest extends Strategy
 
     use ParamHelpers;
 
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $context = []): array
+    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = []): array
     {
         return $this->getBodyParametersFromFormRequest($method);
     }

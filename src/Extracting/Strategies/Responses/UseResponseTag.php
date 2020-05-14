@@ -19,13 +19,13 @@ class UseResponseTag extends Strategy
      * @param \ReflectionClass $controller
      * @param \ReflectionFunctionAbstract $method
      * @param array $routeRules
-     * @param array $context
-     *
-     * @throws \Exception
+     * @param array $alreadyExtractedData
      *
      * @return array|null
+     *@throws \Exception
+     *
      */
-    public function __invoke(Route $route, \ReflectionClass $controller, \ReflectionFunctionAbstract $method, array $routeRules, array $context = [])
+    public function __invoke(Route $route, \ReflectionClass $controller, \ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
     {
         $docBlocks = RouteDocBlocker::getDocBlocksFromRoute($route);
         /** @var DocBlock $methodDocBlock */

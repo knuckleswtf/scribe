@@ -160,7 +160,7 @@ class Generator
         return array_filter($headers);
     }
 
-    protected function iterateThroughStrategies(string $stage, array $context, array $arguments)
+    protected function iterateThroughStrategies(string $stage, array $extractedData, array $arguments)
     {
         $defaultStrategies = [
             'metadata' => [
@@ -193,34 +193,34 @@ class Generator
 
         // Use the default strategies for the stage, unless they were explicitly set
         $strategies = $this->config->get("strategies.$stage", $defaultStrategies[$stage]);
-        $context[$stage] = $context[$stage] ?? [];
+        $extractedData[$stage] = $extractedData[$stage] ?? [];
         foreach ($strategies as $strategyClass) {
             /** @var Strategy $strategy */
             $strategy = new $strategyClass($this->config);
             $strategyArgs = $arguments;
-            $strategyArgs[] = $context;
+            $strategyArgs[] = $extractedData;
             $results = $strategy(...$strategyArgs);
             if (! is_null($results)) {
                 foreach ($results as $index => $item) {
                     if ($stage == 'responses') {
                         // Responses from different strategies are all added, not overwritten
-                        $context[$stage][] = $item;
+                        $extractedData[$stage][] = $item;
                         continue;
                     }
                     // We're using a for loop rather than array_merge or +=
                     // so it does not renumber numeric keys and also allows values to be overwritten
 
                     // Don't allow overwriting if an empty value is trying to replace a set one
-                    if (! in_array($context[$stage], [null, ''], true) && in_array($item, [null, ''], true)) {
+                    if (! in_array($extractedData[$stage], [null, ''], true) && in_array($item, [null, ''], true)) {
                         continue;
                     } else {
-                        $context[$stage][$index] = $item;
+                        $extractedData[$stage][$index] = $item;
                     }
                 }
             }
         }
 
-        return $context[$stage];
+        return $extractedData[$stage];
     }
 
     /**

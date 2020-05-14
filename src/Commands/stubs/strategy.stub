@@ -25,7 +25,7 @@ class DummyClass extends Strategy
      * @param ReflectionClass $controller The class handling the current route.
      * @param ReflectionFunctionAbstract $method The method/closure handling the current route.
      * @param array $routeRules Array of rules for the ruleset which this route belongs to.
-     * @param array $context Results from the previous stages
+     * @param array $alreadyExtractedData Data already extracted from previous stages and earlier strategies in this stage
      *
      * See the documentation linked above for more details about writing custom strategies.
      *
@@ -36,7 +36,7 @@ class DummyClass extends Strategy
         ReflectionClass $controller,
         ReflectionFunctionAbstract $method,
         array $routeRules,
-        array $context = []
+        array $alreadyExtractedData = []
     )
     {
         return null;
