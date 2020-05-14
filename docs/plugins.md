@@ -62,7 +62,7 @@ There are a number of strategies included with the package, so you don't have to
 ## Creating a strategy
 To create a strategy, create a class that extends `\Knuckles\Scribe\Extracting\Strategies\Strategy`. You can do this by running the `scribe:strategy` command. By default, this will place the strategy in your `App\Docs\Strategies` namespace. The first argument to `scribe:strategy` is the name of the strategy, the second is the stage it belongs to.
 
-```sh
+```bash
 php artisan scribe:strategy AddPaginationParameters queryParameters
 ```
 

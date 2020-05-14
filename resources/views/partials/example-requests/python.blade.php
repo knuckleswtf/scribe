@@ -2,7 +2,7 @@
 import requests
 import json
 
-url = '{{ rtrim($baseUrl, '/') }}/{{ ltrim($route['boundUri'], '/') }}'
+url = '{{ rtrim($baseUrl, '/') }}/{{ $route['boundUri'] }}'
 @if(count($route['fileParameters']))
 files = {
 @foreach($route['fileParameters'] as $name => $file)

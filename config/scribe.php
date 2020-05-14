@@ -41,7 +41,7 @@ return [
 
         /*
          * Where is the auth value meant to be sent in a request?
-         * Options: query, body. query_or_body, basic, bearer, header (for custom header)
+         * Options: query, body, query_or_body, basic, bearer, header (for custom header)
          */
         'in' => 'bearer',
 
@@ -51,13 +51,14 @@ return [
         'name' => 'token',
 
         /*
-         * The value of the parameter. This will NOT be part of the generated documentation.
-         * Use it to easily auth response calls by this package. Otherwise, we'll use a random value.
+         * The value of the parameter to be used by Scribe to authenticate response calls.
+         * This will NOT be included in the generated documentation.
+         * If this value is null, Scribe will use a random value.
          */
         'use_value' => env('SCRIBE_AUTH_KEY'),
 
         /*
-         * Any extra info for your users. For instance, you can describe where to find (or generate) their auth credentials.
+         * Any extra authentication-related info for your users. For instance, you can describe how to find or generate their auth credentials.
          * Markdown and HTML are supported.
          */
         'extra_info' => 'You can retrieve your token by visiting your dashboard and clicking <b>Generate API token</b>.',
@@ -128,7 +129,7 @@ INTRO
     'default_group' => 'Endpoints',
 
     /*
-     * Custom logo path. The will be used as the value of the src attribute for the <img> tag,
+     * Custom logo path. This will be used as the value of the src attribute for the <img> tag,
      * so make sure it points to a public URL or path accessible from your web server. For best results the image width should be 230px.
      * Set this to false to not use a logo.
      *
