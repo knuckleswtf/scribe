@@ -10,7 +10,7 @@ There's quite a few changes in Scribe, and this guide aims to show you the key p
 
 ```bash
 composer remove mpociot/laravel-apidoc-generator 
-composer require knuckleswtf/scribe 
+composer require --dev knuckleswtf/scribe 
 ```
 
 - Publish the new config file: 
