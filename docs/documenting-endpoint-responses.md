@@ -1,27 +1,12 @@
 # Documenting responses from an endpoint
-It's helpful if your API's consumers can see what a response should be like before writing any code. There are multiple ways to provide example responses for your endpoint:
-- letting Scribe generate the response by making a "response call"
+It's helpful if your API's consumers can see what a response should be like before writing any code. There are multiple strategies to provide example responses for your endpoint:
 - describing the response using the `@response` tag
 - specifying a file containing the response using the `@responseFile` tag
+- letting Scribe generate the response by making a "response call"
 - letting Scribe generate the response from the `@apiResource` tags (if you're using [Eloquent API resources](https://laravel.com/docs/eloquent-resources))
 - letting Scribe generate the response from the `@transformer` tags (if you're using Transformers)
 
 You can use all of these strategies within the same endpoint. Scribe will display all the responses it finds.
-
-## Generating responses automatically via response calls
-If you don't specify an example response using any of the means described below, Scribe will attempt to get a sample response by making a HTTP request to the local endpoint (known as a "response call"). There are a few ruls that apply to response calls:
-
-- The configuration for response calls is located in the `apply.response_calls` section for each route group in `/scribe.php`. You can apply different settings for different sets of routes.
-
-- Response calls are done within a database transaction and changes are rolled back afterwards, so no data is persisted.
-
-- By default, response calls are only made for GET routes, but you can configure this. Set the `response_calls.methods` key to an array of methods (e.g. `['GET', 'PUT']`). Set it to `['*']` to mean all methods. Leave it as an empty array to turn off response calls for that route group.
-
-- You can specify Laravel config variables to be modified for the response call. This is useful so you can prevent external services like notifications from being triggered. By default the `app.env` is set to 'documentation'. You can add more variables in the `config` key. You can also modify the environment directly by using a `.env.docs` file and running `scribe:generate` with `--env docs`.
-
-- By default, the package will generate dummy values for your documented query, body and file parameters and send in the request. If you specified example values using `@bodyParam` or `@queryParam`, those will be used instead. You can configure additional parameters or overwrite the existing ones for the request in the `response_calls.queryParams`, `response_calls.bodyParams`, and `response_calls.fileParams` sections. For file parameters, each value should be a valid absolute path to a file on the machine.
-
-- Unlike the other approaches described below, the `ResponseCalls` strategy will only attempt to fetch a response if there are no responses with a status code of 2xx already.
 
 ## `@response`
 You can provide an example response for an endpoint by using the `@response` annotation with valid JSON:
@@ -69,7 +54,7 @@ You can define multiple possible responses from the same endpoint using `@respon
 
 ![](images/endpoint-responses-2.png)
 
-You can also indicate a binary response by using `<<binary>>` as the value of the response, followed by a description.
+To indicate a binary response, use `<<binary>>` as the value of the response, followed by a description.
 
 ```php
 /**
@@ -133,12 +118,39 @@ This JSON string will be parsed and merged with the response from the file.
 
 ![](images/endpoint-responses-4.png)
 
+## Generating responses automatically via response calls
+If you don't specify an example response using any of the other means described in this document, Scribe will attempt to get a sample response by making a HTTP request to the local endpoint (known as a "response call").
+
+```eval_rst
+.. Important:: Response calls are done within a database transaction and changes are rolled back afterwards, so no data is persisted.
+```
+
+The configuration for response calls is located in the `apply.response_calls` section for each route group in `config/scribe.php`. This means that You can apply different settings for different sets of routes. Here are some important things to note:
+
+- By default, response calls are only made for `GET` routes, but you can configure this by setting the `response_calls.methods` key to an array of methods (e.g. `['GET', 'PUT']`). Set it to `['*']` to mean all methods. Leave it as an empty array to turn off response calls for that route group.
+
+- You can specify Laravel config variables to be modified for the response call. This is useful so you can prevent external services like notifications from being triggered. By default the `app.env` is set to 'documentation'. You can add more variables in the `response_calls.config` key. 
+
+```eval_rst
+.. Tip:: You can also modify the environment directly by using a :code:`.env.docs` file and running :code:`scribe:generate` with :code:`--env docs`.
+```
+
+- By default, the package will generate dummy values for your documented query, body and file parameters and send in the request. If you specified example values using `@bodyParam` or `@queryParam`, those will be used instead. You can configure additional parameters or overwrite the existing ones for the request in the `response_calls.queryParams`, `response_calls.bodyParams`, and `response_calls.fileParams` sections. For file parameters, each value should be a valid absolute path to a file on the machine.
+
+```eval_rst
+.. Note:: If you specified :code:`No-example` for a parameter earlier, it won't be included when making a response call.
+```
+
+```eval_rst
+.. Note:: Unlike the other approaches described in this document, the `ResponseCalls` strategy will only attempt to fetch a response if there are no responses with a status code of 2xx already.
+```
+
 ## `@apiResource`, `@apiResourceCollection`, and `@apiResourceModel`
 If your endpoint uses [Eloquent API resources](https://laravel.com/docs/eloquent-resources) to generate its response, you can use the `@apiResource` annotations to guide Scribe when generating a sample response. There are three available annotations:
 
-- The `@apiResource` tag, which specifies the name of the resource.
-- The `@apiResourceCollection`, which should be used instead of `@apiResource` if the route returns a list, either via `YourResource::collection()` or`new YourResourceCollection`). Here you'll specify the name of the resource or resource collection.
-- The `@apiResourceModel`, which specifies the Eloquent model to be passed to the resource. You should use `@apiResourceModel` alongside either of the other two.
+- `@apiResource`, which specifies the name of the resource.
+- `@apiResourceCollection`, which should be used instead of `@apiResource` if the route returns a list, either via `YourResource::collection()` or`new YourResourceCollection`). Here you'll specify the name of the resource or resource collection.
+- `@apiResourceModel`, which specifies the Eloquent model to be passed to the resource. You should use `@apiResourceModel` alongside either of the other two.
 
 Examples:
 
@@ -175,16 +187,16 @@ Scribe will generate an instance (or instances) of the model and pass the model(
 
 
 ```eval_rst
-.. Tip:: To understand how Scribe generates an instance of your model and how you can customize that, you should check out the section on `How model instances are generated`_
+.. Tip:: To understand how Scribe generates an instance of your model and how you can customize that, you should check out the section on `How model instances are generated`_.
 ```
 
-### Pagination
-If your endpoint passes paginated results to the resource, you can tell Scribe to paginate by using the `paginate` attribute on `@apiResourceModel`.
+### Paginating with API Resources
+If your endpoint returns a paginated response, you can tell Scribe how to paginate by using the `paginate` attribute on `@apiResourceModel`.
 
 ```php
 /**
  * @apiResourceCollection App\Resources\UserCollection
- * @apiResourceModel App\Models\User paginate=15
+ * @apiResourceModel App\Models\User paginate=10
  */
 public function listMoreUsers()
 {
@@ -204,13 +216,14 @@ public function listMoreUsers()
 ## `@transformer, @transformerCollection, and @transformerModel`
 If you're using transformers (via the league/fractal package), you can tell Scribe how to generate a sample response by using the transformer annotations. There are three available annotations:
  
- - The `@transformer` tag, which specifies the name of the Transformer class.
- - The `@transformerCollection`, which should be used instead of `@transformer` if the route returns a list.
- - The `@transformerModel`, which specifies the Eloquent model to be passed to the transformer. You should use `@transformerModel` alongside either of the other two.
+- `@transformer`, which specifies the name of the Transformer class.
+- `@transformerCollection`, which should be used instead of `@transformer` if the route returns a list.
+- `@transformerModel`, which specifies the Eloquent model to be passed to the transformer. You should use `@transformerModel` alongside either of the other two.
  
-Specifying `@transformerModel` is optional. If you don't specify it, Scribe will attempt to use the class of the first parameter to the transformer's `transform()` method.
 
-Scribe will generate an instance (or instances) of the model (see [How model instances are generated](#how-model-instances-are-generated)) and pass the model(s) to the transformer to get the example response.
+```eval_rst
+.. Tip:: Specifying `@transformerModel` is optional. If you don't specify it, Scribe will attempt to use the class of the first parameter to the transformer's `transform()` method.
+```
 
 For example:
 
@@ -234,8 +247,14 @@ public function listUsers()
 }
 ```
 
-### Pagination
-If your endpoint uses a paginator with the transformer, you can tell Scribe how to paginate via a separate tag, `@transformerPaginator`.
+Scribe will generate an instance (or instances) of the model and pass the model(s) to the transformer to get the example response.
+
+```eval_rst
+.. Tip:: To understand how Scribe generates an instance of your model and how you can customize that, you should check out the section on `How model instances are generated`_.
+```
+
+### Paginating with transformers
+If your endpoint uses a paginator with the transformer, you can tell Scribe how to paginate via an additional tag, `@transformerPaginator`.
 
 ```php
 /**
@@ -258,7 +277,11 @@ public function listMoreUsers()
 ## How model instances are generated
 When generating responses from `@apiResource` and `@transformer` tags, Scribe needs to generate a sample model to pass to the resource or transformer. Here's the process Scribe follows:
  
-1. First, it tries the Eloquent model factory: `factory(YourModel::class)->create()`. It uses `create()`, but runs it in a database transaction which is rolled back afterwards, so no data is persisted.
+1. First, it tries the Eloquent model factory: `factory(YourModel::class)->create()`. 
+
+```eval_rst
+.. Note:: Scribe uses :code:`create()` instead of :code:`make()` when calling the factory, but runs it in a database transaction which is rolled back afterwards, so no data is persisted.
+```
 
 2. If that fails, Scribe calls `YourModel::first()` to retrieve the first model from the database. 
 
@@ -275,7 +298,7 @@ If you want specific states to be applied to your model when instantiating via `
 ```
 
 ### Loading specific relations
-If you want specific relations to be loaded to your model when instantiating via `YourModel::first()`, you can use the `with` attribute on `@apiResourceModel` or `@transformerModel`. Separate multiple relations with a comma.
+If you want specific relations to be loaded with your model when instantiating via `YourModel::first()`, you can use the `with` attribute on `@apiResourceModel` or `@transformerModel`. Separate multiple relations with a comma.
 
 ```php
 /**
@@ -287,29 +310,32 @@ If you want specific relations to be loaded to your model when instantiating via
 ## Adding descriptions for fields in the responses
 You can add descriptions for fields in your response by adding a `@responseField` annotation to your controller method.
 
+```php
+/**
+ * @responseField id The id of the newly created word
+ */
 ```
-@responseField id The id of the newly created user
+
+Scribe figures out the type of the field from the 2xx responses for that endpoint. 
+
+```eval_rst
+.. Tip:: You don't need to specify the full field path if the field is inside an array of objects or wrapped in pagination data. For instance, the above annotation will work fine for all of these responses:
+
+   .. code:: json 
+     { "id": 3 }
+
+   .. code:: json 
+      [
+        { "id": 3 }
+      ]
+
+   .. code:: json 
+      {
+         "data": [
+           { "id": 3 }
+         ]
+      }
 ```
-
-Scribe figures out the type of the field from the 2xx responses for that endpoint. Note that this also works even if the field is inside an array of objects or wrapped in pagination data. This means that the above annotation will work fine for all of these responses:
-
- ```json 
- { "id": 3 }
- ```
-
- ```json
- [
-   { "id": 3 }
- ]
- ```
-
- ```json
- {
-    "data": [
-      { "id": 3 }
-    ]
- }
- ```
 
 ![](./images/response-fields-1.png)
 
@@ -318,7 +344,9 @@ Scribe figures out the type of the field from the 2xx responses for that endpoin
 
 If you wish, you can also specify the type of the parameter:
 
-```
-@responseField id integer The id of the newly created user
+```php
+/**
+ * @responseField id integer The id of the newly created word
+ */
 ```
 

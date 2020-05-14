@@ -301,7 +301,7 @@ class ResponseCalls extends Strategy
         if ($this->config->get('router') == 'dingo') {
             $response = $this->callDingoRoute($request, $route);
         } else {
-            $response = $this->callLaravelRoute($request);
+            $response = $this->callLaravelOrLumenRoute($request);
         }
 
         return $response;
@@ -314,7 +314,7 @@ class ResponseCalls extends Strategy
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    protected function callLaravelRoute(Request $request): \Symfony\Component\HttpFoundation\Response
+    protected function callLaravelOrLumenRoute(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         // Confirm we're running in Laravel, not Lumen
         if (app()->bound(Kernel::class)) {

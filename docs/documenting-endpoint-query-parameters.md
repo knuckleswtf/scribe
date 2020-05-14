@@ -48,7 +48,9 @@ public function createPost(CreatePostRequest $request)
 ## Specifying example values
 By default, Scribe will generate a random value for each parameter, to be used in the example requests and response calls. If you'd like to use a specific example value, you can do so by adding `Example: your-example-here` to the end of your description.
 
-You can also exclude a particular parameter from the generated examples by ending with `No-example` instead. This will also prevent the parameter from being sent along in response calls. The parameter will still be included in the text of the documentation.
+```eval_rst
+.. Tip:: You can exclude a particular parameter from the generated examples by ending with `No-example` instead. The parameter will still be included in the text of the documentation, but it won't be included in response calls or shown in the example requests.
+```
 
 For instance:
 
@@ -86,7 +88,7 @@ public function getPost()
 ![](images/endpoint-urlparams-1.png)
 
 ```eval_rst
-.. Important:: If you want Scribe to omit an optional parameter (`lang` in our example) in requests and response calls, specify `No-example` for the parameter.
+.. Note:: If you want Scribe to omit an optional parameter (`lang` in our example) in requests and response calls, specify :code:`No-example` for the parameter.
 ```
 
 ```php

@@ -16,7 +16,9 @@ The `@bodyParam` annotation takes the name of the parameter, its type, an option
 
 By default, Scribe will generate a random value for each parameter, to be used in the example requests and response calls. If you'd like to use a specific example value, you can do so by adding `Example: your-example-here` to the end of your description.
 
-You can also exclude a particular parameter from the generated examples by ending with `No-example` instead. This will also prevent the parameter from being sent along in response calls. The parameter will still be included in the text of the documentation.
+```eval_rst
+.. Tip:: You can exclude a particular parameter from the generated examples by ending with `No-example` instead. The parameter will still be included in the text of the documentation, but it won't be included in response calls or shown in the example requests.
+```
 
 Here's an example:
 
@@ -105,8 +107,12 @@ If you're using Laravel or Dingo FormRequests in your controller method, Scribe 
 Custom rules are not supported. Scribe will ignore any rules it does not support.
 
 For each parameter in `rules()` it encounters, Scribe will:
-- generate an example value that passes all the supported rules. Note that if you have rules that are not supported, the generated value might not pass them. You can get around that by specifying an example in the `bodyParameters()` method.
-- generate a description that combines the supported validation rules with any description you specify in `bodyParameters()` 
+- generate an example value that passes all the supported rules.
+- generate a description that combines the supported validation rules with any description you specify in `bodyParameters()`.
+
+```eval_rst
+.. Note:: If you have rules that are not supported, Scribe's generated value might not pass their validation checks. You can get around that by manually specifying an example in the `bodyParameters()` method.
+```
 
 Here's an example:
 
@@ -166,4 +172,6 @@ For files, your example should be the absolute path to a file that exists on you
 
 ![](images/endpoint-bodyparams-4.png) 
 
-> Note: Adding a file parameter will automatically set the 'Content-Type' header in example requests and response calls to `multipart/form-data`.
+```eval_rst
+.. Note:: Adding a file parameter will automatically set the 'Content-Type' header in example requests and response calls to `multipart/form-data`.
+```
