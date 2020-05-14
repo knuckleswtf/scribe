@@ -115,7 +115,7 @@ Scribe tries to figure out information about your routes, but it needs more help
 Check out how to do this in the guide on [Documenting your API](documenting.html).
 
 ## Generate and publish
-After making changes as needed, you can run `php artisan scribe:generate` as many times as you want. You should also check out [this list of helpful tips](helpful-tips.html).
+After making changes as needed, you can run `php artisan scribe:generate` as many times as you want.
 
 When you're happy with how your documentation looks, you're good to go. You can add the generated documentation to your version control and deploy as normal, and your users will be able to access it as you've configured.
 

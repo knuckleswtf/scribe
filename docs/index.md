@@ -22,7 +22,6 @@ Generate API documentation for humans from your Laravel/Lumen/[Dingo](https://gi
 * [Documenting possible responses returned from the endpoint](documenting-endpoint-responses.md)
 * [Generating documentation](generating-documentation.md)
 * [Configuration](config.md)
-* [Helpful Tips](helpful-tips.md)
 * [Troubleshooting and Debugging](troubleshooting.md)
 * [Advanced customization](customization.md)
 * [How this works](description.md)
