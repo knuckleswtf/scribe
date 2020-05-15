@@ -6,39 +6,28 @@ class AnnotationParser
 {
     /**
      * Parse an annotation like 'status=400 when="things go wrong" {"message": "failed"}'.
-     * Attributes are always optional.
+     * Attributes are always optional and may appear at the start or the end of the string.
      *
      * @param string $annotationContent
      */
     public static function parseIntoContentAndAttributes(string $annotationContent, array $allowedAttributes): array
     {
-        $result = preg_split('/(\w+)=([^\s\'"]+|".+?"|\'.+?\')\s*/', trim($annotationContent), -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+        $parsedAttributes = array_fill_keys($allowedAttributes, null);
 
-        $defaults = array_fill_keys($allowedAttributes, null);
-        if (count($result) == 1) { // No key-value pairs
-            return [
-                'content' => trim($result[0]),
-                'attributes' => $defaults
-            ];
+        foreach ($allowedAttributes as $attribute) {
+            preg_match("/$attribute=([^\\s'\"]+|\".+?\"|'.+?')\\s*/", $annotationContent, $attributeAndValue);
+
+            if (count($attributeAndValue)) {
+                [$matchingText, $attributeValue] = $attributeAndValue;
+                $annotationContent = str_replace($matchingText, '', $annotationContent);
+
+                $parsedAttributes[$attribute] = trim($attributeValue, '"\' ');
+            }
         }
 
-        // Separate the main content
-        if (in_array($result[0], $allowedAttributes)) {
-            $content = trim(array_pop($result));
-        } else {
-            $content = trim(array_shift($result));
-        }
-
-        [$keys, $values] = collect($result)->partition(function ($value, $key) {
-            return $key % 2;
-        });
-        $attributes = collect($values)->combine($keys)
-            ->map(function ($value) {
-                return trim($value, '"\' ');
-            })
-            ->toArray();
-        $attributes = array_merge($defaults, $attributes);
-
-        return compact('content', 'attributes');
+        return [
+            'content' => trim($annotationContent),
+            'attributes' => $parsedAttributes
+        ];
     }
 }
