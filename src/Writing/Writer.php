@@ -65,15 +65,17 @@ class Writer
 
     public function __construct(DocumentationConfig $config = null, bool $shouldOverwrite = false)
     {
-        // If no config is injected, pull from global
+        // If no config is injected, pull from global. Makes testing easier.
         $this->config = $config ?: new DocumentationConfig(config('scribe'));
         $this->baseUrl = $this->config->get('base_url') ?? config('app.url');
         $this->shouldOverwrite = $shouldOverwrite;
         $this->shouldGeneratePostmanCollection = $this->config->get('postman.enabled', false);
         $this->pastel = new Pastel();
+
         $this->isStatic = $this->config->get('type') === 'static';
         $this->sourceOutputPath = 'resources/docs';
-        $this->outputPath = $this->isStatic ? 'public/docs' : 'resources/views/scribe';
+        $this->outputPath = $this->isStatic ? rtrim($this->config->get('static.output_path', 'public/docs'), '/') : 'resources/views/scribe';
+
         $this->fileModificationTimesFile = $this->sourceOutputPath . '/.filemtimes';
         $this->lastTimesWeModifiedTheseFiles = [];
     }
@@ -187,10 +189,11 @@ class Writer
             mkdir($this->outputPath);
         }
 
-        rename("public/docs/index.html", "$this->outputPath/index.blade.php");
+        rename("{$this->outputPath}/index.html", "$this->outputPath/index.blade.php");
         // Move assets from public/docs to public/vendor/scribe
+        // We need to do this delete first, otherwise move won't work if folder exists
         Utils::deleteDirectoryAndContents("public/vendor/scribe/", getcwd());
-        rename("public/docs/", "public/vendor/scribe/");
+        rename("{$this->outputPath}/", "public/vendor/scribe/");
 
         $contents = file_get_contents("$this->outputPath/index.blade.php");
 
@@ -206,7 +209,7 @@ class Writer
     {
         ConsoleOutputUtils::info('Generating API HTML code');
 
-        $this->pastel->generate($this->sourceOutputPath . '/index.md', 'public/docs');
+        $this->pastel->generate($this->sourceOutputPath . '/index.md', $this->outputPath);
 
         if (!$this->isStatic) {
             $this->performFinalTasksForLaravelType();

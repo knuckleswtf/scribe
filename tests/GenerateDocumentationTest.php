@@ -394,6 +394,19 @@ class GenerateDocumentationTest extends TestCase
     }
 
     /** @test */
+    public function can_customise_static_output_path()
+    {
+        RouteFacade::get('/api/action1', TestGroupController::class . '@action1');
+
+        config(['scribe.routes.0.prefixes' => ['*']]);
+        config(['scribe.static.output_path' => 'static/docs']);
+        $this->artisan('scribe:generate');
+
+        $this->assertFileExists(realpath(__DIR__ . '/../static/docs/index.html'));
+        Utils::deleteDirectoryAndContents('/static/docs');
+    }
+
+    /** @test */
     public function will_not_overwrite_manually_modified_markdown_files_unless_force_flag_is_set()
     {
         RouteFacade::get('/api/action1', TestGroupController::class . '@action1');

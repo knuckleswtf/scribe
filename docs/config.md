@@ -15,6 +15,11 @@ This is the type of documentation output to generate.
 .. Note:: In both instances, the source markdown file will be generated in `resources/docs`.
 ```
 
+### `static`
+Settings for the `static` type output.
+
+- `output_path`: Output folder. The HTML documentation, assets and Postman collection will be generated to this folder. Source Markdown will still be in resources/docs. Default: `public/docs`.
+
 ### `laravel`
 Settings for the `laravel` type output.
 
