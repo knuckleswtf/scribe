@@ -172,18 +172,25 @@ class GenerateDocumentation extends Command
      */
     private function isRouteHiddenFromDocumentation(array $routeControllerAndMethod)
     {
-        $comment = u::reflectRouteMethod($routeControllerAndMethod)->getDocComment();
+        if (! ($class = $routeControllerAndMethod[0]) instanceof \Closure) {
+            $classDocBlock = new DocBlock((new ReflectionClass($class))->getDocComment() ?: '');
+            $shouldIgnoreClass = collect($classDocBlock->getTags())
+                ->filter(function (Tag $tag) {
+                    return Str::lower($tag->getName()) === 'hidefromapidocumentation';
+                })->isNotEmpty();
 
-        if (!$comment) {
-            return false;
+            if ($shouldIgnoreClass) {
+                return true;
+            }
         }
 
-        $phpdoc = new DocBlock($comment);
-
-        return collect($phpdoc->getTags())
+        $methodDocBlock = new DocBlock(u::getReflectedRouteMethod($routeControllerAndMethod)->getDocComment() ?: '');
+        $shouldIgnoreMethod = collect($methodDocBlock->getTags())
             ->filter(function (Tag $tag) {
                 return Str::lower($tag->getName()) === 'hidefromapidocumentation';
             })->isNotEmpty();
+
+        return $shouldIgnoreMethod;
     }
 
     public function bootstrap(): void

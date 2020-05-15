@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Knuckles\Scribe\ScribeServiceProvider;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tests\Fixtures\TestGroupController;
+use Knuckles\Scribe\Tests\Fixtures\TestIgnoreThisController;
 use Knuckles\Scribe\Tests\Fixtures\TestPartialResourceController;
 use Knuckles\Scribe\Tests\Fixtures\TestResourceController;
 use Knuckles\Scribe\Tests\Fixtures\TestUser;
@@ -116,15 +117,17 @@ class GenerateDocumentationTest extends TestCase
     }
 
     /** @test */
-    public function can_skip_single_routes()
+    public function can_skip_methods_and_classes_with_hidefromapidocumentation_tag()
     {
         RouteFacade::get('/api/skip', TestController::class . '@skip');
+        RouteFacade::get('/api/skipClass', TestIgnoreThisController::class . '@dummy');
         RouteFacade::get('/api/test', TestController::class . '@withEndpointDescription');
 
         config(['scribe.routes.0.match.prefixes' => ['api/*']]);
         $output = $this->artisan('scribe:generate');
 
         $this->assertStringContainsString('Skipping route: [GET] api/skip', $output);
+        $this->assertStringContainsString('Skipping route: [GET] api/skipClass', $output);
         $this->assertStringContainsString('Processed route: [GET] api/test', $output);
     }
 

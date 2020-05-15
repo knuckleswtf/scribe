@@ -51,7 +51,8 @@ For details, check out [Documenting API information](documenting-api-information
 Next up, decide what routes you want to document. This is configured in the `routes` key of `scribe.php`. By default, Scribe will try to document all of your routes, so if you're okay with that, you can leave it at that.
 
 If you'd like to exclude some routes, there are two ways:
-- In the docblock for the controller method or class, add this tag: `@hideFromAPIDocumentation`. Any routes handled by methods or controllers with this DocBlock tag won't be added to the doc.
+
+- In the docblock for the controller method or class, add this tag: `@hideFromAPIDocumentation`. Any routes handled by methods or controllers with this doc block tag won't be added to the doc.
 
 - The second way is by configuring your `routes` config. Here's what it looks like:
 

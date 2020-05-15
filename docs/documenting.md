@@ -10,4 +10,4 @@ Here's some of the information you can customise:
 - [Example responses returned from the endpoint](documenting-endpoint-responses.html)
 
 ## Excluding endpoints from the documentation
-You can exclude endpoints from the documentation by using the `@hideFromAPIDocumentation` tag in the method's doc block. Scribe will not extract any information about the route or add it to the generated docs.
+You can exclude endpoints from the documentation by using the `@hideFromAPIDocumentation` tag in the method or class doc block. Scribe will not extract any information about the route or add it to the generated docs.

@@ -58,7 +58,7 @@ class Generator
     {
         [$controllerName, $methodName] = u::getRouteClassAndMethodNames($route);
         $controller = new ReflectionClass($controllerName);
-        $method = u::reflectRouteMethod([$controllerName, $methodName]);
+        $method = u::getReflectedRouteMethod([$controllerName, $methodName]);
 
         $parsedRoute = [
             'id' => md5($this->getUri($route) . ':' . implode($this->getMethods($route))),

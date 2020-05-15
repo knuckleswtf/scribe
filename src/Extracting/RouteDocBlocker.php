@@ -41,7 +41,7 @@ class RouteDocBlocker
             throw new \Exception("Error while fetching docblock for route ". c::getRouteRepresentation($route).": Class $className does not contain method $methodName");
         }
 
-        $method = u::reflectRouteMethod([$className, $methodName]);
+        $method = u::getReflectedRouteMethod([$className, $methodName]);
 
         $docBlocks = [
             'method' => new DocBlock($method->getDocComment() ?: ''),

@@ -97,13 +97,15 @@ class Utils
     }
 
     /**
+     * Returns the route method or closure as an instance of ReflectionMethod or ReflectionFunction
+     *
      * @param array $routeControllerAndMethod
      *
      * @throws ReflectionException
      *
      * @return ReflectionFunctionAbstract
      */
-    public static function reflectRouteMethod(array $routeControllerAndMethod): ReflectionFunctionAbstract
+    public static function getReflectedRouteMethod(array $routeControllerAndMethod): ReflectionFunctionAbstract
     {
         [$class, $method] = $routeControllerAndMethod;
 
