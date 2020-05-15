@@ -224,15 +224,24 @@ class Generator
     }
 
     /**
-     * Create samples at index 0 for array parameters.
-     * Also filter out parameters which were excluded from having examples.
-     * And convert all file params that have string examples to actual files
+     * This method prepares and simplifies request parameters for use in example requests and response calls.
+     * It takes in an array with rich details about a parameter eg
+     *   ['age' => [
+     *     'description' => 'The age',
+     *     'value' => 12,
+     *     'required' => false,
+     *   ]
+     * And transforms them into key-value pairs : ['age' => 12]
+     * It also filters out parameters which have null values and have 'required' as false.
+     * It converts all file params that have string examples to actual files (instances of UploadedFile).
+     * Finally, it adds a '.0' key for each array parameter (eg users.* ->users.0),
+     * so that the array ends up containing a 1-item array.
      *
      * @param array $params
      *
      * @return array
      */
-    public static function cleanParams(array $params)
+    public static function cleanParams(array $params): array
     {
         $cleanParams = [];
 
@@ -250,7 +259,7 @@ class Generator
                     $filePath, $fileName, mime_content_type($filePath), 0,false
                 );
             }
-            self::generateConcreteSampleForArrayKeys(
+            self::generateConcreteKeysForArrayParameters(
                 $paramName,
                 $details['value'],
                 $cleanParams
@@ -262,7 +271,8 @@ class Generator
 
     /**
      * For each array notation parameter (eg user.*, item.*.name, object.*.*, user[])
-     * generate concrete sample (user.0, item.0.name, object.0.0, user.0) with example as value.
+     * add a key that represents a "concrete" number (eg user.0, item.0.name, object.0.0, user.0 with the same value.
+     * That way, we always have an array of length 1 for each array key
      *
      * @param string $paramName
      * @param mixed $paramExample
@@ -270,7 +280,7 @@ class Generator
      *
      * @return void
      */
-    protected static function generateConcreteSampleForArrayKeys($paramName, $paramExample, array &$cleanParams = [])
+    protected static function generateConcreteKeysForArrayParameters($paramName, $paramExample, array &$cleanParams = [])
     {
         if (Str::contains($paramName, '[')) {
             // Replace usages of [] with dot notation
