@@ -267,7 +267,7 @@ public function listMoreUsers()
   $paginator = User::paginate(15);
   $users = $paginator->getCollection();
 
-    $transformer = new Collection($users, new UserTransformer(), 'data');
+    $transformer = new Fractal\Resource\Collection($users, new UserTransformer(), 'data');
     $transformer->setPaginator(new IlluminatePaginatorAdapter($users));
     
     return $fractal->createData($users)->toArray();

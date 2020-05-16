@@ -71,7 +71,7 @@ class GetFromQueryParamTag extends Strategy
                 // Examples:
                 // @queryParam text string required The text.
                 // @queryParam user_id The ID of the user.
-                preg_match('/(.+?)\s+(required\s+)?(.*)/', $tag->getContent(), $content);
+                preg_match('/(.+?)\s+(required\s+)?([\s\S]*)/', $tag->getContent(), $content);
                 $content = preg_replace('/\s?No-example.?/', '', $content);
                 if (empty($content)) {
                     // this means only name was supplied

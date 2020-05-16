@@ -66,7 +66,7 @@ class GetFromUrlParamTag extends Strategy
                 // Examples:
                 // @urlParam id required The id of the post.
                 // @urlParam user_id The ID of the user.
-                preg_match('/(.+?)\s+(required\s+)?(.*)/', $tag->getContent(), $content);
+                preg_match('/(.+?)\s+(required\s+)?([\s\S]*)/', $tag->getContent(), $content);
                 $content = preg_replace('/\s?No-example.?/', '', $content);
                 if (empty($content)) {
                     // This means only name was supplied
