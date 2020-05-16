@@ -97,8 +97,8 @@ class UseApiResourceTags extends Strategy
                     $perPage
                 );
                 $list = $paginator;
-            } elseif (count($pagination) == 2 && $pagination[0] == 'simple') {
-                $perPage = $pagination[1];
+            } elseif (count($pagination) == 2 && $pagination[1] == 'simple') {
+                $perPage = $pagination[0];
                 $paginator = new Paginator($models, $perPage);
                 $list = $paginator;
             } else {

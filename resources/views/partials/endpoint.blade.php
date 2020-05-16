@@ -19,10 +19,13 @@
 ```json
 @if(is_object($response['content']) || is_array($response['content']))
 {!! json_encode($response['content'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}
-@elseif(\Illuminate\Support\Str::startsWith($response['content'], "<<binary>>"))
+@elseif(is_string($response['content']) && \Illuminate\Support\Str::startsWith($response['content'], "<<binary>>"))
 <Binary data> - {{ str_replace("<<binary>>","",$response['content']) }}
 @elseif($response['status'] == 204)
 <Empty response>
+@elseif(is_string($response['content']) && json_decode($response['content']) == null && $response['content'] !== null)
+{{-- If response is a non-JSON string, just print it --}}
+{!! $response['content'] !!}
 @else
 {!! json_encode(json_decode($response['content']), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}
 @endif

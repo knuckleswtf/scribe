@@ -214,7 +214,7 @@ class UseApiResourceTagsTest extends TestCase
         $strategy = new UseApiResourceTags($config);
         $tags = [
             new Tag('apiResourceCollection', 'Knuckles\Scribe\Tests\Fixtures\TestUserApiResourceCollection'),
-            new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser paginate=simple,1'),
+            new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser paginate=1,simple'),
         ];
         $results = $strategy->getApiResourceResponse($tags);
 

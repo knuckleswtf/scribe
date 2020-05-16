@@ -135,7 +135,7 @@ INTRO
     ],
 
     /*
-     * Name for the group of routes which do not have a @group set.
+     * Name for the group of endpoints which do not have a @group set.
      */
     'default_group' => 'Endpoints',
 
