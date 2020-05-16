@@ -179,7 +179,7 @@ class Writer
             ['routeGroups' => $routes, 'baseUrl' => $this->baseUrl]
         );
 
-        return $writer->getCollection();
+        return $writer->makePostmanCollection();
     }
 
     protected function performFinalTasksForLaravelType(): void

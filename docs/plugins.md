@@ -116,7 +116,7 @@ class AddPaginationParameters extends Strategy
 }
 ```
 
-Alternatively, if you're creating a strategy that you'd like people to download and install via Composer, you can generate one from [this GitHub template](https://github.com/shalvah/scribe-plugin-template). 
+Alternatively, if you're creating a strategy that you'd like people to download and install via Composer, you can generate one from [this GitHub template](https://github.com/knuckleswtf/scribe-plugin-template). 
 
 ## Writing strategies
 Let's take a look at the contents of our Strategy class.

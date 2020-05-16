@@ -39,15 +39,15 @@ _After you've done all of the above_, delete your `resources/docs/` and `public/
 - The `laravel.autoload` key is now `laravel.add_routes`, and is `true` by default.
 - The `laravel.docs_url` key is now `/docs` by default (no longer `/doc`). This means if you're using `laravel` docs type, your docs will be at <your-app>/docs and <your-app>/docs.json.
 - The Markdown output is now a set of files, located in `resources/docs`. The route files are located in `resources/docs/groups` and are split by groups (1 group per file).
-- The `rebuild` command has been removed. By default, when you run `php artisan scribe:generate`, Scribe will not overwrite any Markdown files you've modified. If you want Scribe to do so, run with `--force`. 
+- The `rebuild` command has been removed. Instead, if you want Scribe to skip the extraction phase and go straight to converting the existing Markdown to HTML, run `php artisan scribe:generate --no-extraction`.
 
 ### Low impact
 - `logo` is now `false` by default, so no logo spot will be shown. Also, if you specify a logo, it will no longer be copied to the docs folder. Rather, the path to be logo will be used as-is as the `src` for the `<img>` tag in the generated doc. This means that you must use a path that's publicly accessible. 
 For example, if your logo is in `public/img`:
-- set `'logo' => '../img/logo.png'` for `static` type (output folder is `public/docs`)
-- set `'logo' => 'img/logo.png'` for `laravel` type
-
-You can also use a URL.
+  - set `'logo' => '../img/logo.png'` for `static` type (output folder is `public/docs`)
+  - set `'logo' => 'img/logo.png'` for `laravel` type
+  
+  You can also use a URL instead.
 
 ## Advanced users
 It's a new package with a different name, so a few things have changed. This section is especially important if you've written any custom strategies or extended any of the provided classes.
