@@ -83,6 +83,13 @@ trait ParamHelpers
      */
     protected function castToType($value, string $type)
     {
+        if ($type === 'array' && is_string($value)) {
+            $value = trim($value);
+            if ($value[0] == '[' && $value[strlen($value) - 1] == ']') {
+                return json_decode($value, true);
+            }
+        }
+
         $casts = [
             'integer' => 'intval',
             'int' => 'intval',
@@ -152,7 +159,7 @@ trait ParamHelpers
      *
      * @return array The description and included example.
      */
-    protected function parseParamDescription(string $description, string $type)
+    protected function parseExampleFromParamDescription(string $description, string $type)
     {
         $example = null;
         if (preg_match('/(.*)\bExample:\s*([\s\S]+)\s*/', $description, $content)) {

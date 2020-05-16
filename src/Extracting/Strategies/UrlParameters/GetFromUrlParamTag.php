@@ -83,7 +83,7 @@ class GetFromUrlParamTag extends Strategy
                     $required = trim($required) == 'required' ? true : false;
                 }
 
-                [$description, $value] = $this->parseParamDescription($description, 'string');
+                [$description, $value] = $this->parseExampleFromParamDescription($description, 'string');
                 if (is_null($value) && ! $this->shouldExcludeExample($tag->getContent())) {
                     $value = Str::contains($description, ['number', 'count', 'page'])
                         ? $this->generateDummyValue('integer')
