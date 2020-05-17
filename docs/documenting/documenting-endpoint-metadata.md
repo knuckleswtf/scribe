@@ -28,8 +28,7 @@ All endpoints are grouped for easy navigation.
 To add all endpoints in a controller to a group, use `@group` in the controller docblock, followed by the group's title. You can also add a description below the group.
 
 ```eval_rst
-.. Tip:: 
-You can also specify an `@group` on a single method to override the group defined at the controller level.
+.. Tip:: You can also specify an `@group` on a single method to override the group defined at the controller level.
 ```
 
 ```php
