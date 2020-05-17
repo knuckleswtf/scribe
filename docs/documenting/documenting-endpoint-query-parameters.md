@@ -22,9 +22,9 @@ public function listPosts()
 
 The query parameters will be included in the generated documentation text and example requests:
 
-![](images/endpoint-queryparams-1.png)
+![](../images/endpoint-queryparams-1.png)
 
-![](images/endpoint-queryparams-2.png)
+![](../images/endpoint-queryparams-2.png)
 
 
 If you're using a FormRequest in your controller, you can also add the `@queryParam` annotation there instead, and Scribe will fetch it.
@@ -63,7 +63,7 @@ For instance:
     */
 ```
 
-![](images/endpoint-queryparams-3.png)
+![](../images/endpoint-queryparams-3.png)
 
 ## Describing URL parameters
 To describe parameters in the URL, use the `@urlParam` annotation. For instance, if you defined your Laravel route like this:
@@ -85,7 +85,7 @@ public function getPost()
 }
 ```
 
-![](images/endpoint-urlparams-1.png)
+![](../images/endpoint-urlparams-1.png)
 
 ```eval_rst
 .. Note:: If you want Scribe to omit an optional parameter (`lang` in our example) in requests and response calls, specify :code:`No-example` for the parameter.
@@ -102,4 +102,4 @@ public function getPost()
 }
 ```
 
-![](images/endpoint-urlparams-2.png)
+![](../images/endpoint-urlparams-2.png)

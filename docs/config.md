@@ -49,7 +49,7 @@ Path to an image file to use as your logo in the generated docs. This will be us
 ```
 
 ### `default_group`
-When [documenting your api](documenting.md), you use `@group` annotations to group API endpoints. Endpoints which do not have a group annotation will be grouped under the `default_group`. Defaults to `"Endpoints"`.
+When [documenting your api](documenting/index.html), you use `@group` annotations to group API endpoints. Endpoints which do not have a group annotation will be grouped under the `default_group`. Defaults to `"Endpoints"`.
 
 ### `example_languages`
 For each endpoint, an example request is shown in each of the languages specified in this array. Currently only `bash`, `javascript`, `php` and `python` are supported. You can add your own language, but you must also define the corresponding Blade view (see [Adding more example languages](customisation#adding-more-example-languages)). Default: `["bash", "javascript"]` 

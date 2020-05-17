@@ -25,7 +25,7 @@ public function show($id)
 }
 ```
 
-![](images/endpoint-responses-1.png)
+![](../images/endpoint-responses-1.png)
 
 You can also specify a status code (otherwise 200 will be assumed):
 
@@ -52,7 +52,7 @@ You can define multiple possible responses from the same endpoint using `@respon
  */
 ```
 
-![](images/endpoint-responses-2.png)
+![](../images/endpoint-responses-2.png)
 
 To indicate a binary response, use `<<binary>>` as the value of the response, followed by a description.
 
@@ -62,7 +62,7 @@ To indicate a binary response, use `<<binary>>` as the value of the response, fo
  */
 ```
 
-![](images/endpoint-responses-3.png)
+![](../images/endpoint-responses-3.png)
 
 ## `@responseFile`
 `@responseFile` works similarly to `@response`, but instead of inlining the response, you pass a file containing your JSON response. This can be helpful if your response body is large. 
@@ -116,7 +116,7 @@ We can change the `type` to `User` on the fly like this:
 
 This JSON string will be parsed and merged with the response from the file.
 
-![](images/endpoint-responses-4.png)
+![](../images/endpoint-responses-4.png)
 
 ## Generating responses automatically via response calls
 If you don't specify an example response using any of the other means described in this document, Scribe will attempt to get a sample response by making a HTTP request to the local endpoint (known as a "response call").
@@ -340,9 +340,9 @@ Scribe figures out the type of the field from the 2xx responses for that endpoin
       }
 ```
 
-![](./images/response-fields-1.png)
+![](../images/response-fields-1.png)
 
-![](./images/response-fields-2.png)
+![](../images/response-fields-2.png)
 
 
 If you wish, you can also specify the type of the parameter:

@@ -37,7 +37,7 @@ public function createPost()
 
 The body parameters will be included in the generated documentation text and example requests:
 
-![](images/endpoint-bodyparams-1.png)
+![](../images/endpoint-bodyparams-1.png)
 
 
 If you're using a FormRequest in your controller, you can also add the `@bodyParam` annotation there instead, and Scribe will fetch it.
@@ -80,7 +80,7 @@ You can also add a "parent" description if you like, by using `@bodyParam` with 
  */
 ```
 
-![](images/endpoint-bodyparams-2.png)
+![](../images/endpoint-bodyparams-2.png)
 
 
 ## Using FormRequests
@@ -156,7 +156,7 @@ class CreatePostRequest extends FormRequest
 
 This gives:
 
-![](images/endpoint-bodyparams-3.png) 
+![](../images/endpoint-bodyparams-3.png) 
 
 ## Documenting file uploads
 You can document file inputs by using `@bodyParam` or FormRequest rules with a type `file`. You can add a description and example as usual. 
@@ -170,7 +170,7 @@ For files, your example should be the absolute path to a file that exists on you
  */
 ```
 
-![](images/endpoint-bodyparams-4.png) 
+![](../images/endpoint-bodyparams-4.png) 
 
 ```eval_rst
 .. Note:: Adding a file parameter will automatically set the 'Content-Type' header in example requests and response calls to `multipart/form-data`.

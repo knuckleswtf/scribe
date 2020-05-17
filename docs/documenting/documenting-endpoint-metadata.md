@@ -20,7 +20,7 @@ For instance, this:
 
 becomes:
 
-![](images/endpoint-title-description.png)
+![](../images/endpoint-title-description.png)
 
 ## Grouping endpoints
 All endpoints are grouped for easy navigation.
@@ -61,7 +61,7 @@ class UserController extends Controller
 }
 ``` 
 
-![](images/endpoint-groups.png)
+![](../images/endpoint-groups.png)
 
 Grouping endpoints is optional. Any endpoints not in a group will be placed in a default group, "Endpoints".
 
@@ -84,4 +84,4 @@ You can use the `@authenticated` annotation on a method to indicate if the endpo
      }
 ```
 
-![](images/endpoint-auth.png)
+![](../images/endpoint-auth.png)
