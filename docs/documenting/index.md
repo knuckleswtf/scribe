@@ -4,12 +4,13 @@ Scribe tries to infer information about your API from your code, but you can enr
 ```eval_rst
 .. toctree::
    :maxdepth: 2
-documenting-api-information
-documenting-endpoint-metadata
-documenting-endpoint-headers.md
-documenting-endpoint-query-parameters.md
-documenting-endpoint-body-parameters.md
-documenting-endpoint-responses.md
+
+   documenting-api-information
+   documenting-endpoint-metadata
+   documenting-endpoint-headers.md
+   documenting-endpoint-query-parameters.md
+   documenting-endpoint-body-parameters.md
+   documenting-endpoint-responses.md
 ```
 
 ## Excluding endpoints from the documentation
