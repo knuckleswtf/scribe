@@ -66,6 +66,13 @@ Note that some of the unit and strategy tests extend PHPUnit\Framework\TestCase 
 .. Note::  Avoid tests that make assertions on the generated HTML or Markdown output. It's a very unreliable testing approach. Instead assert on structured, consistent data like the parsed route output and Postman collection. 
 ```
 
+## Linting
+We use [PHPStan](https://github.com/phpstan/phpstan) for static analysis (ie to check the code for possible runtme errors wihtout executing it).
+
+You can run the checks by running `composer lint`.
+
+If any errors are reported, you should normally fix the offending code. However, there are scenarios where we can't avoid some errors (for instance, due to Laravel's "magic"). In such cases, add an exception to the `phpstan.neon` file, following the examples you already see there.
+
 ## Making pull requests
 ```eval_rst
 .. Important:: If your code changes how the generated documentation looks, please include "before" and "after" screenshots in your pull request. This will help the maintainers easily see the changes.
