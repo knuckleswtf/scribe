@@ -3,7 +3,7 @@ Scribe tries to infer information about your API from your code, but you can enr
 
 ```eval_rst
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    documenting-api-information
    documenting-endpoint-metadata

@@ -10,17 +10,22 @@ Generate API documentation for humans from your Laravel/Lumen/[Dingo](https://gi
 ```
 
 ## Contents
-* [Getting started](guide-getting-started.md)
-* [Whats new](whats-new.md)
-* [Migrating from mpociot/laravel-apidoc-generator](migrating.md)
-* [Documenting your API](documenting/index.md)
-* [Generating documentation](generating-documentation.md)
-* [Configuration](config.md)
-* [Troubleshooting and debugging](troubleshooting.md)
-* [Advanced customization](customization.md)
-* [How Scribe works](architecture.md)
-* [Extending functionality with plugins](plugins.md)
-* [Contributing to Scribe](contributing.md)
+```eval_rst
+.. toctree::
+   :maxdepth: 2
+
+   guide-getting-started
+   whats-new
+   migrating
+   documenting/index
+   generating-documentation
+   config
+   troubleshooting
+   customization
+   architecture
+   plugins
+   contributing
+```
 
 ## Installation
 PHP 7.2.5 and Laravel/Lumen 5.8 or higher are required.
