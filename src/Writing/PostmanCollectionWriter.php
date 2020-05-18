@@ -90,13 +90,13 @@ class PostmanCollectionWriter
     {
 
         $body = [];
-        $contentType = $route['headers']['Content-Type'];
+        $contentType = $route['headers']['Content-Type'] ?? null;
         switch ($contentType) {
             case 'multipart/form-data':
                 $mode = 'formdata';
                 break;
             case 'application/json':
-            case 'default':
+            default:
                 $mode = 'raw';
         }
         $body['mode'] = $mode;
@@ -121,7 +121,7 @@ class PostmanCollectionWriter
                 }
                 break;
             case 'raw':
-            case 'default':
+            default:
                 $body[$mode] = json_encode($route['cleanBodyParameters'], JSON_PRETTY_PRINT);
                 $body['options'][$mode]['language'] = 'json';
         }
