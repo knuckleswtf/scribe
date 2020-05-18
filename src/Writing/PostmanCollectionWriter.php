@@ -71,8 +71,6 @@ class PostmanCollectionWriter
 
     protected function generateEndpointItem($route)
     {
-        $mode = 'raw';
-
         $method = $route['methods'][0];
 
         return [
@@ -81,15 +79,55 @@ class PostmanCollectionWriter
                 'url' => $this->makeUrlData($route),
                 'method' => $method,
                 'header' => $this->resolveHeadersForRoute($route),
-                'body' => [
-                    'mode' => $mode,
-                    $mode => json_encode($route['cleanBodyParameters'], JSON_PRETTY_PRINT),
-                ],
+                'body' => $this->getBodyOptions($route),
                 'description' => $route['metadata']['description'] ?? null,
                 'response' => [],
             ],
         ];
     }
+
+    protected function getBodyOptions($route)
+    {
+
+        $body = [];
+        $contentType = $route['headers']['Content-Type'];
+        switch ($contentType) {
+            case 'multipart/form-data':
+                $mode = 'formdata';
+                break;
+            case 'application/json':
+            case 'default':
+                $mode = 'raw';
+        }
+        $body['mode'] = $mode;
+
+        switch ($mode) {
+            case 'formdata':
+                foreach ($route['cleanBodyParameters'] as $key => $value) {
+                    $params = [
+                        'key' => $key,
+                        'value' => $value,
+                        'type' => 'text'
+                    ];
+                    $body[$mode][] = $params;
+                }
+                foreach ($route['fileParameters'] as $key => $value) {
+                    $params = [
+                        'key' => $key,
+                        'src' => [],
+                        'type' => 'file'
+                    ];
+                    $body[$mode][] = $params;
+                }
+                break;
+            case 'raw':
+            case 'default':
+                $body[$mode] = json_encode($route['cleanBodyParameters'], JSON_PRETTY_PRINT);
+                $body['options'][$mode]['language'] = 'json';
+        }
+        return $body;
+    }
+
 
     protected function resolveHeadersForRoute($route)
     {
