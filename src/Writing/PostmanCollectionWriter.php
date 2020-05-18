@@ -69,24 +69,24 @@ class PostmanCollectionWriter
         return json_encode($collection, JSON_PRETTY_PRINT);
     }
 
-    protected function generateEndpointItem($route)
+    protected function generateEndpointItem($route): array
     {
         $method = $route['methods'][0];
 
         return [
-            'name' => $route['metadata']['title'] != '' ? $route['metadata']['title'] : $route['uri'],
+            'name' => $route['metadata']['title'] !== '' ? $route['metadata']['title'] : $route['uri'],
             'request' => [
                 'url' => $this->makeUrlData($route),
                 'method' => $method,
                 'header' => $this->resolveHeadersForRoute($route),
-                'body' => $this->getBodyOptions($route),
+                'body' => $this->getBodyData($route),
                 'description' => $route['metadata']['description'] ?? null,
                 'response' => [],
             ],
         ];
     }
 
-    protected function getBodyOptions($route)
+    protected function getBodyData($route): array
     {
 
         $body = [];
