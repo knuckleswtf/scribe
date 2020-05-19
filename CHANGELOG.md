@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+## 1.0.0-beta3 (Tuesday, 19 May, 2020)
+### Fixed
+- Create missing folders when generating for `laravel` type (https://github.com/knuckleswtf/scribe/commit/ee7efd4efb1a55b9b245277a9fef53cc33d04130)
+
 ## 1.0.0-beta2 (Tuesday, 19 May, 2020)
 ### Added
 - Support for multiline descriptions and examples in @xParam tags (https://github.com/knuckleswtf/scribe/commit/660ebcadc88be46b8c3f35b769ce4c320219f201)
