@@ -14,7 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## 1.0.0-beta3 (Tuesday, 19 May, 2020)
 ### Fixed
-- Create missing folders when generating for `laravel` type (https://github.com/knuckleswtf/scribe/commit/ee7efd4efb1a55b9b245277a9fef53cc33d04130)
+- Create missing folders when generating for `laravel` type (https://github.com/knuckleswtf/scribe/commit/1289d399e98c24f6b0f9cfe04a8defd6a47ac000)
 
 ## 1.0.0-beta2 (Tuesday, 19 May, 2020)
 ### Added
