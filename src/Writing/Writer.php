@@ -46,12 +46,17 @@ class Writer
     /**
      * @var string
      */
-    private $sourceOutputPath;
+    private $sourceOutputPath = 'resources/docs';
 
     /**
      * @var string
      */
-    private $outputPath;
+    private $staticTypeOutputPath;
+
+    /**
+     * @var string
+     */
+    private $laravelTypeOutputPath = 'resources/views/scribe';
 
     /**
      * @var string
@@ -73,8 +78,7 @@ class Writer
         $this->pastel = new Pastel();
 
         $this->isStatic = $this->config->get('type') === 'static';
-        $this->sourceOutputPath = 'resources/docs';
-        $this->outputPath = $this->isStatic ? rtrim($this->config->get('static.output_path', 'public/docs'), '/') : 'resources/views/scribe';
+        $this->staticTypeOutputPath = rtrim($this->config->get('static.output_path', 'public/docs'), '/');
 
         $this->fileModificationTimesFile = $this->sourceOutputPath . '/.filemtimes';
         $this->lastTimesWeModifiedTheseFiles = [];
@@ -153,7 +157,7 @@ class Writer
 
             $collection = $this->generatePostmanCollection($parsedRoutes);
             if ($this->isStatic) {
-                $collectionPath = "{$this->outputPath}/collection.json";
+                $collectionPath = "{$this->staticTypeOutputPath}/collection.json";
                 file_put_contents($collectionPath, $collection);
             } else {
                 Storage::disk('local')->put('scribe/collection.json', $collection);
@@ -184,38 +188,39 @@ class Writer
 
     protected function performFinalTasksForLaravelType(): void
     {
-        // Make output a Blade view
-        if (!is_dir($this->outputPath)) {
-            mkdir($this->outputPath);
+        if (!is_dir($this->laravelTypeOutputPath)) {
+            mkdir($this->laravelTypeOutputPath);
         }
 
-        rename("{$this->outputPath}/index.html", "$this->outputPath/index.blade.php");
+        // Transform output HTML to a Blade view
+        rename("{$this->staticTypeOutputPath}/index.html", "$this->laravelTypeOutputPath/index.blade.php");
+
         // Move assets from public/docs to public/vendor/scribe
         // We need to do this delete first, otherwise move won't work if folder exists
         Utils::deleteDirectoryAndContents("public/vendor/scribe/", getcwd());
-        rename("{$this->outputPath}/", "public/vendor/scribe/");
+        rename("{$this->staticTypeOutputPath}/", "public/vendor/scribe/");
 
-        $contents = file_get_contents("$this->outputPath/index.blade.php");
+        $contents = file_get_contents("$this->laravelTypeOutputPath/index.blade.php");
 
         // Rewrite links to go through Laravel
         $contents = preg_replace('#href="css/(.+?)"#', 'href="{{ asset("vendor/scribe/css/$1") }}"', $contents);
         $contents = preg_replace('#src="(js|images)/(.+?)"#', 'src="{{ asset("vendor/scribe/$1/$2") }}"', $contents);
         $contents = str_replace('href="./collection.json"', 'href="{{ route("scribe.json") }}"', $contents);
 
-        file_put_contents("$this->outputPath/index.blade.php", $contents);
+        file_put_contents("$this->laravelTypeOutputPath/index.blade.php", $contents);
     }
 
     public function writeHtmlDocs(): void
     {
         ConsoleOutputUtils::info('Generating API HTML code');
 
-        $this->pastel->generate($this->sourceOutputPath . '/index.md', $this->outputPath);
+        $this->pastel->generate($this->sourceOutputPath . '/index.md', $this->staticTypeOutputPath);
 
         if (!$this->isStatic) {
             $this->performFinalTasksForLaravelType();
         }
 
-        ConsoleOutputUtils::success("Wrote HTML documentation to: {$this->outputPath}");
+        ConsoleOutputUtils::success("Wrote HTML documentation to: " . $this->isStatic ? $this->staticTypeOutputPath : $this->laravelTypeOutputPath);
     }
 
     protected function writeIndexMarkdownFile(array $settings): void
