@@ -4,9 +4,10 @@
 ```
 
 ## Principles
-- You don't have to be friendly, but please be polite.
-- Remember that people have other things to deal with in their lives, so don't expect the maintainers to respond to your PRs and issues instantly.
 - Don't submit sloppy work.
+- Don't be a dick. You don't have to be friendly or nice, but please be respectful of other contributors.
+- Focus on the contribution, not the contributor..
+- Remember that people have other things to deal with in their lives, so don't expect the maintainers to respond to your PRs and issues instantly.
 
 ```eval_rst
 .. Tip:: Before contributing: if you're making a code change, look through open pull requests to see if there's one for the feature/fix already.
