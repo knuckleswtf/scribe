@@ -191,6 +191,9 @@ class Writer
         if (!is_dir($this->laravelTypeOutputPath)) {
             mkdir($this->laravelTypeOutputPath);
         }
+        if (!is_dir("public/vendor/scribe")) {
+            mkdir("public/vendor/scribe", 0777, true);
+        }
 
         // Transform output HTML to a Blade view
         rename("{$this->staticTypeOutputPath}/index.html", "$this->laravelTypeOutputPath/index.blade.php");
@@ -220,7 +223,7 @@ class Writer
             $this->performFinalTasksForLaravelType();
         }
 
-        ConsoleOutputUtils::success("Wrote HTML documentation to: " . $this->isStatic ? $this->staticTypeOutputPath : $this->laravelTypeOutputPath);
+        ConsoleOutputUtils::success("Wrote HTML documentation to: " . ($this->isStatic ? $this->staticTypeOutputPath : $this->laravelTypeOutputPath));
     }
 
     protected function writeIndexMarkdownFile(array $settings): void
