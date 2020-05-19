@@ -86,7 +86,7 @@ class PostmanCollectionWriter
         ];
     }
 
-    protected function getBodyData($route): array
+    protected function getBodyData(array $route): array
     {
 
         $body = [];
