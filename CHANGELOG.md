@@ -12,23 +12,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
-## 1.0.0-alpha1 ()
+## 1.0.0-beta2 (Tuesday, 19 May, 2020)
 ### Added
-- Support for closures (https://github.com/mpociot/laravel-apidoc-generator/pull/690)
+- Support for multiline descriptions and examples in @xParam tags (https://github.com/knuckleswtf/scribe/commit/660ebcadc88be46b8c3f35b769ce4c320219f201)
 
 ### Changed
-- Switch from Documentarian to Pastel
-- Switch to Clara for output
-- Split documentation across multiple Markdown files
-- Change behaviour of command. Running `generate` will generate afresh, keeping any changes to MD files. Use --force to discard your changes. Implement new system for tracking and responding to modifications to files; remove update command
-- Added ability to include files by creating arbitrary markdown files
-
-Appearance:
-- Move Postman collection -> TOC footer
-- Change default page title
-- Improve output: use badges, drop tables for paragraphs, style headings
+- Show 'Empty response' for 204 responses (https://github.com/knuckleswtf/scribe/commit/f63536c76dbd286e6e3c9b63b1a4172bafa5a86f)
 
 ### Fixed
+- Allow Markdown to work in parameter descriptions from annotations (https://github.com/knuckleswtf/scribe/commit/72c54dc9bfd8e9f3b79c88f9e25161629d066ffd)
+- Properly fetch pagination type for API Resources (https://github.com/knuckleswtf/scribe/commit/d442641b4be197838adf4bd01e0c0ebdbfb49af9)
+- Properly parse examples for array parameters in @xParam tags (https://github.com/knuckleswtf/scribe/commit/b89c35755fec3006975221041e61e7107b4346bb)
+- Set paths properly when generating for `laravel` type (https://github.com/knuckleswtf/scribe/commit/ee7efd4efb1a55b9b245277a9fef53cc33d04130)
 
 ### Removed
 
