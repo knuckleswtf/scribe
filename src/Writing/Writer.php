@@ -184,23 +184,27 @@ class Writer
 
     protected function performFinalTasksForLaravelType(): void
     {
-        // Make output a Blade view
         if (!is_dir($this->outputPath)) {
             mkdir($this->outputPath);
         }
 
         rename("{$this->outputPath}/index.html", "$this->outputPath/index.blade.php");
+
+        $contents = file_get_contents("$this->outputPath/index.blade.php");
+        // Rewrite links to go through Laravel
+        $contents = preg_replace('#href="css/(.+?)"#', 'href="{{ asset("vendor/scribe/css/$1") }}"', $contents);
+        $contents = preg_replace('#src="(js|images)/(.+?)"#', 'src="{{ asset("vendor/scribe/$1/$2") }}"', $contents);
+        $contents = str_replace('href="./collection.json"', 'href="{{ route("scribe.json") }}"', $contents);
+
         // Move assets from public/docs to public/vendor/scribe
         // We need to do this delete first, otherwise move won't work if folder exists
         Utils::deleteDirectoryAndContents("public/vendor/scribe/", getcwd());
         rename("{$this->outputPath}/", "public/vendor/scribe/");
 
-        $contents = file_get_contents("$this->outputPath/index.blade.php");
-
-        // Rewrite links to go through Laravel
-        $contents = preg_replace('#href="css/(.+?)"#', 'href="{{ asset("vendor/scribe/css/$1") }}"', $contents);
-        $contents = preg_replace('#src="(js|images)/(.+?)"#', 'src="{{ asset("vendor/scribe/$1/$2") }}"', $contents);
-        $contents = str_replace('href="./collection.json"', 'href="{{ route("scribe.json") }}"', $contents);
+        // recreate the directory after its removal
+        if (!is_dir($this->outputPath)) {
+            mkdir($this->outputPath);
+        }
 
         file_put_contents("$this->outputPath/index.blade.php", $contents);
     }
