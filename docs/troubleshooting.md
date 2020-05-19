@@ -9,4 +9,8 @@ If you need to see the full stack trace, you can run the command again with the 
 ## Turn on debug mode for your app
 Sometimes you may see a 500 `null` response shown in the generated examples. This is usually because an error occured within your application during a response call. The quickest way to debug this is by setting `app.debug` to `true` in your `response_calls.config` section in your `scribe.php` file. Alternatively, you can set `APP_DEBUG=true` in your `.env.docs` file and run the command with `--env docs`.  
 
+## Try clearing previously generated docs
+Sometimes you may run into conflicts if you switch from one output type to another. While we try to prevent this happening, we don't guarantee it. In such cases, please try clearing the old docs generated from your previous run (`laravel` would be in `resources/docs` and `storage/docs`, `static` would be in `public/docs`) and then running again.
+
 ## Be sure you're accessing your docs correctly
+For `laravel` type docs, you should always start your server and visit /docs (or wherever you set as your `docs_url`). For `static` type, you should always open the `index,html` file diretly (located in `public/docs` or wherever you set as your `output_path`).
