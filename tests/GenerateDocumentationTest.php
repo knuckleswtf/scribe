@@ -348,6 +348,22 @@ class GenerateDocumentationTest extends TestCase
     }
 
     /** @test */
+    public function generated_postman_collection_can_add_form_data_parameters()
+    {
+        RouteFacade::get('/api/withFormDataParams', TestController::class . '@withFormDataParams');
+        // We want to have the same values for params each time
+        config(['scribe.faker_seed' => 1234]);
+        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
+        $this->artisan('scribe:generate');
+
+        $generatedCollection = json_decode(file_get_contents(__DIR__ . '/../public/docs/collection.json'), true);
+        // The Postman ID varies from call to call; erase it to make the test data reproducible.
+        $generatedCollection['info']['_postman_id'] = '';
+        $fixtureCollection = json_decode(file_get_contents(__DIR__ . '/Fixtures/collection_with_form_data_parameters.json'), true);
+        $this->assertEquals($fixtureCollection, $generatedCollection);
+    }
+
+    /** @test */
     public function can_append_custom_http_headers()
     {
         RouteFacade::get('/api/headers', TestController::class . '@checkCustomHeaders');

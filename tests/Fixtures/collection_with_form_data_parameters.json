@@ -12,23 +12,19 @@
             "description": "",
             "item": [
                 {
-                    "name": "api\/headers",
+                    "name": "Endpoint with body form data parameters.",
                     "request": {
                         "url": {
                             "protocol": "http",
                             "host": "localhost",
-                            "path": "api/headers",
+                            "path": "api\/withFormDataParams",
                             "query": []
                         },
                         "method": "GET",
                         "header": [
                             {
-                                "key": "Authorization",
-                                "value": "customAuthToken"
-                            },
-                            {
-                                "key": "Custom-Header",
-                                "value": "NotSoCustom"
+                                "key": "Content-Type",
+                                "value": "multipart\/form-data"
                             },
                             {
                                 "key": "Accept",
@@ -36,13 +32,19 @@
                             }
                         ],
                         "body": {
-                            "mode": "raw",
-                            "raw": "[]",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "name",
+                                    "value": "cat.jpg",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "image",
+                                    "src": [],
+                                    "type": "file"
                                 }
-                            }
+                            ]
                         },
                         "description": "",
                         "response": []

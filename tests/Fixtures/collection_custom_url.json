@@ -33,7 +33,12 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "[]"
+                            "raw": "[]",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
                         },
                         "description": "This will be the long description.\nIt can also be multiple lines long.",
                         "response": []
@@ -61,7 +66,12 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "[]"
+                            "raw": "[]",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
                         },
                         "description": "",
                         "response": []

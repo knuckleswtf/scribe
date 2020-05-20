@@ -90,6 +90,17 @@ class TestController extends Controller
     }
 
     /**
+     * Endpoint with body form data parameters.
+     *
+     * @bodyParam name string required Name of image. Example: cat.jpg
+     * @bodyParam image file required The image.
+     */
+    public function withFormDataParams()
+    {
+        return '';
+    }
+
+    /**
      * Endpoint with body parameters as array.
      *
      * @bodyParam *.first_name string The first name of the user. Example: John
