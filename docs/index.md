@@ -13,7 +13,6 @@ Generate API documentation for humans from your Laravel/Lumen/[Dingo](https://gi
 ```eval_rst
 .. toctree::
    :maxdepth: 2
-   :titlesonly: 
 
    guide-getting-started
    whats-new
