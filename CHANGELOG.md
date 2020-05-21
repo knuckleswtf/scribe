@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+## 1.0.0-beta4 (Thursday, 21 May, 2020)
+### Fixed
+- Update deps to fix installation problems
+
 ## 1.0.0-beta3 (Tuesday, 19 May, 2020)
 ### Fixed
 - Create missing folders when generating for `laravel` type (https://github.com/knuckleswtf/scribe/commit/1289d399e98c24f6b0f9cfe04a8defd6a47ac000)
