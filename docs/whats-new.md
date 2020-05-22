@@ -46,6 +46,7 @@ A few other things that might interest some folk:
 - [File upload inputs are supported, too](documenting-endpoint-body-parameters.html#documenting-file-uploads)
 - The output Markdown is now split across multiple files.
 - There are now [a lot more ways](customization.html) to customize the generated docs.
+- You can now specify headers for a single endpoint with the `@header` annotation.
 - The default group is now called "Endpoints".
 - If you're interested in contributing, we've also added a [guide for that](contributing.html). We've reworked the tests structure as well to make it easier to maintain.
 
