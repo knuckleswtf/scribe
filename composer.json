@@ -17,6 +17,7 @@
     "require": {
         "php": ">=7.2.5",
         "ext-json": "*",
+        "erusev/parsedown": "^1.7.4",
         "fzaninotto/faker": "^1.9.1",
         "illuminate/console": "^5.8|^6.0|^7.0",
         "illuminate/routing": "^5.8|^6.0|^7.0",
