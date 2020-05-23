@@ -7,6 +7,8 @@ assignees: ''
 
 ---
 
+- [x] **I confirm that I have read and attempted the tips in the [Troubleshooting Guide](https://scribe.readthedocs.io/en/latest/troubleshooting.html).**
+
 **What happened?**
 1. I set my configuration to...
 2. Then I ran `php artisan scribe:generate` ...
@@ -14,9 +16,8 @@ assignees: ''
 
 instead of...
 
-**I confirm that I have read and attempted the tips in the [Troubleshooting Guide](https://scribe.readthedocs.io/en/latest/troubleshooting.html).**
 
-**Screenshots and stack traces**
+**Screenshots and stack traces:**
 
 
 **My environment:**
@@ -24,6 +25,6 @@ instead of...
  - Laravel version:
  - Scribe Version
 
-**My Scribe config (minus the comments)**
+**My Scribe config (minus the comments):**
 
-**Additional info**
+**Additional info:**
