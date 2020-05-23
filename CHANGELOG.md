@@ -12,5 +12,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+## 1.0.1 (Saturday, 23 May, 2020)
+### Fixed
+- Pinned erusev/parsedown dependency (from mnapoli/front-yaml) to ^1.7.4 to fix incompatibilities. (https://github.com/knuckleswtf/scribe/commit/fd623238852dca0e77aa88e86220830d71a460d4)
+
 ## 1.0.0 (Saturday, 23 May, 2020)
 See [what's new](https://scribe.readthedocs.io/en/latest/whats-new.html) and the [migration guide](https://scribe.readthedocs.io/en/latest/migrating.html).
