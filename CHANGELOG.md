@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+## 1.0.2 (Sunday, 24 May, 2020)
+### Fixed
+- Set badge colour for OPTIONS method too. (https://github.com/knuckleswtf/scribe/commit/ccce82cf75502493d776a4ec2378de9cda1659f3)
+
 ## 1.0.1 (Saturday, 23 May, 2020)
 ### Fixed
 - Pinned erusev/parsedown dependency (from mnapoli/front-yaml) to ^1.7.4 to fix incompatibilities. (https://github.com/knuckleswtf/scribe/commit/fd623238852dca0e77aa88e86220830d71a460d4)
