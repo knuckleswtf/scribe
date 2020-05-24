@@ -14,6 +14,7 @@ class WritingUtils
         'PUT' => 'darkblue',
         'PATCH' => 'purple',
         'DELETE' => 'red',
+        'OPTIONS' => 'grey',
     ];
 
     /**
