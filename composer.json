@@ -5,7 +5,8 @@
     "keywords": [
         "API",
         "documentation",
-        "laravel"
+        "laravel",
+        "dingo"
     ],
     "homepage": "http://github.com/knuckleswtf/scribe",
     "authors": [
