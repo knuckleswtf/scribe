@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+## 1.0.3 (Monday, 25 May, 2020)
+### Modified
+- Updated dependencies (https://github.com/knuckleswtf/scribe/pull/26)
+
 ## 1.0.2 (Sunday, 24 May, 2020)
 ### Fixed
 - Set badge colour for OPTIONS method too. (https://github.com/knuckleswtf/scribe/commit/ccce82cf75502493d776a4ec2378de9cda1659f3)
