@@ -83,4 +83,4 @@ If any errors are reported, you should normally fix the offending code. However,
 .. Tip:: If you need a project to test the generated doc output on, you can use `this <http://github.com/shalvah/thecensorshipapi>`_. Replace the path in the :code:`repositories` section of the :code:`composer.json` to point to your local clone of Scribe.
 ```
 
-- Add a short description to your PR (except it's so simple it fits in the title), so the reviewer knows what to look out for before looking through your changes. If you're fixing a bug, include a describe its behaviour and what your fix was. If you're adding a feature, explain what it is and why.
+- Add a short description to your PR (except it's so simple it fits in the title), so the reviewer knows what to look out for before looking through your changes. If you're fixing a bug, include a description of its behaviour and how your fix resolves it. If you're adding a feature, explain what it is and why.
