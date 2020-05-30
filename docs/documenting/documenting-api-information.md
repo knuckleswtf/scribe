@@ -3,7 +3,7 @@
 ## Authentication information
 You can add authentication information for your API using the `auth` section in `scribe.php`. Scribe will use this in three places:
 - Generating an "Authentication" section in your docs
-- Adding authentication parameters to your rxample requests (for endpoints marked as `authenticated`)
+- Adding authentication parameters to your example requests (for endpoints marked as `authenticated`)
 - Setting authentication information for response calls.
 
 Here's how you'd configure auth with a query parameter named `apiKey`:
