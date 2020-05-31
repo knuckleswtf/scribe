@@ -22,6 +22,10 @@ becomes:
 
 ![](../images/endpoint-title-description.png)
 
+```eval_rst
+.. Note:: If your first line doesn't end with a period (.), you'll have to leave a blank line before the description. Otherwise, both paragraphs would be parsed together as the title.
+```
+
 ## Grouping endpoints
 All endpoints are grouped for easy navigation.
 
