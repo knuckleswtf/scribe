@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+## 1.1.0 (Monday, 1 June, 2020)
+### Modified
+- Added ability to set postman base_url independently (https://github.com/knuckleswtf/scribe/pull/31)
+
 ## 1.0.3 (Monday, 25 May, 2020)
 ### Modified
 - Updated dependencies (https://github.com/knuckleswtf/scribe/pull/26)
