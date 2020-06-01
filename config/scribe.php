@@ -99,7 +99,7 @@ INTRO
     ],
 
     /*
-     * The base URL to be used in examples and the Postman collection.
+     * The base URL to be used in examples.
      * If this is null, Scribe will use the value of config('app.url').
      */
     'base_url' => null,
@@ -124,8 +124,7 @@ INTRO
 
         /*
          * The base URL to be used in the Postman collection.
-         * This will override the base_url settings above only for Postman.
-         * If this is null, Scribe will use the value of config('app.url').
+         * If this is null, Scribe will use the value of base_url set above.
          */
         'base_url' => null,
 
