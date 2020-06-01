@@ -264,7 +264,7 @@ class GenerateDocumentationTest extends TestCase
     /** @test */
     public function generated_postman_collection_can_have_custom_url()
     {
-        Config::set('scribe.base_url', 'http://yourapp.app');
+        Config::set('scribe.postman.base_url', 'http://yourapp.app');
         RouteFacade::get('/api/test', TestController::class . '@withEndpointDescription');
         RouteFacade::post('/api/responseTag', TestController::class . '@withResponseTag');
 

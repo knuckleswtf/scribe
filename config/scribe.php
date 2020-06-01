@@ -123,6 +123,13 @@ INTRO
         'enabled' => true,
 
         /*
+         * The base URL to be used in the Postman collection.
+         * This will override the base_url settings above only for Postman.
+         * If this is null, Scribe will use the value of config('app.url').
+         */
+        'base_url' => null,
+
+        /*
          * The description for the exported Postman collection.
          */
         'description' => null,
