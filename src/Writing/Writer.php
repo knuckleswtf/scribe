@@ -406,14 +406,14 @@ class Writer
     protected function fetchLastTimeWeModifiedFilesFromTrackingFile()
     {
         if (file_exists($this->fileModificationTimesFile)) {
-            $lastTimesWeModifiedTheseFiles = explode("\n", file_get_contents($this->fileModificationTimesFile));
+            $lastTimesWeModifiedTheseFiles = explode("\n", trim(file_get_contents($this->fileModificationTimesFile)));
             // First two lines are comments
             array_shift($lastTimesWeModifiedTheseFiles);
             array_shift($lastTimesWeModifiedTheseFiles);
             $this->lastTimesWeModifiedTheseFiles = collect($lastTimesWeModifiedTheseFiles)
                 ->mapWithKeys(function ($line) {
-                    [$filePath, $mtime] = explode("=", $line);
-                    return [$filePath => $mtime];
+                    [$filePath, $modificationTime] = explode("=", $line);
+                    return [$filePath => $modificationTime];
                 })->toArray();
         }
     }
