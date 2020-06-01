@@ -63,6 +63,8 @@ For `static` output, the collection will be created in `public/docs/collection.j
 
 - `description`: The description for the generated Postman collection.
 
+- `base_url`: The base URL to be used in the Postman collection. If this is null, Scribe will use the value of [`base_url`](#base-url) set above.
+
 - `auth`: The "Auth" section that should appear in the postman collection. See the [Postman schema docs](https://schema.getpostman.com/json/collection/v2.0.0/docs/index.html) for more information.
 
 ## Extraction settings
