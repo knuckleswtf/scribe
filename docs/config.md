@@ -30,7 +30,7 @@ Settings for the `laravel` type output.
 - `middleware`: List of middleware to be attached to the documentation endpoint (if `add_routes` is true).
 
 ### `base_url`
-The base URL to be used in examples and the Postman collection. By default, this will be the value of `config('app.url')`.
+The base URL to be used in examples. By default, this will be the value of `config('app.url')`.
 
 ### `intro_text`
 The text to place in the "Introduction" section. Markdown and HTML are supported.
