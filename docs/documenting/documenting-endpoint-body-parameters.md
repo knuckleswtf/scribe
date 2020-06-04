@@ -60,7 +60,7 @@ public function createPost(CreatePostRequest $request)
 ```
 
 ### Handling array and object parameters
-Sometimes you have body parameters that are arrays ir ibjects. To handle them in `@bodyparam`, Scribe follows Laravel's convention:
+Sometimes you have body parameters that are arrays or objects. To handle them in `@bodyparam`, Scribe follows Laravel's convention:
 - For arrays: use `<name>.*`
 - For objects: use `<name>.<key>`.
 
