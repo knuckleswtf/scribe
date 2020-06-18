@@ -18,7 +18,8 @@
                             "protocol": "https",
                             "host": "yourapp.app",
                             "path": "api/test",
-                            "query": []
+                            "query": [],
+                            "raw": "https://yourapp.app/api/test"
                         },
                         "method": "GET",
                         "header": [
@@ -51,7 +52,8 @@
                             "protocol": "https",
                             "host": "yourapp.app",
                             "path": "api/responseTag",
-                            "query": []
+                            "query": [],
+                            "raw": "https://yourapp.app/api/responseTag"
                         },
                         "method": "POST",
                         "header": [

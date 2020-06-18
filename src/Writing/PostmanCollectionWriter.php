@@ -183,6 +183,14 @@ class PostmanCollectionWriter
             })->values()->toArray(),
         ];
 
+        // Create raw url-parameter (Insomnia uses this on import)
+        $query = collect($base['query'] ?? [])->map(function ($array) {
+            return $array['key'].'='.$array['value'];
+        })->implode('&');
+        $base['raw'] = sprintf('%s://%s/%s%s',
+            $base['protocol'], $base['host'], $base['path'], $query ? '?'.$query : null
+        );
+
         // If there aren't any url parameters described then return what we've got
         /** @var $urlParams Collection */
         if ($urlParams->isEmpty()) {

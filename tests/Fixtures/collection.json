@@ -18,7 +18,8 @@
                             "protocol": "http",
                             "host": "localhost",
                             "path": "api\/withDescription",
-                            "query": []
+                            "query": [],
+                            "raw": "http://localhost/api/withDescription"
                         },
                         "method": "GET",
                         "header": [
@@ -59,7 +60,8 @@
                             "protocol": "http",
                             "host": "localhost",
                             "path": "api\/withResponseTag",
-                            "query": []
+                            "query": [],
+                            "raw": "http://localhost/api/withResponseTag"
                         },
                         "method": "GET",
                         "header": [
@@ -100,7 +102,8 @@
                             "protocol": "http",
                             "host": "localhost",
                             "path": "api\/withBodyParameters",
-                            "query": []
+                            "query": [],
+                            "raw": "http://localhost/api/withBodyParameters"
                         },
                         "method": "POST",
                         "header": [
@@ -172,7 +175,8 @@
                                     "description": "Used for testing that URL parameters will be URL-encoded where needed.",
                                     "disabled": false
                                 }
-                            ]
+                            ],
+                            "raw": "http://localhost/api/withQueryParameters?location_id=consequatur&user_id=me&page=4&filters=consequatur&url_encoded=%2B+%5B%5D%26%3D"
                         },
                         "method": "GET",
                         "header": [
@@ -213,7 +217,8 @@
                             "protocol": "http",
                             "host": "localhost",
                             "path": "api\/withAuthTag",
-                            "query": []
+                            "query": [],
+                            "raw": "http://localhost/api/withAuthTag"
                         },
                         "method": "GET",
                         "header": [
@@ -254,7 +259,8 @@
                             "protocol": "http",
                             "host": "localhost",
                             "path": "api\/withEloquentApiResource",
-                            "query": []
+                            "query": [],
+                            "raw": "http://localhost/api/withEloquentApiResource"
                         },
                         "method": "GET",
                         "header": [
@@ -295,7 +301,8 @@
                             "protocol": "http",
                             "host": "localhost",
                             "path": "api\/withMultipleResponseTagsAndStatusCode",
-                            "query": []
+                            "query": [],
+                            "raw": "http://localhost/api/withMultipleResponseTagsAndStatusCode"
                         },
                         "method": "POST",
                         "header": [
@@ -342,7 +349,8 @@
                             "protocol": "http",
                             "host": "localhost",
                             "path": "api\/withEloquentApiResourceCollectionClass",
-                            "query": []
+                            "query": [],
+                            "raw": "http://localhost/api/withEloquentApiResourceCollectionClass"
                         },
                         "method": "GET",
                         "header": [
@@ -404,7 +412,8 @@
                                     "value": "consequatur",
                                     "description": ""
                                 }
-                            ]
+                            ],
+                            "raw": "http://localhost/api/echoesUrlParameters/{param}-{param2}/:param3?something=consequatur"
                         },
                         "method": "GET",
                         "header": [
