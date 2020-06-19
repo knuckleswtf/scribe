@@ -303,7 +303,7 @@ If you want specific relations to be loaded with your model when instantiating v
 ```php
 /**
  * @apiResourceCollection App\Resources\UserCollection
- * @apiResourceModel App\Models\User relations=teacher,classmates
+ * @apiResourceModel App\Models\User with=teacher,classmates
  */
 ```
 
