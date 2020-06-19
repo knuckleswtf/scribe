@@ -30,7 +30,7 @@ Settings for the `laravel` type output.
 - `middleware`: List of middleware to be attached to the documentation endpoint (if `add_routes` is true).
 
 ### `base_url`
-The base URL to be used in examples and the Postman collection. By default, this will be the value of `config('app.url')`.
+The base URL to be used in examples. By default, this will be the value of `config('app.url')`.
 
 ### `intro_text`
 The text to place in the "Introduction" section. Markdown and HTML are supported.
@@ -62,6 +62,8 @@ For `static` output, the collection will be created in `public/docs/collection.j
 - `enabled`: Whether or not to generate a Postman API collection. Default: `true`
 
 - `description`: The description for the generated Postman collection.
+
+- `base_url`: The base URL to be used in the Postman collection. If this is null, Scribe will use the value of [`base_url`](#base_url) set above.
 
 - `auth`: The "Auth" section that should appear in the postman collection. See the [Postman schema docs](https://schema.getpostman.com/json/collection/v2.0.0/docs/index.html) for more information.
 

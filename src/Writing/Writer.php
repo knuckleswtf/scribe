@@ -24,6 +24,11 @@ class Writer
     private $baseUrl;
 
     /**
+     * @var string
+     */
+    private $postmanBaseUrl;
+
+    /**
      * @var bool
      */
     private $shouldOverwrite;
@@ -73,6 +78,7 @@ class Writer
         // If no config is injected, pull from global. Makes testing easier.
         $this->config = $config ?: new DocumentationConfig(config('scribe'));
         $this->baseUrl = $this->config->get('base_url') ?? config('app.url');
+        $this->postmanBaseUrl = $this->config->get('postman.base_url') ?? $this->baseUrl;
         $this->shouldOverwrite = $shouldOverwrite;
         $this->shouldGeneratePostmanCollection = $this->config->get('postman.enabled', false);
         $this->pastel = new Pastel();
@@ -180,7 +186,7 @@ class Writer
         /** @var PostmanCollectionWriter $writer */
         $writer = app()->makeWith(
             PostmanCollectionWriter::class,
-            ['routeGroups' => $routes, 'baseUrl' => $this->baseUrl]
+            ['routeGroups' => $routes, 'baseUrl' => $this->postmanBaseUrl]
         );
 
         return $writer->makePostmanCollection();
@@ -400,14 +406,14 @@ class Writer
     protected function fetchLastTimeWeModifiedFilesFromTrackingFile()
     {
         if (file_exists($this->fileModificationTimesFile)) {
-            $lastTimesWeModifiedTheseFiles = explode("\n", file_get_contents($this->fileModificationTimesFile));
+            $lastTimesWeModifiedTheseFiles = explode("\n", trim(file_get_contents($this->fileModificationTimesFile)));
             // First two lines are comments
             array_shift($lastTimesWeModifiedTheseFiles);
             array_shift($lastTimesWeModifiedTheseFiles);
             $this->lastTimesWeModifiedTheseFiles = collect($lastTimesWeModifiedTheseFiles)
                 ->mapWithKeys(function ($line) {
-                    [$filePath, $mtime] = explode("=", $line);
-                    return [$filePath => $mtime];
+                    [$filePath, $modificationTime] = explode("=", $line);
+                    return [$filePath => $modificationTime];
                 })->toArray();
         }
     }
