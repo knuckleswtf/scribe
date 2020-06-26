@@ -291,7 +291,7 @@ class Generator
         Arr::set($cleanParams, str_replace(['.*', '*.'], ['.0','0.'], $paramName), $paramExample);
     }
 
-    public function addAuthField(array $parsedRoute)
+    public function addAuthField(array $parsedRoute): array
     {
         $parsedRoute['auth'] = null;
         $isApiAuthed = $this->config->get('auth.enabled', false);
@@ -344,7 +344,5 @@ class Generator
         }
 
         return $parsedRoute;
-
-
     }
 }

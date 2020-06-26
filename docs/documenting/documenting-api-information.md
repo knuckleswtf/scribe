@@ -1,10 +1,14 @@
 # Adding general information about your API
 
 ## Authentication information
-You can add authentication information for your API using the `auth` section in `scribe.php`. Scribe will use this in three places:
+You can add authentication information for your API using the `auth` section in `scribe.php`. 
+
+```eval_rst
+.. Important:: Scribe uses your specified authentication information in three places:
 - Generating an "Authentication" section in your docs
-- Adding authentication parameters to your example requests (for endpoints marked as `authenticated`)
-- Setting authentication information for response calls.
+- Adding authentication parameters to your example requests (only for endpoints marked as `@authenticated`)
+- Adding the necessary auth parameters with the specified value to response calls (only for endpoints marked as `@authenticated`)
+```
 
 Here's how you'd configure auth with a query parameter named `apiKey`:
 
