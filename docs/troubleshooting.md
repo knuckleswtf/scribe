@@ -9,6 +9,9 @@ If you need to see the full stack trace, you can run the command again with the 
 ## Turn on debug mode for your app
 Sometimes you may see a 500 `null` response shown in the generated examples. This is usually because an error occured within your application during a response call. The quickest way to debug this is by setting `app.debug` to `true` in your `response_calls.config` section in your `scribe.php` file. Alternatively, you can set `APP_DEBUG=true` in your `.env.docs` file and run the command with `--env docs`.  
 
+## Try clearing any cached config
+Sometimes Laravel caches config files, and this may lead to Scribe failing with an error about a null `DocumentationConfig`. To fix this, clear the config cache by running `php artisan config:clear`.
+
 ## Make sure you aren't matching `web` routes
 Routes defined in Laravel's web.php typically have the `web` middleware, leading to strange behaviour, so make sure that you've correctly specified the routes to be matched in your config file. See [this Github issue](https://github.com/knuckleswtf/scribe/issues/47).
 
