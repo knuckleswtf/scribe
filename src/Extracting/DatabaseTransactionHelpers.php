@@ -15,7 +15,14 @@ trait DatabaseTransactionHelpers
 
         foreach ($connections as $conn) {
             try {
-                app('db')->connection($conn)->beginTransaction();
+                tap(
+                    app('db')->connection($conn),
+                    function ($driver) {
+                        if (self::driverSupportsTransactions($driver)) {
+                            $driver->beginTransaction();
+                        }
+                    }
+                );
             } catch (Exception $e) {
             }
         }
@@ -30,9 +37,36 @@ trait DatabaseTransactionHelpers
 
         foreach ($connections as $conn) {
             try {
-                app('db')->connection($conn)->rollBack();
+                tap(
+                    app('db')->connection($conn),
+                    function ($driver) {
+                        if (self::driverSupportsTransactions($driver)) {
+                            $driver->rollBack();
+                        }
+                    }
+                );
             } catch (Exception $e) {
             }
         }
+    }
+
+    /**
+     * Assesses whether or not the "PDO" driver provided supports transactions
+     *
+     * @param mixed $driver Driver prodicted for particular connection
+     *
+     * @return boolean
+     */
+    private static function driverSupportsTransactions($driver)
+    {
+        $methods = [ 'beginTransaction', 'rollback' ];
+
+        foreach ($methods as $method) {
+            if (! method_exists($driver, $method)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
