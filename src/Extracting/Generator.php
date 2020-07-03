@@ -43,7 +43,13 @@ class Generator
      */
     public function getMethods(Route $route)
     {
-        return array_diff($route->methods(), ['HEAD']);
+        $methods = $route->methods();
+
+        if (count($methods) === 1) {
+            return $methods;
+        }
+
+        return array_diff($methods, ['HEAD']);
     }
 
     /**
