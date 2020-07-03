@@ -61,7 +61,12 @@ class ConsoleOutputUtils
      */
     public static function getRouteRepresentation(Route $route): string
     {
-        $routeMethods = implode(',', array_diff($route->methods(), ['HEAD']));
+        $methods = $route->methods();
+        if (count($methods) > 1) {
+            $methods = array_diff($route->methods(), ['HEAD']);
+        }
+
+        $routeMethods = implode(',', $methods);
         $routePath = $route->uri();
         return "[$routeMethods] $routePath";
     }

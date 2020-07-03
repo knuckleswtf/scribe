@@ -43,7 +43,15 @@ class Generator
      */
     public function getMethods(Route $route)
     {
-        return array_diff($route->methods(), ['HEAD']);
+        $methods = $route->methods();
+
+        // Laravel adds an automatic "HEAD" endpoint for each GET request, so we'll strip that out,
+        // but not if there's only one method (means it was intentional)
+        if (count($methods) === 1) {
+            return $methods;
+        }
+
+        return array_diff($methods, ['HEAD']);
     }
 
     /**
