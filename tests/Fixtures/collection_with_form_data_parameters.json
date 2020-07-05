@@ -18,7 +18,8 @@
                             "protocol": "http",
                             "host": "localhost",
                             "path": "api\/withFormDataParams",
-                            "query": []
+                            "query": [],
+                            "raw": "http://localhost/api/withFormDataParams"
                         },
                         "method": "GET",
                         "header": [

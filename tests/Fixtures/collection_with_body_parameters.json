@@ -18,7 +18,8 @@
                             "protocol": "http",
                             "host": "localhost",
                             "path": "api\/withBodyParameters",
-                            "query": []
+                            "query": [],
+                            "raw": "http://localhost/api/withBodyParameters"
                         },
                         "method": "GET",
                         "header": [
