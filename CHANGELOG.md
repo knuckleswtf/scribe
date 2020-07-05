@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+## 1.2.0 (Sunday, 5 July, 2020)
+### Added
+- Include raw request URL in Postman collection (https://github.com/knuckleswtf/scribe/pull/43)
+
 ## 1.1.1 (Friday, 3 July, 2020)
 ### Fixed
 - Support HEAD-only endpoints (https://github.com/knuckleswtf/scribe/pull/54)
