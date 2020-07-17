@@ -3,9 +3,10 @@
 namespace Knuckles\Scribe\Extracting;
 
 use Exception;
-use Knuckles\Scribe\Exceptions\DbTransactionSupportException;
+use Knuckles\Scribe\Exceptions\DatabaseTransactionsNotSupported;
 use Knuckles\Scribe\Exceptions\ScribeException;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
+use Knuckles\Scribe\Tools\DocumentationConfig;
 
 trait DatabaseTransactionHelpers
 {
@@ -16,9 +17,9 @@ trait DatabaseTransactionHelpers
     {
         $connections = array_keys(config('database.connections', []));
 
-        foreach ($connections as $conn) {
+        foreach ($connections as $connection) {
             try {
-                $driver = app('db')->connection($conn);
+                $driver = app('db')->connection($connection);
 
                 if (self::driverSupportsTransactions($driver)) {
                     $driver->beginTransaction();
@@ -26,12 +27,11 @@ trait DatabaseTransactionHelpers
                     return;
                 }
 
-                if ($this->isNoTransactionSupportAllowed($conn)) {
-                    throw DbTransactionSupportException::create($conn, get_class($driver));
+                if ($this->canAllowDatabasePersistence($connection)) {
+                    throw DatabaseTransactionsNotSupported::create($connection, get_class($driver));
                 }
 
-                c::warn("Database driver for the connection [{$conn}] does not support transactions!");
-                c::warn("Any changes made to your database will persist!");
+                c::warn("Database driver for the connection [{$connection}] does not support transactions. Any changes made to your database will persist.");
             } catch (ScribeException $e) {
                 throw $e;
             } catch (Exception $e) {
@@ -46,9 +46,9 @@ trait DatabaseTransactionHelpers
     {
         $connections = array_keys(config('database.connections', []));
 
-        foreach ($connections as $conn) {
+        foreach ($connections as $connection) {
             try {
-                $driver = app('db')->connection($conn);
+                $driver = app('db')->connection($connection);
 
                 if (self::driverSupportsTransactions($driver)) {
                     $driver->rollBack();
@@ -56,8 +56,7 @@ trait DatabaseTransactionHelpers
                     return;
                 }
 
-                c::warn("Database driver for the connection [{$conn}] does not support transactions!");
-                c::warn("Any changes made to your database will persist!");
+                c::warn("Database driver for the connection [{$connection}] does not support transactions. Any changes made to your database have been persisted.");
             } catch (Exception $e) {
             }
         }
@@ -72,7 +71,7 @@ trait DatabaseTransactionHelpers
      */
     private static function driverSupportsTransactions($driver)
     {
-        $methods = [ 'beginTransaction', 'rollback' ];
+        $methods = ['beginTransaction', 'rollback'];
 
         foreach ($methods as $method) {
             if (! method_exists($driver, $method)) {
@@ -86,21 +85,16 @@ trait DatabaseTransactionHelpers
     /**
      * Assesses whether drivers without transaction support can proceed
      *
-     * @param string $connection_name Name of the connection
+     * @param string $connection Name of the connection
      *
      * @return boolean
      */
-    private function isNoTransactionSupportAllowed(string $connection_name)
+    private function canAllowDatabasePersistence(string $connection)
     {
         $config = $this->getConfig();
 
-        $allow_list = $config->get('run_without_database_transactions', false);
-
-        if (is_array($allow_list)) {
-            return in_array($connection_name, $allow_list);
-        }
-
-        return false;
+        $whitelistedConnections = $config->get('allow_database_persistence', []);
+        return in_array($connection, $whitelistedConnections);
     }
 
     /**

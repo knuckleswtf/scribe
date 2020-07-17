@@ -333,7 +333,10 @@ INTRO
     'routeMatcher' => \Knuckles\Scribe\Matching\RouteMatcher::class,
 
     /**
-     * [Advanced usage] If a database driver does not support transactions, you can list it here to allow it to run.
+     * [Advanced usage] If one of your app's database connections does not support transactions,
+     * docs generation (instantiating Eloquent models and making response calls) will likely fail.
+     * To avoid that, you can add it here, but that means all database changes will persist.
+     * We recommend using a test database when generating.
      */
-    'run_without_database_transactions' => [],
+    'allow_database_persistence' => [],
 ];
