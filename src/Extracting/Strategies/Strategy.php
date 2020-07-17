@@ -25,6 +25,16 @@ abstract class Strategy
     }
 
     /**
+     * Returns an instance of the documentation config
+     *
+     * @return DocumentationConfig
+     */
+    public function getConfig()
+    {
+        return $this->config;
+    }
+
+    /**
      * @param Route $route The route which we are currently extracting information for.
      * @param ReflectionClass $controller The class handling the current route.
      * @param ReflectionFunctionAbstract $method The method/closure handling the current route.

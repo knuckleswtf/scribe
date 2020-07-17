@@ -331,4 +331,9 @@ INTRO
      *
      */
     'routeMatcher' => \Knuckles\Scribe\Matching\RouteMatcher::class,
+
+    /**
+     * [Advanced usage] If a database driver does not support transactions, you can list it here to allow it to run.
+     */
+    'run_without_database_transactions' => [],
 ];
