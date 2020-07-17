@@ -70,6 +70,20 @@ class GenerateDocumentationTest extends TestCase
     }
 
     /** @test */
+    public function can_process_traditional_laravel_head_routes()
+    {
+        RouteFacade::addRoute('HEAD', '/api/test', TestController::class . '@withEndpointDescription');
+
+        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
+        $output = $this->artisan('scribe:generate');
+
+        $this->assertStringContainsString('Processed route: [HEAD] api/test', $output);
+    }
+
+    /**
+     * @test
+     * @see https://github.com/knuckleswtf/scribe/issues/53
+     */
     public function can_process_closure_routes()
     {
         RouteFacade::get('/api/closure', function () {

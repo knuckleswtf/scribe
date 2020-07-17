@@ -18,7 +18,8 @@
                             "protocol": "http",
                             "host": "localhost",
                             "path": "api/headers",
-                            "query": []
+                            "query": [],
+                            "raw": "http://localhost/api/headers"
                         },
                         "method": "GET",
                         "header": [
