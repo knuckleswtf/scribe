@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+## 1.3.0 (Friday, 17 July, 2020)
+### Fixed
+- Provided option to bypass database drivers that don't support transactions (https://github.com/knuckleswtf/scribe/pull/55, https://github.com/knuckleswtf/scribe/pull/57)
+
 ## 1.2.0 (Sunday, 5 July, 2020)
 ### Added
 - Include raw request URL in Postman collection (https://github.com/knuckleswtf/scribe/pull/43)
