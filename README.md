@@ -8,6 +8,11 @@ Generate API documentation for humans from your Laravel codebase. [Here's what t
 
 [![Latest Stable Version](https://poser.pugx.org/knuckleswtf/scribe/v/stable)](https://packagist.org/packages/knuckleswtf/scribe) [![Total Downloads](https://poser.pugx.org/knuckleswtf/scribe/downloads)](https://packagist.org/packages/knuckleswtf/scribe) [![Build Status](https://travis-ci.com/knuckleswtf/scribe.svg?branch=master)](https://travis-ci.com/knuckleswtf/scribe)
 
+## Documentation
+> Scribe is a fork of [mpociot/laravel-apidoc-generator](https://github.com/mpociot/laravel-apidoc-generator), so see the [migration guide](https://scribe.rtfd.io/en/latest/migrating.html) if you're coming from there.
+
+Check out the documentation at [ReadTheDocs](http://scribe.rtfd.io/).
+
 ## Installation
 PHP 7.2.5 and Laravel/Lumen 5.8 or higher are required.
 
@@ -25,7 +30,7 @@ php artisan vendor:publish --provider="Knuckles\Scribe\ScribeServiceProvider" --
 This will create a `scribe.php` file in your `config` folder.
 
 ### Lumen
-- When using Lumen, you will need to run `composer require knuckleswtf/scribe` instead.
+- When using Lumen, you will need to run `composer require knuckleswtf/scribe` instead (no `--dev`.
 - Register the service provider in your `bootstrap/app.php`:
 
 ```php
@@ -38,7 +43,5 @@ $app->register(\Knuckles\Scribe\ScribeServiceProvider::class);
 $app->configure('scribe');
 ```
 
-## Documentation
-Check out the documentation at [ReadTheDocs](http://scribe.rtfd.io/). Don't forget to check out the [migration guide](https://scribe.rtfd.io/en/latest/migrating.html) if you're coming from mpociot/laravel-apidoc-generator.
-
-To learn how to contribute, see our [contribution guide](https://scribe.rtfd.io/en/latest/contributing.html).
+## Contributing
+Contributing is easy! See our [contribution guide](https://scribe.rtfd.io/en/latest/contributing.html).
