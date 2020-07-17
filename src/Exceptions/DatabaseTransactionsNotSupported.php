@@ -7,12 +7,12 @@ use RuntimeException;
 
 class DatabaseTransactionsNotSupported extends RuntimeException implements ScribeException
 {
-    public static function create(string $connection, string $driver)
+    public static function create(string $connectionName, string $driverName)
     {
         return new self(
-            "Database Driver [{$driver}] for connection [{$connection}] does not support transactions. " .
+            "Database Driver [{$driverName}] for connection [{$connectionName}] does not support transactions. " .
             "Changes to your database will be persistent. " .
-            "To allow this, add \"{$connection}\" to the \"allow_database_persistence\" config."
+            "To allow this, add \"{$driverName}\" to the \"continue_without_database_transactions\" config."
         );
     }
 }

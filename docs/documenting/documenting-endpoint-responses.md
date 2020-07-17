@@ -122,7 +122,7 @@ This JSON string will be parsed and merged with the response from the file.
 If you don't specify an example response using any of the other means described in this document, Scribe will attempt to get a sample response by making a HTTP request to the local endpoint (known as a "response call").
 
 ```eval_rst
-.. Note:: Response calls are done within a database transaction and changes are rolled back afterwards, so no data is persisted.
+.. Note:: Response calls are done within a database transaction and changes are rolled back afterwards, so no data is persisted. If your database connection does not support transactions, you should add it to `continue_without_database_transactions`, but be warned that data from response calls will be persisted.
 ```
 
 The configuration for response calls is located in the `apply.response_calls` section for each route group in `config/scribe.php`. This means that You can apply different settings for different sets of routes. Here are some important things to note:
@@ -280,7 +280,7 @@ When generating responses from `@apiResource` and `@transformer` tags, Scribe ne
 1. First, it tries the Eloquent model factory: `factory(YourModel::class)->create()`. 
 
 ```eval_rst
-.. Note:: Scribe uses :code:`create()` instead of :code:`make()` when calling the factory, but runs it in a database transaction which is rolled back afterwards, so no data is persisted.
+.. Note:: Scribe uses :code:`create()` instead of :code:`make()` when calling the factory, but runs it in a database transaction which is rolled back afterwards, so no data is persisted. If your database connection does not support transactions, you should add it to `continue_without_database_transactions`, but be warned that created models will be persisted.
 ```
 
 2. If that fails, Scribe calls `YourModel::first()` to retrieve the first model from the database. 

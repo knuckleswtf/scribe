@@ -205,9 +205,6 @@ When generating example requests, this package uses the fzanninoto/faker package
 .. Tip:: Alternatively, you can set example values for parameters when `documenting them <documenting.html>`_.
 ```
 
-### `routeMatcher`
-The route matcher class provides the algorithm that determines what routes should be documented. The default matcher used is the included `\Knuckles\Scribe\Matching\RouteMatcher::class`, and you can provide your own custom implementation if you wish to programmatically change the algorithm. The provided matcher should be an instance of `\Knuckles\Scribe\Matching\RouteMatcherInterface`.
-
 ### `fractal`
 This section only applies if you're using [transformers](https://fractal.thephpleague.com/transformers/) for your API (via the league/fractal package), and documenting responses with `@transformer` and `@transformerCollection`. Here, you configure how responses are transformed.
 
@@ -217,4 +214,16 @@ This section only applies if you're using [transformers](https://fractal.thephpl
   - `\League\Fractal\Serializer\JsonApiSerializer::class`
 
   Leave this as `null` to use no serializer or return a simple JSON.
-     
+
+
+### `routeMatcher`
+The route matcher class provides the algorithm that determines what routes should be documented. The default matcher used is the included `\Knuckles\Scribe\Matching\RouteMatcher::class`, and you can provide your own custom implementation if you wish to programmatically change the algorithm. The provided matcher should be an instance of `\Knuckles\Scribe\Matching\RouteMatcherInterface`.
+
+### `continue_without_database_transactions`
+By default, Scribe runs response calls and example model creation in a database transaction, and then rolls them back so no changes are persisted. If one of your database drivers does not support database transactions, Scribe will log an error and exit. If you would like Scribe to proceed (and persist the data), add the database driver class name to this array. For example:
+
+```php
+'continue_without_database_transactions' => [
+    Jenssegers\Mongodb\Connection::class,
+],
+```
