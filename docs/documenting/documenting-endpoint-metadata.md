@@ -23,7 +23,10 @@ becomes:
 ![](../images/endpoint-title-description.png)
 
 ```eval_rst
-.. Note:: If your first line doesn't end with a period (.), you'll have to leave a blank line before the description. Otherwise, both paragraphs would be parsed together as the title.
+.. Note:: There needs to be a blank line between the title and description.
+```
+```eval_rst
+.. Tip:: For best results, all free text (title and description) should come before any annotations.
 ```
 
 ## Grouping endpoints
