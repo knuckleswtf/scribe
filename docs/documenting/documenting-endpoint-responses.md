@@ -125,7 +125,7 @@ If you don't specify an example response using any of the other means described 
 .. Note:: Response calls are done within a database transaction and changes are rolled back afterwards, so no data is persisted. If your database connection does not support transactions, you should add it to `continue_without_database_transactions`, but be warned that data from response calls will be persisted.
 ```
 
-The configuration for response calls is located in the `apply.response_calls` section for each route group in `config/scribe.php`. This means that You can apply different settings for different sets of routes. Here are some important things to note:
+The configuration for response calls is located in the `apply.response_calls` section for each route group in `config/scribe.php`. This means that you can apply different settings for different sets of routes. Here are some important things to note:
 
 - By default, response calls are only made for `GET` routes, but you can configure this by setting the `response_calls.methods` key to an array of methods (e.g. `['GET', 'PUT']`). Set it to `['*']` to mean all methods. Leave it as an empty array to turn off response calls for that route group.
 
