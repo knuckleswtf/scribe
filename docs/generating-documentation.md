@@ -30,7 +30,7 @@ You can configure Postman collection generation in the `postman` section of your
 - You can add descriptions and auth information for the collection in the `postman.description` and `postman.auth` keys. 
 
 ## Customising the environment with `--env`
-You can pass the `--env` option to run this command in a specific env. For instance, if you have a `.env.test` file, running `scribe:generate --env test` will make Laravel use that file to populate the env for this comand. This can be very useful to customise the behaviour of your app for documentation purposes and disable things like notifications when response calls are running. 
+You can pass the `--env` option to run this command in a specific env. For instance, if you have a `.env.test` file, running `scribe:generate --env test` will make Laravel use that file to populate the env for this command. This can be very useful to customise the behaviour of your app for documentation purposes and disable things like notifications when response calls are running. 
 
 ## Skipping the extraction phase
 If you've modified the generated Markdown, and you only want Scribe to transform it to the normal HTML output, you  can use the `--no-extraction` flag. Scribe will skip extracting data from your routes and go straight to the writing phase, where it converts your Markdown to HTML or Blade. See [Advanced Customization](customization.html).

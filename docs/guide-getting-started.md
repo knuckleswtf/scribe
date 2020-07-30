@@ -1,6 +1,6 @@
 # Getting Started
 
-## Setup the package
+## Set up the package
 First, install the package:
 
 ```bash

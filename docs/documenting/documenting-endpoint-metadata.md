@@ -8,6 +8,7 @@ For instance, this:
 ```php
     /**
      * Add a word to the list.
+     *
      * This endpoint allows you to add a word to the list. It's a really useful endpoint,
      * and you should play around with it for a bit.
      * <aside class="notice">We mean it; you really should.😕</aside>
@@ -81,6 +82,7 @@ You can use the `@authenticated` annotation on a method to indicate if the endpo
 ```php
     /**
      * Create a user
+     *
      * This endpoint lets you create a user.
      * @authenticated
      *
