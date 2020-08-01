@@ -42,18 +42,10 @@ The contents of `prepend.md` will be added after the Introduction section, while
 
 ## Adding more example languages
 For each endpoint, an example request is shown in [each language configured](config.html#example-languages). To add a language which is not supported by this package, you'll have to create your own view for how an example should render. Here's how:
- 
- ### Laravel 
-First, publish the vendor views by running:
- 
- ```bash
- php artisan vendor:publish --provider="Knuckles\Scribe\ScribeServiceProvider" --tag=scribe-views
- ```
- 
-This will copy the views to `resources/views/vendor/scribe`.
 
-### Lumen
-In order to publish the vendor views, you need to manually create a `vendor/scribe` directory under `resources/views`. Then, copy the contents of `vendor/knuckleswtf/scribe/resources/views/` into the newly created `resources/views/vendor/scribe`.
+First, you'll need to publish the vendor views to to `resources/views/vendor/scribe`:
+- **Laravel**: Run `php artisan vendor:publish --provider="Knuckles\Scribe\ScribeServiceProvider" --tag=scribe-views`
+- **Lumen**: Create the `resources/views/vendor/scribe` directory and copy the contents of `vendor/knuckleswtf/scribe/resources/views/` into it.
  
 Next, create a file called `{language-name}.blade.php` (for example, `ruby.blade.php`) in the `partials/example-requests` directory. 
 
