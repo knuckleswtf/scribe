@@ -8,6 +8,8 @@ Generate API documentation for humans from your Laravel codebase. [Here's what t
 
 [![Latest Stable Version](https://poser.pugx.org/knuckleswtf/scribe/v/stable)](https://packagist.org/packages/knuckleswtf/scribe) [![Total Downloads](https://poser.pugx.org/knuckleswtf/scribe/downloads)](https://packagist.org/packages/knuckleswtf/scribe) [![Build Status](https://travis-ci.com/knuckleswtf/scribe.svg?branch=master)](https://travis-ci.com/knuckleswtf/scribe)
 
+> Looking to document your Node.js APIs? Check out [Scribe for JS](https://github.com/knuckleswtf/scribe-js).
+
 ## Documentation
 > Scribe is a fork of [mpociot/laravel-apidoc-generator](https://github.com/mpociot/laravel-apidoc-generator), so see the [migration guide](https://scribe.rtfd.io/en/latest/migrating.html) if you're coming from there.
 

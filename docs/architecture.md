@@ -13,4 +13,4 @@ Read this page if you want a deeper understanding of how Scribe works (for insta
   - sample responses
 - Next, the Writer uses information from these parsed routes and other configuration to generate a Markdown file via Blade templating.
 - This Markdown file is passed to [Pastel](https://github.com/knuckleswtf/pastel), which wraps them in a theme and converts them into HTML, CSS and JS.
-- If enabled, a Postman collection is generated as wel, via the PostmanCollectionWriter.
+- If enabled, a Postman collection is generated as well, via the PostmanCollectionWriter.

@@ -338,11 +338,11 @@ class Generator
                 ];
                 break;
             case 'bearer':
-                $parsedRoute['auth'] = "headers.Authorization.".($valueToUse ? "Bearer $valueToUse" : "Bearer $token");
+                $parsedRoute['auth'] = "headers.Authorization.Bearer ".($valueToUse ?: $token);
                 $parsedRoute['headers']['Authorization'] = "Bearer $token";
                 break;
             case 'basic':
-                $parsedRoute['auth'] = "headers.Authorization.".($valueToUse ? "Basic $valueToUse" : "Basic $token");
+                $parsedRoute['auth'] = "headers.Authorization.Basic ".($valueToUse ?: base64_encode($token));
                 $parsedRoute['headers']['Authorization'] = "Basic ".base64_encode($token);
                 break;
             case 'header':

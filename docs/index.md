@@ -9,6 +9,10 @@ Generate API documentation for humans from your Laravel/Lumen/[Dingo](https://gi
    If you're coming from mpociot/laravel-apidoc-generator, check out `what's new <whats-new.html>`_ and the `migration guide <migrating.html>`_. Otherwise, check out the `getting started guide <guide-getting-started.html>`_.
 ```
 
+```eval_rst
+.. Tip:: Looking to document your Node.js APIs? Check out `Scribe for JS <https://github.com/knuckleswtf/scribe-js>`_.
+```
+
 ## Contents
 ```eval_rst
 .. toctree::
