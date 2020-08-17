@@ -45,7 +45,7 @@ First, let's add some general info about the API. Here are some things you can c
 - Languages for the example requests
 - A logo to show in your docs.
 
-For details, check out [Documenting API information](documenting-api-information.html).
+For details, check out [Documenting API information](documenting/documenting-api-information.html).
 
 ## Choose your routes
 Next up, decide what routes you want to document. This is configured in the `routes` key of `scribe.php`. By default, Scribe will try to document all of your routes, so if you're okay with that, you can leave it at that.
@@ -113,7 +113,7 @@ Scribe tries to figure out information about your routes, but it needs more help
 - Example responses
 - Fields in the response
 
-Check out how to do this in the guide on [Documenting your API](documenting.html).
+Check out how to do this in the guide on [Documenting your API](documenting/).
 
 ## Generate and publish
 After making changes as needed, you can run `php artisan scribe:generate` as many times as you want.
