@@ -29,6 +29,13 @@ You can configure Postman collection generation in the `postman` section of your
 
 - You can add descriptions and auth information for the collection in the `postman.description` and `postman.auth` keys. 
 
+## OpenAPI (Swagger) spec generation
+Scribe can also generate an OpenAPI spec file. This is disabled by default. You can configure this in the `openapi` section of your `scribe.php` file.
+
+- To enable it, set the `openapi.enabled` config option to `true`.
+
+You can view the generated spec by visiting `public/docs/openapi.yaml` for `static` type, and `<your-app>/docs.openapi` for `laravel` type. This link will also be added to the sidebar of your docs.
+
 ## Customising the environment with `--env`
 You can pass the `--env` option to run this command in a specific env. For instance, if you have a `.env.test` file, running `scribe:generate --env test` will make Laravel use that file to populate the env for this command. This can be very useful to customise the behaviour of your app for documentation purposes and disable things like notifications when response calls are running. 
 

@@ -36,6 +36,8 @@ Visit your newly generated docs:
 
 There's also a Postman collection generated for you by default. You can get it by visiting `public/docs/collection.json` for `static` type, and `<your-app>/docs.json` for `laravel` type.
 
+If you'd like an OpenAPI (Swagger) spec, Scribe can do that too. Set `openapi.enabled` in your config to `true`, then run the `generate` command. You can get the generated spec by visiting `public/docs/openapi.yaml` for `static` type, and `<your-app>/docs.openapi` for `laravel` type.
+
 Great! You've seen what Scribe can do. Now, let's refine our docs to match what we want.
 
 ## Add general information about your API

@@ -10,6 +10,17 @@ Generate API documentation for humans from your Laravel codebase. [Here's what t
 
 > Looking to document your Node.js APIs? Check out [Scribe for JS](https://github.com/knuckleswtf/scribe-js).
 
+## Features
+- Pretty HTML documentation page, with included code samples and friendly text
+- Markdown source files that can be edited to modify docs
+- Extracts body parameters information from FormRequests
+- Safely calls API endpoints to generate sample responses, with authentication and other custom configuration supported
+- Supports generating responses from Transformers or Eloquent API Resources
+- Supports Postman collection and OpenAPI (Swagger) spec generation
+- Included UI components for additional styling
+- Easily customisable with custom views
+- Easily extensible with custom strategies
+
 ## Documentation
 > Scribe is a fork of [mpociot/laravel-apidoc-generator](https://github.com/mpociot/laravel-apidoc-generator), so see the [migration guide](https://scribe.rtfd.io/en/latest/migrating.html) if you're coming from there.
 

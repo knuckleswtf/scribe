@@ -31,6 +31,17 @@ Generate API documentation for humans from your Laravel/Lumen/[Dingo](https://gi
    contributing
 ```
 
+## Features
+- Pretty HTML documentation page, with included code samples and friendly text
+- Markdown source files that can be edited to modify docs
+- Extracts body parameters information from FormRequests
+- Safely calls API endpoints to generate sample responses, with authentication and other custom configuration supported
+- Supports generating responses from Transformers or Eloquent API Resources
+- Supports Postman collection and OpenAPI (Swagger) spec generation
+- Included UI components for additional styling
+- Easily customisable with custom views
+- Easily extensible with custom strategies
+
 ## Installation
 PHP 7.2.5 and Laravel/Lumen 5.8 or higher are required.
 

@@ -110,6 +110,8 @@ INTRO
      */
     'title' => null,
 
+    'description' => '',
+
     /*
      * Generate a Postman collection in addition to HTML docs.
      * For 'static' docs, the collection will be generated to public/docs/collection.json.
@@ -138,6 +140,10 @@ INTRO
          * https://schema.getpostman.com/json/collection/v2.0.0/docs/index.html
          */
         'auth' => null,
+    ],
+
+    'openapi' => [
+        'enabled' => true,
     ],
 
     /*
