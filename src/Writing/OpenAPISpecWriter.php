@@ -132,10 +132,6 @@ class OpenAPISpecWriter
 
     /**
      * Add query parameters and headers.
-     *
-     * @param $endpoint
-     *
-     * @return array|\stdClass
      */
     protected function generateEndpointParametersSpec($endpoint)
     {
@@ -398,6 +394,7 @@ class OpenAPISpecWriter
 
         $location = $this->config->get('auth.in');
         $parameterName = $this->config->get('auth.name');
+        $scheme = [];
 
         switch ($location) {
             case 'query':
