@@ -96,7 +96,6 @@ class UseTransformerTags extends Strategy
         }
 
         $response = response($fractal->createData($resource)->toJson());
-
         return [
             [
                 'status' => $statusCode ?: 200,
@@ -139,10 +138,10 @@ class UseTransformerTags extends Strategy
         $relations = [];
         $resourceKey = null;
         if ($modelTag) {
-            ['content' => $type, 'attributes' => $attributes] = a::parseIntoContentAndAttributes($modelTag->getContent(), ['states', 'with', 'resourcekey']);
+            ['content' => $type, 'attributes' => $attributes] = a::parseIntoContentAndAttributes($modelTag->getContent(), ['states', 'with', 'resourceKey']);
             $states = $attributes['states'] ? explode(',', $attributes['states']) : [];
             $relations = $attributes['with'] ? explode(',', $attributes['with']) : [];
-            $resourceKey = $attributes['resourcekey'] ?? null;
+            $resourceKey = $attributes['resourceKey'] ?? null;
         } else {
             $parameter = Arr::first($transformerMethod->getParameters());
             if ($parameter->hasType() && !$parameter->getType()->isBuiltin() && class_exists($parameter->getType()->getName())) {
