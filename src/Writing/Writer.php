@@ -229,7 +229,14 @@ class Writer
             ['config' => $this->config]
         );
 
-        return Yaml::dump($writer->generateSpecContent($groupedEndpoints), 10, 4, Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP);
+        $spec = $writer->generateSpecContent($groupedEndpoints);
+        $overrides = $this->config->get('openapi.overrides');
+        if (count($overrides)) {
+            foreach ($overrides as $key => $value) {
+                data_set($spec, $key, $value);
+            }
+        }
+        return Yaml::dump($spec, 10, 4, Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP);
     }
 
     protected function performFinalTasksForLaravelType(): void

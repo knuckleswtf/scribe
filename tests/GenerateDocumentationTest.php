@@ -294,6 +294,29 @@ class GenerateDocumentationTest extends TestCase
     }
 
     /** @test */
+    public function can_override_fields_in_generated_openapi_spec_file()
+    {
+        RouteFacade::get('/api/withDescription', [TestController::class, 'withEndpointDescription']);
+        RouteFacade::get('/api/withResponseTag', TestController::class . '@withResponseTag');
+        RouteFacade::post('/api/withBodyParameters', TestController::class . '@withBodyParameters');
+        RouteFacade::get('/api/withQueryParameters', TestController::class . '@withQueryParameters');
+
+        config(['scribe.faker_seed' => 1234]);
+        config(['scribe.openapi.enabled' => true]);
+        config(['scribe.openapi.overrides' => [
+            'info.version' => '3.9.9',
+            'servers.0.url' => 'http://okay.dev',
+        ]]);
+        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
+
+        $this->artisan('scribe:generate');
+
+        $generatedCollection = json_decode(file_get_contents(__DIR__ . '/../public/docs/openapi.yaml'), true);
+        $fixtureCollection = json_decode(file_get_contents(__DIR__ . '/Fixtures/openapi-overridden.yaml'), true);
+        $this->assertEquals($fixtureCollection, $generatedCollection);
+    }
+
+    /** @test */
     public function generated_postman_collection_domain_is_correct()
     {
         $domain = 'http://somedomain.test';
