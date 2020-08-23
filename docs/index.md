@@ -12,6 +12,16 @@ Generate API documentation for humans from your Laravel/Lumen/[Dingo](https://gi
 ```eval_rst
 .. Tip:: Looking to document your Node.js APIs? Check out `Scribe for JS <https://github.com/knuckleswtf/scribe-js>`_.
 ```
+## Features
+- Pretty HTML documentation page, with included code samples and friendly text
+- Markdown source files that can be edited to modify docs
+- Extracts body parameters information from FormRequests
+- Safely calls API endpoints to generate sample responses, with authentication and other custom configuration supported
+- Supports generating responses from Transformers or Eloquent API Resources
+- Supports Postman collection and OpenAPI (Swagger) spec generation
+- Included UI components for additional styling
+- Easily customisable with custom views
+- Easily extensible with custom strategies
 
 ## Contents
 ```eval_rst
@@ -30,17 +40,6 @@ Generate API documentation for humans from your Laravel/Lumen/[Dingo](https://gi
    plugins
    contributing
 ```
-
-## Features
-- Pretty HTML documentation page, with included code samples and friendly text
-- Markdown source files that can be edited to modify docs
-- Extracts body parameters information from FormRequests
-- Safely calls API endpoints to generate sample responses, with authentication and other custom configuration supported
-- Supports generating responses from Transformers or Eloquent API Resources
-- Supports Postman collection and OpenAPI (Swagger) spec generation
-- Included UI components for additional styling
-- Easily customisable with custom views
-- Easily extensible with custom strategies
 
 ## Installation
 PHP 7.2.5 and Laravel/Lumen 5.8 or higher are required.

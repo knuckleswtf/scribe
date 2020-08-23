@@ -122,7 +122,7 @@ class ResponseCalls extends Strategy
         $method = array_shift($routeMethods);
         $cookies = isset($rulesToApply['cookies']) ? $rulesToApply['cookies'] : [];
 
-        // Note that we initialise the request with the bodyPatams here
+        // Note that we initialise the request with the bodyParams here
         // and later still add them to the ParameterBag (`addBodyParameters`)
         // The first is so the body params get added to the request content
         // (where Laravel reads body from)
