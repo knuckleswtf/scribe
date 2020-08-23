@@ -116,12 +116,9 @@ INTRO
      * Generate a Postman collection in addition to HTML docs.
      * For 'static' docs, the collection will be generated to public/docs/collection.json.
      * For 'laravel' docs, it will be generated to storage/app/scribe/collection.json.
-     * Setting `laravel.autoload` to true (above) will add routes for both the HTML and the Postman collection.
+     * Setting `laravel.add_routes` to true (above) will also add a route for the collection.
      */
     'postman' => [
-        /*
-         * Specify whether the Postman collection should be generated.
-         */
         'enabled' => true,
 
         /*
@@ -140,10 +137,30 @@ INTRO
          * https://schema.getpostman.com/json/collection/v2.0.0/docs/index.html
          */
         'auth' => null,
+
+        /*
+         * Manually override some generated content in the spec. Dot notation is supported.
+         */
+        'overrides' => [
+            // 'info.version' => '2.0.0',
+        ],
     ],
 
+    /*
+     * Generate an OpenAPI spec file in addition to docs webpage.
+     * For 'static' docs, the collection will be generated to public/docs/openapi.yaml.
+     * For 'laravel' docs, it will be generated to storage/app/scribe/openapi.yaml.
+     * Setting `laravel.add_routes` to true (above) will also add a route for the spec.
+     */
     'openapi' => [
         'enabled' => true,
+
+        /*
+         * Manually override some generated content in the spec. Dot notation is supported.
+         */
+        'overrides' => [
+            // 'info.version' => '2.0.0',
+        ],
     ],
 
     /*
