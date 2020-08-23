@@ -9,14 +9,18 @@ use Orchestra\Testbench\TestCase;
 
 class PostmanCollectionWriterTest extends TestCase
 {
-    public function testNameIsPresentInCollection()
+    public function testCorrectStructureIsFollowed()
     {
         \Config::set('scribe.title', 'Test API');
+        \Config::set('scribe.postman', [
+            'description' => 'A fake description',
+        ]);
 
         $writer = new PostmanCollectionWriter(new Collection(), '');
-        $collection = $writer->makePostmanCollection();
+        $collection = $writer->generatePostmanCollection();
 
-        $this->assertSame('Test API', json_decode($collection)->info->name);
+        $this->assertSame('Test API', $collection['info']['name']);
+        $this->assertSame('A fake description', $collection['info']['description']);
     }
 
     public function testFallbackCollectionNameIsUsed()
@@ -24,29 +28,17 @@ class PostmanCollectionWriterTest extends TestCase
         \Config::set('app.name', 'Fake App');
 
         $writer = new PostmanCollectionWriter(new Collection(), '');
-        $collection = $writer->makePostmanCollection();
+        $collection = $writer->generatePostmanCollection();
 
-        $this->assertSame('Fake App API', json_decode($collection)->info->name);
-    }
-
-    public function testDescriptionIsPresentInCollection()
-    {
-        \Config::set('scribe.postman', [
-            'description' => 'A fake description',
-        ]);
-
-        $writer = new PostmanCollectionWriter(new Collection(), '');
-        $collection = $writer->makePostmanCollection();
-
-        $this->assertSame('A fake description', json_decode($collection)->info->description);
+        $this->assertSame('Fake App API', $collection['info']['name']);
     }
 
     public function testAuthIsNotIncludedWhenNull()
     {
         $writer = new PostmanCollectionWriter(new Collection(), '');
-        $collection = $writer->makePostmanCollection();
+        $collection = $writer->generatePostmanCollection();
 
-        $this->assertArrayNotHasKey('auth', json_decode($collection, true));
+        $this->assertArrayNotHasKey('auth', $collection);
     }
 
     public function testAuthIsIncludedVerbatim()
@@ -60,9 +52,9 @@ class PostmanCollectionWriterTest extends TestCase
         ]);
 
         $writer = new PostmanCollectionWriter(new Collection(), '');
-        $collection = $writer->makePostmanCollection();
+        $collection = $writer->generatePostmanCollection();
 
-        $this->assertSame($auth, json_decode($collection, true)['auth']);
+        $this->assertSame($auth, $collection['auth']);
     }
 
     public function testEndpointIsParsed()
@@ -75,7 +67,7 @@ class PostmanCollectionWriterTest extends TestCase
         $collection = $this->createMockRouteGroup([$route], 'Group');
 
         $writer = new PostmanCollectionWriter($collection, 'fake.localhost');
-        $collection = json_decode($writer->makePostmanCollection(), true);
+        $collection = $writer->generatePostmanCollection();
 
         $this->assertSame('Group', data_get($collection, 'item.0.name'), 'Group name exists');
 
@@ -96,7 +88,7 @@ class PostmanCollectionWriterTest extends TestCase
     {
         $collection = $this->createMockRouteGroup([$this->createMockRouteData('fake')]);
         $writer = new PostmanCollectionWriter($collection, 'https://fake.localhost');
-        $collection = json_decode($writer->makePostmanCollection(), true);
+        $collection = $writer->generatePostmanCollection();
 
         $this->assertSame('https', data_get($collection, 'item.0.item.0.request.url.protocol'));
     }
@@ -109,7 +101,7 @@ class PostmanCollectionWriterTest extends TestCase
 
         $collection = $this->createMockRouteGroup([$route], 'Group');
         $writer = new PostmanCollectionWriter($collection, 'fake.localhost');
-        $collection = json_decode($writer->makePostmanCollection(), true);
+        $collection = $writer->generatePostmanCollection();
 
         $this->assertContains([
             'key' => 'X-Fake',
@@ -117,33 +109,25 @@ class PostmanCollectionWriterTest extends TestCase
         ], data_get($collection, 'item.0.item.0.request.header'));
     }
 
-    public function testUrlParametersAreConverted()
-    {
-        $collection = $this->createMockRouteGroup([$this->createMockRouteData('fake/{param}')]);
-        $writer = new PostmanCollectionWriter($collection, 'fake.localhost');
-        $collection = json_decode($writer->makePostmanCollection(), true);
-
-        $item = data_get($collection, 'item.0.item.0');
-        $this->assertSame('fake/{param}', $item['name'], 'Name defaults to path');
-        $this->assertSame('fake/:param', data_get($item, 'request.url.path'), 'Path is converted');
-    }
-
-    public function testUrlParamsResolveTheirDocumentation()
+    /** @test */
+    public function url_parameters_are_represented_properly()
     {
         $fakeRoute = $this->createMockRouteData('fake/{param}');
-
         $fakeRoute['urlParameters'] = ['param' => [
             'description' => 'A test description for the test param',
             'required' => true,
             'value' => 'foobar',
         ]];
-
         $collection = $this->createMockRouteGroup([$fakeRoute]);
+
         $writer = new PostmanCollectionWriter($collection, 'fake.localhost');
-        $collection = json_decode($writer->makePostmanCollection(), true);
+        $collection = $writer->generatePostmanCollection();
+
+        $item = data_get($collection, 'item.0.item.0');
+        $this->assertSame('fake/{param}', $item['name'], 'Name defaults to URL path');
+        $this->assertSame('fake/:param', data_get($item, 'request.url.path'), 'Path is converted');
 
         $variableData = data_get($collection, 'item.0.item.0.request.url.variable');
-
         $this->assertCount(1, $variableData);
         $this->assertEquals([
             'id' => 'param',
@@ -153,6 +137,7 @@ class PostmanCollectionWriterTest extends TestCase
         ], $variableData[0]);
     }
 
+    /** @test */
     public function testQueryParametersAreDocumented()
     {
         $fakeRoute = $this->createMockRouteData('fake/path');
@@ -173,7 +158,7 @@ class PostmanCollectionWriterTest extends TestCase
 
         $collection = $this->createMockRouteGroup([$fakeRoute]);
         $writer = new PostmanCollectionWriter($collection, 'fake.localhost');
-        $collection = json_decode($writer->makePostmanCollection(), true);
+        $collection = $writer->generatePostmanCollection();
 
         $variableData = data_get($collection, 'item.0.item.0.request.url.query');
 
@@ -204,7 +189,7 @@ class PostmanCollectionWriterTest extends TestCase
 
         $collection = $this->createMockRouteGroup([$fakeRoute]);
         $writer = new PostmanCollectionWriter($collection, 'fake.localhost');
-        $collection = json_decode($writer->makePostmanCollection(), true);
+        $collection = $writer->generatePostmanCollection();
 
         $variableData = data_get($collection, 'item.0.item.0.request.url.query');
 
@@ -230,7 +215,7 @@ class PostmanCollectionWriterTest extends TestCase
 
         $collection = $this->createMockRouteGroup([$fakeRoute]);
         $writer = new PostmanCollectionWriter($collection, 'fake.localhost');
-        $collection = json_decode($writer->makePostmanCollection(), true);
+        $collection = $writer->generatePostmanCollection();
 
         $variableData = data_get($collection, 'item.0.item.0.request.url.query');
 
@@ -262,7 +247,7 @@ class PostmanCollectionWriterTest extends TestCase
         $route['headers'] = $expectedRemovedHeaders;
         $collection = $this->createMockRouteGroup([$route], 'Group');
         $writer = new PostmanCollectionWriter($collection, 'fake.localhost');
-        $collection = json_decode($writer->makePostmanCollection(), true);
+        $collection = $writer->generatePostmanCollection();
 
         foreach ($expectedRemovedHeaders as $key => $value) {
             $this->assertNotContains(compact('key', 'value'), data_get($collection, 'item.0.item.0.request.header'));
@@ -296,7 +281,7 @@ class PostmanCollectionWriterTest extends TestCase
         $route['headers'] = ['X-Authorization' => 'Test'];
         $collection = $this->createMockRouteGroup([$route], 'Group');
         $writer = new PostmanCollectionWriter($collection, 'fake.localhost');
-        $collection = json_decode($writer->makePostmanCollection(), true);
+        $collection = $writer->generatePostmanCollection();
 
         $this->assertContains([
             'key' => 'X-Authorization',
@@ -314,9 +299,15 @@ class PostmanCollectionWriterTest extends TestCase
                 'groupDescription' => '',
                 'title' => $title,
             ],
-            'queryParameters' => [],
             'urlParameters' => [],
+            'cleanUrlParameters' => [],
+            'queryParameters' => [],
+            'cleanQueryParameters' => [],
+            'bodyParameters' => [],
             'cleanBodyParameters' => [],
+            'fileParameters' => [],
+            'responses' => [],
+            'responseFields' => [],
         ];
     }
 

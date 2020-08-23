@@ -137,6 +137,13 @@ INTRO
          * https://schema.getpostman.com/json/collection/v2.0.0/docs/index.html
          */
         'auth' => null,
+
+        /*
+         * Manually override some generated content in the spec. Dot notation is supported.
+         */
+        'overrides' => [
+            // 'info.version' => '2.0.0',
+        ],
     ],
 
     /*

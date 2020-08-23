@@ -218,7 +218,14 @@ class Writer
             ['routeGroups' => $routes, 'baseUrl' => $this->postmanBaseUrl]
         );
 
-        return $writer->makePostmanCollection();
+        $collection = $writer->generatePostmanCollection();
+        $overrides = $this->config->get('postman.overrides');
+        if (count($overrides)) {
+            foreach ($overrides as $key => $value) {
+                data_set($collection, $key, $value);
+            }
+        }
+        return json_encode($collection, JSON_PRETTY_PRINT);
     }
 
     public function generateOpenAPISpec(Collection $groupedEndpoints)
