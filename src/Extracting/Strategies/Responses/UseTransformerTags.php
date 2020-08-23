@@ -87,7 +87,7 @@ class UseTransformerTags extends Strategy
                 $total = count($models);
                 // Need to pass only the first page to both adapter and paginator, otherwise they will display ebverything
                 $firstPage = collect($models)->slice(0, $perPage);
-                $resource = new Collection($firstPage, new $transformer());
+                $resource = new Collection($firstPage, new $transformer(), $resourceKey);
                 $paginator = new LengthAwarePaginator($firstPage, $total, $perPage);
                 $resource->setPaginator(new $paginatorAdapter($paginator));
             }
