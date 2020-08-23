@@ -12,6 +12,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+## 1.4.0 (Sunday, 23 August, 2020)
+### Added
+- Support for resourceKey in Transformers(https://github.com/knuckleswtf/scribe/pull/73)
+- OpenAPI (Swagger) spec generation (https://github.com/knuckleswtf/scribe/pull/75)
+- Ability to override specific fields in generated Postman collection and OpenAPI spec (https://github.com/knuckleswtf/scribe/pull/76)
+
 ## 1.3.0 (Friday, 17 July, 2020)
 ### Fixed
 - Provided option to bypass database drivers that don't support transactions (https://github.com/knuckleswtf/scribe/pull/55, https://github.com/knuckleswtf/scribe/pull/57)
