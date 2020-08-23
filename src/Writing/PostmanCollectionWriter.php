@@ -43,7 +43,7 @@ class PostmanCollectionWriter
         $this->auth = config('scribe.postman.auth');
     }
 
-    public function makePostmanCollection()
+    public function generatePostmanCollection()
     {
         $collection = [
             'variables' => [],
@@ -66,7 +66,7 @@ class PostmanCollectionWriter
             $collection['auth'] = $this->auth;
         }
 
-        return json_encode($collection, JSON_PRETTY_PRINT);
+        return $collection;
     }
 
     protected function generateEndpointItem($route): array
