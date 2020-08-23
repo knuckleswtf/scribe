@@ -69,7 +69,7 @@ class UseTransformerTags extends Strategy
         }
 
         [$statusCode, $transformer] = $this->getStatusCodeAndTransformerClass($transformerTag);
-        [$model, $factoryStates, $relations] = $this->getClassToBeTransformed($tags, (new ReflectionClass($transformer))->getMethod('transform'));
+        [$model, $factoryStates, $relations, $resourceKey] = $this->getClassToBeTransformed($tags, (new ReflectionClass($transformer))->getMethod('transform'));
         $modelInstance = $this->instantiateTransformerModel($model, $factoryStates, $relations);
 
         $fractal = new Manager();
@@ -87,16 +87,15 @@ class UseTransformerTags extends Strategy
                 $total = count($models);
                 // Need to pass only the first page to both adapter and paginator, otherwise they will display ebverything
                 $firstPage = collect($models)->slice(0, $perPage);
-                $resource = new Collection($firstPage, new $transformer());
+                $resource = new Collection($firstPage, new $transformer(), $resourceKey);
                 $paginator = new LengthAwarePaginator($firstPage, $total, $perPage);
                 $resource->setPaginator(new $paginatorAdapter($paginator));
             }
         } else {
-            $resource = new Item($modelInstance, new $transformer());
+            $resource = (new Item($modelInstance, new $transformer(), $resourceKey));
         }
 
         $response = response($fractal->createData($resource)->toJson());
-
         return [
             [
                 'status' => $statusCode ?: 200,
@@ -137,10 +136,12 @@ class UseTransformerTags extends Strategy
         $type = null;
         $states = [];
         $relations = [];
+        $resourceKey = null;
         if ($modelTag) {
-            ['content' => $type, 'attributes' => $attributes] = a::parseIntoContentAndAttributes($modelTag->getContent(), ['states', 'with']);
+            ['content' => $type, 'attributes' => $attributes] = a::parseIntoContentAndAttributes($modelTag->getContent(), ['states', 'with', 'resourceKey']);
             $states = $attributes['states'] ? explode(',', $attributes['states']) : [];
             $relations = $attributes['with'] ? explode(',', $attributes['with']) : [];
+            $resourceKey = $attributes['resourceKey'] ?? null;
         } else {
             $parameter = Arr::first($transformerMethod->getParameters());
             if ($parameter->hasType() && !$parameter->getType()->isBuiltin() && class_exists($parameter->getType()->getName())) {
@@ -153,7 +154,7 @@ class UseTransformerTags extends Strategy
             throw new Exception("Couldn't detect a transformer model from your doc block. Did you remember to specify a model using @transformerModel?");
         }
 
-        return [$type, $states, $relations];
+        return [$type, $states, $relations, $resourceKey];
     }
 
     protected function instantiateTransformerModel(string $type, array $factoryStates = [], array $relations = [])

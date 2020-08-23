@@ -253,6 +253,15 @@ Scribe will generate an instance (or instances) of the model and pass the model(
 .. Tip:: To understand how Scribe generates an instance of your model and how you can customize that, you should check out the section on `How model instances are generated`_.
 ```
 
+If your response data is nested within a Fractal [resource key](https://fractal.thephpleague.com/serializers/#jsonapiserializer), you can specify it via an additional attribute in the `@transformerModel` tag.
+
+```php
+/**
+ * @transformer App\Transformers\UserTransformer
+ * @transformerModel App\Models\User resourceKey=user
+ */
+```
+
 ### Paginating with transformers
 If your endpoint uses a paginator with the transformer, you can tell Scribe how to paginate via an additional tag, `@transformerPaginator`.
 
