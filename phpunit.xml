@@ -27,6 +27,7 @@
         </testsuite>
         <testsuite name="Other Unit Tests">
             <file>tests/Unit/PostmanCollectionWriterTest.php</file>
+            <file>tests/Unit/OpenAPISpecWriterTest.php</file>
             <file>tests/Unit/AnnotationParserTest.php</file>
         </testsuite>
     </testsuites>

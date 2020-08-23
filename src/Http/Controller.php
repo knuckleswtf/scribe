@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Storage;
 
 class Controller
 {
-    public function html()
+    public function webpage()
     {
         return view('scribe.index');
     }
@@ -16,10 +16,17 @@ class Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function json()
+    public function postman()
     {
         return response()->json(
             json_decode(Storage::disk('local')->get('scribe/collection.json'))
+        );
+    }
+
+    public function openapi()
+    {
+        return response()->json(
+            json_decode(Storage::disk('local')->get('scribe/openapi.yaml'))
         );
     }
 }

@@ -10,6 +10,7 @@ use Knuckles\Pastel\Pastel;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\Utils;
+use Symfony\Component\Yaml\Yaml;
 
 class Writer
 {
@@ -36,7 +37,12 @@ class Writer
     /**
      * @var bool
      */
-    private $shouldGeneratePostmanCollection = true;
+    private $shouldGeneratePostmanCollection = false;
+
+    /**
+     * @var bool
+     */
+    private $shouldGenerateOpenAPISpec = false;
 
     /**
      * @var Pastel
@@ -81,6 +87,7 @@ class Writer
         $this->postmanBaseUrl = $this->config->get('postman.base_url') ?? $this->baseUrl;
         $this->shouldOverwrite = $shouldOverwrite;
         $this->shouldGeneratePostmanCollection = $this->config->get('postman.enabled', false);
+        $this->shouldGenerateOpenAPISpec = $this->config->get('openapi.enabled', false);
         $this->pastel = new Pastel();
 
         $this->isStatic = $this->config->get('type') === 'static';
@@ -98,11 +105,15 @@ class Writer
         // For 'laravel' docs, the output files (index.blade.php, collection.json)
         // go in resources/views/scribe/ and storage/app/scribe/ respectively.
 
+        // When running with --no-extraction, $routes will be null.
+        // In that case, we only want to write HTMl docs again, hence the conditionals below
         $routes && $this->writeMarkdownAndSourceFiles($routes);
 
         $this->writeHtmlDocs();
 
         $routes && $this->writePostmanCollection($routes);
+
+        $routes && $this->writeOpenAPISpec($routes);
     }
 
     /**
@@ -174,6 +185,24 @@ class Writer
         }
     }
 
+    protected function writeOpenAPISpec(Collection $parsedRoutes): void
+    {
+        if ($this->shouldGenerateOpenAPISpec) {
+            ConsoleOutputUtils::info('Generating OpenAPI specification');
+
+            $spec = $this->generateOpenAPISpec($parsedRoutes);
+            if ($this->isStatic) {
+                $specPath = "{$this->staticTypeOutputPath}/openapi.yaml";
+                file_put_contents($specPath, $spec);
+            } else {
+                Storage::disk('local')->put('scribe/openapi.yaml', $spec);
+                $specPath = 'storage/app/scribe/openapi.yaml';
+            }
+
+            ConsoleOutputUtils::success("Wrote OpenAPI specification to: {$specPath}");
+        }
+    }
+
     /**
      * Generate Postman collection JSON file.
      *
@@ -190,6 +219,17 @@ class Writer
         );
 
         return $writer->makePostmanCollection();
+    }
+
+    public function generateOpenAPISpec(Collection $groupedEndpoints)
+    {
+        /** @var OpenAPISpecWriter $writer */
+        $writer = app()->makeWith(
+            OpenAPISpecWriter::class,
+            ['config' => $this->config]
+        );
+
+        return Yaml::dump($writer->generateSpecContent($groupedEndpoints), 10, 4, Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP);
     }
 
     protected function performFinalTasksForLaravelType(): void
@@ -215,6 +255,7 @@ class Writer
         $contents = preg_replace('#href="css/(.+?)"#', 'href="{{ asset("vendor/scribe/css/$1") }}"', $contents);
         $contents = preg_replace('#src="(js|images)/(.+?)"#', 'src="{{ asset("vendor/scribe/$1/$2") }}"', $contents);
         $contents = str_replace('href="./collection.json"', 'href="{{ route("scribe.json") }}"', $contents);
+        $contents = str_replace('href="./openapi.yaml"', 'href="{{ route("scribe.openapi") }}"', $contents);
 
         file_put_contents("$this->laravelTypeOutputPath/index.blade.php", $contents);
     }
@@ -246,8 +287,10 @@ class Writer
 
         $frontmatter = view('scribe::partials.frontmatter')
             ->with('showPostmanCollectionButton', $this->shouldGeneratePostmanCollection)
+            ->with('showOpenAPISpecButton', $this->shouldGenerateOpenAPISpec)
             // This path is wrong for laravel type but will be replaced in post
             ->with('postmanCollectionLink', './collection.json')
+            ->with('openAPISpecLink', './openapi.yaml')
             ->with('outputPath', 'docs')
             ->with('settings', $settings);
 

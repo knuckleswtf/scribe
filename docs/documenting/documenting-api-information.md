@@ -62,7 +62,7 @@ For more information, see the [reference documentation on the auth section](conf
 The `intro_text` key in `scribe.php` is where you can set the text shown to readers in the "Introduction" section. If your text is too long to be put in a config file, you can create a `prepend.md` containing the intro text and put it in the `resources/docs` folder.
 
 ## Title
-You can set the HTML `<title>` for the generated documentation, and the name of the generated Postman collection by setting the `title` key in `scribe.php`. If you leave it as null, Scribe will infer it from the value of `config('app.name')`.
+You can set the HTML `<title>` for the generated docs webpage, Postman collection and OpenAPI spec by setting the `title` key in `scribe.php`. If you leave it as null, Scribe will infer it from the value of `config('app.name')`.
 
 ## Logo
 Maybe you've got a pretty logo for your API or company, and you'd like to display that on your documentation page. No worries! To add a logo, set the `logo` key in `scribe.php` to the path of the logo. Here are your options:

@@ -261,6 +261,39 @@ class GenerateDocumentationTest extends TestCase
     }
 
     /** @test */
+    public function generated_openapi_spec_file_is_correct()
+    {
+        RouteFacade::get('/api/withDescription', [TestController::class, 'withEndpointDescription']);
+        RouteFacade::get('/api/withResponseTag', TestController::class . '@withResponseTag');
+        RouteFacade::post('/api/withBodyParameters', TestController::class . '@withBodyParameters');
+        RouteFacade::get('/api/withQueryParameters', TestController::class . '@withQueryParameters');
+        RouteFacade::get('/api/withAuthTag', TestController::class . '@withAuthenticatedTag');
+        RouteFacade::get('/api/withEloquentApiResource', [TestController::class, 'withEloquentApiResource']);
+        RouteFacade::get('/api/withEloquentApiResourceCollectionClass', [TestController::class, 'withEloquentApiResourceCollectionClass']);
+        RouteFacade::post('/api/withMultipleResponseTagsAndStatusCode', [TestController::class, 'withMultipleResponseTagsAndStatusCode']);
+        RouteFacade::get('/api/echoesUrlParameters/{param}-{param2}/{param3?}', [TestController::class, 'echoesUrlParameters']);
+
+        // We want to have the same values for params each time
+        config(['scribe.faker_seed' => 1234]);
+        config(['scribe.openapi.enabled' => true]);
+        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
+        config([
+            'scribe.routes.0.apply.headers' => [
+                'Authorization' => 'customAuthToken',
+                'Custom-Header' => 'NotSoCustom',
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ],
+        ]);
+
+        $this->artisan('scribe:generate');
+
+        $generatedCollection = json_decode(file_get_contents(__DIR__ . '/../public/docs/openapi.yaml'), true);
+        $fixtureCollection = json_decode(file_get_contents(__DIR__ . '/Fixtures/openapi.yaml'), true);
+        $this->assertEquals($fixtureCollection, $generatedCollection);
+    }
+
+    /** @test */
     public function generated_postman_collection_domain_is_correct()
     {
         $domain = 'http://somedomain.test';

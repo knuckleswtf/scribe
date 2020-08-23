@@ -67,6 +67,13 @@ For `static` output, the collection will be created in `public/docs/collection.j
 
 - `auth`: The "Auth" section that should appear in the postman collection. See the [Postman schema docs](https://schema.getpostman.com/json/collection/v2.0.0/docs/index.html) for more information.
 
+### `openapi`
+Scribe can also generate an OpenAPI (Swagger) spec for your routes. This section is where you can configure or disable that.
+
+For `static` output, the spec will be created in `public/docs/openapi.yaml`. For `laravel` output, the spec will be generated to `storage/app/scribe/openapi.yaml`. Setting `laravel.add_routes` to `true` will add a `/docs.openapi` endpoint to fetch it.
+
+- `enabled`: Whether or not to generate an OpenAPI spec. Default: `false`
+
 ## Extraction settings
 ### `router`
 The router to use when processing your routes. Can be `laravel` or `dingo`. Defaults to `laravel`.
