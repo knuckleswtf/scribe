@@ -253,22 +253,13 @@ Scribe will generate an instance (or instances) of the model and pass the model(
 .. Tip:: To understand how Scribe generates an instance of your model and how you can customize that, you should check out the section on `How model instances are generated`_.
 ```
 
-### Adding a Fractal Resource Key
-If your response data is nested within a Fractal Resource Key, you can specify it via an additional attribute in the `@transformerModel` tag.
-You can read more about Fractal Resource Keys on the [Fractal (The PHP League)](https://fractal.thephpleague.com/serializers/#jsonapiserializer) website.
-
-In addition to setting the resourceKey attribute, please make sure your Serializer is utilizing the resourceKey as well.
-
+If your response data is nested within a Fractal [resource key](https://fractal.thephpleague.com/serializers/#jsonapiserializer), you can specify it via an additional attribute in the `@transformerModel` tag.
 
 ```php
 /**
- * @apiResource App\Resources\UserResource
- * @apiResourceModel App\Models\User resourceKey=user
+ * @transformer App\Transformers\UserTransformer
+ * @transformerModel App\Models\User resourceKey=user
  */
-public function showUser(User $user)
-{
-    return new UserResource($user);
-}
 ```
 
 ### Paginating with transformers
