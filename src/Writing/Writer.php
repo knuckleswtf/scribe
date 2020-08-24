@@ -237,7 +237,7 @@ class Writer
         );
 
         $spec = $writer->generateSpecContent($groupedEndpoints);
-        $overrides = $this->config->get('openapi.overrides');
+        $overrides = $this->config->get('openapi.overrides', []);
         if (count($overrides)) {
             foreach ($overrides as $key => $value) {
                 data_set($spec, $key, $value);
