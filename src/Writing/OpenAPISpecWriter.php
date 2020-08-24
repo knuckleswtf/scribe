@@ -360,7 +360,7 @@ class OpenAPISpecWriter
                     if (isset($endpoint['responseFields'][$key]['description'])) {
                         $spec['description'] = $endpoint['responseFields'][$key]['description'];
                     }
-                    if ($spec['type'] === 'array') {
+                    if ($spec['type'] === 'array' && !empty($value)) {
                         $spec['items']['type'] = $this->convertScribeOrPHPTypeToOpenAPIType(gettype($value[0]));
                     }
 
