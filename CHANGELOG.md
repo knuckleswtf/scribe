@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+## 1.4.1 (Monday, 23 August, 2020)
+### Fixed
+- Set proper defaults for Postman overrides, handle empt array examples in OAS (https://github.com/knuckleswtf/scribe/pull/77)
+
 ## 1.4.0 (Sunday, 23 August, 2020)
 ### Added
 - Support for resourceKey in Transformers(https://github.com/knuckleswtf/scribe/pull/73)
