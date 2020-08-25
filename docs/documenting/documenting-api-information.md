@@ -55,7 +55,7 @@ You can set whatever you want as the `extra_info`. A good idea would be to tell 
 
 The `use_value` field is only used by Scribe for response calls. It won't be included in the generated output or examples.
 
-For more information, see the [reference documentation on the auth section](config.html#auth).
+For more information, see the [reference documentation on the auth section](../config.html#auth).
 
 
 ## Introductory text
