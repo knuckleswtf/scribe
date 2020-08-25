@@ -1,6 +1,11 @@
 # Troubleshooting and Debugging
 This page contains a few tips to help you figure out what's wrong when Scribe seems to be malfunctioning.
 
+## Update your installation
+First off, try updating your installed Scribe version. Maybe your problem is due to a bug we've fixed in a newer release. You can see a list of releases and major changes on [the changelog](https://github.com/knuckleswtf/scribe/blob/master/CHANGELOG.md).
+- To find the exact 
+- To update to the latest version, run `composer update knuckleswtf/scribe`. To update to a specific version (example: 1.4.1), run `composer update knuckleswtf/scribe:1.4.1`.
+
 ## Increase the verbosity
 By default, Scribe will try to keep going until it processes all routes and generates your docs. If it encounters any problems while processing a route (such as a missing `@responseFile`, or some invalid configuration leading to an exception being thrown), it will output a warning and the exception message, then move on to the next route.
 

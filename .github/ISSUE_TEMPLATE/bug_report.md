@@ -21,9 +21,10 @@ instead of...
 
 
 **My environment:**
- - PHP version: 
- - Framework (Laravel/Lumen) and version: 
- - Scribe Version: 
+ - PHP version (from `php -v`): 
+ - Framework (Laravel/Lumen):
+ - Laravel/Lumen version (from `composer show laravel/framework` or `composer show lumen/framework`): 
+ - Scribe version (from `composer show knuckleswtf/scribe`): 
 
 **My Scribe config (minus the comments):**
 
