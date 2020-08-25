@@ -19,7 +19,7 @@ Sometimes you may see a 500 `null` response shown in the generated examples. Thi
 Sometimes Laravel caches config files, and this may lead to Scribe failing with an error about a null `DocumentationConfig`. To fix this, clear the config cache by running `php artisan config:clear`.
 
 ## Make sure you aren't matching `web` routes
-Routes defined in Laravel's web.php typically have the `web` middleware, leading to strange behaviour, so make sure that you've correctly specified the routes to be matched in your config file. See [this Github issue](https://github.com/knuckleswtf/scribe/issues/47).
+Routes defined in Laravel's web.php typically have the `web` middleware, leading to strange behaviour, so make sure you've correctly specified the routes to be matched in your config file. See [this GitHub issue](https://github.com/knuckleswtf/scribe/issues/47).
 
 ## Clear previously generated docs
 Sometimes you may run into conflicts if you switch from one output type to another. While we try to prevent this happening, we don't guarantee it. In such cases, please try clearing the old docs generated from your previous run (`laravel` would be in `resources/docs` and `storage/docs`, `static` would be in `public/docs`) and then running again. We recommend copying these out to a different location, just to be safe.
