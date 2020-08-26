@@ -20,12 +20,23 @@ class Generator
      */
     private $config;
 
-    public static $routeBeingProcessed = null;
+    /**
+     * @var Route|null
+     */
+    private static $routeBeingProcessed = null;
 
     public function __construct(DocumentationConfig $config = null)
     {
         // If no config is injected, pull from global
         $this->config = $config ?: new DocumentationConfig(config('scribe'));
+    }
+
+    /**
+     * @return Route|null
+     */
+    public static function getRouteBeingProcessed(): ?Route
+    {
+        return self::$routeBeingProcessed;
     }
 
     /**
