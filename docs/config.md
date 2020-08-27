@@ -203,7 +203,7 @@ If we only want to match endpoints on the `v2-api.acme.co` domain and we want to
 
   - `headers`: Any headers you specify here will be added to the headers shown in the example requests in your documentation. They will also be included in response calls. Headers are specified as key => value strings.
 
-  - `response_calls`: These are the settings that will be applied when making ["response calls"](documenting-endpoint-responses.html#generating-responses-automatically-via-response-calls). 
+  - `response_calls`: These are the settings that will be applied when making ["response calls"](documenting/documenting-endpoint-responses.html#generating-responses-automatically-via-response-calls). 
 
 ```eval_rst
 .. Tip:: By splitting your routes into groups, you can apply different settings to different routes.
