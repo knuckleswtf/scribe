@@ -398,10 +398,11 @@ class OpenAPISpecWriter
 
         switch ($location) {
             case 'query':
+            case 'header':
                 $scheme = [
                     'type' => 'apiKey',
                     'name' => $parameterName,
-                    'in' => 'query',
+                    'in' => $location,
                     'description' => '',
                 ];
                 break;
@@ -411,15 +412,6 @@ class OpenAPISpecWriter
                 $scheme = [
                     'type' => 'http',
                     'scheme' => $location,
-                    'description' => '',
-                ];
-                break;
-
-            case 'header':
-                $scheme = [
-                    'type' => 'header',
-                    'name' => $parameterName,
-                    'in' => 'header',
                     'description' => '',
                 ];
                 break;

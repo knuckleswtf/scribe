@@ -117,6 +117,7 @@ INTRO
      * For 'static' docs, the collection will be generated to public/docs/collection.json.
      * For 'laravel' docs, it will be generated to storage/app/scribe/collection.json.
      * Setting `laravel.add_routes` to true (above) will also add a route for the collection.
+     * Collection schema: https://schema.getpostman.com/json/collection/v2.0.0/collection.json
      */
     'postman' => [
         'enabled' => true,

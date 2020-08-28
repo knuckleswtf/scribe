@@ -23,7 +23,7 @@ You can configure Postman collection generation in the `postman` section of your
 
 - To turn it off, set the `postman.enabled` config option to false.
 
-- To override some fields in the generated collection, set the `openapi.overrides` config option to your changes. You can use dot notation to update specific nested fields. For instance, `['info.version' => '2.0.0']` will override the 'version` key in the 'info` object whenever generating.
+- To override some fields in the generated collection, set the `postman.overrides` config option to your changes. You can use dot notation to update specific nested fields. For instance, `['info.version' => '2.0.0']` will override the 'version` key in the 'info` object whenever generating.
 
 - The base URL used in the Postman collection is the value of `config('app.url')` by default. To change this, set the value of the `postman.base_url` key.
 
