@@ -42,6 +42,10 @@ class PostmanCollectionWriter
         $this->protocol = Str::startsWith($baseUrl, 'https') ? 'https' : 'http';
         $this->baseUrl = $this->getBaseUrl($baseUrl);
         $this->auth = config('scribe.postman.auth');
+
+        if ($this->auth) {
+            c::deprecated('the `postman.auth` config key', 'the `postman.overrides` feature');
+        }
     }
 
     public function generatePostmanCollection()
@@ -49,7 +53,7 @@ class PostmanCollectionWriter
         $description = config('scribe.postman.description', '');
 
         if ($description) {
-            c::deprecated('the config key postman.description', 'description');
+            c::deprecated('the `postman.description` config key', 'the `description` key');
         } else {
             $description = config('scribe.description', '');
         }
