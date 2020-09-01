@@ -316,13 +316,14 @@ class Generator
         }
         $token = $faker->shuffle('abcdefghkvaZVDPE1864563');
         $valueToUse = $this->config->get('auth.use_value');
+        $valueToDisplay = $this->config->get('auth.display_value');
         switch ($strategy) {
             case 'query':
             case 'query_or_body':
                 $parsedRoute['auth'] = "cleanQueryParameters.$parameterName.".($valueToUse ?: $token);
                 $parsedRoute['queryParameters'][$parameterName] = [
                     'name' => $parameterName,
-                    'value' => $token,
+                    'value' => $valueToDisplay ?:$token,
                     'description' => '',
                     'required' => true,
                 ];
@@ -332,22 +333,22 @@ class Generator
                 $parsedRoute['bodyParameters'][$parameterName] = [
                     'name' => $parameterName,
                     'type' => 'string',
-                    'value' => $token,
+                    'value' => $valueToDisplay ?: $token,
                     'description' => '',
                     'required' => true,
                 ];
                 break;
             case 'bearer':
                 $parsedRoute['auth'] = "headers.Authorization.Bearer ".($valueToUse ?: $token);
-                $parsedRoute['headers']['Authorization'] = "Bearer $token";
+                $parsedRoute['headers']['Authorization'] = "Bearer ".($valueToDisplay ?: $token);
                 break;
             case 'basic':
                 $parsedRoute['auth'] = "headers.Authorization.Basic ".($valueToUse ?: base64_encode($token));
-                $parsedRoute['headers']['Authorization'] = "Basic ".base64_encode($token);
+                $parsedRoute['headers']['Authorization'] = "Basic ".($valueToDisplay ?: base64_encode($token));
                 break;
             case 'header':
                 $parsedRoute['auth'] = "headers.$parameterName.".($valueToUse ?: $token);
-                $parsedRoute['headers'][$parameterName] = $token;
+                $parsedRoute['headers'][$parameterName] = $valueToDisplay ?: $token;
                 break;
         }
 
