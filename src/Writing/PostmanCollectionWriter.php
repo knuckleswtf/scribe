@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Ramsey\Uuid\Uuid;
 use ReflectionMethod;
+use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 
 class PostmanCollectionWriter
 {
@@ -45,12 +46,20 @@ class PostmanCollectionWriter
 
     public function generatePostmanCollection()
     {
+        $description = config('scribe.postman.description', '');
+
+        if ($description) {
+            c::deprecated('the config key postman.description', 'description');
+        } else {
+            $description = config('scribe.description', '');
+        }
+
         $collection = [
             'variables' => [],
             'info' => [
                 'name' => config('scribe.title') ?: config('app.name') . ' API',
                 '_postman_id' => Uuid::uuid4()->toString(),
-                'description' => config('scribe.postman.description') ?: '',
+                'description' => $description,
                 'schema' => 'https://schema.getpostman.com/json/collection/v2.0.0/collection.json',
             ],
             'item' => $this->routeGroups->map(function (Collection $routes, $groupName) {
