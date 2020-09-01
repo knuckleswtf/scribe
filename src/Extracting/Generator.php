@@ -9,6 +9,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\DocumentationConfig;
+use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\Utils as u;
 use ReflectionClass;
 use ReflectionFunctionAbstract;
@@ -316,6 +317,13 @@ class Generator
         }
         $token = $faker->shuffle('abcdefghkvaZVDPE1864563');
         $valueToUse = $this->config->get('auth.use_value');
+
+        if ($valueToUse) {
+            c::deprecated('the `auth.use_value` config item', 'change this to `response_calls.auth`');
+        } else {
+            $this->config->get('response_calls.auth');
+        }
+
         switch ($strategy) {
             case 'query':
             case 'query_or_body':

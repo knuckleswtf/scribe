@@ -21,7 +21,7 @@ class ConsoleOutputUtils
             ->only();
     }
 
-    public static function deprecated($feature, $shouldUse = null, $link = null)
+    public static function deprecated($feature, $should = null, $link = null)
     {
         if (!self::$clara) {
             self::bootstrapOutput(new ConsoleOutput);
@@ -29,7 +29,7 @@ class ConsoleOutputUtils
 
         $message = "You're using $feature. This is deprecated and will be removed in the next major version.";
         if ($shouldUse) {
-            $message .= "\nYou should use $shouldUse instead.";
+            $message .= "\nYou should $should instead.";
         }
         if ($link) {
             $message .= " See $link for details";

@@ -18,7 +18,6 @@ Here's how you'd configure auth with a query parameter named `apiKey`:
         'enabled' => true,
         'in' => 'query',
         'name' => 'apiKey',
-        'use_value' => env('SCRIBE_API_KEY'),
         'extra_info' => 'You can retrieve your key by going to settings and clicking <b>Generate API key</b>.',
     ],
 ```
@@ -33,7 +32,6 @@ Here's an example with a bearer token (also applies to basic auth, if you change
         'enabled' => true,
         'in' => 'bearer',
         'name' => 'hahaha', // <--- This value is ignored for bearer and basic auth
-        'use_value' => env('SCRIBE_AUTH_KEY'),
         'extra_info' => 'You can retrieve your token by visiting your dashboard and clicking <b>Generate API token</b>.',
     ],
 ```
@@ -46,14 +44,13 @@ And here's an example with a custom header:
         'enabled' => true,
         'in' => 'header',
         'name' => 'Api-Key', // <--- The name of the header
-        'use_value' => env('SCRIBE_AUTH_KEY'),
         'extra_info' => 'You can retrieve your token by visiting your dashboard and clicking <b>Generate API token</b>.',
     ],
 ```
 
 You can set whatever you want as the `extra_info`. A good idea would be to tell your users where to get their auth key. 
 
-The `use_value` field is only used by Scribe for response calls. It won't be included in the generated output or examples.
+You can also specify the value Scribe should use for response calls by setting `response_calls.auth`. This value will only be used to authenticate calls to endpoints marked as authenticated; it won't be included in the generated output or examples.
 
 For more information, see the [reference documentation on the auth section](../config.html#auth).
 

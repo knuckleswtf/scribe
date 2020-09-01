@@ -44,7 +44,7 @@ class PostmanCollectionWriter
         $this->auth = config('scribe.postman.auth');
 
         if ($this->auth) {
-            c::deprecated('the `postman.auth` config key', 'the `postman.overrides` feature');
+            c::deprecated('the `postman.auth` config item', 'use the `postman.overrides` feature');
         }
     }
 
@@ -53,7 +53,7 @@ class PostmanCollectionWriter
         $description = config('scribe.postman.description', '');
 
         if ($description) {
-            c::deprecated('the `postman.description` config key', 'the `description` key');
+            c::deprecated('the `postman.description` config item', 'use the `description` item');
         } else {
             $description = config('scribe.description', '');
         }
