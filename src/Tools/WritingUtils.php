@@ -122,7 +122,10 @@ class WritingUtils
                 }
 
                 if (is_array($v) && ! empty($v)) {
-                    $results = array_merge($results, static::getParameterNamesAndValuesForFormData($parameter.'['.$key.'][', $v));
+                    $results = array_merge(
+                        $results,
+                        static::getParameterNamesAndValuesForFormData($parameter.'['.$key.'][', $v)
+                    );
                 } else {
                     if ($v != null) {
                         if (substr($parameter, -1) === '[') {

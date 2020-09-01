@@ -105,9 +105,9 @@ class PostmanCollectionWriter
         switch ($mode) {
             case 'formdata':
                 foreach ($route['cleanBodyParameters'] as $key => $value) {
-                    foreach (WritingUtils::getParameterNamesAndValuesForFormData($key, $value) as $key => $actualValue) {
+                    foreach (WritingUtils::getParameterNamesAndValuesForFormData($key, $value) as $k => $actualValue) {
                         $params = [
-                            'key' => $key,
+                            'key' => $k,
                             'value' => $actualValue,
                             'type' => 'text'
                         ];
