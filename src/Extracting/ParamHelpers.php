@@ -116,7 +116,7 @@ trait ParamHelpers
 
     /**
      * Normalizes the stated "type" of a parameter (eg "int", "integer", "double")
-     * to a number of standard types (integer, boolean, float). Will return the input if no match.
+     * to a number of standard types (integer, boolean, number). Will return the input if no match.
      *
      * @param string $type
      *
@@ -131,7 +131,8 @@ trait ParamHelpers
         $typeMap = [
             'int' => 'integer',
             'bool' => 'boolean',
-            'double' => 'float',
+            'double' => 'number',
+            'float' => 'number',
         ];
 
         return $typeMap[$type] ?? $type;

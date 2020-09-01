@@ -258,7 +258,7 @@ class OpenAPISpecWriterTest extends TestCase
                     'description' => 'Number param',
                     'required' => false,
                     'value' => 186.9,
-                    'type' => 'float',
+                    'type' => 'number',
                 ],
             ],
         ]);

@@ -7,9 +7,9 @@ Scribe can get information about your endpoint's body parameters in two ways:
 To describe body parameters for your endpoint, use the `@bodyParam` annotation on the method handling it.
 
 The `@bodyParam` annotation takes the name of the parameter, its type, an optional "required" label, and then its description. Valid types:
-- `int` / `integer`
 - `string`
-- `number` / `float`
+- `integer`
+- `number`
 - `boolean`
 - `array`, `object` (see [Handling array and object parameters](#handling-array-and-object-parameters) below)
 - `file` (see [Documenting File Uploads](#documenting-file-uploads) below)

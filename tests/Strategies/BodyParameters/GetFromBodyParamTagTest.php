@@ -26,7 +26,7 @@ class GetFromBodyParamTagTest extends TestCase
             new Tag('bodyParam', 'yet_another_param object required Some object params.'),
             new Tag('bodyParam', 'yet_another_param.name string required Subkey in the object param.'),
             new Tag('bodyParam', 'even_more_param array Some array params.'),
-            new Tag('bodyParam', 'even_more_param.* float Subkey in the array param.'),
+            new Tag('bodyParam', 'even_more_param.* number Subkey in the array param.'),
             new Tag('bodyParam', 'book.name string'),
             new Tag('bodyParam', 'book.author_id integer'),
             new Tag('bodyParam', 'book[pages_count] integer'),
@@ -75,7 +75,7 @@ class GetFromBodyParamTagTest extends TestCase
                 'description' => 'Some array params.',
             ],
             'even_more_param.*' => [
-                'type' => 'float',
+                'type' => 'number',
                 'description' => 'Subkey in the array param.',
                 'required' => false,
             ],
