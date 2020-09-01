@@ -34,8 +34,11 @@
                         ],
                         "body": null,
                         "description": "This will be the long description.\nIt can also be multiple lines long.",
-                        "response": []
-                    }
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
                 },
                 {
                     "name": "Endpoint with body form data parameters.",
@@ -78,8 +81,11 @@
                             ]
                         },
                         "description": "",
-                        "response": []
-                    }
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
                 },
                 {
                     "name": "api\/withResponseTag",
@@ -104,8 +110,11 @@
                         ],
                         "body": null,
                         "description": "",
-                        "response": []
-                    }
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
                 },
                 {
                     "name": "Endpoint with body parameters.",
@@ -137,8 +146,11 @@
                             "raw": "{\n    \"user_id\": 9,\n    \"room_id\": \"consequatur\",\n    \"forever\": false,\n    \"another_one\": 11613.31890586,\n    \"yet_another_param\": {\n        \"name\": \"consequatur\"\n    },\n    \"even_more_param\": [\n        11613.31890586\n    ],\n    \"book\": {\n        \"name\": \"consequatur\",\n        \"author_id\": 17,\n        \"pages_count\": 17\n    },\n    \"ids\": [\n        17\n    ],\n    \"users\": [\n        {\n            \"first_name\": \"John\",\n            \"last_name\": \"Doe\"\n        }\n    ]\n}"
                         },
                         "description": "",
-                        "response": []
-                    }
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
                 },
                 {
                     "name": "api\/withQueryParameters",
@@ -194,8 +206,11 @@
                         ],
                         "body": null,
                         "description": "",
-                        "response": []
-                    }
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
                 },
                 {
                     "name": "api\/withAuthTag",
@@ -220,8 +235,9 @@
                         ],
                         "body": null,
                         "description": "",
-                        "response": []
-                    }
+                        "auth": null
+                    },
+                    "response": []
                 },
                 {
                     "name": "api\/withEloquentApiResource",
@@ -246,8 +262,11 @@
                         ],
                         "body": null,
                         "description": "",
-                        "response": []
-                    }
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
                 },
                 {
                     "name": "api\/withMultipleResponseTagsAndStatusCode",
@@ -272,8 +291,11 @@
                         ],
                         "body": null,
                         "description": "",
-                        "response": []
-                    }
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
                 }
             ]
         },
@@ -304,8 +326,11 @@
                         ],
                         "body": null,
                         "description": "",
-                        "response": []
-                    }
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
                 },
                 {
                     "name": "api\/echoesUrlParameters\/{param}-{param2}\/{param3?}",
@@ -351,10 +376,16 @@
                         ],
                         "body": null,
                         "description": "",
-                        "response": []
-                    }
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
                 }
             ]
         }
-    ]
+    ],
+    "auth": {
+        "type": "noauth"
+    }
 }

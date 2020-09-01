@@ -53,7 +53,7 @@ class PostmanCollectionWriter
                 'name' => config('scribe.title') ?: config('app.name') . ' API',
                 '_postman_id' => Uuid::uuid4()->toString(),
                 'description' => $description,
-                'schema' => "https://schema.getpostman.com/json/collection/v".self::VERSION."/collection.json",
+                'schema' => "https://schema.getpostman.com/json/collection/v" . self::VERSION . "/collection.json",
             ],
             'item' => $groupedEndpoints->map(function (Collection $routes, $groupName) {
                 return [
@@ -62,13 +62,50 @@ class PostmanCollectionWriter
                     'item' => $routes->map(\Closure::fromCallable([$this, 'generateEndpointItem']))->toArray(),
                 ];
             })->values()->toArray(),
+            'auth' => $this->generateAuthObject(),
         ];
 
-        if (! empty($this->auth)) {
+        if (!empty($this->auth)) {
             $collection['auth'] = $this->auth;
         }
 
         return $collection;
+    }
+
+    protected function generateAuthObject()
+    {
+        if (!$this->config->get('auth.enabled')) {
+            return [
+                'type' => 'noauth',
+            ];
+        }
+
+        switch ($this->config->get('auth.in')) {
+            case "basic":
+                return [
+                    'type' => 'basic',
+                ];
+            case "bearer":
+                return [
+                    'type' => 'bearer',
+                ];
+            default:
+                return [
+                    'type' => 'apikey',
+                    'apikey' => [
+                        [
+                            'key' => 'in',
+                            'value' => $this->config->get('auth.in'),
+                            'type' => 'string',
+                        ],
+                        [
+                            'key' => 'key',
+                            'value' => $this->config->get('auth.name'),
+                            'type' => 'string',
+                        ],
+                    ],
+                ];
+        }
     }
 
     protected function generateEndpointItem($endpoint): array
@@ -81,8 +118,9 @@ class PostmanCollectionWriter
                 'header' => $this->resolveHeadersForEndpoint($endpoint),
                 'body' => empty($endpoint['bodyParameters']) ? null : $this->getBodyData($endpoint),
                 'description' => $endpoint['metadata']['description'] ?? null,
-                'response' => [],
+                'auth' => ($endpoint['metadata']['authenticated'] ?? false) ? null : ['type' => 'noauth'],
             ],
+            'response' => [],
         ];
     }
 
@@ -107,7 +145,7 @@ class PostmanCollectionWriter
                     $params = [
                         'key' => $key,
                         'value' => $value,
-                        'type' => 'text'
+                        'type' => 'text',
                     ];
                     $body[$inputMode][] = $params;
                 }
@@ -127,14 +165,13 @@ class PostmanCollectionWriter
         return $body;
     }
 
-
     protected function resolveHeadersForEndpoint($route)
     {
         $headers = collect($route['headers']);
 
         // Exclude authentication headers if they're handled by Postman auth
         $authHeader = $this->getAuthHeader();
-        if (! empty($authHeader)) {
+        if (!empty($authHeader)) {
             $headers = $headers->except($authHeader);
         }
 
@@ -173,7 +210,7 @@ class PostmanCollectionWriter
             }, $route['uri']),
             'query' => collect($route['queryParameters'] ?? [])->map(function ($parameterData, $key) {
                 // TODO remove: unneeded with new syntax
-                $key = rtrim($key,".*");
+                $key = rtrim($key, ".*");
                 return [
                     'key' => $key,
                     'value' => urlencode($parameterData['value']),
@@ -186,10 +223,10 @@ class PostmanCollectionWriter
 
         // Create raw url-parameter (Insomnia uses this on import)
         $query = collect($base['query'] ?? [])->map(function ($queryParamData) {
-            return $queryParamData['key'].'='.$queryParamData['value'];
+            return $queryParamData['key'] . '=' . $queryParamData['value'];
         })->implode('&');
         $base['raw'] = sprintf('%s://%s/%s%s',
-            $base['protocol'], $base['host'], $base['path'], $query ? '?'.$query : null
+            $base['protocol'], $base['host'], $base['path'], $query ? '?' . $query : null
         );
 
         // If there aren't any url parameters described then return what we've got
@@ -213,7 +250,7 @@ class PostmanCollectionWriter
     protected function getAuthHeader()
     {
         $auth = $this->auth;
-        if (empty($auth) || ! is_string($auth['type'] ?? null)) {
+        if (empty($auth) || !is_string($auth['type'] ?? null)) {
             return null;
         }
 
