@@ -25,7 +25,7 @@ class OpenAPISpecWriter
 
     public function __construct(DocumentationConfig $config = null)
     {
-        $this->config = $config ?: new DocumentationConfig(config('scribe'));
+        $this->config = $config ?: new DocumentationConfig(config('scribe', []));
         $this->EMPTY = new \stdClass();
     }
 
@@ -441,6 +441,8 @@ class OpenAPISpecWriter
             case 'float':
             case 'double':
                 return 'number';
+            case 'NULL':
+                return 'null';
             default:
                 return $type;
         }

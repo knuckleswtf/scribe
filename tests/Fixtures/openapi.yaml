@@ -14,28 +14,14 @@ paths:
             parameters:
                 -
                     in: header
-                    name: Authorization
-                    description: ''
-                    example: customAuthToken
-                    schema:
-                        type: string
-                -
-                    in: header
-                    name: Custom-Header
-                    description: ''
-                    example: NotSoCustom
-                    schema:
-                        type: string
-                -
-                    in: header
-                    name: Accept
+                    name: Content-Type
                     description: ''
                     example: application/json
                     schema:
                         type: string
                 -
                     in: header
-                    name: Content-Type
+                    name: Accept
                     description: ''
                     example: application/json
                     schema:
@@ -51,28 +37,14 @@ paths:
             parameters:
                 -
                     in: header
-                    name: Authorization
-                    description: ''
-                    example: customAuthToken
-                    schema:
-                        type: string
-                -
-                    in: header
-                    name: Custom-Header
-                    description: ''
-                    example: NotSoCustom
-                    schema:
-                        type: string
-                -
-                    in: header
-                    name: Accept
+                    name: Content-Type
                     description: ''
                     example: application/json
                     schema:
                         type: string
                 -
                     in: header
-                    name: Content-Type
+                    name: Accept
                     description: ''
                     example: application/json
                     schema:
@@ -108,28 +80,14 @@ paths:
             parameters:
                 -
                     in: header
-                    name: Authorization
-                    description: ''
-                    example: customAuthToken
-                    schema:
-                        type: string
-                -
-                    in: header
-                    name: Custom-Header
-                    description: ''
-                    example: NotSoCustom
-                    schema:
-                        type: string
-                -
-                    in: header
-                    name: Accept
+                    name: Content-Type
                     description: ''
                     example: application/json
                     schema:
                         type: string
                 -
                     in: header
-                    name: Content-Type
+                    name: Accept
                     description: ''
                     example: application/json
                     schema:
@@ -253,28 +211,14 @@ paths:
                         type: string
                 -
                     in: header
-                    name: Authorization
-                    description: ''
-                    example: customAuthToken
-                    schema:
-                        type: string
-                -
-                    in: header
-                    name: Custom-Header
-                    description: ''
-                    example: NotSoCustom
-                    schema:
-                        type: string
-                -
-                    in: header
-                    name: Accept
+                    name: Content-Type
                     description: ''
                     example: application/json
                     schema:
                         type: string
                 -
                     in: header
-                    name: Content-Type
+                    name: Accept
                     description: ''
                     example: application/json
                     schema:
@@ -283,297 +227,3 @@ paths:
             tags:
                 - 'Group A'
             security: []
-    /api/withAuthTag:
-        get:
-            summary: ''
-            description: ''
-            parameters:
-                -
-                    in: header
-                    name: Authorization
-                    description: ''
-                    example: customAuthToken
-                    schema:
-                        type: string
-                -
-                    in: header
-                    name: Custom-Header
-                    description: ''
-                    example: NotSoCustom
-                    schema:
-                        type: string
-                -
-                    in: header
-                    name: Accept
-                    description: ''
-                    example: application/json
-                    schema:
-                        type: string
-                -
-                    in: header
-                    name: Content-Type
-                    description: ''
-                    example: application/json
-                    schema:
-                        type: string
-            responses: {  }
-            tags:
-                - 'Group A'
-    /api/withEloquentApiResource:
-        get:
-            summary: ''
-            description: ''
-            parameters:
-                -
-                    in: header
-                    name: Authorization
-                    description: ''
-                    example: customAuthToken
-                    schema:
-                        type: string
-                -
-                    in: header
-                    name: Custom-Header
-                    description: ''
-                    example: NotSoCustom
-                    schema:
-                        type: string
-                -
-                    in: header
-                    name: Accept
-                    description: ''
-                    example: application/json
-                    schema:
-                        type: string
-                -
-                    in: header
-                    name: Content-Type
-                    description: ''
-                    example: application/json
-                    schema:
-                        type: string
-            responses:
-                200:
-                    description: ''
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                example:
-                                    data: { id: 4, name: 'Tested Again', email: a@b.com }
-                                properties:
-                                    data: { type: object, example: { id: 4, name: 'Tested Again', email: a@b.com } }
-            tags:
-                - 'Group A'
-            security: []
-    /api/withMultipleResponseTagsAndStatusCode:
-        post:
-            summary: ''
-            description: ''
-            parameters:
-                -
-                    in: header
-                    name: Authorization
-                    description: ''
-                    example: customAuthToken
-                    schema:
-                        type: string
-                -
-                    in: header
-                    name: Custom-Header
-                    description: ''
-                    example: NotSoCustom
-                    schema:
-                        type: string
-                -
-                    in: header
-                    name: Accept
-                    description: ''
-                    example: application/json
-                    schema:
-                        type: string
-                -
-                    in: header
-                    name: Content-Type
-                    description: ''
-                    example: application/json
-                    schema:
-                        type: string
-            responses:
-                200:
-                    description: '200'
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                example:
-                                    id: 4
-                                    name: banana
-                                    color: red
-                                    weight: '1 kg'
-                                    delicious: true
-                                    multipleResponseTagsAndStatusCodes: true
-                                properties:
-                                    id: { type: integer, example: 4 }
-                                    name: { type: string, example: banana }
-                                    color: { type: string, example: red }
-                                    weight: { type: string, example: '1 kg' }
-                                    delicious: { type: boolean, example: true }
-                                    multipleResponseTagsAndStatusCodes: { type: boolean, example: true }
-                401:
-                    description: '401'
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                example:
-                                    message: Unauthorized
-                                properties:
-                                    message: { type: string, example: Unauthorized }
-            tags:
-                - 'Group A'
-            security: []
-    /api/withEloquentApiResourceCollectionClass:
-        get:
-            summary: ''
-            description: ''
-            parameters:
-                -
-                    in: header
-                    name: Authorization
-                    description: ''
-                    example: customAuthToken
-                    schema:
-                        type: string
-                -
-                    in: header
-                    name: Custom-Header
-                    description: ''
-                    example: NotSoCustom
-                    schema:
-                        type: string
-                -
-                    in: header
-                    name: Accept
-                    description: ''
-                    example: application/json
-                    schema:
-                        type: string
-                -
-                    in: header
-                    name: Content-Type
-                    description: ''
-                    example: application/json
-                    schema:
-                        type: string
-            responses:
-                200:
-                    description: ''
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                example:
-                                    data: [{ id: 4, name: 'Tested Again', email: a@b.com }, { id: 4, name: 'Tested Again', email: a@b.com }]
-                                    links: { self: link-value }
-                                properties:
-                                    data: { type: array, example: [{ id: 4, name: 'Tested Again', email: a@b.com }, { id: 4, name: 'Tested Again', email: a@b.com }], items: { type: object } }
-                                    links: { type: object, example: { self: link-value } }
-            tags:
-                - Other😎
-            security: []
-    '/api/echoesUrlParameters/{param}-{param2}/{param3}':
-        get:
-            summary: ''
-            description: ''
-            parameters:
-                -
-                    in: query
-                    name: something
-                    description: ''
-                    example: consequatur
-                    required: false
-                    schema:
-                        type: string
-                -
-                    in: header
-                    name: Authorization
-                    description: ''
-                    example: customAuthToken
-                    schema:
-                        type: string
-                -
-                    in: header
-                    name: Custom-Header
-                    description: ''
-                    example: NotSoCustom
-                    schema:
-                        type: string
-                -
-                    in: header
-                    name: Accept
-                    description: ''
-                    example: application/json
-                    schema:
-                        type: string
-                -
-                    in: header
-                    name: Content-Type
-                    description: ''
-                    example: application/json
-                    schema:
-                        type: string
-            responses:
-                200:
-                    description: ''
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                example:
-                                    param: '4'
-                                    param2: consequatur
-                                    param3: null
-                                    param4: null
-                                properties:
-                                    param: { type: string, example: '4' }
-                                    param2: { type: string, example: consequatur }
-                                    param3: { type: 'NULL', example: null }
-                                    param4: { type: 'NULL', example: null }
-            tags:
-                - Other😎
-            security: []
-        parameters:
-            -
-                in: path
-                name: param
-                description: ''
-                example: '4'
-                required: true
-                schema:
-                    type: string
-            -
-                in: path
-                name: param2
-                description: 'Optional parameter.'
-                required: true
-                schema:
-                    type: string
-                examples:
-                    omitted:
-                        summary: 'When the value is omitted'
-                        value: ''
-                    present:
-                        summary: 'When the value is present'
-                        value: consequatur
-            -
-                in: path
-                name: param4
-                description: 'Optional parameter.'
-                required: true
-                schema:
-                    type: string
-                examples:
-                    omitted:
-                        summary: 'When the value is omitted'
-                        value: ''

@@ -25,11 +25,6 @@ class Writer
     private $baseUrl;
 
     /**
-     * @var string
-     */
-    private $postmanBaseUrl;
-
-    /**
      * @var bool
      */
     private $shouldOverwrite;
@@ -84,7 +79,6 @@ class Writer
         // If no config is injected, pull from global. Makes testing easier.
         $this->config = $config ?: new DocumentationConfig(config('scribe'));
         $this->baseUrl = $this->config->get('base_url') ?? config('app.url');
-        $this->postmanBaseUrl = $this->config->get('postman.base_url') ?? $this->baseUrl;
         $this->shouldOverwrite = $shouldOverwrite;
         $this->shouldGeneratePostmanCollection = $this->config->get('postman.enabled', false);
         $this->shouldGenerateOpenAPISpec = $this->config->get('openapi.enabled', false);
@@ -206,19 +200,19 @@ class Writer
     /**
      * Generate Postman collection JSON file.
      *
-     * @param Collection $routes
+     * @param Collection $groupedEndpoints
      *
      * @return string
      */
-    public function generatePostmanCollection(Collection $routes)
+    public function generatePostmanCollection(Collection $groupedEndpoints)
     {
         /** @var PostmanCollectionWriter $writer */
         $writer = app()->makeWith(
             PostmanCollectionWriter::class,
-            ['routeGroups' => $routes, 'baseUrl' => $this->postmanBaseUrl]
+            ['config' => $this->config]
         );
 
-        $collection = $writer->generatePostmanCollection();
+        $collection = $writer->generatePostmanCollection($groupedEndpoints);
         $overrides = $this->config->get('postman.overrides', []);
         if (count($overrides)) {
             foreach ($overrides as $key => $value) {

@@ -5,6 +5,7 @@ namespace Knuckles\Scribe\Writing;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
+use Knuckles\Scribe\Tools\DocumentationConfig;
 use Ramsey\Uuid\Uuid;
 use ReflectionMethod;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
@@ -12,19 +13,9 @@ use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 class PostmanCollectionWriter
 {
     /**
-     * @var Collection
+     * Postman collection schema version
      */
-    private $routeGroups;
-
-    /**
-     * @var string
-     */
-    private $baseUrl;
-
-    /**
-     * @var string
-     */
-    private $protocol;
+    const VERSION = '2.1.0';
 
     /**
      * @var array|null
@@ -32,15 +23,13 @@ class PostmanCollectionWriter
     private $auth;
 
     /**
-     * CollectionWriter constructor.
-     *
-     * @param Collection $routeGroups
+     * @var DocumentationConfig
      */
-    public function __construct(Collection $routeGroups, $baseUrl)
+    protected $config;
+
+    public function __construct(DocumentationConfig $config = null)
     {
-        $this->routeGroups = $routeGroups;
-        $this->protocol = Str::startsWith($baseUrl, 'https') ? 'https' : 'http';
-        $this->baseUrl = $this->getBaseUrl($baseUrl);
+        $this->config = $config ?: new DocumentationConfig(config('scribe', []));
         $this->auth = config('scribe.postman.auth');
 
         if ($this->auth) {
@@ -48,7 +37,7 @@ class PostmanCollectionWriter
         }
     }
 
-    public function generatePostmanCollection()
+    public function generatePostmanCollection(Collection $groupedEndpoints)
     {
         $description = config('scribe.postman.description', '');
 
@@ -59,14 +48,14 @@ class PostmanCollectionWriter
         }
 
         $collection = [
-            'variables' => [],
+            'variable' => [],
             'info' => [
                 'name' => config('scribe.title') ?: config('app.name') . ' API',
                 '_postman_id' => Uuid::uuid4()->toString(),
                 'description' => $description,
-                'schema' => 'https://schema.getpostman.com/json/collection/v2.0.0/collection.json',
+                'schema' => "https://schema.getpostman.com/json/collection/v".self::VERSION."/collection.json",
             ],
-            'item' => $this->routeGroups->map(function (Collection $routes, $groupName) {
+            'item' => $groupedEndpoints->map(function (Collection $routes, $groupName) {
                 return [
                     'name' => $groupName,
                     'description' => $routes->first()['metadata']['groupDescription'],
@@ -82,67 +71,64 @@ class PostmanCollectionWriter
         return $collection;
     }
 
-    protected function generateEndpointItem($route): array
+    protected function generateEndpointItem($endpoint): array
     {
-        $method = $route['methods'][0];
-
         return [
-            'name' => $route['metadata']['title'] !== '' ? $route['metadata']['title'] : $route['uri'],
+            'name' => $endpoint['metadata']['title'] !== '' ? $endpoint['metadata']['title'] : $endpoint['uri'],
             'request' => [
-                'url' => $this->makeUrlData($route),
-                'method' => $method,
-                'header' => $this->resolveHeadersForRoute($route),
-                'body' => $this->getBodyData($route),
-                'description' => $route['metadata']['description'] ?? null,
+                'url' => $this->generateUrlObject($endpoint),
+                'method' => $endpoint['methods'][0],
+                'header' => $this->resolveHeadersForEndpoint($endpoint),
+                'body' => empty($endpoint['bodyParameters']) ? null : $this->getBodyData($endpoint),
+                'description' => $endpoint['metadata']['description'] ?? null,
                 'response' => [],
             ],
         ];
     }
 
-    protected function getBodyData(array $route): array
+    protected function getBodyData(array $endpoint): array
     {
-
         $body = [];
-        $contentType = $route['headers']['Content-Type'] ?? null;
+        $contentType = $endpoint['headers']['Content-Type'] ?? null;
         switch ($contentType) {
             case 'multipart/form-data':
-                $mode = 'formdata';
+                $inputMode = 'formdata';
                 break;
             case 'application/json':
             default:
-                $mode = 'raw';
+                $inputMode = 'raw';
         }
-        $body['mode'] = $mode;
+        $body['mode'] = $inputMode;
+        $body[$inputMode] = [];
 
-        switch ($mode) {
+        switch ($inputMode) {
             case 'formdata':
-                foreach ($route['cleanBodyParameters'] as $key => $value) {
+                foreach ($endpoint['cleanBodyParameters'] as $key => $value) {
                     $params = [
                         'key' => $key,
                         'value' => $value,
                         'type' => 'text'
                     ];
-                    $body[$mode][] = $params;
+                    $body[$inputMode][] = $params;
                 }
-                foreach ($route['fileParameters'] as $key => $value) {
+                foreach ($endpoint['fileParameters'] as $key => $value) {
                     $params = [
                         'key' => $key,
                         'src' => [],
-                        'type' => 'file'
+                        'type' => 'file',
                     ];
-                    $body[$mode][] = $params;
+                    $body[$inputMode][] = $params;
                 }
                 break;
             case 'raw':
             default:
-                $body[$mode] = json_encode($route['cleanBodyParameters'], JSON_PRETTY_PRINT);
-                $body['options'][$mode]['language'] = 'json';
+                $body[$inputMode] = json_encode($endpoint['cleanBodyParameters'], JSON_PRETTY_PRINT);
         }
         return $body;
     }
 
 
-    protected function resolveHeadersForRoute($route)
+    protected function resolveHeadersForEndpoint($route)
     {
         $headers = collect($route['headers']);
 
@@ -169,7 +155,7 @@ class PostmanCollectionWriter
             ->all();
     }
 
-    protected function makeUrlData($route)
+    protected function generateUrlObject($route)
     {
         // URL Parameters are collected by the `UrlParameters` strategies, but only make sense if they're in the route
         // definition. Filter out any URL parameters that don't appear in the URL.
@@ -177,14 +163,16 @@ class PostmanCollectionWriter
             return Str::contains($route['uri'], '{' . $key . '}');
         });
 
+        $baseUrl = $this->getBaseUrl($this->config->get('postman.base_url', $this->config->get('base_url')));
         $base = [
-            'protocol' => $this->protocol,
-            'host' => $this->baseUrl,
-            // Substitute laravel/symfony query params ({example}) to Postman style, prefixed with a colon
-            'path' => preg_replace_callback('/\/{(\w+)\??}(?=\/|$)/', function ($matches) {
-                return '/:' . $matches[1];
+            'protocol' => Str::startsWith($baseUrl, 'https') ? 'https' : 'http',
+            'host' => $baseUrl,
+            // Change laravel/symfony URL params ({example}) to Postman style, prefixed with a colon
+            'path' => preg_replace_callback('/\{(\w+)\??}/', function ($matches) {
+                return ':' . $matches[1];
             }, $route['uri']),
             'query' => collect($route['queryParameters'] ?? [])->map(function ($parameterData, $key) {
+                // TODO remove: unneeded with new syntax
                 $key = rtrim($key,".*");
                 return [
                     'key' => $key,
@@ -210,10 +198,10 @@ class PostmanCollectionWriter
             return $base;
         }
 
-        $base['variable'] = $urlParams->map(function ($parameter, $key) {
+        $base['variable'] = $urlParams->map(function ($parameter, $name) {
             return [
-                'id' => $key,
-                'key' => $key,
+                'id' => $name,
+                'key' => $name,
                 'value' => urlencode($parameter['value']),
                 'description' => $parameter['description'],
             ];

@@ -28,7 +28,7 @@ class ConsoleOutputUtils
         }
 
         $message = "You're using $feature. This is deprecated and will be removed in the next major version.";
-        if ($shouldUse) {
+        if ($should) {
             $message .= "\nYou should $should instead.";
         }
         if ($link) {
