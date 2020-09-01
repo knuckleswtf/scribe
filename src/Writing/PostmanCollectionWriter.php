@@ -5,6 +5,7 @@ namespace Knuckles\Scribe\Writing;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
+use Knuckles\Scribe\Tools\WritingUtils;
 use Ramsey\Uuid\Uuid;
 use ReflectionMethod;
 
@@ -104,12 +105,14 @@ class PostmanCollectionWriter
         switch ($mode) {
             case 'formdata':
                 foreach ($route['cleanBodyParameters'] as $key => $value) {
-                    $params = [
-                        'key' => $key,
-                        'value' => $value,
-                        'type' => 'text'
-                    ];
-                    $body[$mode][] = $params;
+                    foreach (WritingUtils::getParameterNamesAndValuesForFormData($key, $value) as $key => $actualValue) {
+                        $params = [
+                            'key' => $key,
+                            'value' => $actualValue,
+                            'type' => 'text'
+                        ];
+                        $body[$mode][] = $params;
+                    }
                 }
                 foreach ($route['fileParameters'] as $key => $value) {
                     $params = [

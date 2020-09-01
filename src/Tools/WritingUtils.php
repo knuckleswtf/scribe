@@ -111,23 +111,35 @@ class WritingUtils
      *
      * @return array
      */
-    public static function getParameterNamesAndValuesForFormData(string $parameter, $value): array
+    public static function getParameterNamesAndValuesForFormData($parameter, $value)
     {
-        if (!is_array($value)) {
-            return [$parameter => $value];
+        $results = [];
+
+        if (is_array($value) && ! empty($value)) {
+            foreach ($value as $key => $v) {
+                if (is_numeric($key)) {
+                    $key = '';
+                }
+
+                if (is_array($v) && ! empty($v)) {
+                    $results = array_merge($results, static::getParameterNamesAndValuesForFormData($parameter.'['.$key.'][', $v));
+                } else {
+                    if ($v != null) {
+                        if (substr($parameter, -1) === '[') {
+                            $results[$parameter . $key . ']'] = $v;
+                        } else {
+                            $results[$parameter . '[' . $key . ']'] = $v;
+                        }
+                    }
+                }
+            }
+        } else {
+            if ($value != null) {
+                $results[$parameter] = $value;
+            }
         }
 
-        if (array_keys($value)[0] === 0) {
-            // We assume it's a list if its first key is 0
-            return [$parameter . '[]' => $value[0]];
-        }
-
-        // Transform maps
-        $params = [];
-        foreach ($value as $item => $itemValue) {
-            $params[$parameter . "[$item]"] = $itemValue;
-        }
-        return $params;
+        return $results;
     }
 
     /**
