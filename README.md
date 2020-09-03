@@ -13,9 +13,9 @@ Generate API documentation for humans from your Laravel codebase. [Here's what t
 ## Features
 - Pretty HTML documentation page, with included code samples and friendly text
 - Markdown source files that can be edited to modify docs
-- Extracts body parameters information from FormRequests
+- Extracts body parameters information from Laravel FormRequests
 - Safely calls API endpoints to generate sample responses, with authentication and other custom configuration supported
-- Supports generating responses from Transformers or Eloquent API Resources
+- Supports generating responses from Eloquent API Resources or Fractal Transformers
 - Supports Postman collection and OpenAPI (Swagger) spec generation
 - Included UI components for additional styling
 - Easily customisable with custom views
