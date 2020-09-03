@@ -20,10 +20,23 @@ class Generator
      */
     private $config;
 
+    /**
+     * @var Route|null
+     */
+    private static $routeBeingProcessed = null;
+
     public function __construct(DocumentationConfig $config = null)
     {
         // If no config is injected, pull from global
         $this->config = $config ?: new DocumentationConfig(config('scribe'));
+    }
+
+    /**
+     * External interface that allows users to know what route is currently being processed
+     */
+    public static function getRouteBeingProcessed(): ?Route
+    {
+        return self::$routeBeingProcessed;
     }
 
     /**
@@ -64,6 +77,8 @@ class Generator
      */
     public function processRoute(Route $route, array $routeRules = [])
     {
+        self::$routeBeingProcessed = $route;
+
         [$controllerName, $methodName] = u::getRouteClassAndMethodNames($route);
         $controller = new ReflectionClass($controllerName);
         $method = u::getReflectedRouteMethod([$controllerName, $methodName]);
@@ -112,6 +127,8 @@ class Generator
 
         $responseFields = $this->fetchResponseFields($controller, $method, $route, $routeRules, $parsedRoute);
         $parsedRoute['responseFields'] = $responseFields;
+
+        self::$routeBeingProcessed = null;
 
         return $parsedRoute;
     }
