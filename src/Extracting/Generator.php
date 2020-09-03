@@ -32,7 +32,7 @@ class Generator
     }
 
     /**
-     * @return Route|null
+     * External interface that allows users to know what route is currently being processed
      */
     public static function getRouteBeingProcessed(): ?Route
     {
