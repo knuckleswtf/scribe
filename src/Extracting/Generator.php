@@ -316,7 +316,7 @@ class Generator
         }
         $token = $faker->shuffle('abcdefghkvaZVDPE1864563');
         $valueToUse = $this->config->get('auth.use_value');
-        $valueToDisplay = $this->config->get('auth.display_value');
+        $valueToDisplay = $this->config->get('auth.placeholder');
         switch ($strategy) {
             case 'query':
             case 'query_or_body':

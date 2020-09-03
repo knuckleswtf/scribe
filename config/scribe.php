@@ -69,10 +69,10 @@ return [
         'use_value' => env('SCRIBE_AUTH_KEY'),
 
         /*
-         * The value of the parameter to be displayed by Scribe in documentation.
+         * Placeholder your users will see for the auth parameter in the example requests.
          * If this value is null, Scribe will use a random value.
          */
-        'display_value' => null,
+        'placeholder' => '{YOUR_AUTH_KEY}',
 
         /*
          * Any extra authentication-related info for your users. For instance, you can describe how to find or generate their auth credentials.
