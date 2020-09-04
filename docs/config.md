@@ -98,6 +98,8 @@ Here are the available settings:
 
 - `name`: The name of the parameter (eg `token`, `key`, `apiKey`) or header (eg `Authorization`, `Api-Key`). When `in` is set to `bearer` or `basic`, this value will be ignored, and the header used will be `Authorization`.
 
+- `use_value`: The value of the parameter to be used by Scribe to authenticate response calls. This will **not** be included in the generated documentation. If this value is null, Scribe will use a random value.
+
 - `extra_info`: Any extra authentication-related info for your users. For instance, you can describe how to find or generate their auth credentials. Markdown and HTML are supported. This will be included in the `Authentication` section.
 
 ### `strategies`

@@ -62,6 +62,13 @@ return [
         'name' => 'token',
 
         /*
+         * The value of the parameter to be used by Scribe to authenticate response calls.
+         * This will NOT be included in the generated documentation.
+         * If this value is empty, Scribe will use a random value.
+         */
+        'use_value' => env('SCRIBE_AUTH_KEY'),
+
+        /*
          * Any extra authentication-related info for your users. For instance, you can describe how to find or generate their auth credentials.
          * Markdown and HTML are supported.
          */
@@ -241,12 +248,6 @@ INTRO
                         'app.env' => 'documentation',
                         // 'app.debug' => false,
                     ],
-
-                    /*
-                     * The value of the auth parameter (described in your auth section above) to be used by Scribe to authenticate response calls.
-                     * If this value is empty, Scribe will use a random value.
-                     */
-                    'auth' => env('SCRIBE_AUTH_KEY'),
 
                     /*
                      * Cookies which should be sent with the API call.

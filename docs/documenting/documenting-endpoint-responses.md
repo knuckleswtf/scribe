@@ -135,8 +135,6 @@ The configuration for response calls is located in the `apply.response_calls` se
 .. Tip:: You can also modify the environment directly by using a :code:`.env.docs` file and running :code:`scribe:generate` with :code:`--env docs`.
 ```
 
-- If you have authenticated endpoints, you can use `response_calls.auth` to authenticate your response calls. Set it to the value of the auth parameter. Scribe combines this with the information in your `auth` section to authenticate your requests. If this value is empty, Scribe will use a random value. 
-
 - By default, the package will generate dummy values for your documented query, body and file parameters and send in the request. If you specified example values using `@bodyParam` or `@queryParam`, those will be used instead. You can configure additional parameters or overwrite the existing ones for the request in the `response_calls.queryParams`, `response_calls.bodyParams`, and `response_calls.fileParams` sections. For file parameters, each value should be a valid absolute path to a file on the machine.
 
 ```eval_rst
