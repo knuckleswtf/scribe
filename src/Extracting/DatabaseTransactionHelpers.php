@@ -21,7 +21,7 @@ trait DatabaseTransactionHelpers
                 if (self::driverSupportsTransactions($driver)) {
                     $driver->beginTransaction();
 
-                    return;
+                    continue;
                 }
 
                 $driverClassName = get_class($driver);
@@ -52,7 +52,7 @@ trait DatabaseTransactionHelpers
                 if (self::driverSupportsTransactions($driver)) {
                     $driver->rollBack();
 
-                    return;
+                    continue;
                 }
 
                 $driverClassName = get_class($driver);

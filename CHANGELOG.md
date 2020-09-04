@@ -4,13 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project aims to adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
-### Added
+### Additions
 
-### Changed
+### Changes
 
-### Fixed
+### Fixes
 
-### Removed
+### Removals
+
+## 1.5.0 (Thursday, 3 September, 2020)
+### Additions
+- Added `auth.placeholder` value so you can customise the placeholder API users will see in the example requests. (https://github.com/knuckleswtf/scribe/pull/84)
+- Added `Generator::getRouteBeingProcessed()` method that returns the current route. (https://github.com/knuckleswtf/scribe/pull/79)
+
+### Fixes
+- Response calls should now properly start/stop database transactions for all connections (https://github.com/knuckleswtf/scribe/pull/89)
+- Generated OpenAPI spec should now correctly use `"apiKey"` as the value of `type` in the security scheme (https://github.com/knuckleswtf/scribe/commit/896c2132ad3a2cfe89e0fba524aa489661823a11)
 
 ## 1.4.1 (Monday, 24 August, 2020)
 ### Fixed
