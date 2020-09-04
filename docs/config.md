@@ -63,14 +63,12 @@ For `static` output, the collection will be created in `public/docs/collection.j
 
 - `overrides`: List of fields to apply to the generated collection. Dot notation is supported. For instance, if you'd like to override the version (in the `info` object, you can set `overrides` to `['info.version' => '2.0.0']`.
 
-- `description`: The description for the generated Postman collection.
-
-- `base_url`: The base URL to be used in the Postman collection. If this is null, Scribe will use the value of [`base_url`](#base_url) set above.
-
-- `auth`: The "Auth" section that should appear in the postman collection. See the [Postman schema docs](https://schema.getpostman.com/json/collection/v2.0.0/docs/index.html) for more information.
-
 ### `openapi`
 Scribe can also generate an OpenAPI (Swagger) spec for your routes (disabled by default). This section is where you can configure or enable that.
+
+```eval_rst
+.. Important:: The OpenAPI spec is an opinionated spec that doesn't cover all features of APIs in the wild. Scribe does its best, but there's no guarantee that the spec generated will exactly match your API structure.
+```
 
 For `static` output, the spec will be created in `public/docs/openapi.yaml`. For `laravel` output, the spec will be generated to `storage/app/scribe/openapi.yaml`. Setting `laravel.add_routes` to `true` will add a `/docs.openapi` endpoint to fetch it.
 

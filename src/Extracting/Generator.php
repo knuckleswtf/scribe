@@ -59,9 +59,9 @@ class Generator
      * @param \Illuminate\Routing\Route $route
      * @param array $routeRules Rules to apply when generating documentation for this route
      *
+     * @return array
      * @throws \ReflectionException
      *
-     * @return array
      */
     public function processRoute(Route $route, array $routeRules = [])
     {
@@ -240,35 +240,31 @@ class Generator
      *     'description' => 'The age',
      *     'value' => 12,
      *     'required' => false,
-     *   ]
-     * And transforms them into key-value pairs : ['age' => 12]
+     *   ]]
+     * And transforms them into key-example pairs : ['age' => 12]
      * It also filters out parameters which have null values and have 'required' as false.
      * It converts all file params that have string examples to actual files (instances of UploadedFile).
      * Finally, it adds a '.0' key for each array parameter (eg users.* ->users.0),
      * so that the array ends up containing a 1-item array.
      *
-     * @param array $params
+     * @param array $parameters
      *
      * @return array
      */
-    public static function cleanParams(array $params): array
+    public static function cleanParams(array $parameters): array
     {
         $cleanParams = [];
 
-        // Remove params which have no examples and are optional.
-        $params = array_filter($params, function ($details) {
-            return ! (is_null($details['value']) && $details['required'] === false);
-        });
-
-        foreach ($params as $paramName => $details) {
-            if (($details['type'] ?? '') === 'file' && is_string($details['value'])) {
-                // Convert any string file examples to instances of UploadedFile
-                $filePath = $details['value'];
-                $fileName = basename($filePath);
-                $details['value'] = new UploadedFile(
-                    $filePath, $fileName, mime_content_type($filePath), 0,false
-                );
+        foreach ($parameters as $paramName => $details) {
+            // Remove params which have no examples and are optional.
+            if (is_null($details['value']) && $details['required'] === false) {
+                continue;
             }
+
+            if (($details['type'] ?? '') === 'file' && is_string($details['value'])) {
+                $details['value'] = self::convertStringValueToUploadedFileInstance($details['value']);
+            }
+
             self::generateConcreteKeysForArrayParameters(
                 $paramName,
                 $details['value'],
@@ -318,16 +314,10 @@ class Generator
         $token = $faker->shuffle('abcdefghkvaZVDPE1864563');
         $valueToUse = $this->config->get('auth.use_value');
 
-        if ($valueToUse) {
-            c::deprecated('the `auth.use_value` config item', 'change this to `response_calls.auth`');
-        } else {
-            $this->config->get('response_calls.auth');
-        }
-
         switch ($strategy) {
             case 'query':
             case 'query_or_body':
-                $parsedRoute['auth'] = "cleanQueryParameters.$parameterName.".($valueToUse ?: $token);
+                $parsedRoute['auth'] = "cleanQueryParameters.$parameterName." . ($valueToUse ?: $token);
                 $parsedRoute['queryParameters'][$parameterName] = [
                     'name' => $parameterName,
                     'value' => $token,
@@ -336,7 +326,7 @@ class Generator
                 ];
                 break;
             case 'body':
-                $parsedRoute['auth'] = "cleanBodyParameters.$parameterName.".($valueToUse ?: $token);
+                $parsedRoute['auth'] = "cleanBodyParameters.$parameterName." . ($valueToUse ?: $token);
                 $parsedRoute['bodyParameters'][$parameterName] = [
                     'name' => $parameterName,
                     'type' => 'string',
@@ -346,19 +336,27 @@ class Generator
                 ];
                 break;
             case 'bearer':
-                $parsedRoute['auth'] = "headers.Authorization.Bearer ".($valueToUse ?: $token);
+                $parsedRoute['auth'] = "headers.Authorization.Bearer " . ($valueToUse ?: $token);
                 $parsedRoute['headers']['Authorization'] = "Bearer $token";
                 break;
             case 'basic':
-                $parsedRoute['auth'] = "headers.Authorization.Basic ".($valueToUse ?: base64_encode($token));
-                $parsedRoute['headers']['Authorization'] = "Basic ".base64_encode($token);
+                $parsedRoute['auth'] = "headers.Authorization.Basic " . ($valueToUse ?: base64_encode($token));
+                $parsedRoute['headers']['Authorization'] = "Basic " . base64_encode($token);
                 break;
             case 'header':
-                $parsedRoute['auth'] = "headers.$parameterName.".($valueToUse ?: $token);
+                $parsedRoute['auth'] = "headers.$parameterName." . ($valueToUse ?: $token);
                 $parsedRoute['headers'][$parameterName] = $token;
                 break;
         }
 
         return $parsedRoute;
+    }
+
+    protected static function convertStringValueToUploadedFileInstance(string $filePath): UploadedFile
+    {
+        $fileName = basename($filePath);
+        return new UploadedFile(
+            $filePath, $fileName, mime_content_type($filePath), 0, false
+        );
     }
 }

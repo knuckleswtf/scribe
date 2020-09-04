@@ -116,23 +116,6 @@ INTRO
         'enabled' => true,
 
         /*
-         * The base URL to be used in the Postman collection.
-         * If this is null, Scribe will use the value of base_url set above.
-         */
-        'base_url' => null,
-
-        /*
-         * The description for the exported Postman collection.
-         */
-        'description' => null,
-
-        /*
-         * The "Auth" section that should appear in the postman collection. See the schema docs for more information:
-         * https://schema.getpostman.com/json/collection/v2.0.0/docs/index.html
-         */
-        'auth' => null,
-
-        /*
          * Manually override some generated content in the spec. Dot notation is supported.
          */
         'overrides' => [

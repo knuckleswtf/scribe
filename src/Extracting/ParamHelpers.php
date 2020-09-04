@@ -4,7 +4,7 @@ namespace Knuckles\Scribe\Extracting;
 
 use Faker\Factory;
 use Illuminate\Http\UploadedFile;
-use stdClass;
+use Illuminate\Support\Str;
 
 trait ParamHelpers
 {
@@ -20,6 +20,14 @@ trait ParamHelpers
 
     protected function generateDummyValue(string $type)
     {
+        $baseType = $type;
+        $isListType = false;
+
+        if (Str::endsWith($type, '[]')) {
+            $baseType = strtolower(substr($type, 0, strlen($type) - 2));
+            $isListType = true;
+        }
+
         $faker = $this->getFaker();
 
         $fakeFactories = [
@@ -27,9 +35,6 @@ trait ParamHelpers
                 return $faker->numberBetween(1, 20);
             },
             'number' => function () use ($faker) {
-                return $faker->randomFloat();
-            },
-            'float' => function () use ($faker) {
                 return $faker->randomFloat();
             },
             'boolean' => function () use ($faker) {
@@ -42,17 +47,18 @@ trait ParamHelpers
                 return [];
             },
             'object' => function () {
-                return new stdClass();
+                return [];
             },
             'file' => function () {
-                $file = UploadedFile::fake()->create('test.jpg')->size(10);
-                return $file;
+                return UploadedFile::fake()->create('test.jpg')->size(10);
             },
         ];
 
-        $fakeFactory = $fakeFactories[$type] ?? $fakeFactories['string'];
+        $fakeFactory = $fakeFactories[$this->normalizeParameterType($baseType)] ?? $fakeFactories['string'];
+        $value = $fakeFactory();
 
-        return $fakeFactory();
+        // Return a two-array item for a list
+        return $isListType ? [$value, $this->generateDummyValue($baseType)] : $value;
     }
 
     protected function isSupportedTypeInDocBlocks(string $type)
@@ -60,17 +66,17 @@ trait ParamHelpers
         $types = [
             'integer',
             'int',
-            'float',
             'number',
+            'float',
             'double',
             'boolean',
             'bool',
             'string',
-            'list',
-            'array',
+            'list', // todo remove this
+            'array', // todo remove this
             'object',
         ];
-        return in_array($type, $types);
+        return in_array(preg_replace('/\[]$/', '', $type), $types);
     }
 
     /**
@@ -83,6 +89,17 @@ trait ParamHelpers
      */
     protected function castToType($value, string $type)
     {
+        if ($value === null) {
+            return null;
+        }
+
+        if (Str::endsWith($type, '[]')) {
+            $baseType = strtolower(substr($type, 0, strlen($type) - 2));
+            return is_array($value) ? array_map(function ($v) use ($baseType) {
+                return $this->castToType($v, $baseType);
+            }, $value) : json_decode($value);
+        }
+
         if ($type === 'array' && is_string($value)) {
             $value = trim($value);
             if ($value[0] == '[' && $value[strlen($value) - 1] == ']') {
@@ -130,9 +147,13 @@ trait ParamHelpers
 
         $typeMap = [
             'int' => 'integer',
+            'int[]' => 'integer[]',
             'bool' => 'boolean',
+            'bool[]' => 'boolean[]',
             'double' => 'number',
+            'double[]' => 'number[]',
             'float' => 'number',
+            'float[]' => 'number[]',
         ];
 
         return $typeMap[$type] ?? $type;

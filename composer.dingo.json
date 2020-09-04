@@ -17,6 +17,7 @@
     ],
     "require": {
         "php": ">=7.2.5",
+        "ext-fileinfo": "*",
         "ext-json": "*",
         "dingo/api": "^2.3",
         "erusev/parsedown": "^1.7.4",

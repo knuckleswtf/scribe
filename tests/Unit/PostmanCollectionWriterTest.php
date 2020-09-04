@@ -111,7 +111,7 @@ class PostmanCollectionWriterTest extends TestCase
     }
 
     /** @test */
-    public function testQueryParametersAreDocumented()
+    public function query_parameters_are_documented()
     {
         $fakeRoute = $this->createMockRouteData('fake/path');
 

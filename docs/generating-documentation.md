@@ -25,8 +25,6 @@ You can configure Postman collection generation in the `postman` section of your
 
 - To override fields in the generated collection, set the `postman.overrides` config option to your changes. You can use dot notation to update specific nested fields. For instance, `['info.version' => '2.0.0']` will override the 'version` key in the 'info` object whenever generating.
 
-- The base URL used in the Postman collection is the value of `config('app.url')` by default. To change this, set the value of the `postman.base_url` key.
-
 ## OpenAPI (Swagger) spec generation
 Scribe can also generate an OpenAPI spec file. This is disabled by default. You can configure this in the `openapi` section of your `scribe.php` file.
 
