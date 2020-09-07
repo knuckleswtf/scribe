@@ -31,9 +31,7 @@ class ConsoleOutputUtils
         if ($should) {
             $message .= "\nYou should $should instead.";
         }
-        if ($link) {
-            $message .= " See $link for details";
-        }
+        $message .= $link ? " See $link for details" : " See the changelog for details";
 
         self::$clara->warn($message);
     }

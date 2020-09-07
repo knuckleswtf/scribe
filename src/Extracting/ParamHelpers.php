@@ -28,6 +28,11 @@ trait ParamHelpers
             $isListType = true;
         }
 
+        if ($isListType) {
+            // Return a two-array item for a list
+            return [$this->generateDummyValue($baseType), $this->generateDummyValue($baseType)];
+        }
+
         $faker = $this->getFaker();
 
         $fakeFactories = [
@@ -55,10 +60,8 @@ trait ParamHelpers
         ];
 
         $fakeFactory = $fakeFactories[$this->normalizeParameterType($baseType)] ?? $fakeFactories['string'];
-        $value = $fakeFactory();
 
-        // Return a two-array item for a list
-        return $isListType ? [$value, $this->generateDummyValue($baseType)] : $value;
+        return $fakeFactory();
     }
 
     protected function isSupportedTypeInDocBlocks(string $type)
@@ -139,24 +142,24 @@ trait ParamHelpers
      *
      * @return string
      */
-    protected function normalizeParameterType(string $type): string
+    protected function normalizeParameterType(?string $typeName): string
     {
-        if (!$type) {
+        if (!$typeName) {
             return 'string';
         }
 
-        $typeMap = [
-            'int' => 'integer',
-            'int[]' => 'integer[]',
-            'bool' => 'boolean',
-            'bool[]' => 'boolean[]',
-            'double' => 'number',
-            'double[]' => 'number[]',
-            'float' => 'number',
-            'float[]' => 'number[]',
-        ];
-
-        return $typeMap[$type] ?? $type;
+        $base = preg_replace('/\[]/g', '', strtolower($typeName));
+        switch ($base) {
+            case 'int':
+                return preg_replace($base, 'integer', $typeName);
+            case 'float':
+            case 'double':
+                return preg_replace($base, 'number', $typeName);
+            case 'bool':
+                return preg_replace($base, 'boolean', $typeName);
+            default:
+                return $typeName;
+        }
     }
 
     /**
