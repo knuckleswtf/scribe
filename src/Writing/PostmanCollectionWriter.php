@@ -27,10 +27,13 @@ class PostmanCollectionWriter
      */
     protected $config;
 
+    protected $baseUrl;
+
     public function __construct(DocumentationConfig $config = null)
     {
         $this->config = $config ?: new DocumentationConfig(config('scribe', []));
         $this->auth = config('scribe.postman.auth');
+        $this->baseUrl = $this->getBaseUrl($this->config->get('postman.base_url', $this->config->get('base_url')));
 
         if ($this->auth) {
             c::deprecated('the `postman.auth` config setting', 'the `postman.overrides` setting');
@@ -48,7 +51,15 @@ class PostmanCollectionWriter
         }
 
         $collection = [
-            'variable' => [],
+            'variable' => [
+                [
+                    'id' => 'baseUrl',
+                    'key' => 'baseUrl',
+                    'type' => 'string',
+                    'name' => 'string',
+                    'value' => parse_url($this->baseUrl, PHP_URL_HOST),
+                ],
+            ],
             'info' => [
                 'name' => config('scribe.title') ?: config('app.name') . ' API',
                 '_postman_id' => Uuid::uuid4()->toString(),
@@ -200,10 +211,9 @@ class PostmanCollectionWriter
             return Str::contains($route['uri'], '{' . $key . '}');
         });
 
-        $baseUrl = $this->getBaseUrl($this->config->get('postman.base_url', $this->config->get('base_url')));
         $base = [
-            'protocol' => Str::startsWith($baseUrl, 'https') ? 'https' : 'http',
-            'host' => $baseUrl,
+            'protocol' => Str::startsWith($this->baseUrl, 'https') ? 'https' : 'http',
+            'host' => '{{baseUrl}}',
             // Change laravel/symfony URL params ({example}) to Postman style, prefixed with a colon
             'path' => preg_replace_callback('/\{(\w+)\??}/', function ($matches) {
                 return ':' . $matches[1];
