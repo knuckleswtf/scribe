@@ -61,41 +61,41 @@ class GetFromBodyParamTag extends Strategy
 
     public function getBodyParametersFromDocBlock($tags)
     {
-        $parameters = collect($tags)
-            ->filter(function ($tag) {
-                return $tag instanceof Tag && $tag->getName() === 'bodyParam';
-            })
-            ->mapWithKeys(function (Tag $tag) {
-                // Format:
-                // @bodyParam <name> <type> <"required" (optional)> <description>
-                // Examples:
-                // @bodyParam text string required The text.
-                // @bodyParam user_id integer The ID of the user.
-                preg_match('/(.+?)\s+(.+?)\s+(required\s+)?([\s\S]*)/', trim($tag->getContent()), $content);
-                $content = preg_replace('/\s+No-example.?/', '', $content);
-                if (empty($content)) {
-                    // this means only name and type were supplied
-                    [$name, $type] = preg_split('/\s+/', $tag->getContent());
-                    $required = false;
+        $parameters = [];
+
+        foreach ($tags as $tag) {
+            if ($tag->getName() !== 'bodyParam') continue;
+
+            $tagContent = trim($tag->getContent());
+            // Format:
+            // @bodyParam <name> <type> <"required" (optional)> <description>
+            // Examples:
+            // @bodyParam text string required The text.
+            // @bodyParam user_id integer The ID of the user.
+            preg_match('/(.+?)\s+(.+?)\s+(required\s+)?([\s\S]*)/', $tagContent, $content);
+            if (empty($content)) {
+                // this means only name and type were supplied
+                [$name, $type] = preg_split('/\s+/', $tagContent);
+                $required = false;
+                $description = '';
+            } else {
+                [$_, $name, $type, $required, $description] = $content;
+                $description = trim(str_replace(['No-example.', 'No-example'], '', $description));
+                if ($description == 'required') {
+                    $required = $description;
                     $description = '';
-                } else {
-                    [$_, $name, $type, $required, $description] = $content;
-                    $description = trim($description);
-                    if ($description == 'required' && empty(trim($required))) {
-                        $required = $description;
-                        $description = '';
-                    }
-                    $required = trim($required) == 'required' ? true : false;
                 }
+                $required = trim($required) === 'required';
+            }
 
-                $type = $this->normalizeParameterType($type);
-                [$description, $example] = $this->parseExampleFromParamDescription($description, $type);
-                $value = is_null($example) && ! $this->shouldExcludeExample($tag->getContent())
-                    ? $this->generateDummyValue($type)
-                    : $example;
+            $type = $this->normalizeParameterType($type);
+            [$description, $example] = $this->parseExampleFromParamDescription($description, $type);
+            $value = is_null($example) && !$this->shouldExcludeExample($tagContent)
+                ? $this->generateDummyValue($type)
+                : $example;
 
-                return [$name => compact('type', 'description', 'required', 'value')];
-            })->toArray();
+            $parameters[$name] = compact('type', 'description', 'required', 'value');
+        }
 
         return $parameters;
     }

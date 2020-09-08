@@ -54,44 +54,61 @@ class GetFromUrlParamTag extends Strategy
         return $this->getUrlParametersFromDocBlock($methodDocBlock->getTags());
     }
 
+    /**
+     * @param Tag[] $tags
+     *
+     * @return <string, array>[]
+     */
     public function getUrlParametersFromDocBlock($tags)
     {
-        $parameters = collect($tags)
-            ->filter(function ($tag) {
-                return $tag instanceof Tag && $tag->getName() === 'urlParam';
-            })
-            ->mapWithKeys(function (Tag $tag) {
-                // Format:
-                // @urlParam <name> <"required" (optional)> <description>
-                // Examples:
-                // @urlParam id required The id of the post.
-                // @urlParam user_id The ID of the user.
-                preg_match('/(.+?)\s+(required\s+)?([\s\S]*)/', $tag->getContent(), $content);
-                $content = preg_replace('/\s?No-example.?/', '', $content);
-                if (empty($content)) {
-                    // This means only name was supplied
-                    [$name] = preg_split('/\s+/', $tag->getContent());
-                    $required = false;
+        $parameters = [];
+
+        foreach ($tags as $tag) {
+            if ($tag->getName() !== 'urlParam') continue;
+
+            $tagContent = trim($tag->getContent());
+            // Format:
+            // @urlParam <name> <type (optional)> <"required" (optional)> <description>
+            // Examples:
+            // @urlParam id string required The id of the post.
+            // @urlParam user_id The ID of the user.
+
+            // We match on all the possible types for URL parameters. It's a limited range, so no biggie.
+            preg_match('/(\w+?)\s+((int|integer|string|float|double|number)\s+)?(required\s+)?([\s\S]*)/', $tagContent, $content);
+            if (empty($content)) {
+                // This means only name was supplied
+                $name = trim($tagContent);
+                $required = false;
+                $description = '';
+                $type = 'string';
+            } else {
+                [$_, $name, $__, $type, $required, $description] = $content;
+                $description = trim(str_replace(['No-example.', 'No-example'], '', $description));
+                if ($description === 'required') {
+                    $required = true;
                     $description = '';
                 } else {
-                    [$_, $name, $required, $description] = $content;
-                    $description = trim($description);
-                    if ($description == 'required' && empty(trim($required))) {
-                        $required = $description;
-                        $description = '';
-                    }
-                    $required = trim($required) == 'required' ? true : false;
+                    $required = trim($required) === 'required';
                 }
 
-                [$description, $value] = $this->parseExampleFromParamDescription($description, 'string');
-                if (is_null($value) && ! $this->shouldExcludeExample($tag->getContent())) {
-                    $value = Str::contains($description, ['number', 'count', 'page'])
-                        ? $this->generateDummyValue('integer')
-                        : $this->generateDummyValue('string');
+                if (empty($type) && $this->isSupportedTypeInDocBlocks($description)) {
+                    // Only type was supplied
+                    $type = $description;
+                    $description = '';
                 }
 
-                return [$name => compact('description', 'required', 'value')];
-            })->toArray();
+                $type = empty($type)
+                    ? (Str::contains($description, ['number', 'count', 'page']) ? 'integer' : 'string')
+                    : $this->normalizeParameterType($type);
+            }
+
+            [$description, $value] = $this->parseExampleFromParamDescription($description, $type);
+            if (is_null($value) && !$this->shouldExcludeExample($tagContent)) {
+                $value = $this->generateDummyValue($type);
+            }
+
+            $parameters[$name] = compact('description', 'required', 'value', 'type');
+        }
 
         return $parameters;
     }

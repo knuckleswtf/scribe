@@ -59,44 +59,79 @@ class GetFromQueryParamTag extends Strategy
         return $this->getQueryParametersFromDocBlock($methodDocBlock->getTags());
     }
 
-    public function getQueryParametersFromDocBlock($tags)
+    /**
+     * @param Tag[] $tags
+     *
+     * @return <string, array>[]
+     */
+    public function getQueryParametersFromDocBlock(array $tags)
     {
-        $parameters = collect($tags)
-            ->filter(function ($tag) {
-                return $tag instanceof Tag && $tag->getName() === 'queryParam';
-            })
-            ->mapWithKeys(function (Tag $tag) {
-                // Format:
-                // @queryParam <name> <"required" (optional)> <description>
-                // Examples:
-                // @queryParam text string required The text.
-                // @queryParam user_id The ID of the user.
-                preg_match('/(.+?)\s+(required\s+)?([\s\S]*)/', $tag->getContent(), $content);
-                $content = preg_replace('/\s?No-example.?/', '', $content);
-                if (empty($content)) {
-                    // this means only name was supplied
-                    [$name] = preg_split('/\s+/', $tag->getContent());
-                    $required = false;
+        $parameters = [];
+
+        foreach ($tags as $tag) {
+            if ($tag->getName() !== 'queryParam') continue;
+
+            // Format:
+            // @queryParam <name> <type (optional)> <"required" (optional)> <description>
+            // Examples:
+            // @queryParam text required The text.
+            // @queryParam user_id integer The ID of the user.
+
+            $tagContent = trim($tag->getContent());
+            preg_match('/(.+?)\s+([a-zA-Z\[\]]+\s+)?(required\s+)?([\s\S]*)/', $tagContent, $content);
+
+            if (empty($content)) {
+                // this means only name was supplied
+                $name = $tagContent;
+                $required = false;
+                $description = '';
+                $type = 'string';
+            } else {
+                [$_, $name, $type, $required, $description] = $content;
+
+                $description = trim(str_replace(['No-example.', 'No-example'], '', $description));
+                if ($description === 'required') {
+                    // No description was supplied
+                    $required = true;
                     $description = '';
                 } else {
-                    [$_, $name, $required, $description] = $content;
-                    $description = trim($description);
-                    if ($description == 'required' && empty(trim($required))) {
-                        $required = $description;
-                        $description = '';
+                    $required = trim($required) === 'required';
+                }
+
+                $type = trim($type);
+                if ($type) {
+                    if ($type === 'required') {
+                        // Type wasn't supplied
+                        $type = 'string';
+                        $required = true;
+                    } else {
+                        $type = $this->normalizeParameterType($type);
+                        // Type in annotation is optional
+                        if (!$this->isSupportedTypeInDocBlocks($type)) {
+                            // Then that wasn't a type, but part of the description
+                            $description = trim("$type $description");
+                            $type = '';
+                        }
                     }
-                    $required = trim($required) == 'required' ? true : false;
+                } else if ($this->isSupportedTypeInDocBlocks($description)) {
+                    // Only type was supplied
+                    $type = $description;
+                    $description = '';
                 }
 
-                [$description, $value] = $this->parseExampleFromParamDescription($description, 'string');
-                if (is_null($value) && ! $this->shouldExcludeExample($tag->getContent())) {
-                    $value = Str::contains($description, ['number', 'count', 'page'])
-                        ? $this->generateDummyValue('integer')
-                        : $this->generateDummyValue('string');
-                }
+                $type = empty($type)
+                    ? (Str::contains($description, ['number', 'count', 'page']) ? 'integer' : 'string')
+                    : $this->normalizeParameterType($type);
 
-                return [$name => compact('description', 'required', 'value')];
-            })->toArray();
+            }
+
+            [$description, $value] = $this->parseExampleFromParamDescription($description, $type);
+            if (is_null($value) && !$this->shouldExcludeExample($tagContent)) {
+                $value = $this->generateDummyValue($type);
+            }
+
+            $parameters[$name] = compact('description', 'required', 'value', 'type');
+        }
 
         return $parameters;
     }

@@ -8,7 +8,6 @@ use Illuminate\Foundation\Http\FormRequest;
  * @queryParam location_id required The id of the location.
  * @queryParam user_id required The id of the user. Example: me
  * @queryParam page required The page number. Example: 4
- * @queryParam filters.* The filters.
  * @queryParam url_encoded  Used for testing that URL parameters will be URL-encoded where needed. Example: + []&=
  * @bodyParam user_id int required The id of the user. Example: 9
  * @bodyParam room_id string The id of the room.

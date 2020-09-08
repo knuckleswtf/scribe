@@ -58,7 +58,7 @@ class GetFromResponseFieldTag extends Strategy
                 // Support optional type in annotation
                 if (!$this->isSupportedTypeInDocBlocks($type)) {
                     // Then that wasn't a type, but part of the description
-                    $description = "$type $description";
+                    $description = trim("$type $description");
 
                     // Try to get a type from first 2xx response
                     $validResponse = collect($responses)->first(function ($r) {

@@ -59,7 +59,7 @@ trait ParamHelpers
             },
         ];
 
-        $fakeFactory = $fakeFactories[$this->normalizeParameterType($baseType)] ?? $fakeFactories['string'];
+        $fakeFactory = $fakeFactories[$baseType] ?? $fakeFactories['string'];
 
         return $fakeFactory();
     }
@@ -79,7 +79,7 @@ trait ParamHelpers
             'array', // todo remove this
             'object',
         ];
-        return in_array(preg_replace('/\[]$/', '', $type), $types);
+        return in_array(str_replace('[]', '', $type), $types);
     }
 
     /**
@@ -148,15 +148,15 @@ trait ParamHelpers
             return 'string';
         }
 
-        $base = preg_replace('/\[]/', '', strtolower($typeName));
+        $base = str_replace('[]', '', strtolower($typeName));
         switch ($base) {
             case 'int':
-                return preg_replace("/$base/", 'integer', $typeName);
+                return str_replace($base, 'integer', $typeName);
             case 'float':
             case 'double':
-                return preg_replace("/$base/", 'number', $typeName);
+                return str_replace($base, 'number', $typeName);
             case 'bool':
-                return preg_replace("/$base/", 'boolean', $typeName);
+                return str_replace($base, 'boolean', $typeName);
             default:
                 return $typeName;
         }
