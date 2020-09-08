@@ -82,7 +82,7 @@ return [
     ],
 
     /*
-     * Text to place in the "Introduction" section. Markdown and HTML are supported.
+     * Text to place in the "Introduction" section, right after the `description`. Markdown and HTML are supported.
      */
     'intro_text' => <<<INTRO
 Welcome to our API documentation!

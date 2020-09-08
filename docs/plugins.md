@@ -209,13 +209,15 @@ Each strategy class must implement the `__invoke` method with the parameters as 
 'authenticated' // boolean
 ```
 
-- In the `urlParameters`, `queryParameters`, and `bodyParameters` stages, you can return an array with arbitrary keys. These keys will be the names of your parameters. Array keys can be indicated with Laravel's dot notation. The value of each key should be an array with the following keys:
+- In the `urlParameters`, `queryParameters`, and `bodyParameters` stages, you can return an array with arbitrary keys. These keys will be the names of your parameters. Array keys can be indicated with Laravel's dot notation. The value of each key should be an array with the following structure:
 
-```
-'type', // Only valid in bodyParameters
-'description', 
-'required', // boolean
-'value', // An example value for the parameter
+```php
+[
+  'type' => 'valid type',
+  'description' => 'An optional description.', 
+  'required => true, // or false
+  'value' => "An example value for the parameter",
+];
 ```
 
 ```eval_rst
@@ -244,9 +246,11 @@ Each strategy class must implement the `__invoke` method with the parameters as 
 ```
 
 
-- In the `responseFields` stage, you can return an array with arbitrary keys. These keys will be the names of fields in your response. The value of each key should be an array with the following keys:
+- In the `responseFields` stage, you can return an array with arbitrary keys. These keys will be the names of fields in your response. The value of each key should be an array with the following structure:
 
 ```
-'type',
-'description',
+[
+  'type' => '',
+  'description' => '',
+]
 ```

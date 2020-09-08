@@ -3,14 +3,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project aims to adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 1.6.0 (Tuesday, 8 September, 2020)
 ### Additions
+- New `description` field, where you can add a description of your API. This field will be used as the `info.description` field in the Postman collection and OpenAPI spec, and as the first paragraph under the "Introduction" section on the generated webpage, before the `intro_text`. (https://github.com/knuckleswtf/scribe/pull/90/commits/dc356f3f2b13732d567dbee88dad07fc0441f40e)
+- Postman collection `auth` information is now populated from Scribe's auth info. (https://github.com/knuckleswtf/scribe/pull/90/commits/33c00a7a0b915e9cbedccdb13d7cb4fcc3c76dc5)
 
-### Changes
+#### Changes
+- Postman collection schema version has been updated to 2.1.0. (https://github.com/knuckleswtf/scribe/pull/90/commits/cc7e4cbfae08999f555f7a105ab3c2993fdbb2c1)
+- The `float` type is now `number`: Previously, `float` was used in the generated webpage as the default type for non-integer numbers, in alignment with PHP's type system. We've changed this to `number`, to align with standards like OpenAPI and JSON types. You can still use `float` in your annotations, but it will be rendered as `number`. (https://github.com/knuckleswtf/scribe/pull/90/commits/66993d2d2c7a1a57806960dd4cc428068fb0f589)
+- [Internal] Reworked PostmanCollectionWriter API: The `PostmanCollectionWriter` has been reworked to be more in line with the `OpenAPISpecWriter`. See the class for details.
 
-### Fixes
-
-### Removals
+#### Deprecations
+- Deprecated `postman.auth` in favour of `postman.overrides`: It didn't make sense to have two ways of setting Postman-specific auth information (`postman.auth` and `postman.overrides`). Will be removed in v2.
+- Deprecated Postman-specific `postman.description` in favour of `description`. Will be removed in v2.
 
 ## 1.5.0 (Thursday, 3 September, 2020)
 ### Additions

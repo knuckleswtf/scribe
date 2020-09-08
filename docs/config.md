@@ -38,6 +38,9 @@ The text to place in the "Introduction" section. Markdown and HTML are supported
 ### `title`
 The HTML `<title>` for the generated documentation, and the name of the generated Postman collection. If this is `null`, Scribe will infer it from `config('app.name')`.
 
+### `description`
+A description for your API. This will be placed in the "Introduction" section, before the `intro_text`. It will also be used as the `info.description` field in the generated Postman collection and OpenAPI spec.
+
 ### `logo`
 Path to an image file to use as your logo in the generated docs. This will be used as the value of the src attribute for the `<img>` tag, so make sure it points to a public URL or path accessible from your web server. For best results, the image width should be 230px. Set this to `false` if you're not using a logo. Default: `false`.
 
@@ -83,6 +86,7 @@ The router to use when processing your routes. Can be `laravel` or `dingo`. Defa
 ### `auth`
 Authentication information about your API. This information will be used:
 - to derive the text in the "Authentication" section in the generated docs
+- to generate auth info in the Postman collection and OpenAPI spec
 - to add the auth headers/query parameters/body parameters to the docs and example requests
 - to set the auth headers/query parameters/body parameters for response calls
 

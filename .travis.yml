@@ -36,4 +36,4 @@ install:
   - if [[ $SETUP = 'lint' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-stable --no-suggest; composer lint -- --memory-limit 1G; fi
 
 script:
-  - if [[ $SETUP = 'lint' ]]; then exit 0; fi; composer test-ci;
+  - if [[ $SETUP = 'lint' ]]; then exit 0; fi; composer test-parallel-ci;
