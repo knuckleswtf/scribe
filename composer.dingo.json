@@ -59,8 +59,8 @@
         "lint": "phpstan analyse -c ./phpstan.neon src",
         "test": "phpunit --stop-on-failure --group dingo",
         "test-ci": "phpunit --group dingo",
-        "test-parallel": "paratest -p3 --stop-on-failure --parallel-suite --group dingo tests",
-        "test-parallel-ci": "paratest -p3 --parallel-suite --group dingo tests"
+        "test-parallel": "paratest -p4 --stop-on-failure --parallel-suite --group dingo tests",
+        "test-parallel-ci": "paratest -p4 --parallel-suite --group dingo tests"
     },
     "extra": {
         "laravel": {

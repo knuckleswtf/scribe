@@ -3,7 +3,7 @@
          backupStaticAttributes="false"
          bootstrap="vendor/autoload.php"
          cacheResult="true"
-         colors="true"
+         colors="false"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
@@ -25,10 +25,12 @@
             <file>tests/Unit/RouteMatcherDingoTest.php</file>
             <file>tests/Unit/RouteMatcherTest.php</file>
         </testsuite>
-        <testsuite name="Other Unit Tests">
-            <file>tests/Unit/PostmanCollectionWriterTest.php</file>
+        <testsuite name="Other Unit Tests 1">
             <file>tests/Unit/OpenAPISpecWriterTest.php</file>
             <file>tests/Unit/AnnotationParserTest.php</file>
+        </testsuite>
+        <testsuite name="Other Unit Tests 2">
+            <file>tests/Unit/PostmanCollectionWriterTest.php</file>
         </testsuite>
     </testsuites>
     <filter>
