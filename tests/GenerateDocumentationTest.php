@@ -239,6 +239,9 @@ class GenerateDocumentationTest extends TestCase
         config(['scribe.faker_seed' => 1234]);
         config(['scribe.title' => 'GREAT API!']);
         config(['scribe.routes.0.match.prefixes' => ['api/*']]);
+        config(['scribe.postman.overrides' => [
+            'info.version' => '3.9.9',
+        ]]);
         config([
             'scribe.routes.0.apply.headers' => [
                 'Custom-Header' => 'NotSoCustom',
@@ -255,28 +258,6 @@ class GenerateDocumentationTest extends TestCase
     }
 
     /** @test */
-    public function can_override_fields_in_generated_postman_collection_file()
-    {
-        RouteFacade::get('/api/withDescription', [TestController::class, 'withEndpointDescription']);
-        RouteFacade::get('/api/withQueryParameters', TestController::class . '@withQueryParameters');
-
-        config(['scribe.faker_seed' => 1234]);
-        config(['scribe.postman.enabled' => true]);
-        config(['scribe.postman.overrides' => [
-            'info.version' => '3.9.9',
-            'info.name' => 'Custom API',
-        ]]);
-        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
-
-        $this->artisan('scribe:generate');
-
-        $generatedCollection = json_decode(file_get_contents(__DIR__ . '/../public/docs/collection.json'), true);
-        $generatedCollection['info']['_postman_id'] = '';
-        $fixtureCollection = json_decode(file_get_contents(__DIR__ . '/Fixtures/collection-overridden.json'), true);
-        $this->assertEquals($fixtureCollection, $generatedCollection);
-    }
-
-    /** @test */
     public function generated_openapi_spec_file_is_correct()
     {
         RouteFacade::get('/api/withDescription', [TestController::class, 'withEndpointDescription']);
@@ -289,6 +270,9 @@ class GenerateDocumentationTest extends TestCase
         // We want to have the same values for params each time
         config(['scribe.faker_seed' => 1234]);
         config(['scribe.openapi.enabled' => true]);
+        config(['scribe.openapi.overrides' => [
+            'info.version' => '3.9.9',
+        ]]);
         config(['scribe.routes.0.match.prefixes' => ['api/*']]);
         config([
             'scribe.routes.0.apply.headers' => [
@@ -300,27 +284,6 @@ class GenerateDocumentationTest extends TestCase
 
         $generatedCollection = json_decode(file_get_contents(__DIR__ . '/../public/docs/openapi.yaml'), true);
         $fixtureCollection = json_decode(file_get_contents(__DIR__ . '/Fixtures/openapi.yaml'), true);
-        $this->assertEquals($fixtureCollection, $generatedCollection);
-    }
-
-    /** @test */
-    public function can_override_fields_in_generated_openapi_spec_file()
-    {
-        RouteFacade::get('/api/withDescription', [TestController::class, 'withEndpointDescription']);
-        RouteFacade::get('/api/withResponseTag', TestController::class . '@withResponseTag');
-
-        config(['scribe.faker_seed' => 1234]);
-        config(['scribe.openapi.enabled' => true]);
-        config(['scribe.openapi.overrides' => [
-            'info.version' => '3.9.9',
-            'servers.0.url' => 'http://okay.dev',
-        ]]);
-        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
-
-        $this->artisan('scribe:generate');
-
-        $generatedCollection = json_decode(file_get_contents(__DIR__ . '/../public/docs/openapi.yaml'), true);
-        $fixtureCollection = json_decode(file_get_contents(__DIR__ . '/Fixtures/openapi-overridden.yaml'), true);
         $this->assertEquals($fixtureCollection, $generatedCollection);
     }
 

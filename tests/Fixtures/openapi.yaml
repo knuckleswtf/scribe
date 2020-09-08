@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
     title: null
     description: ''
-    version: 1.0.0
+    version: 3.9.9
 servers:
     -
         url: 'http://localhost'
