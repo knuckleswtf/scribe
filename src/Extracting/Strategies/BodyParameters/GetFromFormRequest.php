@@ -42,6 +42,10 @@ class GetFromFormRequest extends Strategy
 
             $parameterClassName = $paramType->getName();
 
+            if (!class_exists($parameterClassName)) {
+                continue;
+            }
+
             try {
                 $parameterClass = new ReflectionClass($parameterClassName);
             } catch (ReflectionException $e) {

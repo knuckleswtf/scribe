@@ -138,7 +138,7 @@ trait ParamHelpers
      * Normalizes the stated "type" of a parameter (eg "int", "integer", "double")
      * to a number of standard types (integer, boolean, number). Will return the input if no match.
      *
-     * @param string $type
+     * @param string $typeName
      *
      * @return string
      */
@@ -148,15 +148,15 @@ trait ParamHelpers
             return 'string';
         }
 
-        $base = preg_replace('/\[]/g', '', strtolower($typeName));
+        $base = preg_replace('/\[]/', '', strtolower($typeName));
         switch ($base) {
             case 'int':
-                return preg_replace($base, 'integer', $typeName);
+                return preg_replace("/$base/", 'integer', $typeName);
             case 'float':
             case 'double':
-                return preg_replace($base, 'number', $typeName);
+                return preg_replace("/$base/", 'number', $typeName);
             case 'bool':
-                return preg_replace($base, 'boolean', $typeName);
+                return preg_replace("/$base/", 'boolean', $typeName);
             default:
                 return $typeName;
         }

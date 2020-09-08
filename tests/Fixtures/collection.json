@@ -4,7 +4,8 @@
         "name": "GREAT API!",
         "_postman_id": "",
         "description": "",
-        "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json"
+        "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json",
+        "version": "3.9.9"
     },
     "item": [
         {
@@ -80,35 +81,6 @@
                                 }
                             ]
                         },
-                        "description": "",
-                        "auth": {
-                            "type": "noauth"
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "api\/withResponseTag",
-                    "request": {
-                        "url": {
-                            "protocol": "http",
-                            "host": "localhost",
-                            "path": "api\/withResponseTag",
-                            "query": [],
-                            "raw": "http:\/\/localhost\/api\/withResponseTag"
-                        },
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Custom-Header",
-                                "value": "NotSoCustom"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
                         "description": "",
                         "auth": {
                             "type": "noauth"
@@ -238,64 +210,6 @@
                         "auth": null
                     },
                     "response": []
-                },
-                {
-                    "name": "api\/withEloquentApiResource",
-                    "request": {
-                        "url": {
-                            "protocol": "http",
-                            "host": "localhost",
-                            "path": "api\/withEloquentApiResource",
-                            "query": [],
-                            "raw": "http:\/\/localhost\/api\/withEloquentApiResource"
-                        },
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Custom-Header",
-                                "value": "NotSoCustom"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
-                        "description": "",
-                        "auth": {
-                            "type": "noauth"
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "api\/withMultipleResponseTagsAndStatusCode",
-                    "request": {
-                        "url": {
-                            "protocol": "http",
-                            "host": "localhost",
-                            "path": "api\/withMultipleResponseTagsAndStatusCode",
-                            "query": [],
-                            "raw": "http:\/\/localhost\/api\/withMultipleResponseTagsAndStatusCode"
-                        },
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Custom-Header",
-                                "value": "NotSoCustom"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
-                        "description": "",
-                        "auth": {
-                            "type": "noauth"
-                        }
-                    },
-                    "response": []
                 }
             ]
         },
@@ -303,35 +217,6 @@
             "name": "Other\ud83d\ude0e",
             "description": "",
             "item": [
-                {
-                    "name": "api\/withEloquentApiResourceCollectionClass",
-                    "request": {
-                        "url": {
-                            "protocol": "http",
-                            "host": "localhost",
-                            "path": "api\/withEloquentApiResourceCollectionClass",
-                            "query": [],
-                            "raw": "http:\/\/localhost\/api\/withEloquentApiResourceCollectionClass"
-                        },
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Custom-Header",
-                                "value": "NotSoCustom"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
-                        "description": "",
-                        "auth": {
-                            "type": "noauth"
-                        }
-                    },
-                    "response": []
-                },
                 {
                     "name": "api\/echoesUrlParameters\/{param}-{param2}\/{param3?}",
                     "request": {
