@@ -21,8 +21,7 @@ matrix:
     - php: 7.3
       env: SETUP=lowest
     - php: 7.4
-    - php: 7.4
-      env: SETUP=lowest
+      # No lowest for 7.4 because the lowest (Laravel 5.8) doesn't support 7.4
 
 cache:
   directories:
