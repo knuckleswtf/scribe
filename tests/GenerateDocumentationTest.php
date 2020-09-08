@@ -231,13 +231,9 @@ class GenerateDocumentationTest extends TestCase
     {
         RouteFacade::get('/api/withDescription', [TestController::class, 'withEndpointDescription']);
         RouteFacade::post('/api/withFormDataParams', TestController::class . '@withFormDataParams');
-        RouteFacade::get('/api/withResponseTag', TestController::class . '@withResponseTag');
         RouteFacade::post('/api/withBodyParameters', TestController::class . '@withBodyParameters');
         RouteFacade::get('/api/withQueryParameters', TestController::class . '@withQueryParameters');
         RouteFacade::get('/api/withAuthTag', TestController::class . '@withAuthenticatedTag');
-        RouteFacade::get('/api/withEloquentApiResource', [TestController::class, 'withEloquentApiResource']);
-        RouteFacade::get('/api/withEloquentApiResourceCollectionClass', [TestController::class, 'withEloquentApiResourceCollectionClass']);
-        RouteFacade::post('/api/withMultipleResponseTagsAndStatusCode', [TestController::class, 'withMultipleResponseTagsAndStatusCode']);
         RouteFacade::get('/api/echoesUrlParameters/{param}-{param2}/{param3?}', [TestController::class, 'echoesUrlParameters']);
         // We want to have the same values for params each time
         config(['scribe.faker_seed' => 1234]);
@@ -262,8 +258,6 @@ class GenerateDocumentationTest extends TestCase
     public function can_override_fields_in_generated_postman_collection_file()
     {
         RouteFacade::get('/api/withDescription', [TestController::class, 'withEndpointDescription']);
-        RouteFacade::get('/api/withResponseTag', TestController::class . '@withResponseTag');
-        RouteFacade::post('/api/withBodyParameters', TestController::class . '@withBodyParameters');
         RouteFacade::get('/api/withQueryParameters', TestController::class . '@withQueryParameters');
 
         config(['scribe.faker_seed' => 1234]);
@@ -288,12 +282,8 @@ class GenerateDocumentationTest extends TestCase
         RouteFacade::get('/api/withDescription', [TestController::class, 'withEndpointDescription']);
         RouteFacade::post('/api/withFormDataParams', TestController::class . '@withFormDataParams');
         RouteFacade::get('/api/withResponseTag', TestController::class . '@withResponseTag');
-        RouteFacade::post('/api/withBodyParameters', TestController::class . '@withBodyParameters');
         RouteFacade::get('/api/withQueryParameters', TestController::class . '@withQueryParameters');
         RouteFacade::get('/api/withAuthTag', TestController::class . '@withAuthenticatedTag');
-        RouteFacade::get('/api/withEloquentApiResource', [TestController::class, 'withEloquentApiResource']);
-        RouteFacade::get('/api/withEloquentApiResourceCollectionClass', [TestController::class, 'withEloquentApiResourceCollectionClass']);
-        RouteFacade::post('/api/withMultipleResponseTagsAndStatusCode', [TestController::class, 'withMultipleResponseTagsAndStatusCode']);
         RouteFacade::get('/api/echoesUrlParameters/{param}-{param2}/{param3?}', [TestController::class, 'echoesUrlParameters']);
 
         // We want to have the same values for params each time
@@ -318,8 +308,6 @@ class GenerateDocumentationTest extends TestCase
     {
         RouteFacade::get('/api/withDescription', [TestController::class, 'withEndpointDescription']);
         RouteFacade::get('/api/withResponseTag', TestController::class . '@withResponseTag');
-        RouteFacade::post('/api/withBodyParameters', TestController::class . '@withBodyParameters');
-        RouteFacade::get('/api/withQueryParameters', TestController::class . '@withQueryParameters');
 
         config(['scribe.faker_seed' => 1234]);
         config(['scribe.openapi.enabled' => true]);
