@@ -43,7 +43,7 @@
 @foreach($route['urlParameters'] as $attribute => $parameter)
 @component('scribe::components.field-details', [
   'name' => $attribute,
-  'type' => null,
+  'type' => $parameter['type'] ?? 'string',
   'required' => $parameter['required'] ?? true,
   'description' => $parameter['description'],
 ])
@@ -55,7 +55,7 @@
 @foreach($route['queryParameters'] as $attribute => $parameter)
 @component('scribe::components.field-details', [
   'name' => $attribute,
-  'type' => null,
+  'type' => $parameter['type'] ?? 'string',
   'required' => $parameter['required'] ?? true,
   'description' => $parameter['description'],
 ])
@@ -67,7 +67,7 @@
 @foreach($route['bodyParameters'] as $attribute => $parameter)
 @component('scribe::components.field-details', [
   'name' => $attribute,
-  'type' => $parameter['type'] ?? null,
+  'type' => $parameter['type'] ?? 'string',
   'required' => $parameter['required'] ?? true,
   'description' => $parameter['description'],
 ])

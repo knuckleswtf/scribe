@@ -21,6 +21,21 @@ class ConsoleOutputUtils
             ->only();
     }
 
+    public static function deprecated($feature, $should = null, $link = null)
+    {
+        if (!self::$clara) {
+            self::bootstrapOutput(new ConsoleOutput);
+        }
+
+        $message = "You're using $feature. This is deprecated and will be removed in the next major version.";
+        if ($should) {
+            $message .= "\nYou should $should instead.";
+        }
+        $message .= $link ? " See $link for details" : " See the changelog for details";
+
+        self::$clara->warn($message);
+    }
+
     public static function warn($message)
     {
         if (!self::$clara) {

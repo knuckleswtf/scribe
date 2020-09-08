@@ -1,10 +1,11 @@
 {
-    "variables": [],
+    "variable": [],
     "info": {
-        "name": "Laravel API",
+        "name": "GREAT API!",
         "_postman_id": "",
         "description": "",
-        "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.0.0\/collection.json"
+        "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json",
+        "version": "3.9.9"
     },
     "item": [
         {
@@ -19,14 +20,10 @@
                             "host": "localhost",
                             "path": "api\/withDescription",
                             "query": [],
-                            "raw": "http://localhost/api/withDescription"
+                            "raw": "http:\/\/localhost\/api\/withDescription"
                         },
                         "method": "GET",
                         "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "customAuthToken"
-                            },
                             {
                                 "key": "Custom-Header",
                                 "value": "NotSoCustom"
@@ -34,66 +31,62 @@
                             {
                                 "key": "Accept",
                                 "value": "application\/json"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
                             }
                         ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "[]",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
-                        },
+                        "body": null,
                         "description": "This will be the long description.\nIt can also be multiple lines long.",
-                        "response": []
-                    }
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
                 },
                 {
-                    "name": "api\/withResponseTag",
+                    "name": "Endpoint with body form data parameters.",
                     "request": {
                         "url": {
                             "protocol": "http",
                             "host": "localhost",
-                            "path": "api\/withResponseTag",
+                            "path": "api\/withFormDataParams",
                             "query": [],
-                            "raw": "http://localhost/api/withResponseTag"
+                            "raw": "http:\/\/localhost\/api\/withFormDataParams"
                         },
-                        "method": "GET",
+                        "method": "POST",
                         "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "customAuthToken"
-                            },
                             {
                                 "key": "Custom-Header",
                                 "value": "NotSoCustom"
                             },
                             {
-                                "key": "Accept",
-                                "value": "application\/json"
+                                "key": "Content-Type",
+                                "value": "multipart\/form-data"
                             },
                             {
-                                "key": "Content-Type",
+                                "key": "Accept",
                                 "value": "application\/json"
                             }
                         ],
                         "body": {
-                            "mode": "raw",
-                            "raw": "[]",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "name",
+                                    "value": "cat.jpg",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "image",
+                                    "src": [],
+                                    "type": "file"
                                 }
-                            }
+                            ]
                         },
                         "description": "",
-                        "response": []
-                    }
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
                 },
                 {
                     "name": "Endpoint with body parameters.",
@@ -103,39 +96,33 @@
                             "host": "localhost",
                             "path": "api\/withBodyParameters",
                             "query": [],
-                            "raw": "http://localhost/api/withBodyParameters"
+                            "raw": "http:\/\/localhost\/api\/withBodyParameters"
                         },
                         "method": "POST",
                         "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "customAuthToken"
-                            },
                             {
                                 "key": "Custom-Header",
                                 "value": "NotSoCustom"
                             },
                             {
-                                "key": "Accept",
+                                "key": "Content-Type",
                                 "value": "application\/json"
                             },
                             {
-                                "key": "Content-Type",
+                                "key": "Accept",
                                 "value": "application\/json"
                             }
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"user_id\": 9,\n    \"room_id\": \"consequatur\",\n    \"forever\": false,\n    \"another_one\": 11613.31890586,\n    \"yet_another_param\": {\n        \"name\": \"consequatur\"\n    },\n    \"even_more_param\": [\n        11613.31890586\n    ],\n    \"book\": {\n        \"name\": \"consequatur\",\n        \"author_id\": 17,\n        \"pages_count\": 17\n    },\n    \"ids\": [\n        17\n    ],\n    \"users\": [\n        {\n            \"first_name\": \"John\",\n            \"last_name\": \"Doe\"\n        }\n    ]\n}",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
+                            "raw": "{\n    \"user_id\": 9,\n    \"room_id\": \"consequatur\",\n    \"forever\": false,\n    \"another_one\": 11613.31890586,\n    \"yet_another_param\": {\n        \"name\": \"consequatur\"\n    },\n    \"even_more_param\": [\n        11613.31890586\n    ],\n    \"book\": {\n        \"name\": \"consequatur\",\n        \"author_id\": 17,\n        \"pages_count\": 17\n    },\n    \"ids\": [\n        17\n    ],\n    \"users\": [\n        {\n            \"first_name\": \"John\",\n            \"last_name\": \"Doe\"\n        }\n    ]\n}"
                         },
                         "description": "",
-                        "response": []
-                    }
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
                 },
                 {
                     "name": "api\/withQueryParameters",
@@ -176,14 +163,10 @@
                                     "disabled": false
                                 }
                             ],
-                            "raw": "http://localhost/api/withQueryParameters?location_id=consequatur&user_id=me&page=4&filters=consequatur&url_encoded=%2B+%5B%5D%26%3D"
+                            "raw": "http:\/\/localhost\/api\/withQueryParameters?location_id=consequatur&user_id=me&page=4&filters=consequatur&url_encoded=%2B+%5B%5D%26%3D"
                         },
                         "method": "GET",
                         "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "customAuthToken"
-                            },
                             {
                                 "key": "Custom-Header",
                                 "value": "NotSoCustom"
@@ -191,24 +174,15 @@
                             {
                                 "key": "Accept",
                                 "value": "application\/json"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
                             }
                         ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "[]",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
-                        },
+                        "body": null,
                         "description": "",
-                        "response": []
-                    }
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
                 },
                 {
                     "name": "api\/withAuthTag",
@@ -218,123 +192,24 @@
                             "host": "localhost",
                             "path": "api\/withAuthTag",
                             "query": [],
-                            "raw": "http://localhost/api/withAuthTag"
+                            "raw": "http:\/\/localhost\/api\/withAuthTag"
                         },
                         "method": "GET",
                         "header": [
                             {
-                                "key": "Authorization",
-                                "value": "customAuthToken"
-                            },
-                            {
                                 "key": "Custom-Header",
                                 "value": "NotSoCustom"
                             },
                             {
                                 "key": "Accept",
                                 "value": "application\/json"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
                             }
                         ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "[]",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
-                        },
+                        "body": null,
                         "description": "",
-                        "response": []
-                    }
-                },
-                {
-                    "name": "api\/withEloquentApiResource",
-                    "request": {
-                        "url": {
-                            "protocol": "http",
-                            "host": "localhost",
-                            "path": "api\/withEloquentApiResource",
-                            "query": [],
-                            "raw": "http://localhost/api/withEloquentApiResource"
-                        },
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "customAuthToken"
-                            },
-                            {
-                                "key": "Custom-Header",
-                                "value": "NotSoCustom"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "[]",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
-                        },
-                        "description": "",
-                        "response": []
-                    }
-                },
-                {
-                    "name": "api\/withMultipleResponseTagsAndStatusCode",
-                    "request": {
-                        "url": {
-                            "protocol": "http",
-                            "host": "localhost",
-                            "path": "api\/withMultipleResponseTagsAndStatusCode",
-                            "query": [],
-                            "raw": "http://localhost/api/withMultipleResponseTagsAndStatusCode"
-                        },
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "customAuthToken"
-                            },
-                            {
-                                "key": "Custom-Header",
-                                "value": "NotSoCustom"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "[]",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
-                        },
-                        "description": "",
-                        "response": []
-                    }
+                        "auth": null
+                    },
+                    "response": []
                 }
             ]
         },
@@ -343,54 +218,12 @@
             "description": "",
             "item": [
                 {
-                    "name": "api\/withEloquentApiResourceCollectionClass",
-                    "request": {
-                        "url": {
-                            "protocol": "http",
-                            "host": "localhost",
-                            "path": "api\/withEloquentApiResourceCollectionClass",
-                            "query": [],
-                            "raw": "http://localhost/api/withEloquentApiResourceCollectionClass"
-                        },
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "customAuthToken"
-                            },
-                            {
-                                "key": "Custom-Header",
-                                "value": "NotSoCustom"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "[]",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
-                        },
-                        "description": "",
-                        "response": []
-                    }
-                },
-                {
                     "name": "api\/echoesUrlParameters\/{param}-{param2}\/{param3?}",
                     "request": {
                         "url": {
                             "protocol": "http",
                             "host": "localhost",
-                            "path": "api\/echoesUrlParameters\/{param}-{param2}\/:param3",
+                            "path": "api\/echoesUrlParameters\/:param-:param2\/:param3",
                             "query": [
                                 {
                                     "key": "something",
@@ -399,6 +232,7 @@
                                     "disabled": false
                                 }
                             ],
+                            "raw": "http:\/\/localhost\/api\/echoesUrlParameters\/:param-:param2\/:param3?something=consequatur",
                             "variable": [
                                 {
                                     "id": "param",
@@ -412,15 +246,10 @@
                                     "value": "consequatur",
                                     "description": ""
                                 }
-                            ],
-                            "raw": "http://localhost/api/echoesUrlParameters/{param}-{param2}/:param3?something=consequatur"
+                            ]
                         },
                         "method": "GET",
                         "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "customAuthToken"
-                            },
                             {
                                 "key": "Custom-Header",
                                 "value": "NotSoCustom"
@@ -428,26 +257,20 @@
                             {
                                 "key": "Accept",
                                 "value": "application\/json"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
                             }
                         ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "[]",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
-                        },
+                        "body": null,
                         "description": "",
-                        "response": []
-                    }
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
                 }
             ]
         }
-    ]
+    ],
+    "auth": {
+        "type": "noauth"
+    }
 }

@@ -87,7 +87,7 @@ class GenerateDocumentation extends Command
      * @param Match[] $matches
      *
      * @return array
-     *@throws \ReflectionException
+     * @throws \ReflectionException
      *
      */
     private function processRoutes(array $matches)

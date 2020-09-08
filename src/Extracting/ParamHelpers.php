@@ -4,7 +4,7 @@ namespace Knuckles\Scribe\Extracting;
 
 use Faker\Factory;
 use Illuminate\Http\UploadedFile;
-use stdClass;
+use Illuminate\Support\Str;
 
 trait ParamHelpers
 {
@@ -20,6 +20,19 @@ trait ParamHelpers
 
     protected function generateDummyValue(string $type)
     {
+        $baseType = $type;
+        $isListType = false;
+
+        if (Str::endsWith($type, '[]')) {
+            $baseType = strtolower(substr($type, 0, strlen($type) - 2));
+            $isListType = true;
+        }
+
+        if ($isListType) {
+            // Return a two-array item for a list
+            return [$this->generateDummyValue($baseType), $this->generateDummyValue($baseType)];
+        }
+
         $faker = $this->getFaker();
 
         $fakeFactories = [
@@ -27,9 +40,6 @@ trait ParamHelpers
                 return $faker->numberBetween(1, 20);
             },
             'number' => function () use ($faker) {
-                return $faker->randomFloat();
-            },
-            'float' => function () use ($faker) {
                 return $faker->randomFloat();
             },
             'boolean' => function () use ($faker) {
@@ -42,15 +52,14 @@ trait ParamHelpers
                 return [];
             },
             'object' => function () {
-                return new stdClass();
+                return [];
             },
             'file' => function () {
-                $file = UploadedFile::fake()->create('test.jpg')->size(10);
-                return $file;
+                return UploadedFile::fake()->create('test.jpg')->size(10);
             },
         ];
 
-        $fakeFactory = $fakeFactories[$type] ?? $fakeFactories['string'];
+        $fakeFactory = $fakeFactories[$this->normalizeParameterType($baseType)] ?? $fakeFactories['string'];
 
         return $fakeFactory();
     }
@@ -60,17 +69,17 @@ trait ParamHelpers
         $types = [
             'integer',
             'int',
-            'float',
             'number',
+            'float',
             'double',
             'boolean',
             'bool',
             'string',
-            'list',
-            'array',
+            'list', // todo remove this
+            'array', // todo remove this
             'object',
         ];
-        return in_array($type, $types);
+        return in_array(preg_replace('/\[]$/', '', $type), $types);
     }
 
     /**
@@ -83,6 +92,17 @@ trait ParamHelpers
      */
     protected function castToType($value, string $type)
     {
+        if ($value === null) {
+            return null;
+        }
+
+        if (Str::endsWith($type, '[]')) {
+            $baseType = strtolower(substr($type, 0, strlen($type) - 2));
+            return is_array($value) ? array_map(function ($v) use ($baseType) {
+                return $this->castToType($v, $baseType);
+            }, $value) : json_decode($value);
+        }
+
         if ($type === 'array' && is_string($value)) {
             $value = trim($value);
             if ($value[0] == '[' && $value[strlen($value) - 1] == ']') {
@@ -116,25 +136,30 @@ trait ParamHelpers
 
     /**
      * Normalizes the stated "type" of a parameter (eg "int", "integer", "double")
-     * to a number of standard types (integer, boolean, float). Will return the input if no match.
+     * to a number of standard types (integer, boolean, number). Will return the input if no match.
      *
-     * @param string $type
+     * @param string $typeName
      *
      * @return string
      */
-    protected function normalizeParameterType(string $type): string
+    protected function normalizeParameterType(?string $typeName): string
     {
-        if (!$type) {
+        if (!$typeName) {
             return 'string';
         }
 
-        $typeMap = [
-            'int' => 'integer',
-            'bool' => 'boolean',
-            'double' => 'float',
-        ];
-
-        return $typeMap[$type] ?? $type;
+        $base = preg_replace('/\[]/', '', strtolower($typeName));
+        switch ($base) {
+            case 'int':
+                return preg_replace("/$base/", 'integer', $typeName);
+            case 'float':
+            case 'double':
+                return preg_replace("/$base/", 'number', $typeName);
+            case 'bool':
+                return preg_replace("/$base/", 'boolean', $typeName);
+            default:
+                return $typeName;
+        }
     }
 
     /**

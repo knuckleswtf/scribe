@@ -230,24 +230,21 @@ class GenerateDocumentationTest extends TestCase
     public function generated_postman_collection_file_is_correct()
     {
         RouteFacade::get('/api/withDescription', [TestController::class, 'withEndpointDescription']);
-        RouteFacade::get('/api/withResponseTag', TestController::class . '@withResponseTag');
+        RouteFacade::post('/api/withFormDataParams', TestController::class . '@withFormDataParams');
         RouteFacade::post('/api/withBodyParameters', TestController::class . '@withBodyParameters');
         RouteFacade::get('/api/withQueryParameters', TestController::class . '@withQueryParameters');
         RouteFacade::get('/api/withAuthTag', TestController::class . '@withAuthenticatedTag');
-        RouteFacade::get('/api/withEloquentApiResource', [TestController::class, 'withEloquentApiResource']);
-        RouteFacade::get('/api/withEloquentApiResourceCollectionClass', [TestController::class, 'withEloquentApiResourceCollectionClass']);
-        RouteFacade::post('/api/withMultipleResponseTagsAndStatusCode', [TestController::class, 'withMultipleResponseTagsAndStatusCode']);
         RouteFacade::get('/api/echoesUrlParameters/{param}-{param2}/{param3?}', [TestController::class, 'echoesUrlParameters']);
-
         // We want to have the same values for params each time
         config(['scribe.faker_seed' => 1234]);
+        config(['scribe.title' => 'GREAT API!']);
         config(['scribe.routes.0.match.prefixes' => ['api/*']]);
+        config(['scribe.postman.overrides' => [
+            'info.version' => '3.9.9',
+        ]]);
         config([
             'scribe.routes.0.apply.headers' => [
-                'Authorization' => 'customAuthToken',
                 'Custom-Header' => 'NotSoCustom',
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
             ],
         ]);
 
@@ -261,52 +258,25 @@ class GenerateDocumentationTest extends TestCase
     }
 
     /** @test */
-    public function can_override_fields_in_generated_postman_collection_file()
-    {
-        RouteFacade::get('/api/withDescription', [TestController::class, 'withEndpointDescription']);
-        RouteFacade::get('/api/withResponseTag', TestController::class . '@withResponseTag');
-        RouteFacade::post('/api/withBodyParameters', TestController::class . '@withBodyParameters');
-        RouteFacade::get('/api/withQueryParameters', TestController::class . '@withQueryParameters');
-
-        config(['scribe.faker_seed' => 1234]);
-        config(['scribe.postman.enabled' => true]);
-        config(['scribe.postman.overrides' => [
-            'info.version' => '3.9.9',
-            'info.name' => 'Custom API',
-        ]]);
-        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
-
-        $this->artisan('scribe:generate');
-
-        $generatedCollection = json_decode(file_get_contents(__DIR__ . '/../public/docs/collection.json'), true);
-        $generatedCollection['info']['_postman_id'] = '';
-        $fixtureCollection = json_decode(file_get_contents(__DIR__ . '/Fixtures/collection-overridden.json'), true);
-        $this->assertEquals($fixtureCollection, $generatedCollection);
-    }
-
-    /** @test */
     public function generated_openapi_spec_file_is_correct()
     {
         RouteFacade::get('/api/withDescription', [TestController::class, 'withEndpointDescription']);
+        RouteFacade::post('/api/withFormDataParams', TestController::class . '@withFormDataParams');
         RouteFacade::get('/api/withResponseTag', TestController::class . '@withResponseTag');
-        RouteFacade::post('/api/withBodyParameters', TestController::class . '@withBodyParameters');
         RouteFacade::get('/api/withQueryParameters', TestController::class . '@withQueryParameters');
         RouteFacade::get('/api/withAuthTag', TestController::class . '@withAuthenticatedTag');
-        RouteFacade::get('/api/withEloquentApiResource', [TestController::class, 'withEloquentApiResource']);
-        RouteFacade::get('/api/withEloquentApiResourceCollectionClass', [TestController::class, 'withEloquentApiResourceCollectionClass']);
-        RouteFacade::post('/api/withMultipleResponseTagsAndStatusCode', [TestController::class, 'withMultipleResponseTagsAndStatusCode']);
         RouteFacade::get('/api/echoesUrlParameters/{param}-{param2}/{param3?}', [TestController::class, 'echoesUrlParameters']);
 
         // We want to have the same values for params each time
         config(['scribe.faker_seed' => 1234]);
         config(['scribe.openapi.enabled' => true]);
+        config(['scribe.openapi.overrides' => [
+            'info.version' => '3.9.9',
+        ]]);
         config(['scribe.routes.0.match.prefixes' => ['api/*']]);
         config([
             'scribe.routes.0.apply.headers' => [
-                'Authorization' => 'customAuthToken',
                 'Custom-Header' => 'NotSoCustom',
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
             ],
         ]);
 
@@ -314,146 +284,6 @@ class GenerateDocumentationTest extends TestCase
 
         $generatedCollection = json_decode(file_get_contents(__DIR__ . '/../public/docs/openapi.yaml'), true);
         $fixtureCollection = json_decode(file_get_contents(__DIR__ . '/Fixtures/openapi.yaml'), true);
-        $this->assertEquals($fixtureCollection, $generatedCollection);
-    }
-
-    /** @test */
-    public function can_override_fields_in_generated_openapi_spec_file()
-    {
-        RouteFacade::get('/api/withDescription', [TestController::class, 'withEndpointDescription']);
-        RouteFacade::get('/api/withResponseTag', TestController::class . '@withResponseTag');
-        RouteFacade::post('/api/withBodyParameters', TestController::class . '@withBodyParameters');
-        RouteFacade::get('/api/withQueryParameters', TestController::class . '@withQueryParameters');
-
-        config(['scribe.faker_seed' => 1234]);
-        config(['scribe.openapi.enabled' => true]);
-        config(['scribe.openapi.overrides' => [
-            'info.version' => '3.9.9',
-            'servers.0.url' => 'http://okay.dev',
-        ]]);
-        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
-
-        $this->artisan('scribe:generate');
-
-        $generatedCollection = json_decode(file_get_contents(__DIR__ . '/../public/docs/openapi.yaml'), true);
-        $fixtureCollection = json_decode(file_get_contents(__DIR__ . '/Fixtures/openapi-overridden.yaml'), true);
-        $this->assertEquals($fixtureCollection, $generatedCollection);
-    }
-
-    /** @test */
-    public function generated_postman_collection_domain_is_correct()
-    {
-        $domain = 'http://somedomain.test';
-        RouteFacade::get('/api/test', TestController::class . '@withEndpointDescription');
-
-        config(['scribe.base_url' => $domain]);
-        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
-        $this->artisan('scribe:generate');
-
-        $generatedCollection = json_decode(file_get_contents(__DIR__ . '/../public/docs/collection.json'));
-        $endpointUrl = $generatedCollection->item[0]->item[0]->request->url->host;
-        $this->assertTrue(Str::startsWith($endpointUrl, 'somedomain.test'));
-    }
-
-    /** @test */
-    public function generated_postman_collection_can_have_custom_url()
-    {
-        Config::set('scribe.postman.base_url', 'http://yourapp.app');
-        RouteFacade::get('/api/test', TestController::class . '@withEndpointDescription');
-        RouteFacade::post('/api/responseTag', TestController::class . '@withResponseTag');
-
-        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
-        $this->artisan('scribe:generate');
-
-        $generatedCollection = json_decode(file_get_contents(__DIR__ . '/../public/docs/collection.json'), true);
-        // The Postman ID varies from call to call; erase it to make the test data reproducible.
-        $generatedCollection['info']['_postman_id'] = '';
-        $fixtureCollection = json_decode(file_get_contents(__DIR__ . '/Fixtures/collection_custom_url.json'), true);
-        $this->assertEquals($fixtureCollection, $generatedCollection);
-    }
-
-    /** @test */
-    public function generated_postman_collection_can_have_secure_url()
-    {
-        Config::set('scribe.base_url', 'https://yourapp.app');
-        RouteFacade::get('/api/test', TestController::class . '@withEndpointDescription');
-        RouteFacade::post('/api/responseTag', TestController::class . '@withResponseTag');
-
-        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
-        $this->artisan('scribe:generate');
-
-        $generatedCollection = json_decode(file_get_contents(__DIR__ . '/../public/docs/collection.json'), true);
-        // The Postman ID varies from call to call; erase it to make the test data reproducible.
-        $generatedCollection['info']['_postman_id'] = '';
-        $fixtureCollection = json_decode(file_get_contents(__DIR__ . '/Fixtures/collection_with_secure_url.json'), true);
-        $this->assertEquals($fixtureCollection, $generatedCollection);
-    }
-
-    /** @test */
-    public function generated_postman_collection_can_append_custom_http_headers()
-    {
-        RouteFacade::get('/api/headers', TestController::class . '@checkCustomHeaders');
-        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
-        config([
-            'scribe.routes.0.apply.headers' => [
-                'Authorization' => 'customAuthToken',
-                'Custom-Header' => 'NotSoCustom',
-            ],
-        ]);
-        $this->artisan('scribe:generate');
-
-        $generatedCollection = json_decode(file_get_contents(__DIR__ . '/../public/docs/collection.json'), true);
-        // The Postman ID varies from call to call; erase it to make the test data reproducible.
-        $generatedCollection['info']['_postman_id'] = '';
-        $fixtureCollection = json_decode(file_get_contents(__DIR__ . '/Fixtures/collection_with_custom_headers.json'), true);
-        $this->assertEquals($fixtureCollection, $generatedCollection);
-    }
-
-    /** @test */
-    public function generated_postman_collection_can_have_query_parameters()
-    {
-        RouteFacade::get('/api/withQueryParameters', TestController::class . '@withQueryParameters');
-        // We want to have the same values for params each time
-        config(['scribe.faker_seed' => 1234]);
-        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
-        $this->artisan('scribe:generate');
-
-        $generatedCollection = json_decode(file_get_contents(__DIR__ . '/../public/docs/collection.json'), true);
-        // The Postman ID varies from call to call; erase it to make the test data reproducible.
-        $generatedCollection['info']['_postman_id'] = '';
-        $fixtureCollection = json_decode(file_get_contents(__DIR__ . '/Fixtures/collection_with_query_parameters.json'), true);
-        $this->assertEquals($fixtureCollection, $generatedCollection);
-    }
-
-    /** @test */
-    public function generated_postman_collection_can_add_body_parameters()
-    {
-        RouteFacade::get('/api/withBodyParameters', TestController::class . '@withBodyParameters');
-        // We want to have the same values for params each time
-        config(['scribe.faker_seed' => 1234]);
-        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
-        $this->artisan('scribe:generate');
-
-        $generatedCollection = json_decode(file_get_contents(__DIR__ . '/../public/docs/collection.json'), true);
-        // The Postman ID varies from call to call; erase it to make the test data reproducible.
-        $generatedCollection['info']['_postman_id'] = '';
-        $fixtureCollection = json_decode(file_get_contents(__DIR__ . '/Fixtures/collection_with_body_parameters.json'), true);
-        $this->assertEquals($fixtureCollection, $generatedCollection);
-    }
-
-    /** @test */
-    public function generated_postman_collection_can_add_form_data_parameters()
-    {
-        RouteFacade::get('/api/withFormDataParams', TestController::class . '@withFormDataParams');
-        // We want to have the same values for params each time
-        config(['scribe.faker_seed' => 1234]);
-        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
-        $this->artisan('scribe:generate');
-
-        $generatedCollection = json_decode(file_get_contents(__DIR__ . '/../public/docs/collection.json'), true);
-        // The Postman ID varies from call to call; erase it to make the test data reproducible.
-        $generatedCollection['info']['_postman_id'] = '';
-        $fixtureCollection = json_decode(file_get_contents(__DIR__ . '/Fixtures/collection_with_form_data_parameters.json'), true);
         $this->assertEquals($fixtureCollection, $generatedCollection);
     }
 

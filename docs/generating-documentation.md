@@ -23,20 +23,14 @@ You can configure Postman collection generation in the `postman` section of your
 
 - To turn it off, set the `postman.enabled` config option to false.
 
-- To override some fields in the generated collection, set the `postman.overrides` config option to your changes. You can use dot notation to update specific nested fields. For instance, `['info.version' => '2.0.0']` will override the 'version` key in the 'info` object whenever generating.
-
-- The base URL used in the Postman collection is the value of `config('app.url')` by default. To change this, set the value of the `postman.base_url` key.
-
-- The name of the Postman collection will be derived from `config('app.name')` by default. To change this, set the value of the `title` key (not in the `postman` array). This will also set the title for your docs HTML page.
-
-- You can add descriptions and auth information for the collection in the `postman.description` and `postman.auth` keys. 
+- To override fields in the generated collection, set the `postman.overrides` config option to your changes. You can use dot notation to update specific nested fields. For instance, `['info.version' => '2.0.0']` will override the 'version` key in the 'info` object whenever generating.
 
 ## OpenAPI (Swagger) spec generation
 Scribe can also generate an OpenAPI spec file. This is disabled by default. You can configure this in the `openapi` section of your `scribe.php` file.
 
 - To enable it, set the `openapi.enabled` config option to `true`.
 
-- To override some fields in the generated spec, set the `openapi.overrides` config option to your changes. You can use dot notation to update specific nested fields. For instance, `['info.version' => '2.0.0']` will override the 'version` key in the 'info` object whenever generating.
+- To override fields in the generated spec, set the `openapi.overrides` config option to your changes. You can use dot notation to update specific nested fields. For instance, `['info.version' => '2.0.0']` will override the 'version` key in the 'info` object whenever generating.
 
 You can view the generated spec by visiting `public/docs/openapi.yaml` for `static` type, and `<your-app>/docs.openapi` for `laravel` type. This link will also be added to the sidebar of your docs.
 
