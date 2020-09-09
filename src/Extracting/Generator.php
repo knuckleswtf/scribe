@@ -129,6 +129,9 @@ class Generator
         $responseFields = $this->fetchResponseFields($controller, $method, $route, $routeRules, $parsedRoute);
         $parsedRoute['responseFields'] = $responseFields;
 
+
+        $parsedRoute['nestedBodyParameters'] = $this->nestArrayAndObjectFields($parsedRoute['bodyParameters']);
+
         self::$routeBeingProcessed = null;
 
         return $parsedRoute;
@@ -323,27 +326,6 @@ class Generator
         }
     }
 
-    /**
-     * For each array notation parameter (eg user.*, item.*.name, object.*.*, user[])
-     * add a key that represents a "concrete" number (eg user.0, item.0.name, object.0.0, user.0 with the same value.
-     * That way, we always have an array of length 1 for each array key
-     *
-     * @param string $paramName
-     * @param mixed $paramExample
-     * @param array $cleanParams The array that holds the result
-     *
-     * @return void
-     */
-    protected static function generateConcreteKeysForArrayParameters($paramName, $paramExample, array &$cleanParams = [])
-    {
-        if (Str::contains($paramName, '[')) {
-            // Replace usages of [] with dot notation
-            $paramName = str_replace(['][', '[', ']', '..'], ['.', '.', '', '.*.'], $paramName);
-        }
-        // Then generate a sample item for the dot notation
-        Arr::set($cleanParams, str_replace(['.*', '*.'], ['.0', '0.'], $paramName), $paramExample);
-    }
-
     public function addAuthField(array $parsedRoute): array
     {
         $parsedRoute['auth'] = null;
@@ -407,5 +389,37 @@ class Generator
         return new UploadedFile(
             $filePath, $fileName, mime_content_type($filePath), 0, false
         );
+    }
+
+    /**
+     * Transform body parameters such that object fields have a `fields` property containing a list of all subfields
+     * Subfields will be removed from the main parameter map
+     * For instance, if $parameters is ['dad' => [], 'dad.cars' => [], 'dad.age' => []],
+     * normalise this into ['dad' => [..., 'fields' => ['dad.cars' => [], 'dad.age' => []]]
+     */
+    public static function nestArrayAndObjectFields(array $parameters)
+    {
+        $finalParameters = [];
+        foreach ($parameters as $name => $parameter) {
+            if (Str::contains($name, '.')) { // Likely an object field
+                // Get the various pieces of the name
+                $parts = array_reverse(explode('.', $name));
+
+                $fieldName = array_shift($parts);
+
+                $baseName = join('.fields.', array_reverse($parts));
+                // The type should be indicated in the source object by now; we don't need it in the name
+                $normalisedBaseName = str_replace('[]', '.fields', $baseName);
+
+                $dotPath = preg_replace('/\.fields$/', '', $normalisedBaseName) . '.fields.' . $fieldName;
+                Arr::set($finalParameters, $dotPath, $parameter);
+            } else { // A regular field
+                $parameter['fields'] = [];
+                $finalParameters[$name] = $parameter;
+            }
+
+        }
+
+        return $finalParameters;
     }
 }

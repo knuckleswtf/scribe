@@ -41,6 +41,7 @@
 @if(count($route['urlParameters']))
 <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
 @foreach($route['urlParameters'] as $attribute => $parameter)
+<p>
 @component('scribe::components.field-details', [
   'name' => $attribute,
   'type' => $parameter['type'] ?? 'string',
@@ -48,11 +49,13 @@
   'description' => $parameter['description'],
 ])
 @endcomponent
+</p>
 @endforeach
 @endif
 @if(count($route['queryParameters']))
 <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
 @foreach($route['queryParameters'] as $attribute => $parameter)
+<p>
 @component('scribe::components.field-details', [
   'name' => $attribute,
   'type' => $parameter['type'] ?? 'string',
@@ -60,24 +63,19 @@
   'description' => $parameter['description'],
 ])
 @endcomponent
+</p>
 @endforeach
 @endif
-@if(count($route['bodyParameters']))
+@if(count($route['nestedBodyParameters']))
 <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
-@foreach($route['bodyParameters'] as $attribute => $parameter)
-@component('scribe::components.field-details', [
-  'name' => $attribute,
-  'type' => $parameter['type'] ?? 'string',
-  'required' => $parameter['required'] ?? true,
-  'description' => $parameter['description'],
-])
+@component('scribe::partials.body-parameters', ['parameters' => $route['nestedBodyParameters']])
 @endcomponent
-@endforeach
 @endif
 
 @if(count($route['responseFields'] ?? []))
 <h4 class="fancy-heading-panel"><b>Response Fields</b></h4>
 @foreach($route['responseFields'] as $name => $field)
+<p>
 @component('scribe::components.field-details', [
   'name' => $name,
   'type' => $field['type'],
@@ -85,5 +83,6 @@
   'description' => $field['description'],
 ])
 @endcomponent
+</p>
 @endforeach
 @endif
