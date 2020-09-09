@@ -72,9 +72,9 @@ class Generator
      * @param \Illuminate\Routing\Route $route
      * @param array $routeRules Rules to apply when generating documentation for this route
      *
+     * @return array
      * @throws \ReflectionException
      *
-     * @return array
      */
     public function processRoute(Route $route, array $routeRules = [])
     {
@@ -124,7 +124,7 @@ class Generator
 
         $responses = $this->fetchResponses($controller, $method, $route, $routeRules, $parsedRoute);
         $parsedRoute['responses'] = $responses;
-        $parsedRoute['showresponse'] = ! empty($responses);
+        $parsedRoute['showresponse'] = !empty($responses);
 
         $responseFields = $this->fetchResponseFields($controller, $method, $route, $routeRules, $parsedRoute);
         $parsedRoute['responseFields'] = $responseFields;
@@ -227,7 +227,7 @@ class Generator
             $strategyArgs = $arguments;
             $strategyArgs[] = $extractedData;
             $results = $strategy(...$strategyArgs);
-            if (! is_null($results)) {
+            if (!is_null($results)) {
                 foreach ($results as $index => $item) {
                     if ($stage == 'responses') {
                         // Responses from different strategies are all added, not overwritten
@@ -238,7 +238,7 @@ class Generator
                     // so it does not renumber numeric keys and also allows values to be overwritten
 
                     // Don't allow overwriting if an empty value is trying to replace a set one
-                    if (! in_array($extractedData[$stage], [null, ''], true) && in_array($item, [null, ''], true)) {
+                    if (!in_array($extractedData[$stage], [null, ''], true) && in_array($item, [null, ''], true)) {
                         continue;
                     } else {
                         $extractedData[$stage][$index] = $item;
@@ -261,8 +261,6 @@ class Generator
      * And transforms them into key-example pairs : ['age' => 12]
      * It also filters out parameters which have null values and have 'required' as false.
      * It converts all file params that have string examples to actual files (instances of UploadedFile).
-     * Finally, it adds a '.0' key for each array parameter (eg users.* ->users.0),
-     * so that the array ends up containing a 1-item array.
      *
      * @param array $parameters
      *
@@ -270,7 +268,7 @@ class Generator
      */
     public static function cleanParams(array $parameters): array
     {
-        $cleanParams = [];
+        $cleanParameters = [];
 
         foreach ($parameters as $paramName => $details) {
             // Remove params which have no examples and are optional.
@@ -282,14 +280,47 @@ class Generator
                 $details['value'] = self::convertStringValueToUploadedFileInstance($details['value']);
             }
 
-            self::generateConcreteKeysForArrayParameters(
-                $paramName,
-                $details['value'],
-                $cleanParams
-            );
+            if (Str::contains($paramName, '.')) { // Object field
+                self::setObject($cleanParameters, $paramName, $details['value'], $parameters);
+            } else {
+                $cleanParameters[$paramName] = $details['value'];
+            }
         }
 
-        return $cleanParams;
+        return $cleanParameters;
+    }
+
+    public static function setObject(array &$results, string $path, $value, array $source)
+    {
+        if (Str::contains($path, '.')) {
+            $parts = array_reverse(explode('.', $path));
+
+            array_shift($parts); // Get rid of the field name
+
+            $baseName = join('.', array_reverse($parts));
+            // The type should be indicated in the source object by now; we don't need it in the name
+            $normalisedBaseName = str_replace('[]', '', $baseName);
+
+            $parentData = Arr::get($source, $normalisedBaseName);
+            if ($parentData) {
+                // Path we use for lodash set
+                $dotPath = str_replace('[]', '.0', $path);
+                $noValue = new \stdClass();
+                if ($parentData['type'] === 'object') {
+                    if (Arr::get($results, $dotPath, $noValue) === $noValue) {
+                        Arr::set($results, $dotPath, $value);
+                    }
+                } else if ($parentData['type'] === 'object[]') {
+                    if (Arr::get($results, $dotPath, $noValue) === $noValue) {
+                        Arr::set($results, $dotPath, $value);
+                    }
+                    // If there's a second item in the array, set for that too.
+                    if ($value !== null && Arr::get($results, str_replace('[]', '.1', $baseName), $noValue) !== $noValue) {
+                        Arr::set($results, str_replace('.0', '.1', $dotPath), $value);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -310,7 +341,7 @@ class Generator
             $paramName = str_replace(['][', '[', ']', '..'], ['.', '.', '', '.*.'], $paramName);
         }
         // Then generate a sample item for the dot notation
-        Arr::set($cleanParams, str_replace(['.*', '*.'], ['.0','0.'], $paramName), $paramExample);
+        Arr::set($cleanParams, str_replace(['.*', '*.'], ['.0', '0.'], $paramName), $paramExample);
     }
 
     public function addAuthField(array $parsedRoute): array
@@ -338,7 +369,7 @@ class Generator
                 $parsedRoute['auth'] = "cleanQueryParameters.$parameterName." . ($valueToUse ?: $token);
                 $parsedRoute['queryParameters'][$parameterName] = [
                     'name' => $parameterName,
-                    'value' => $valueToDisplay ?:$token,
+                    'value' => $valueToDisplay ?: $token,
                     'description' => '',
                     'required' => true,
                 ];
@@ -354,15 +385,15 @@ class Generator
                 ];
                 break;
             case 'bearer':
-                $parsedRoute['auth'] = "headers.Authorization.Bearer ".($valueToUse ?: $token);
-                $parsedRoute['headers']['Authorization'] = "Bearer ".($valueToDisplay ?: $token);
+                $parsedRoute['auth'] = "headers.Authorization.Bearer " . ($valueToUse ?: $token);
+                $parsedRoute['headers']['Authorization'] = "Bearer " . ($valueToDisplay ?: $token);
                 break;
             case 'basic':
-                $parsedRoute['auth'] = "headers.Authorization.Basic ".($valueToUse ?: base64_encode($token));
-                $parsedRoute['headers']['Authorization'] = "Basic ".($valueToDisplay ?: base64_encode($token));
+                $parsedRoute['auth'] = "headers.Authorization.Basic " . ($valueToUse ?: base64_encode($token));
+                $parsedRoute['headers']['Authorization'] = "Basic " . ($valueToDisplay ?: base64_encode($token));
                 break;
             case 'header':
-                $parsedRoute['auth'] = "headers.$parameterName.".($valueToUse ?: $token);
+                $parsedRoute['auth'] = "headers.$parameterName." . ($valueToUse ?: $token);
                 $parsedRoute['headers'][$parameterName] = $valueToDisplay ?: $token;
                 break;
         }

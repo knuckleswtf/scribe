@@ -75,8 +75,7 @@ class TestController extends Controller
      * @bodyParam another_one number Just need something here.
      * @bodyParam yet_another_param object required Some object params.
      * @bodyParam yet_another_param.name string required Subkey in the object param.
-     * @bodyParam even_more_param array Some array params.
-     * @bodyParam even_more_param.* number Subkey in the array param.
+     * @bodyParam even_more_param number[] Subkey in the array param.
      * @bodyParam book.name string
      * @bodyParam book.author_id integer
      * @bodyParam book[pages_count] integer

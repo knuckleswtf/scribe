@@ -82,27 +82,35 @@ abstract class GeneratorTestCase extends TestCase
                 'type' => 'object',
                 'value' => [],
             ],
-            'object_with_keys.key1' => [
+            'object.key1' => [
                 'type' => 'string',
                 'value' => '43',
             ],
-            'object_with_keys[key2]' => [
+            'object.key2' => [
                 'type' => 'integer',
                 'value' => 77,
             ],
+            'object.key3' => [
+                'type' => 'object',
+                'value'=> [],
+            ],
+            'object.key3.key1' => [
+                'type' => 'string',
+                'value' => 'hoho',
+            ],
             'list' => [
-                'type' => 'array',
-                'value' => [],
+                'type' => 'integer[]',
+                'value' => [4],
             ],
-            'list_with_types.*' => [
-                'type' => 'integer',
-                'value' => 4,
+            'list_of_objects' => [
+                'type' => 'object[]',
+                'value' => [[]],
             ],
-            'list_of_objects.*.key1' => [
+            'list_of_objects[].key1' => [
                 'type' => 'string',
                 'value' => 'John',
             ],
-            'list_of_objects.*.key2' => [
+            'list_of_objects[].key2' => [
                 'type' => 'boolean',
                 'value' => false,
             ],
@@ -111,13 +119,14 @@ abstract class GeneratorTestCase extends TestCase
         $cleanBodyParameters = Generator::cleanParams($parameters);
 
         $this->assertEquals([
-            'object' => [],
-            'object_with_keys' => [
+            'object' => [
                 'key1' => '43',
                 'key2' => 77,
+                'key3' => [
+                    'key1' => 'hoho'
+                ]
             ],
-            'list' => [],
-            'list_with_types' => [4],
+            'list' => [4],
             'list_of_objects' => [
                 [
                     'key1' => 'John',
