@@ -225,6 +225,9 @@ class PostmanCollectionWriter
             if (Str::endsWith($parameterData['type'], '[]')) {
                 $values = empty($parameterData['value']) ? [] : $parameterData['value'];
                 foreach ($values as $index => $value) {
+                    // PHP's parse_str supports array query parameters as filters[0]=name&filters[1]=age OR filters[]=name&filters[]=age
+                    // Going with the first to also support object query parameters
+                    // See https://www.php.net/manual/en/function.parse-str.php
                     $query[] = [
                         'key' => "{$name}[$index]",
                         'value' => urlencode($value),

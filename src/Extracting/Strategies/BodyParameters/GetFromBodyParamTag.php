@@ -88,13 +88,13 @@ class GetFromBodyParamTag extends Strategy
                 $required = trim($required) === 'required';
             }
 
-            $type = $this->normalizeParameterType($type);
+            $type = $this->normalizeTypeName($type);
             [$description, $example] = $this->parseExampleFromParamDescription($description, $type);
             $value = is_null($example) && !$this->shouldExcludeExample($tagContent)
                 ? $this->generateDummyValue($type)
                 : $example;
 
-            $parameters[$name] = compact('type', 'description', 'required', 'value');
+            $parameters[$name] = compact('name', 'type', 'description', 'required', 'value');
         }
 
         return $parameters;

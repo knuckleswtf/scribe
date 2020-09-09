@@ -99,7 +99,7 @@ class GetFromUrlParamTag extends Strategy
 
                 $type = empty($type)
                     ? (Str::contains($description, ['number', 'count', 'page']) ? 'integer' : 'string')
-                    : $this->normalizeParameterType($type);
+                    : $this->normalizeTypeName($type);
             }
 
             [$description, $value] = $this->parseExampleFromParamDescription($description, $type);
@@ -107,7 +107,7 @@ class GetFromUrlParamTag extends Strategy
                 $value = $this->generateDummyValue($type);
             }
 
-            $parameters[$name] = compact('description', 'required', 'value', 'type');
+            $parameters[$name] = compact('name', 'description', 'required', 'value', 'type');
         }
 
         return $parameters;

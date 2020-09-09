@@ -5,6 +5,7 @@ namespace Knuckles\Scribe\Tools;
 use Closure;
 use Exception;
 use Illuminate\Routing\Route;
+use Illuminate\Support\Str;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
@@ -44,7 +45,7 @@ class Utils
             ];
         }
 
-        throw new Exception("Couldn't get class and method names for route ". c::getRouteRepresentation($route).'.');
+        throw new Exception("Couldn't get class and method names for route " . c::getRouteRepresentation($route) . '.');
     }
 
     /**
@@ -101,9 +102,9 @@ class Utils
      *
      * @param array $routeControllerAndMethod
      *
+     * @return ReflectionFunctionAbstract
      * @throws ReflectionException
      *
-     * @return ReflectionFunctionAbstract
      */
     public static function getReflectedRouteMethod(array $routeControllerAndMethod): ReflectionFunctionAbstract
     {
@@ -116,4 +117,13 @@ class Utils
         return (new ReflectionClass($class))->getMethod($method);
     }
 
+    public static function isArrayType(string $typeName)
+    {
+        return Str::endsWith($typeName, '[]');
+    }
+
+    public static function getBaseTypeFromArrayType(string $typeName)
+    {
+        return substr($typeName, 0, -2);
+    }
 }

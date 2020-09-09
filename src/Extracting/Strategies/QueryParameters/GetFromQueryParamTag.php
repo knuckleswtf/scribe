@@ -105,7 +105,7 @@ class GetFromQueryParamTag extends Strategy
                         $type = 'string';
                         $required = true;
                     } else {
-                        $type = $this->normalizeParameterType($type);
+                        $type = $this->normalizeTypeName($type);
                         // Type in annotation is optional
                         if (!$this->isSupportedTypeInDocBlocks($type)) {
                             // Then that wasn't a type, but part of the description
@@ -121,7 +121,7 @@ class GetFromQueryParamTag extends Strategy
 
                 $type = empty($type)
                     ? (Str::contains($description, ['number', 'count', 'page']) ? 'integer' : 'string')
-                    : $this->normalizeParameterType($type);
+                    : $this->normalizeTypeName($type);
 
             }
 
@@ -130,7 +130,7 @@ class GetFromQueryParamTag extends Strategy
                 $value = $this->generateDummyValue($type);
             }
 
-            $parameters[$name] = compact('description', 'required', 'value', 'type');
+            $parameters[$name] = compact('name', 'description', 'required', 'value', 'type');
         }
 
         return $parameters;

@@ -4,10 +4,14 @@ namespace Knuckles\Scribe\Writing;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Tools\DocumentationConfig;
+use Knuckles\Scribe\Tools\Utils;
 
 class OpenAPISpecWriter
 {
+    use ParamHelpers;
+
     const VERSION = '3.0.3';
 
     /**
@@ -145,9 +149,7 @@ class OpenAPISpecWriter
                     'description' => $details['description'] ?? '',
                     'example' => $details['value'] ?? null,
                     'required' => $details['required'] ?? false,
-                    'schema' => [
-                        'type' => $details['type'] ?? 'string',
-                    ],
+                    'schema' => $this->generateFieldData($details),
                 ];
                 $parameters[] = $parameterData;
             }
@@ -183,7 +185,7 @@ class OpenAPISpecWriter
             $hasRequiredParameter = false;
             $hasFileParameter = false;
 
-            foreach ($endpoint['bodyParameters'] as $name => $details) {
+            foreach ($endpoint['nestedBodyParameters'] as $name => $details) {
                 if ($details['required']) {
                     $hasRequiredParameter = true;
                     // Don't declare this earlier.
@@ -193,25 +195,10 @@ class OpenAPISpecWriter
 
 
                 if ($details['type'] === 'file') {
-                    // See https://swagger.io/docs/specification/describing-request-body/file-upload/
                     $hasFileParameter = true;
-                    $fieldData = [
-                        'type' => 'string',
-                        'format' => 'binary',
-                        'description' => $details['description'] ?? '',
-                    ];
-                } else {
-                    $fieldData = [
-                        'type' => $this->convertScribeOrPHPTypeToOpenAPIType($details['type']),
-                        'description' => $details['description'] ?? '',
-                        'example' => $details['value'] ?? null,
-                    ];
-                    if ($fieldData['type'] === 'array') {
-                        $fieldData['items'] = [
-                            'type' => empty($details['value'] ?? null) ? 'object' : $this->convertScribeOrPHPTypeToOpenAPIType(gettype($details['value'][0])),
-                        ];
-                    }
                 }
+
+                $fieldData = $this->generateFieldData($details);
 
                 $schema['properties'][$name] = $fieldData;
             }
@@ -415,7 +402,7 @@ class OpenAPISpecWriter
                     'description' => '',
                 ];
                 break;
-                // OpenAPI doesn't support auth with body parameter
+            // OpenAPI doesn't support auth with body parameter
         }
 
         return [
@@ -445,6 +432,57 @@ class OpenAPISpecWriter
                 return 'null';
             default:
                 return $type;
+        }
+    }
+
+    public function generateFieldData(array $field): array
+    {
+        if ($field['type'] === 'file') {
+            // See https://swagger.io/docs/specification/describing-request-body/file-upload/
+            return [
+                'type' => 'string',
+                'format' => 'binary',
+                'description' => $field['description'] ?? '',
+            ];
+        } else if (Utils::isArrayType($field['type'])) {
+            $baseType = Utils::getBaseTypeFromArrayType($field['type']);
+            $fieldData = [
+                'type' => 'array',
+                'description' => $field['description'] ?? '',
+                'example' => $field['value'] ?? null,
+                'items' => Utils::isArrayType($baseType)
+                    ? $this->generateFieldData(['name' => '', 'type' => $baseType, 'value' => ($field['value'] ?? [null])[0]])
+                : [
+                'type' => $baseType,
+            ],
+        ];
+
+        if ($baseType === 'object') {
+            foreach ($field['fields'] as $subfield) {
+                $fieldSimpleName = preg_replace("/^{$field['name']}\\[\]\\./", '', $subfield['name']);
+                $fieldData['items']['properties'][$fieldSimpleName] = $this->generateFieldData($subfield);
+                if ($subfield['required']) {
+                    $fieldData['items']['required'][] = $fieldSimpleName;
+                }
+            }
+        }
+
+        return $fieldData;
+    } else if ($field['type'] === 'object') {
+            return [
+                'type' => 'object',
+                'description' => $field['description'] ?? '',
+                'example' => $field['value'] ?? null,
+                'properties' => collect($field['fields'])->mapWithKeys(function ($subfield) use ($field) {
+                    return [preg_replace("/^{$field['name']}\\./", '', $subfield['name']) => $this->generateFieldData($subfield)];
+                })->all(),
+            ];
+        } else {
+            return [
+                'type' => $this->normalizeTypeName($field['type']),
+                'description' => $field['description'] ?? '',
+                'example' => $field['value'] ?? null,
+            ];
         }
     }
 }

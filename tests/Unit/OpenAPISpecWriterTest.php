@@ -4,6 +4,7 @@ namespace Knuckles\Scribe\Tests\Unit;
 
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Faker\Factory;
+use Knuckles\Scribe\Extracting\Generator;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Writing\OpenAPISpecWriter;
 use Orchestra\Testbench\TestCase;
@@ -116,12 +117,14 @@ class OpenAPISpecWriterTest extends TestCase
             'urlParameters.param' => [
                 'description' => 'Something',
                 'required' => true,
-                'value' => '56',
+                'value' => 56,
+                'type' => 'integer',
             ],
             'urlParameters.optionalParam' => [
                 'description' => 'Another',
                 'required' => false,
                 'value' => '69',
+                'type' => 'string',
             ],
         ]);
         $fakeRoute2 = $this->createMockRouteData(['uri' => 'path1', 'methods' => ['POST']]);
@@ -137,8 +140,8 @@ class OpenAPISpecWriterTest extends TestCase
             'required' => true,
             'name' => 'param',
             'description' => 'Something',
-            'example' => '56',
-            'schema' => ['type' => 'string'],
+            'example' => 56,
+            'schema' => ['type' => 'integer'],
         ], $results['paths']['/path1/{param}/{optionalParam}']['parameters'][0]);
         $this->assertEquals([
             'in' => 'path',
@@ -194,6 +197,7 @@ class OpenAPISpecWriterTest extends TestCase
                     'description' => 'A query param',
                     'required' => false,
                     'value' => 'hahoho',
+                    'type' => 'string',
                 ],
             ],
         ]);
@@ -212,7 +216,11 @@ class OpenAPISpecWriterTest extends TestCase
             'name' => 'param',
             'description' => 'A query param',
             'example' => 'hahoho',
-            'schema' => ['type' => 'string'],
+            'schema' => [
+                'type' => 'string',
+                'description' => 'A query param',
+                'example' => 'hahoho',
+            ],
         ], $results['paths']['/path1']['get']['parameters'][0]);
     }
 
@@ -224,44 +232,86 @@ class OpenAPISpecWriterTest extends TestCase
             'uri' => '/path1',
             'bodyParameters' => [
                 'stringParam' => [
+                    'name' => 'stringParam',
                     'description' => 'String param',
                     'required' => false,
                     'value' => 'hahoho',
                     'type' => 'string',
                 ],
                 'integerParam' => [
+                    'name' => 'integerParam',
                     'description' => 'Integer param',
                     'required' => true,
                     'value' => 99,
                     'type' => 'integer',
                 ],
                 'booleanParam' => [
+                    'name' => 'booleanParam',
                     'description' => 'Boolean param',
                     'required' => true,
                     'value' => false,
                     'type' => 'boolean',
                 ],
+                'objectParam' => [
+                    'name' => 'objectParam',
+                    'description' => 'Object param',
+                    'required' => false,
+                    'value' => [],
+                    'type' => 'object',
+                ],
+                'objectParam.field' => [
+                    'name' => 'objectParam.field',
+                    'description' => 'Object param field',
+                    'required' => false,
+                    'value' => 119.0,
+                    'type' => 'number',
+                ],
             ],
         ]);
+        $fakeRoute1['nestedBodyParameters'] = Generator::nestArrayAndObjectFields($fakeRoute1['bodyParameters']);
         $fakeRoute2 = $this->createMockRouteData(['methods' => ['GET'], 'uri' => '/path1']);
         $fakeRoute3 = $this->createMockRouteData([
             'methods' => ['PUT'],
             'uri' => '/path2',
             'bodyParameters' => [
                 'fileParam' => [
+                    'name' => 'fileParam',
                     'description' => 'File param',
                     'required' => false,
                     'value' => null,
                     'type' => 'file',
                 ],
-                'numberParam' => [
-                    'description' => 'Number param',
+                'numberArrayParam' => [
+                    'name' => 'numberArrayParam',
+                    'description' => 'Number array param',
                     'required' => false,
-                    'value' => 186.9,
-                    'type' => 'number',
+                    'value' => [186.9],
+                    'type' => 'number[]',
+                ],
+                'objectArrayParam' => [
+                    'name' => 'objectArrayParam',
+                    'description' => 'Object array param',
+                    'required' => false,
+                    'value' => [[]],
+                    'type' => 'object[]',
+                ],
+                'objectArrayParam[].field1' => [
+                    'name' => 'objectArrayParam[].field1',
+                    'description' => 'Object array param first field',
+                    'required' => true,
+                    'value' => ["hello"],
+                    'type' => 'string[]',
+                ],
+                'objectArrayParam[].field2' => [
+                    'name' => 'objectArrayParam[].field2',
+                    'description' => '',
+                    'required' => false,
+                    'value' => "hi",
+                    'type' => 'string',
                 ],
             ],
         ]);
+        $fakeRoute3['nestedBodyParameters'] = Generator::nestArrayAndObjectFields($fakeRoute3['bodyParameters']);
         $groupedEndpoints = collect([$fakeRoute1, $fakeRoute2, $fakeRoute3])->groupBy('metadata.groupName');
 
         $writer = new OpenAPISpecWriter(new DocumentationConfig($this->config));
@@ -291,6 +341,18 @@ class OpenAPISpecWriterTest extends TestCase
                                 'example' => 99,
                                 'type' => 'integer',
                             ],
+                            'objectParam' => [
+                                'description' => 'Object param',
+                                'example' => [],
+                                'type' => 'object',
+                                'properties' => [
+                                    'field' => [
+                                        'description' => 'Object param field',
+                                        'example' => 119.0,
+                                        'type' => 'number',
+                                    ],
+                                ],
+                            ],
                         ],
                         'required' => [
                             'integerParam',
@@ -312,10 +374,37 @@ class OpenAPISpecWriterTest extends TestCase
                                 'type' => 'string',
                                 'format' => 'binary',
                             ],
-                            'numberParam' => [
-                                'description' => 'Number param',
-                                'example' => 186.9,
-                                'type' => 'number',
+                            'numberArrayParam' => [
+                                'description' => 'Number array param',
+                                'example' => [186.9],
+                                'type' => 'array',
+                                'items' => [
+                                    'type' => 'number',
+                                ],
+                            ],
+                            'objectArrayParam' => [
+                                'description' => 'Object array param',
+                                'example' => [[]],
+                                'type' => 'array',
+                                'items' => [
+                                    'type' => 'object',
+                                    'required' => ['field1'],
+                                    'properties' => [
+                                        'field1' => [
+                                            'type' => 'array',
+                                            'items' => [
+                                                'type' => 'string'
+                                            ],
+                                            'description' => 'Object array param first field',
+                                            'example' => ["hello"],
+                                        ],
+                                        'field2' => [
+                                            'type' => 'string',
+                                            'description' => '',
+                                            'example' => "hi",
+                                        ],
+                                    ],
+                                ],
                             ],
                         ],
                     ],

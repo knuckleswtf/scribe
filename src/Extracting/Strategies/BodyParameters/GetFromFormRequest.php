@@ -116,6 +116,7 @@ class GetFromFormRequest extends Strategy
             $userSpecifiedParameterInfo = $customParameterData[$parameter] ?? [];
 
             $parameterData = [
+                'name' => $parameter,
                 'required' => false,
                 'type' => null,
                 'value' => self::$MISSING_VALUE,

@@ -142,7 +142,7 @@ trait ParamHelpers
      *
      * @return string
      */
-    protected function normalizeParameterType(?string $typeName): string
+    protected function normalizeTypeName(?string $typeName): string
     {
         if (!$typeName) {
             return 'string';

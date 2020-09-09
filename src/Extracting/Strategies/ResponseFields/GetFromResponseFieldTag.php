@@ -53,7 +53,7 @@ class GetFromResponseFieldTag extends Strategy
                     $description = trim($description);
                 }
 
-                $type = $this->normalizeParameterType($type);
+                $type = $this->normalizeTypeName($type);
 
                 // Support optional type in annotation
                 if (!$this->isSupportedTypeInDocBlocks($type)) {
@@ -76,7 +76,7 @@ class GetFromResponseFieldTag extends Strategy
                             ?? $validResponse['data'][0][$name] // Maybe an Api Resource Collection?
                             ?? $nonexistent;
                         if ($value !== $nonexistent) {
-                            $type =  $this->normalizeParameterType(gettype($value));
+                            $type =  $this->normalizeTypeName(gettype($value));
                         } else {
                             $type = '';
                         }
