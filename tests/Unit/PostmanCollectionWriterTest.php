@@ -15,9 +15,7 @@ class PostmanCollectionWriterTest extends TestCase
     public function testCorrectStructureIsFollowed()
     {
         \Config::set('scribe.title', 'Test API');
-        \Config::set('scribe.postman', [
-            'description' => 'A fake description',
-        ]);
+        \Config::set('scribe.description', 'A fake description');
 
         $writer = new PostmanCollectionWriter();
         $collection = $writer->generatePostmanCollection(new Collection());
@@ -54,7 +52,8 @@ class PostmanCollectionWriterTest extends TestCase
         $item = data_get($collection, 'item.0.item.0');
         $this->assertSame('some/path', $item['name'], 'Name defaults to path');
         $this->assertSame('http', data_get($item, 'request.url.protocol'), 'Protocol defaults to http');
-        $this->assertSame('fake.localhost', data_get($item, 'request.url.host'), 'Host uses what\'s given');
+        $this->assertSame('fake.localhost', data_get($collection, 'variable.0.value'));
+        $this->assertSame('{{baseUrl}}', data_get($item, 'request.url.host'));
         $this->assertSame('some/path', data_get($item, 'request.url.path'), 'Path is set correctly');
         $this->assertEmpty(data_get($item, 'request.url.query'), 'Query parameters are empty');
         $this->assertSame('GET', data_get($item, 'request.method'), 'Method is correctly resolved');
@@ -117,14 +116,16 @@ class PostmanCollectionWriterTest extends TestCase
 
         $fakeRoute['queryParameters'] = [
             'limit' => [
+                'type' => 'integer',
                 'description' => 'A fake limit for my fake endpoint',
                 'required' => true,
                 'value' => 5,
             ],
-            'filters.*' => [
+            'filters' => [
+                'type' => 'integer[]',
                 'description' => 'Filters',
                 'required' => true,
-                'value' => '34,12',
+                'value' => [34, 12],
             ],
         ];
         $fakeRoute['cleanQueryParameters'] = Generator::cleanParams($fakeRoute['queryParameters']);
@@ -136,7 +137,7 @@ class PostmanCollectionWriterTest extends TestCase
 
         $variableData = data_get($collection, 'item.0.item.0.request.url.query');
 
-        $this->assertCount(2, $variableData);
+        $this->assertCount(3, $variableData);
         $this->assertEquals([
             'key' => 'limit',
             'value' => '5',
@@ -144,11 +145,17 @@ class PostmanCollectionWriterTest extends TestCase
             'disabled' => false,
         ], $variableData[0]);
         $this->assertEquals([
-            'key' => 'filters',
-            'value' => urlencode("34,12"),
+            'key' => 'filters[0]',
+            'value' => 34,
             'description' => 'Filters',
             'disabled' => false,
         ], $variableData[1]);
+        $this->assertEquals([
+            'key' => 'filters[1]',
+            'value' => 12,
+            'description' => 'Filters',
+            'disabled' => false,
+        ], $variableData[2]);
     }
 
     public function testUrlParametersAreNotIncludedIfMissingFromPath()
@@ -177,11 +184,13 @@ class PostmanCollectionWriterTest extends TestCase
         $fakeRoute = $this->createMockRouteData('fake/path');
         $fakeRoute['queryParameters'] = [
             'required' => [
+                'type' => 'string',
                 'description' => 'A required param with a null value',
                 'required' => true,
                 'value' => null,
             ],
             'not_required' => [
+                'type' => 'string',
                 'description' => 'A not required param with a null value',
                 'required' => false,
                 'value' => null,

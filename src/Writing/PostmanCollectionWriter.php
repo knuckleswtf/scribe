@@ -57,7 +57,7 @@ class PostmanCollectionWriter
                     'key' => 'baseUrl',
                     'type' => 'string',
                     'name' => 'string',
-                    'value' => parse_url($this->baseUrl, PHP_URL_HOST),
+                    'value' => parse_url($this->baseUrl, PHP_URL_HOST) ?: $this->baseUrl, // if there's no protocol, parse_url might fail
                 ],
             ],
             'info' => [
@@ -218,25 +218,40 @@ class PostmanCollectionWriter
             'path' => preg_replace_callback('/\{(\w+)\??}/', function ($matches) {
                 return ':' . $matches[1];
             }, $route['uri']),
-            'query' => collect($route['queryParameters'] ?? [])->map(function ($parameterData, $key) {
-                // TODO remove: unneeded with new syntax
-                $key = rtrim($key, ".*");
-                return [
-                    'key' => $key,
+        ];
+
+        $query = [];
+        foreach ($route['queryParameters'] ?? [] as $name => $parameterData) {
+            if (Str::endsWith($parameterData['type'], '[]')) {
+                $values = empty($parameterData['value']) ? [] : $parameterData['value'];
+                foreach ($values as $index => $value) {
+                    $query[] = [
+                        'key' => "{$name}[$index]",
+                        'value' => urlencode($value),
+                        'description' => strip_tags($parameterData['description']),
+                        // Default query params to disabled if they aren't required and have empty values
+                        'disabled' => !($parameterData['required'] ?? false) && empty($parameterData['value']),
+                    ];
+                }
+            } else {
+                $query[] = [
+                    'key' => $name,
                     'value' => urlencode($parameterData['value']),
                     'description' => strip_tags($parameterData['description']),
                     // Default query params to disabled if they aren't required and have empty values
                     'disabled' => !($parameterData['required'] ?? false) && empty($parameterData['value']),
                 ];
-            })->values()->toArray(),
-        ];
+            }
+        }
+
+        $base['query'] = $query;
 
         // Create raw url-parameter (Insomnia uses this on import)
-        $query = collect($base['query'] ?? [])->map(function ($queryParamData) {
+        $queryString = collect($base['query'] ?? [])->map(function ($queryParamData) {
             return $queryParamData['key'] . '=' . $queryParamData['value'];
         })->implode('&');
         $base['raw'] = sprintf('%s://%s/%s%s',
-            $base['protocol'], $base['host'], $base['path'], $query ? '?' . $query : null
+            $base['protocol'], $base['host'], $base['path'], $queryString ? "?{$queryString}" : null
         );
 
         // If there aren't any url parameters described then return what we've got

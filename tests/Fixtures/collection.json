@@ -1,5 +1,13 @@
 {
-    "variable": [],
+    "variable": [
+        {
+            "id": "baseUrl",
+            "key": "baseUrl",
+            "type": "string",
+            "name": "string",
+            "value": "localhost"
+        }
+    ],
     "info": {
         "name": "GREAT API!",
         "_postman_id": "",
@@ -17,10 +25,10 @@
                     "request": {
                         "url": {
                             "protocol": "http",
-                            "host": "localhost",
+                            "host": "{{baseUrl}}",
                             "path": "api\/withDescription",
                             "query": [],
-                            "raw": "http:\/\/localhost\/api\/withDescription"
+                            "raw": "http:\/\/{{baseUrl}}\/api\/withDescription"
                         },
                         "method": "GET",
                         "header": [
@@ -46,10 +54,10 @@
                     "request": {
                         "url": {
                             "protocol": "http",
-                            "host": "localhost",
+                            "host": "{{baseUrl}}",
                             "path": "api\/withFormDataParams",
                             "query": [],
-                            "raw": "http:\/\/localhost\/api\/withFormDataParams"
+                            "raw": "http:\/\/{{baseUrl}}\/api\/withFormDataParams"
                         },
                         "method": "POST",
                         "header": [
@@ -93,10 +101,10 @@
                     "request": {
                         "url": {
                             "protocol": "http",
-                            "host": "localhost",
+                            "host": "{{baseUrl}}",
                             "path": "api\/withBodyParameters",
                             "query": [],
-                            "raw": "http:\/\/localhost\/api\/withBodyParameters"
+                            "raw": "http:\/\/{{baseUrl}}\/api\/withBodyParameters"
                         },
                         "method": "POST",
                         "header": [
@@ -129,7 +137,7 @@
                     "request": {
                         "url": {
                             "protocol": "http",
-                            "host": "localhost",
+                            "host": "{{baseUrl}}",
                             "path": "api\/withQueryParameters",
                             "query": [
                                 {
@@ -163,7 +171,7 @@
                                     "disabled": false
                                 }
                             ],
-                            "raw": "http:\/\/localhost\/api\/withQueryParameters?location_id=consequatur&user_id=me&page=4&filters=consequatur&url_encoded=%2B+%5B%5D%26%3D"
+                            "raw": "http:\/\/{{baseUrl}}\/api\/withQueryParameters?location_id=consequatur&user_id=me&page=4&filters=consequatur&url_encoded=%2B+%5B%5D%26%3D"
                         },
                         "method": "GET",
                         "header": [
@@ -189,10 +197,10 @@
                     "request": {
                         "url": {
                             "protocol": "http",
-                            "host": "localhost",
+                            "host": "{{baseUrl}}",
                             "path": "api\/withAuthTag",
                             "query": [],
-                            "raw": "http:\/\/localhost\/api\/withAuthTag"
+                            "raw": "http:\/\/{{baseUrl}}\/api\/withAuthTag"
                         },
                         "method": "GET",
                         "header": [
@@ -222,7 +230,7 @@
                     "request": {
                         "url": {
                             "protocol": "http",
-                            "host": "localhost",
+                            "host": "{{baseUrl}}",
                             "path": "api\/echoesUrlParameters\/:param-:param2\/:param3",
                             "query": [
                                 {
@@ -232,7 +240,7 @@
                                     "disabled": false
                                 }
                             ],
-                            "raw": "http:\/\/localhost\/api\/echoesUrlParameters\/:param-:param2\/:param3?something=consequatur",
+                            "raw": "http:\/\/{{baseUrl}}\/api\/echoesUrlParameters\/:param-:param2\/:param3?something=consequatur",
                             "variable": [
                                 {
                                     "id": "param",
