@@ -118,7 +118,7 @@ INTRO
 
     'description' => '',
 
-    'responses_base_dir' => storage_path('responses/'),
+    'responses_base_dir' => storage_path() . '/',
 
     /*
      * Generate a Postman collection in addition to HTML docs.

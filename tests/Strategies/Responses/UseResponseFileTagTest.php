@@ -33,8 +33,10 @@ class UseResponseFileTagTest extends TestCase
         $filePath =  __DIR__ . '/../../Fixtures/response_test.json';
         $filePath2 =  __DIR__ . '/../../Fixtures/response_error_test.json';
 
-        copy($filePath, storage_path('response_test.json'));
-        copy($filePath2, storage_path('response_error_test.json'));
+        $baseResponsesPath = config('scribe.responses_base_dir', storage_path() . '/');
+
+        copy($filePath, $baseResponsesPath . 'response_test.json');
+        copy($filePath2, $baseResponsesPath . 'response_error_test.json');
 
         $strategy = new UseResponseFileTag(new DocumentationConfig([]));
         $results = $strategy->getFileResponses($tags);
@@ -52,8 +54,8 @@ class UseResponseFileTagTest extends TestCase
             ],
         ], $results);
 
-        unlink(storage_path('response_test.json'));
-        unlink(storage_path('response_error_test.json'));
+        unlink($baseResponsesPath . 'response_test.json');
+        unlink($baseResponsesPath . 'response_error_test.json');
     }
 
     /** @test */
@@ -61,7 +63,9 @@ class UseResponseFileTagTest extends TestCase
     {
 
         $filePath = __DIR__ . '/../../Fixtures/response_test.json';
-        copy($filePath, storage_path('response_test.json'));
+        $baseResponsesPath = config('scribe.responses_base_dir', storage_path() . '/');
+        copy($filePath, $baseResponsesPath . 'response_test.json');
+
 
         $strategy = new UseResponseFileTag(new DocumentationConfig([]));
         $tags = [
