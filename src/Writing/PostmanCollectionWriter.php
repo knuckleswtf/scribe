@@ -32,14 +32,6 @@ class PostmanCollectionWriter
 
     public function generatePostmanCollection(Collection $groupedEndpoints)
     {
-        $description = config('scribe.postman.description', '');
-
-        if ($description) {
-            c::deprecated('the `postman.description` config setting', 'the `description` setting');
-        } else {
-            $description = config('scribe.description', '');
-        }
-
         $collection = [
             'variable' => [
                 [
@@ -51,9 +43,9 @@ class PostmanCollectionWriter
                 ],
             ],
             'info' => [
-                'name' => config('scribe.title') ?: config('app.name') . ' API',
+                'name' => $this->config->get('title') ?: config('app.name') . ' API',
                 '_postman_id' => Uuid::uuid4()->toString(),
-                'description' => $description,
+                'description' => $this->config->get('description', ''),
                 'schema' => "https://schema.getpostman.com/json/collection/v" . self::VERSION . "/collection.json",
             ],
             'item' => $groupedEndpoints->map(function (Collection $routes, $groupName) {
