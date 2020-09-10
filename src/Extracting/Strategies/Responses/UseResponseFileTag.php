@@ -69,7 +69,6 @@ class UseResponseFileTag extends Strategy
             $filePath = $baseResponsePath . $relativeFilePath;
             if (! file_exists($filePath)) {
                 c::warn("@responseFile {$relativeFilePath} does not exist");
-                return false;
             }
             $content = file_get_contents($filePath, true);
             if ($json) {
