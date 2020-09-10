@@ -18,11 +18,6 @@ class PostmanCollectionWriter
     const VERSION = '2.1.0';
 
     /**
-     * @var array|null
-     */
-    private $auth;
-
-    /**
      * @var DocumentationConfig
      */
     protected $config;
@@ -32,12 +27,7 @@ class PostmanCollectionWriter
     public function __construct(DocumentationConfig $config = null)
     {
         $this->config = $config ?: new DocumentationConfig(config('scribe', []));
-        $this->auth = config('scribe.postman.auth');
         $this->baseUrl = $this->getBaseUrl($this->config->get('postman.base_url', $this->config->get('base_url')));
-
-        if ($this->auth) {
-            c::deprecated('the `postman.auth` config setting', 'the `postman.overrides` setting');
-        }
     }
 
     public function generatePostmanCollection(Collection $groupedEndpoints)
@@ -75,11 +65,6 @@ class PostmanCollectionWriter
             })->values()->toArray(),
             'auth' => $this->generateAuthObject(),
         ];
-
-        if (!empty($this->auth)) {
-            $collection['auth'] = $this->auth;
-        }
-
         return $collection;
     }
 
@@ -180,12 +165,6 @@ class PostmanCollectionWriter
     {
         $headers = collect($route['headers']);
 
-        // Exclude authentication headers if they're handled by Postman auth
-        $authHeader = $this->getAuthHeader();
-        if (!empty($authHeader)) {
-            $headers = $headers->except($authHeader);
-        }
-
         return $headers
             ->union([
                 'Accept' => 'application/json',
@@ -273,29 +252,6 @@ class PostmanCollectionWriter
         })->values()->toArray();
 
         return $base;
-    }
-
-    protected function getAuthHeader()
-    {
-        $auth = $this->auth;
-        if (empty($auth) || !is_string($auth['type'] ?? null)) {
-            return null;
-        }
-
-        switch ($auth['type']) {
-            case 'bearer':
-                return 'Authorization';
-            case 'apikey':
-                $spec = $auth['apikey'];
-
-                if (isset($spec['in']) && $spec['in'] !== 'header') {
-                    return null;
-                }
-
-                return $spec['key'];
-            default:
-                return null;
-        }
     }
 
     protected function getBaseUrl($baseUrl)
