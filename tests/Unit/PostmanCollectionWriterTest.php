@@ -227,6 +227,7 @@ class PostmanCollectionWriterTest extends TestCase
     {
         config(['scribe.base_url' => 'fake.localhost']);
         config(['scribe.auth.enabled' => true]);
+        config(['scribe.auth.default' => false]);
 
         $route1 = $this->createMockRouteData('some/path');
         $route1['metadata']['authenticated'] = true;

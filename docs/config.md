@@ -91,7 +91,9 @@ Authentication information about your API. This information will be used:
 - to set the auth headers/query parameters/body parameters for response calls
 
 Here are the available settings:
-- `enabled`: Set this to `true` if your API requires authentication. Default: `false`.
+- `enabled`: Set this to `true` if any endpoints in your API use authentication. Default: `false`.
+
+- `default`: Specify the default behaviour of your API. If you set this to `true`, your endpoints will be authenticated by default, and you can opt out individually with the `@unauthenticated` tag. If you set this to `false`, your endpoints will NOT be authenticated by default, and you can turn on auth individually with the `@authenticated` tag. Don't forget to set `auth.enabled` to `true`!  Default: `false`.
 
 - `in`: Where is the auth value meant to be sent in a request? Options:
   - `query` (for a query parameter)

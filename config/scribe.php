@@ -46,9 +46,15 @@ return [
      */
     'auth' => [
         /*
-         * Set this to true if your API is authenticated.
+         * Set this to true if any endpoints in your API are authenticated.
          */
         'enabled' => false,
+
+        /*
+         * Set this to true if your API is authenticated by default.
+         * You can also use @unauthenticated or @authenticated on individual methods to change their status.
+         */
+        'default' => false,
 
         /*
          * Where is the auth value meant to be sent in a request?

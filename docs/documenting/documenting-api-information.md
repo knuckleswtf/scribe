@@ -7,8 +7,8 @@ You can add authentication information for your API using the `auth` section in 
 .. Important:: Scribe uses your specified authentication information in three places:
 
    - Generating an "Authentication" section in your docs
-   - Adding authentication parameters to your example requests (only for endpoints marked as :code:`@authenticated`)
-   - Adding the necessary auth parameters with the specified value to response calls (only for endpoints marked as :code:`@authenticated`)
+   - Adding authentication parameters to your example requests for endpoints marked as :code:`@authenticated` (or if you have with :code:`auth.default` = true)
+   - Adding the necessary auth parameters with the specified value to response calls only for endpoints marked as :code:`@authenticated` (or if you have with :code:`auth.default` = true)
 ```
 
 Here's how you'd configure auth with a query parameter named `apiKey`:
@@ -16,6 +16,7 @@ Here's how you'd configure auth with a query parameter named `apiKey`:
 ```php
     'auth' => [
         'enabled' => true,
+        'default' => false,
         'in' => 'query',
         'name' => 'apiKey',
         'use_value' => env('SCRIBE_API_KEY'),
@@ -32,6 +33,7 @@ Here's an example with a bearer token (also applies to basic auth, if you change
 ```php
     'auth' => [
         'enabled' => true,
+        'default' => false,
         'in' => 'bearer',
         'name' => 'hahaha', // <--- This value is ignored for bearer and basic auth
         'use_value' => env('SCRIBE_AUTH_KEY'),
@@ -46,6 +48,7 @@ And here's an example with a custom header:
 ```php
     'auth' => [
         'enabled' => true,
+        'default' => false,
         'in' => 'header',
         'name' => 'Api-Key', // <--- The name of the header
         'use_value' => env('SCRIBE_AUTH_KEY'),
@@ -53,6 +56,7 @@ And here's an example with a custom header:
         'extra_info' => 'You can retrieve your token by visiting your dashboard and clicking <b>Generate API token</b>.',
     ],
 ```
+The `default` field is the default behaviour of our API. If your endpoints are authenticated by default, set this to `true`, then use `@unauthenticated` on the method doc block if you need to turn off auth for specific endpoints. If your endpoints are open by default, leave this as `false`, then use `@authenticated` on the method doc block if you need to turn on auth for specific endpoints.
 
 You can set whatever you want as the `extra_info`. A good idea would be to tell your users where to get their auth key. 
 

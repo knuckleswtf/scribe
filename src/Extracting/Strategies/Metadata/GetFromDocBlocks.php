@@ -33,23 +33,31 @@ class GetFromDocBlocks extends Strategy
             'groupDescription' => $routeGroupDescription,
             'title' => $routeTitle ?: $methodDocBlock->getShortDescription(),
             'description' => $methodDocBlock->getLongDescription()->getContents(),
-            'authenticated' => $this->getAuthStatusFromDocBlock($classDocBlock->getTags()) ?: $this->getAuthStatusFromDocBlock($methodDocBlock->getTags()),
+            'authenticated' => $this->getAuthStatusFromDocBlock($methodDocBlock, $classDocBlock),
         ];
     }
 
     /**
-     * @param array $tags Tags in the method doc block
+     * @param DocBlock $methodDocBlock Method docblock
+     * @param DocBlock $classDocBlock Class docblock
      *
      * @return bool
      */
-    protected function getAuthStatusFromDocBlock(array $tags)
+    protected function getAuthStatusFromDocBlock(DocBlock $methodDocBlock, DocBlock $classDocBlock = null)
     {
-        $authTag = collect($tags)
-            ->first(function ($tag) {
-                return $tag instanceof Tag && strtolower($tag->getName()) === 'authenticated';
-            });
+        foreach ($methodDocBlock->getTags() as $tag) {
+            if (strtolower($tag->getName()) === 'authenticated') {
+                return true;
+            }
 
-        return (bool) $authTag;
+            if (strtolower($tag->getName()) === 'unauthenticated') {
+                return false;
+            }
+        }
+
+        return $classDocBlock
+            ? $this->getAuthStatusFromDocBlock($classDocBlock)
+            : $this->config->get('auth.default', false);
     }
 
     /**
@@ -61,7 +69,7 @@ class GetFromDocBlocks extends Strategy
     protected function getRouteGroupDescriptionAndTitle(DocBlock $methodDocBlock, DocBlock $controllerDocBlock)
     {
         // @group tag on the method overrides that on the controller
-        if (! empty($methodDocBlock->getTags())) {
+        if (!empty($methodDocBlock->getTags())) {
             foreach ($methodDocBlock->getTags() as $tag) {
                 if ($tag->getName() === 'group') {
                     $routeGroupParts = explode("\n", trim($tag->getContent()));
