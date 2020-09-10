@@ -16,6 +16,7 @@ use Knuckles\Scribe\Tests\Fixtures\TestUser;
 use Knuckles\Scribe\Tools\Utils;
 use Orchestra\Testbench\TestCase;
 use ReflectionException;
+use Symfony\Component\Yaml\Yaml;
 
 class GenerateDocumentationTest extends TestCase
 {
@@ -38,7 +39,7 @@ class GenerateDocumentationTest extends TestCase
 
     public function tearDown(): void
     {
-        Utils::deleteDirectoryAndContents('/public/docs');
+        // Utils::deleteDirectoryAndContents('/public/docs');
         Utils::deleteDirectoryAndContents('/resources/docs');
     }
 
@@ -282,8 +283,8 @@ class GenerateDocumentationTest extends TestCase
 
         $this->artisan('scribe:generate');
 
-        $generatedCollection = json_decode(file_get_contents(__DIR__ . '/../public/docs/openapi.yaml'), true);
-        $fixtureCollection = json_decode(file_get_contents(__DIR__ . '/Fixtures/openapi.yaml'), true);
+        $generatedCollection = Yaml::parseFile(__DIR__ . '/../public/docs/openapi.yaml');
+        $fixtureCollection = Yaml::parseFile(__DIR__ . '/Fixtures/openapi.yaml');
         $this->assertEquals($fixtureCollection, $generatedCollection);
     }
 

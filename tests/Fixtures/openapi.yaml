@@ -14,21 +14,55 @@ paths:
             parameters:
                 -
                     in: header
-                    name: Content-Type
+                    name: Custom-Header
                     description: ''
-                    example: application/json
-                    schema:
-                        type: string
-                -
-                    in: header
-                    name: Accept
-                    description: ''
-                    example: application/json
+                    example: NotSoCustom
                     schema:
                         type: string
             responses: {  }
             tags:
                 - 'Group A'
+            security: []
+    /api/withFormDataParams:
+        post:
+            summary: 'Endpoint with body form data parameters.'
+            description: ''
+            parameters:
+                -
+                    in: header
+                    name: Custom-Header
+                    description: ''
+                    example: NotSoCustom
+                    schema:
+                        type: string
+                -
+                    in: header
+                    name: Content-Type
+                    description: ''
+                    example: multipart/form-data
+                    schema:
+                        type: string
+            responses: {  }
+            tags:
+                - 'Group A'
+            requestBody:
+                required: true
+                content:
+                    multipart/form-data:
+                        schema:
+                            type: object
+                            properties:
+                                name:
+                                    type: string
+                                    description: 'Name of image.'
+                                    example: cat.jpg
+                                image:
+                                    type: string
+                                    format: binary
+                                    description: 'The image.'
+                            required:
+                                - name
+                                - image
             security: []
     /api/withResponseTag:
         get:
@@ -37,16 +71,9 @@ paths:
             parameters:
                 -
                     in: header
-                    name: Content-Type
+                    name: Custom-Header
                     description: ''
-                    example: application/json
-                    schema:
-                        type: string
-                -
-                    in: header
-                    name: Accept
-                    description: ''
-                    example: application/json
+                    example: NotSoCustom
                     schema:
                         type: string
             responses:
@@ -86,6 +113,8 @@ paths:
                     required: true
                     schema:
                         type: string
+                        description: 'The id of the location.'
+                        example: consequatur
                 -
                     in: query
                     name: user_id
@@ -94,6 +123,8 @@ paths:
                     required: true
                     schema:
                         type: string
+                        description: 'The id of the user.'
+                        example: me
                 -
                     in: query
                     name: page
@@ -102,14 +133,18 @@ paths:
                     required: true
                     schema:
                         type: string
+                        description: 'The page number.'
+                        example: '4'
                 -
                     in: query
-                    name: 'filters.*'
+                    name: filters
                     description: 'The filters.'
                     example: consequatur
                     required: false
                     schema:
                         type: string
+                        description: 'The filters.'
+                        example: consequatur
                 -
                     in: query
                     name: url_encoded
@@ -118,21 +153,107 @@ paths:
                     required: false
                     schema:
                         type: string
+                        description: 'Used for testing that URL parameters will be URL-encoded where needed.'
+                        example: '+ []&='
                 -
                     in: header
-                    name: Content-Type
+                    name: Custom-Header
                     description: ''
-                    example: application/json
-                    schema:
-                        type: string
-                -
-                    in: header
-                    name: Accept
-                    description: ''
-                    example: application/json
+                    example: NotSoCustom
                     schema:
                         type: string
             responses: {  }
             tags:
                 - 'Group A'
             security: []
+    /api/withAuthTag:
+        get:
+            summary: ''
+            description: ''
+            parameters:
+                -
+                    in: header
+                    name: Custom-Header
+                    description: ''
+                    example: NotSoCustom
+                    schema:
+                        type: string
+            responses: {  }
+            tags:
+                - 'Group A'
+    '/api/echoesUrlParameters/{param}-{param2}/{param3}':
+        get:
+            summary: ''
+            description: ''
+            parameters:
+                -
+                    in: query
+                    name: something
+                    description: ''
+                    example: consequatur
+                    required: false
+                    schema:
+                        type: string
+                        description: ''
+                        example: consequatur
+                -
+                    in: header
+                    name: Custom-Header
+                    description: ''
+                    example: NotSoCustom
+                    schema:
+                        type: string
+            responses:
+                200:
+                    description: ''
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                example:
+                                    param: '4'
+                                    param2: consequatur
+                                    param3: null
+                                    param4: null
+                                properties:
+                                    param: { type: string, example: '4' }
+                                    param2: { type: string, example: consequatur }
+                                    param3: { type: string, example: null }
+                                    param4: { type: string, example: null }
+            tags:
+                - Other😎
+            security: []
+        parameters:
+            -
+                in: path
+                name: param
+                description: ''
+                example: '4'
+                required: true
+                schema:
+                    type: string
+            -
+                in: path
+                name: param2
+                description: 'Optional parameter.'
+                required: true
+                schema:
+                    type: string
+                examples:
+                    omitted:
+                        summary: 'When the value is omitted'
+                        value: ''
+                    present:
+                        summary: 'When the value is present'
+                        value: consequatur
+            -
+                in: path
+                name: param4
+                description: 'Optional parameter.'
+                required: true
+                schema:
+                    type: string
+                examples:
+                    omitted:
+                        summary: 'When the value is omitted'
+                        value: ''

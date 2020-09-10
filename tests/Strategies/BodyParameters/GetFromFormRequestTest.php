@@ -63,6 +63,12 @@ class GetFromFormRequestTest extends TestCase
                 'required' => false,
                 'description' => '',
             ],
+            'book' => [
+                'type' => 'object',
+                'description' => '',
+                'required' => false,
+                'value' => [],
+            ],
             'book.name' => [
                 'type' => 'string',
                 'description' => '',
@@ -73,23 +79,29 @@ class GetFromFormRequestTest extends TestCase
                 'description' => '',
                 'required' => false,
             ],
-            'book[pages_count]' => [
+            'book.pages_count' => [
                 'type' => 'integer',
                 'description' => '',
                 'required' => false,
             ],
-            'ids.*' => [
-                'type' => 'integer',
+            'ids' => [
+                'type' => 'integer[]',
                 'description' => '',
                 'required' => false,
             ],
-            'users.*.first_name' => [
+            'users' => [
+                'type' => 'object[]',
+                'description' => '',
+                'required' => false,
+                'value' => [[]],
+            ],
+            'users[].first_name' => [
                 'type' => 'string',
                 'description' => 'The first name of the user.',
                 'required' => false,
                 'value' => 'John',
             ],
-            'users.*.last_name' => [
+            'users[].last_name' => [
                 'type' => 'string',
                 'description' => 'The last name of the user.',
                 'required' => false,
@@ -132,9 +144,52 @@ class GetFromFormRequestTest extends TestCase
         }
     }
 
+    /** @test */
+    public function can_transform_arrays_and_objects()
+    {
+        $strategy = new GetFromFormRequest(new DocumentationConfig([]));
+        $ruleset = [
+                'array_param' => 'array|required',
+                'array_param.*' => 'string',
+            ];
+        $results = $strategy->normaliseArrayAndObjectParameters($strategy->getBodyParametersFromValidationRules($ruleset));
+        $this->assertCount(1, $results);
+        $this->assertEquals('string[]', $results['array_param']['type']);
+
+        $ruleset = [
+            'object_param' => 'array|required',
+            'object_param.field1.*' => 'string',
+            'object_param.field2' => 'integer|required',
+        ];
+        $results = $strategy->normaliseArrayAndObjectParameters($strategy->getBodyParametersFromValidationRules($ruleset));
+        $this->assertCount(3, $results);
+        $this->assertEquals('object', $results['object_param']['type']);
+        $this->assertEquals('string[]', $results['object_param.field1']['type']);
+        $this->assertEquals('integer', $results['object_param.field2']['type']);
+
+        $ruleset = [
+            'array_of_objects_with_array.*.another.*.one.field1.*' => 'string|required',
+            'array_of_objects_with_array.*.another.*.one.field2' => 'integer',
+            'array_of_objects_with_array.*.another.*.two.field2' => 'numeric',
+        ];
+        $results = $strategy->normaliseArrayAndObjectParameters($strategy->getBodyParametersFromValidationRules($ruleset));
+        $this->assertCount(7, $results);
+        $this->assertEquals('object[]', $results['array_of_objects_with_array']['type']);
+        $this->assertEquals('object[]', $results['array_of_objects_with_array[].another']['type']);
+        $this->assertEquals('object', $results['array_of_objects_with_array[].another[].one']['type']);
+        $this->assertEquals('object', $results['array_of_objects_with_array[].another[].two']['type']);
+        $this->assertEquals('string[]', $results['array_of_objects_with_array[].another[].one.field1']['type']);
+        $this->assertEquals('integer', $results['array_of_objects_with_array[].another[].one.field2']['type']);
+        $this->assertEquals('number', $results['array_of_objects_with_array[].another[].two.field2']['type']);
+    }
+
     public function supportedRules()
     {
         $description = 'A description';
+        // Key is just an identifier
+        // First array in each key is the validation ruleset,
+        // Second is custom information from bodyParameters()
+        // Third is expected result
         return [
             'required' => [
                 ['required_param' => 'required'],
@@ -252,5 +307,4 @@ class GetFromFormRequestTest extends TestCase
             ],
         ];
     }
-
 }

@@ -17,8 +17,9 @@ use Illuminate\Foundation\Http\FormRequest;
  * @bodyParam even_more_param array
  * @bodyParam book.name string
  * @bodyParam book.author_id integer
- * @bodyParam book[pages_count] integer
- * @bodyParam ids.* integer
+ * @bodyParam book.pages_count integer
+ * @bodyParam ids integer[]
+ * @bodyParam users OBJECT[] User details
  * @bodyParam users.*.first_name string The first name of the user. Example: John
  * @bodyParam users.*.last_name string The last name of the user. Example: Doe
  */
@@ -34,7 +35,7 @@ class TestRequest extends FormRequest
             'even_more_param' => 'array',
             'book.name' => 'string',
             'book.author_id' => 'integer',
-            'book[pages_count]' => 'integer',
+            'book.pages_count' => 'integer',
             'ids.*' => 'integer',
             'users.*.first_name' => ['string'],
             'users.*.last_name' => 'string',

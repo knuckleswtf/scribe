@@ -7,8 +7,8 @@
 @component('scribe::components.field-details', [
   'name' => $name,
   'type' => $parameter['type'] ?? 'string',
-  'required' => $parameter['required'] ?? true,
-  'description' => $parameter['description'],
+  'required' => $parameter['required'] ?? false,
+  'description' => $parameter['description'] ?? '',
 ])
 @endcomponent
 </summary>
@@ -22,8 +22,8 @@
 @component('scribe::components.field-details', [
   'name' => $subfieldName,
   'type' => $subfield['type'] ?? 'string',
-  'required' => $subfield['required'] ?? true,
-  'description' => $subfield['description'],
+  'required' => $subfield['required'] ?? false,
+  'description' => $subfield['description'] ?? '',
 ])
 @endcomponent
 </p>
@@ -36,8 +36,8 @@
 @component('scribe::components.field-details', [
   'name' => $name,
   'type' => $parameter['type'] ?? 'string',
-  'required' => $parameter['required'] ?? true,
-  'description' => $parameter['description'],
+  'required' => $parameter['required'] ?? false,
+  'description' => $parameter['description'] ?? '',
 ])
 @endcomponent
 </p>

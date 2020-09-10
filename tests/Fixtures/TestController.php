@@ -76,12 +76,14 @@ class TestController extends Controller
      * @bodyParam yet_another_param object required Some object params.
      * @bodyParam yet_another_param.name string required Subkey in the object param.
      * @bodyParam even_more_param number[] Subkey in the array param.
+     * @bodyParam book object
      * @bodyParam book.name string
      * @bodyParam book.author_id integer
-     * @bodyParam book[pages_count] integer
-     * @bodyParam ids.* integer
-     * @bodyParam users.*.first_name string The first name of the user. Example: John
-     * @bodyParam users.*.last_name string The last name of the user. Example: Doe
+     * @bodyParam book.pages_count integer
+     * @bodyParam ids int[]
+     * @bodyParam users object[]
+     * @bodyParam users[].first_name string The first name of the user. Example: John
+     * @bodyParam users[].last_name string The last name of the user. Example: Doe
      */
     public function withBodyParameters()
     {
@@ -102,11 +104,11 @@ class TestController extends Controller
     /**
      * Endpoint with body parameters as array.
      *
-     * @bodyParam *.first_name string The first name of the user. Example: John
-     * @bodyParam *.last_name string The last name of the user. Example: Doe
-     * @bodyParam *.contacts.*.first_name string The first name of the contact. Example: John
-     * @bodyParam *.contacts.*.last_name string The last name of the contact. Example: Doe
-     * @bodyParam *.roles.* string The name of the role. Example: Admin
+     * @bodyParam [].first_name string The first name of the user. Example: John
+     * @bodyParam [].last_name string The last name of the user. Example: Doe
+     * @bodyParam [].contacts[].first_name string The first name of the contact. Example: John
+     * @bodyParam [].contacts[].last_name string The last name of the contact. Example: Doe
+     * @bodyParam [].roles[] string[] The name of the role. Example: Admin
      */
     public function withBodyParametersAsArray()
     {

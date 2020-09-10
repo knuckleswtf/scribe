@@ -283,7 +283,7 @@ class Generator
                 $details['value'] = self::convertStringValueToUploadedFileInstance($details['value']);
             }
 
-            if (Str::contains($paramName, '.')) { // Object field
+            if (Str::contains($paramName, '.')) { // Object field (or array of objects)
                 self::setObject($cleanParameters, $paramName, $details['value'], $parameters);
             } else {
                 $cleanParameters[$paramName] = $details['value'];
@@ -295,32 +295,30 @@ class Generator
 
     public static function setObject(array &$results, string $path, $value, array $source)
     {
-        if (Str::contains($path, '.')) {
-            $parts = array_reverse(explode('.', $path));
+        $parts = array_reverse(explode('.', $path));
 
-            array_shift($parts); // Get rid of the field name
+        array_shift($parts); // Get rid of the field name
 
-            $baseName = join('.', array_reverse($parts));
-            // The type should be indicated in the source object by now; we don't need it in the name
-            $normalisedBaseName = str_replace('[]', '', $baseName);
+        $baseName = join('.', array_reverse($parts));
+        // The type should be indicated in the source object by now; we don't need it in the name
+        $normalisedBaseName = str_replace('[]', '', $baseName);
 
-            $parentData = Arr::get($source, $normalisedBaseName);
-            if ($parentData) {
-                // Path we use for lodash set
-                $dotPath = str_replace('[]', '.0', $path);
-                $noValue = new \stdClass();
-                if ($parentData['type'] === 'object') {
-                    if (Arr::get($results, $dotPath, $noValue) === $noValue) {
-                        Arr::set($results, $dotPath, $value);
-                    }
-                } else if ($parentData['type'] === 'object[]') {
-                    if (Arr::get($results, $dotPath, $noValue) === $noValue) {
-                        Arr::set($results, $dotPath, $value);
-                    }
-                    // If there's a second item in the array, set for that too.
-                    if ($value !== null && Arr::get($results, str_replace('[]', '.1', $baseName), $noValue) !== $noValue) {
-                        Arr::set($results, str_replace('.0', '.1', $dotPath), $value);
-                    }
+        $parentData = Arr::get($source, $normalisedBaseName);
+        if ($parentData) {
+            // Path we use for data_set
+            $dotPath = str_replace('[]', '.0', $path);
+            $noValue = new \stdClass();
+            if ($parentData['type'] === 'object') {
+                if (Arr::get($results, $dotPath, $noValue) === $noValue) {
+                    Arr::set($results, $dotPath, $value);
+                }
+            } else if ($parentData['type'] === 'object[]') {
+                if (Arr::get($results, $dotPath, $noValue) === $noValue) {
+                    Arr::set($results, $dotPath, $value);
+                }
+                // If there's a second item in the array, set for that too.
+                if ($value !== null && Arr::get($results, str_replace('[]', '.1', $baseName), $noValue) !== $noValue) {
+                    Arr::set($results, str_replace('.0', '.1', $dotPath), $value);
                 }
             }
         }

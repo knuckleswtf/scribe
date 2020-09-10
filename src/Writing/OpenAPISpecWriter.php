@@ -429,7 +429,8 @@ class OpenAPISpecWriter
             case 'double':
                 return 'number';
             case 'NULL':
-                return 'null';
+                // null is not an allowed type in OpenAPI
+                return 'string';
             default:
                 return $type;
         }
