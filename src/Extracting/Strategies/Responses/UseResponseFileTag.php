@@ -65,9 +65,11 @@ class UseResponseFileTag extends Strategy
             $status = $attributes['status'] ?: ($status ?: 200);
             $description = $attributes['scenario'] ? "$status, {$attributes['scenario']}" : "$status";
 
-            $filePath = storage_path($relativeFilePath);
+            $baseResponsePath = config('responses_base_dir');
+            $filePath = $baseResponsePath . $relativeFilePath;
             if (! file_exists($filePath)) {
                 c::warn("@responseFile {$relativeFilePath} does not exist");
+                return false;
             }
             $content = file_get_contents($filePath, true);
             if ($json) {

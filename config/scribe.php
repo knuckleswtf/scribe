@@ -118,6 +118,8 @@ INTRO
 
     'description' => '',
 
+    'responses_base_dir' => storage_path('responses/'),
+
     /*
      * Generate a Postman collection in addition to HTML docs.
      * For 'static' docs, the collection will be generated to public/docs/collection.json.
