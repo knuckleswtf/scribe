@@ -7,11 +7,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ErrorHandlingUtils
 {
-    public static function dumpExceptionIfVerbose(\Throwable $e): void
+    public static function dumpExceptionIfVerbose(\Throwable $e, $completelySilent = false): void
     {
         if (Flags::$shouldBeVerbose) {
             self::dumpException($e);
-        } else {
+        } else if (!$completelySilent) {
             [$firstFrame, $secondFrame] = $e->getTrace();
 
             try {

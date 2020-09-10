@@ -190,7 +190,7 @@ class UseApiResourceTags extends Strategy
             }
         } catch (Exception $e) {
             c::debug("Eloquent model factory failed to instantiate {$type}; trying to fetch from database.");
-            e::dumpExceptionIfVerbose($e);
+            e::dumpExceptionIfVerbose($e, true);
 
             $instance = new $type();
             if ($instance instanceof \Illuminate\Database\Eloquent\Model) {
