@@ -5,7 +5,6 @@ namespace Knuckles\Scribe\Tests\Strategies\Metadata;
 use Knuckles\Scribe\Extracting\Strategies\Metadata\GetFromDocBlocks;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Mpociot\Reflection\DocBlock;
-use Mpociot\Reflection\DocBlock\Tag;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use PHPUnit\Framework\TestCase;
 

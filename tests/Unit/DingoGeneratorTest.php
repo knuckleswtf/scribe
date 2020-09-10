@@ -9,11 +9,12 @@ use Knuckles\Scribe\Extracting\Generator;
 use Knuckles\Scribe\ScribeServiceProvider;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
+use Orchestra\Testbench\TestCase;
 
 /**
  * @group dingo
  */
-class DingoGeneratorTest extends GeneratorTestCase
+class DingoGeneratorTest extends TestCase
 {
     protected function getPackageProviders($app)
     {

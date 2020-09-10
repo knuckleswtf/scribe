@@ -45,7 +45,7 @@ class OpenAPISpecWriter
         return array_merge([
             'openapi' => self::VERSION,
             'info' => [
-                'title' => $this->config->get('title', config('app.name', '') . ' API'),
+                'title' => $this->config->get('title') ?: config('app.name', '') . ' API',
                 'description' => $this->config->get('description', ''),
                 'version' => '1.0.0',
             ],

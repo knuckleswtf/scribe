@@ -7,7 +7,7 @@ use Faker\Factory;
 use Knuckles\Scribe\Extracting\Generator;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Writing\OpenAPISpecWriter;
-use Orchestra\Testbench\TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * See https://swagger.io/specification/

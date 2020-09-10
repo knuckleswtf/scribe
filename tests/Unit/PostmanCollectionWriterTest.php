@@ -5,8 +5,9 @@ namespace Knuckles\Scribe\Tests\Unit;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Illuminate\Support\Collection;
 use Knuckles\Scribe\Extracting\Generator;
+use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Writing\PostmanCollectionWriter;
-use Orchestra\Testbench\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class PostmanCollectionWriterTest extends TestCase
 {
@@ -14,24 +15,13 @@ class PostmanCollectionWriterTest extends TestCase
 
     public function testCorrectStructureIsFollowed()
     {
-        \Config::set('scribe.title', 'Test API');
-        \Config::set('scribe.description', 'A fake description');
+        $config = ['title' => 'Test API', 'description' => 'A fake description'];
 
-        $writer = new PostmanCollectionWriter();
+        $writer = new PostmanCollectionWriter(new DocumentationConfig($config));
         $collection = $writer->generatePostmanCollection(new Collection());
 
         $this->assertSame('Test API', $collection['info']['name']);
         $this->assertSame('A fake description', $collection['info']['description']);
-    }
-
-    public function testFallbackCollectionNameIsUsed()
-    {
-        \Config::set('app.name', 'Fake App');
-
-        $writer = new PostmanCollectionWriter();
-        $collection = $writer->generatePostmanCollection(new Collection());
-
-        $this->assertSame('Fake App API', $collection['info']['name']);
     }
 
     public function testEndpointIsParsed()
@@ -43,8 +33,8 @@ class PostmanCollectionWriterTest extends TestCase
 
         $endpoints = $this->createMockRouteGroup([$route], 'Group');
 
-        config(['scribe.base_url' => 'fake.localhost']);
-        $writer = new PostmanCollectionWriter();
+        $config = ['base_url' => 'fake.localhost', 'title' => 'Test API'];
+        $writer = new PostmanCollectionWriter(new DocumentationConfig($config));
         $collection = $writer->generatePostmanCollection($endpoints);
 
         $this->assertSame('Group', data_get($collection, 'item.0.name'), 'Group name exists');
@@ -70,8 +60,8 @@ class PostmanCollectionWriterTest extends TestCase
         $route['headers'] = ['X-Fake' => 'Test'];
 
         $endpoints = $this->createMockRouteGroup([$route], 'Group');
-        config(['scribe.base_url' => 'fake.localhost']);
-        $writer = new PostmanCollectionWriter();
+        $config = ['base_url' => 'fake.localhost', 'title' => 'Test API'];
+        $writer = new PostmanCollectionWriter(new DocumentationConfig($config));
         $collection = $writer->generatePostmanCollection($endpoints);
 
         $this->assertContains([
@@ -91,8 +81,8 @@ class PostmanCollectionWriterTest extends TestCase
         ]];
         $endpoints = $this->createMockRouteGroup([$fakeRoute]);
 
-        config(['scribe.base_url' => 'fake.localhost']);
-        $writer = new PostmanCollectionWriter();
+        $config = ['base_url' => 'fake.localhost', 'title' => 'Test API'];
+        $writer = new PostmanCollectionWriter(new DocumentationConfig($config));
         $collection = $writer->generatePostmanCollection($endpoints);
 
         $item = data_get($collection, 'item.0.item.0');
@@ -131,8 +121,8 @@ class PostmanCollectionWriterTest extends TestCase
         $fakeRoute['cleanQueryParameters'] = Generator::cleanParams($fakeRoute['queryParameters']);
 
         $endpoints = $this->createMockRouteGroup([$fakeRoute]);
-        config(['scribe.base_url' => 'fake.localhost']);
-        $writer = new PostmanCollectionWriter();
+        $config = ['base_url' => 'fake.localhost', 'title' => 'Test API'];
+        $writer = new PostmanCollectionWriter(new DocumentationConfig($config));
         $collection = $writer->generatePostmanCollection($endpoints);
 
         $variableData = data_get($collection, 'item.0.item.0.request.url.query');
@@ -169,8 +159,8 @@ class PostmanCollectionWriterTest extends TestCase
         ]];
 
         $endpoints = $this->createMockRouteGroup([$fakeRoute]);
-        config(['scribe.base_url' => 'fake.localhost']);
-        $writer = new PostmanCollectionWriter();
+        $config = ['base_url' => 'fake.localhost', 'title' => 'Test API'];
+        $writer = new PostmanCollectionWriter(new DocumentationConfig($config));
         $collection = $writer->generatePostmanCollection($endpoints);
 
         $variableData = data_get($collection, 'item.0.item.0.request.url.query');
@@ -199,8 +189,8 @@ class PostmanCollectionWriterTest extends TestCase
         $fakeRoute['cleanQueryParameters'] = Generator::cleanParams($fakeRoute['queryParameters']);
 
         $endpoints = $this->createMockRouteGroup([$fakeRoute]);
-        config(['scribe.base_url' => 'fake.localhost']);
-        $writer = new PostmanCollectionWriter();
+        $config = ['base_url' => 'fake.localhost', 'title' => 'Test API'];
+        $writer = new PostmanCollectionWriter(new DocumentationConfig($config));
         $collection = $writer->generatePostmanCollection($endpoints);
 
         $variableData = data_get($collection, 'item.0.item.0.request.url.query');
@@ -225,26 +215,31 @@ class PostmanCollectionWriterTest extends TestCase
      */
     public function auth_info_is_added_correctly()
     {
-        config(['scribe.base_url' => 'fake.localhost']);
-        config(['scribe.auth.enabled' => true]);
-        config(['scribe.auth.default' => false]);
 
         $route1 = $this->createMockRouteData('some/path');
         $route1['metadata']['authenticated'] = true;
         $route2 = $this->createMockRouteData('some/other/path');
         $endpoints = $this->createMockRouteGroup([$route1, $route2], 'Group');
 
-        config(['scribe.auth.in' => 'bearer']);
-        $writer = new PostmanCollectionWriter();
+        $config = [
+            'title' => 'Test API',
+            'base_url' => 'fake.localhost',
+            'auth' => [
+                'enabled' => true,
+                'default' => false,
+            ]
+        ];
+        $config['auth']['in'] = 'bearer';
+        $writer = new PostmanCollectionWriter(new DocumentationConfig($config));
         $collection = $writer->generatePostmanCollection($endpoints);
 
         $this->assertEquals(['type' => 'bearer'], $collection['auth']);
         $this->assertNull($collection['item'][0]['item'][0]['request']['auth']);
         $this->assertEquals(['type' => 'noauth'], $collection['item'][0]['item'][1]['request']['auth']);
 
-        config(['scribe.auth.in' => 'query']);
-        config(['scribe.auth.name' => 'tokennnn']);;
-        $writer = new PostmanCollectionWriter();
+        $config['auth']['in'] = 'query';
+        $config['auth']['name'] = 'tokennnn';
+        $writer = new PostmanCollectionWriter(new DocumentationConfig($config));
         $collection = $writer->generatePostmanCollection($endpoints);
 
         $this->assertEquals([

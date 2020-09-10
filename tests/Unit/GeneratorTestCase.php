@@ -3,13 +3,11 @@
 namespace Knuckles\Scribe\Tests\Unit;
 
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
-use Illuminate\Support\Arr;
 use Knuckles\Scribe\ScribeServiceProvider;
 use Knuckles\Scribe\Extracting\Generator;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
-use Knuckles\Scribe\Tools\Flags;
-use Orchestra\Testbench\TestCase;
+use PHPUnit\Framework\TestCase;
 
 abstract class GeneratorTestCase extends TestCase
 {
@@ -189,38 +187,6 @@ abstract class GeneratorTestCase extends TestCase
         $this->assertEquals(['DELETE'], $parsed['methods']);
     }
 
-    /** @test */
-    public function can_override_url_path_parameters_with_urlparam_annotation()
-    {
-        $route = $this->createRoute('POST', '/echoesUrlParameters/{param}', 'echoesUrlParameters', true);
-        $rules = [
-            'response_calls' => [
-                'methods' => ['*'],
-            ],
-        ];
-        $parsed = $this->generator->processRoute($route, $rules);
-        $response = json_decode(Arr::first($parsed['responses'])['content'], true);
-        $this->assertEquals(4, $response['param']);
-    }
-
-    /** @test */
-    public function ignores_or_inserts_optional_url_path_parameters_according_to_annotations()
-    {
-        $route = $this->createRoute('POST', '/echoesUrlParameters/{param}/{param2?}/{param3}/{param4?}', 'echoesUrlParameters', true);
-
-        $rules = [
-            'response_calls' => [
-                'methods' => ['*'],
-            ],
-        ];
-        $parsed = $this->generator->processRoute($route, $rules);
-        $response = json_decode(Arr::first($parsed['responses'])['content'], true);
-        $this->assertEquals(4, $response['param']);
-        $this->assertNotNull($response['param2']);
-        $this->assertEquals(1, $response['param3']);
-        $this->assertNull($response['param4']);
-    }
-
     /**
      * @test
      * @dataProvider authRules
@@ -228,7 +194,7 @@ abstract class GeneratorTestCase extends TestCase
     public function adds_appropriate_field_based_on_configured_auth_type($config, $expected)
     {
         $route = $this->createRoute('POST', '/withAuthenticatedTag', 'withAuthenticatedTag', true);
-        $generator = new Generator(new DocumentationConfig($config));
+        $generator = new Generator(new DocumentationConfig(array_merge($this->config, $config)));
         $parsed = $generator->processRoute($route, []);
         $this->assertNotNull($parsed[$expected['where']][$expected['name']]);
         $this->assertStringStartsWith("{$expected['where']}.{$expected['name']}.", $parsed['auth']);
@@ -306,65 +272,65 @@ abstract class GeneratorTestCase extends TestCase
     {
         return [
             [
-                array_merge($this->config, [
+                [
                     'auth' => [
                         'enabled' => true,
                         'in' => 'bearer',
                         'name' => 'dfadb',
                     ]
-                ]),
+                ],
                 [
                     'name' => 'Authorization',
                     'where' => 'headers',
                 ]
             ],
             [
-                array_merge($this->config, [
+                [
                     'auth' => [
                         'enabled' => true,
                         'in' => 'basic',
                         'name' => 'efwr',
                     ]
-                ]),
+                ],
                 [
                     'name' => 'Authorization',
                     'where' => 'headers',
                 ]
             ],
             [
-                array_merge($this->config, [
+                [
                     'auth' => [
                         'enabled' => true,
                         'in' => 'header',
                         'name' => 'Api-Key',
                     ]
-                ]),
+                ],
                 [
                     'name' => 'Api-Key',
                     'where' => 'headers',
                 ]
             ],
             [
-                array_merge($this->config, [
+                [
                     'auth' => [
                         'enabled' => true,
                         'in' => 'query',
                         'name' => 'apiKey',
                     ]
-                ]),
+                ],
                 [
                     'name' => 'apiKey',
                     'where' => 'cleanQueryParameters',
                 ]
             ],
             [
-                array_merge($this->config, [
+                [
                     'auth' => [
                         'enabled' => true,
                         'in' => 'body',
                         'name' => 'access_token',
                     ]
-                ]),
+                ],
                 [
                     'name' => 'access_token',
                     'where' => 'cleanBodyParameters',

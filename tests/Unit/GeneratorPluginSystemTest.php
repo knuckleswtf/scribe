@@ -9,8 +9,11 @@ use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\ScribeServiceProvider;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
+use PHPUnit\Framework\TestCase;
+use ReflectionClass;
+use ReflectionFunctionAbstract;
 
-class GeneratorPluginSystemTestCase extends LaravelGeneratorTest
+class GeneratorPluginSystemTest extends TestCase
 {
     use ArraySubsetAsserts;
 
@@ -30,32 +33,33 @@ class GeneratorPluginSystemTestCase extends LaravelGeneratorTest
         return $providers;
     }
 
+    protected function tearDown(): void
+    {
+        EmptyStrategy1::$called = false;
+        EmptyStrategy2::$called = false;
+        NotDummyMetadataStrategy::$called = false;
+
+        parent::tearDown();
+    }
+
     /** @test */
     public function only_specified_strategies_are_loaded()
     {
         $config = [
             'strategies' => [
-                'metadata' => [EmptyStrategy1::class],
+                'metadata' => [NotDummyMetadataStrategy::class],
                 'bodyParameters' => [
                     EmptyStrategy1::class,
-                    EmptyStrategy2::class,
                 ],
-                'responses' => [EmptyStrategy1::class],
             ],
         ];
         $route = $this->createRoute('GET', '/api/test', 'dummy', true, TestController::class);
         $generator = new Generator(new DocumentationConfig($config));
         $generator->processRoute($route);
 
-        // Probably not the best way to do this, but 🤷‍♂️
-        $this->assertTrue(EmptyStrategy1::$called['metadata']);
-
-        $this->assertTrue(EmptyStrategy1::$called['bodyParameters']);
-        $this->assertTrue(EmptyStrategy2::$called['bodyParameters']);
-
-        $this->assertArrayNotHasKey('queryParameters', EmptyStrategy1::$called);
-
-        $this->assertTrue(EmptyStrategy1::$called['responses']);
+        $this->assertTrue(EmptyStrategy1::$called);
+        $this->assertTrue(NotDummyMetadataStrategy::$called);
+        $this->assertFalse(EmptyStrategy2::$called);
     }
 
     /** @test */
@@ -82,9 +86,10 @@ class GeneratorPluginSystemTestCase extends LaravelGeneratorTest
         $this->assertEquals('dummy2', $second['content']);
     }
 
-    // This is a generalized test, as opposed to the one above for responses only
-
-    /** @test */
+    /**
+     * @test
+     * This is a generalized test, as opposed to the one above for responses only
+     */
     public function combines_results_from_different_strategies_in_same_stage()
     {
         $config = [
@@ -150,46 +155,41 @@ class GeneratorPluginSystemTestCase extends LaravelGeneratorTest
         $this->assertArraySubset($expectedMetadata, $parsed['metadata']);
     }
 
-    public function dataResources()
+    public function createRoute(string $httpMethod, string $path, string $controllerMethod, $register = false, $class = TestController::class)
     {
-        return [
-            [
-                null,
-                '{"data":{"id":1,"description":"Welcome on this test versions","name":"TestName"}}',
-            ],
-            [
-                'League\Fractal\Serializer\JsonApiSerializer',
-                '{"data":{"type":null,"id":"1","attributes":{"description":"Welcome on this test versions","name":"TestName"}}}',
-            ],
-        ];
+
+        return new Route([$httpMethod], $path, ['uses' => $class . "@$controllerMethod"]);
     }
 }
 
 
 class EmptyStrategy1 extends Strategy
 {
-    public static $called = [];
+    public static $called = false;
 
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionMethod $method, array $routeRules, array $alreadyExtractedData = [])
+    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
     {
-        static::$called[$this->stage] = true;
+        static::$called = true;
     }
 }
 
 class EmptyStrategy2 extends Strategy
 {
-    public static $called = [];
+    public static $called = false;
 
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionMethod $method, array $routeRules, array $alreadyExtractedData = [])
+    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
     {
-        static::$called[$this->stage] = true;
+        static::$called = true;
     }
 }
 
 class NotDummyMetadataStrategy extends Strategy
 {
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionMethod $method, array $routeRules, array $alreadyExtractedData = [])
+    public static $called = false;
+
+    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
     {
+        static::$called = true;
         return [
             'groupName' => 'notdummy',
             'groupDescription' => 'notdummy',
@@ -202,7 +202,7 @@ class NotDummyMetadataStrategy extends Strategy
 
 class PartialDummyMetadataStrategy1 extends Strategy
 {
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionMethod $method, array $routeRules, array $alreadyExtractedData = [])
+    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
     {
         return [
             'groupName' => 'dummy',
@@ -215,7 +215,7 @@ class PartialDummyMetadataStrategy1 extends Strategy
 
 class PartialDummyMetadataStrategy2 extends Strategy
 {
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionMethod $method, array $routeRules, array $alreadyExtractedData = [])
+    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
     {
         return [
             'description' => 'dummy',
@@ -226,7 +226,7 @@ class PartialDummyMetadataStrategy2 extends Strategy
 
 class DummyResponseStrategy200 extends Strategy
 {
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionMethod $method, array $routeRules, array $alreadyExtractedData = [])
+    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
     {
         return [['status' => 200, 'content' => 'dummy']];
     }
@@ -234,7 +234,7 @@ class DummyResponseStrategy200 extends Strategy
 
 class DummyResponseStrategy400 extends Strategy
 {
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionMethod $method, array $routeRules, array $alreadyExtractedData = [])
+    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
     {
         return [['status' => 400, 'content' => 'dummy2']];
     }

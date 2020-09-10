@@ -248,14 +248,18 @@ class PostmanCollectionWriter
 
     protected function getBaseUrl($baseUrl)
     {
-        if (Str::contains(app()->version(), 'Lumen')) { //Is Lumen
-            $reflectionMethod = new ReflectionMethod(\Laravel\Lumen\Routing\UrlGenerator::class, 'getRootUrl');
-            $reflectionMethod->setAccessible(true);
-            $url = app('url');
+        try {
+            if (Str::contains(app()->version(), 'Lumen')) { //Is Lumen
+                $reflectionMethod = new ReflectionMethod(\Laravel\Lumen\Routing\UrlGenerator::class, 'getRootUrl');
+                $reflectionMethod->setAccessible(true);
+                $url = app('url');
 
-            return $reflectionMethod->invokeArgs($url, ['', $baseUrl]);
+                return $reflectionMethod->invokeArgs($url, ['', $baseUrl]);
+            }
+
+            return URL::formatRoot('', $baseUrl);
+        } catch (\Throwable $e) {
+            return $baseUrl;
         }
-
-        return URL::formatRoot('', $baseUrl);
     }
 }
