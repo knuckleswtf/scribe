@@ -80,6 +80,7 @@ class GetFromQueryParamTag extends Strategy
             $tagContent = trim($tag->getContent());
             preg_match('/(.+?)\s+([a-zA-Z\[\]]+\s+)?(required\s+)?([\s\S]*)/', $tagContent, $content);
 
+            $type = '';
             if (empty($content)) {
                 // this means only name was supplied
                 $name = $tagContent;
@@ -120,7 +121,7 @@ class GetFromQueryParamTag extends Strategy
                 }
 
                 $type = empty($type)
-                    ? (Str::contains($description, ['number', 'count', 'page']) ? 'integer' : 'string')
+                    ? (Str::contains(strtolower($description), ['number', 'count', 'page']) ? 'integer' : 'string')
                     : $this->normalizeTypeName($type);
 
             }

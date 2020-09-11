@@ -121,6 +121,8 @@ class Writer
             'languages' => $this->config->get('example_languages'),
             'logo' => $this->config->get('logo'),
             'title' => $this->config->get('title', config('app.name', '') . ' API Documentation'),
+            'auth' => $this->config->get('auth'),
+            'interactive' => $this->config->get('output.interactive', true)
         ];
 
         ConsoleOutputUtils::info('Writing source Markdown files to: ' . $this->sourceOutputPath);
@@ -147,10 +149,21 @@ class Writer
                 $hasRequestOptions = !empty($route['headers'])
                     || !empty($route['cleanQueryParameters'])
                     || !empty($route['cleanBodyParameters']);
+                // Needed for Try It Out
+                $auth = $settings['auth'];
+                if ($auth['in'] === 'bearer' || $auth['in'] === 'basic') {
+                    $auth['name'] = 'Authorization';
+                    $auth['location'] = 'header';
+                    $auth['prefix'] = ucfirst($auth['in']).' ';
+                } else {
+                    $auth['location'] = $auth['in'];
+                    $auth['prefix'] = '';
+                }
                 $route['output'] = (string)view('scribe::partials.endpoint')
                     ->with('hasRequestOptions', $hasRequestOptions)
                     ->with('route', $route)
                     ->with('settings', $settings)
+                    ->with('auth', $auth)
                     ->with('baseUrl', $this->baseUrl)
                     ->render();
 
@@ -276,6 +289,8 @@ class Writer
 
         if (!$this->isStatic) {
             $this->performFinalTasksForLaravelType();
+        } else {
+            copy(__DIR__.'/../../resources/js/tryitout.js', $this->staticTypeOutputPath . '/js/tryitout.js');
         }
 
         ConsoleOutputUtils::success("Wrote HTML documentation to: " . ($this->isStatic ? $this->staticTypeOutputPath : $this->laravelTypeOutputPath));
@@ -305,7 +320,8 @@ class Writer
         $introText = $this->config->get('intro_text', '');
         $introMarkdown = view('scribe::index')
             ->with('frontmatter', $frontmatter)
-            ->with('introText', $introText);
+            ->with('introText', $introText)
+            ->with('baseUrl', $this->baseUrl);
         $this->writeFile($indexMarkdownFile, $introMarkdown);
     }
 

@@ -37,12 +37,12 @@ let body = {!! json_encode($route['cleanBodyParameters'], JSON_PRETTY_PRINT) !!}
 fetch(url, {
     method: "{{$route['methods'][0]}}",
 @if(count($route['headers']))
-    headers: headers,
+    headers,
 @endif
-@if(count($route['fileParameters']) || count($route['cleanBodyParameters']))
-    body: body
+@if(count($route['fileParameters']))
+    body,
+@elseif(count($route['cleanBodyParameters']))
+    body: JSON.stringify(body),
 @endif
-})
-    .then(response => response.json())
-    .then(json => console.log(json));
+}).then(response => response.json());
 ```

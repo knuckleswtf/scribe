@@ -1,3 +1,4 @@
+@php($endpointId = $route['methods'][0].str_replace(['/', '?', '{', '}'], '-', $route['uri']))
 ## {{ $route['metadata']['title'] ?: $route['uri']}}
 
 @component('scribe::components.badges.auth', ['authenticated' => $route['metadata']['authenticated']])
@@ -19,7 +20,7 @@
 ```json
 @if(is_object($response['content']) || is_array($response['content']))
 {!! json_encode($response['content'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}
-@elseif(is_string($response['content']) && \Illuminate\Support\Str::startsWith($response['content'], "<<binary>>"))
+@elseif(is_string($response['content']) && \Str::startsWith($response['content'], "<<binary>>"))
 <Binary data> - {{ str_replace("<<binary>>","",$response['content']) }}
 @elseif($response['status'] == 204)
 <Empty response>
@@ -32,12 +33,34 @@
 ```
 @endforeach
 @endif
-
-### Request
+<div id="execution-results-{{ $endpointId }}" hidden>
+    <blockquote>Received response<span id="execution-response-status-{{ $endpointId }}"></span>:</blockquote>
+    <pre class="json"><code id="execution-response-content-{{ $endpointId }}"></code></pre>
+</div>
+<div id="execution-error-{{ $endpointId }}" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-{{ $endpointId }}"></code></pre>
+</div>
+<form id="form-{{ $endpointId }}" data-method="{{ $route['methods'][0] }}" data-path="{{ $route['uri'] }}" data-authed="{{ $route['metadata']['authenticated'] ? 1 : 0 }}" data-hasfiles="{{ count($route['fileParameters']) }}" data-headers='@json($route['headers'])' onsubmit="event.preventDefault(); executeTryOut('{{ $endpointId }}', this);">
+<h3>
+    Request&nbsp;&nbsp;&nbsp;
+    @if($settings['interactive'])
+    <button type="button" style="background-color: #8fbcd4; padding: 5px 10px; border-radius 5px; border-width: thin;" id="btn-tryout-{{ $endpointId }}" onclick="tryItOut('{{ $endpointId }}');">Try it out ⚡</button>
+    @endif
+    <button type="button" style="background-color: #c97a7e; padding: 5px 10px; border-radius 5px; border-width: thin;" id="btn-canceltryout-{{ $endpointId }}" onclick="cancelTryOut('{{ $endpointId }}');" hidden>Cancel</button>&nbsp;&nbsp;
+    <button type="submit" style="background-color: #6ac174; padding: 5px 10px; border-radius 5px; border-width: thin;" id="btn-executetryout-{{ $endpointId }}" hidden>Execute</button>
+</h3>
+<p>
 @foreach($route['methods'] as $method)
-@component('scribe::components.badges.http-method', ['method' => $method])@endcomponent **`{{$route['uri']}}`**
+@component('scribe::components.badges.http-method', ['method' => $method])@endcomponent <b><code>{{$route['uri']}}</code></b>
 
 @endforeach
+</p>
+@if($route['metadata']['authenticated'] && $auth['location'] === 'header')
+<p>
+<label id="auth-{{ $endpointId }}" hidden>{{ $auth['name'] }} header: <b><code>{{ $auth['prefix'] }}</code></b><input type="text" name="{{ $auth['name'] }}" data-prefix="{{ $auth['prefix'] }}" data-endpoint="{{ $endpointId }}" data-component="header"></label>
+</p>
+@endif
 @if(count($route['urlParameters']))
 <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
 @foreach($route['urlParameters'] as $attribute => $parameter)
@@ -47,6 +70,8 @@
   'type' => $parameter['type'] ?? 'string',
   'required' => $parameter['required'] ?? true,
   'description' => $parameter['description'],
+  'endpointId' => $endpointId,
+  'component' => 'url',
 ])
 @endcomponent
 </p>
@@ -61,6 +86,8 @@
   'type' => $parameter['type'] ?? 'string',
   'required' => $parameter['required'] ?? true,
   'description' => $parameter['description'],
+  'endpointId' => $endpointId,
+  'component' => 'query',
 ])
 @endcomponent
 </p>
@@ -68,11 +95,13 @@
 @endif
 @if(count($route['nestedBodyParameters']))
 <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
-@component('scribe::partials.body-parameters', ['parameters' => $route['nestedBodyParameters']])
+@component('scribe::partials.body-parameters', ['parameters' => $route['nestedBodyParameters'], 'endpointId' => $endpointId,])
 @endcomponent
 @endif
+</form>
 
 @if(count($route['responseFields'] ?? []))
+### Response
 <h4 class="fancy-heading-panel"><b>Response Fields</b></h4>
 @foreach($route['responseFields'] as $name => $field)
 <p>
@@ -81,6 +110,7 @@
   'type' => $field['type'],
   'required' => true,
   'description' => $field['description'],
+  'isInput' => false,
 ])
 @endcomponent
 </p>

@@ -23,6 +23,7 @@ abstract class GeneratorTestCase extends TestCase
                 \Knuckles\Scribe\Extracting\Strategies\Metadata\GetFromDocBlocks::class,
             ],
             'urlParameters' => [
+                \Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromLaravelAPI::class,
                 \Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromUrlParamTag::class,
             ],
             'queryParameters' => [

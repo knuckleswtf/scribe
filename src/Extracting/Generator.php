@@ -196,6 +196,7 @@ class Generator
                 \Knuckles\Scribe\Extracting\Strategies\Metadata\GetFromDocBlocks::class,
             ],
             'urlParameters' => [
+                \Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromLaravelAPI::class,
                 \Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromUrlParamTag::class,
             ],
             'queryParameters' => [
@@ -350,7 +351,7 @@ class Generator
                 $parsedRoute['queryParameters'][$parameterName] = [
                     'name' => $parameterName,
                     'value' => $valueToDisplay ?: $token,
-                    'description' => '',
+                    'description' => 'Authentication key.',
                     'required' => true,
                 ];
                 break;
@@ -360,7 +361,7 @@ class Generator
                     'name' => $parameterName,
                     'type' => 'string',
                     'value' => $valueToDisplay ?: $token,
-                    'description' => '',
+                    'description' => 'Authentication key.',
                     'required' => true,
                 ];
                 break;
