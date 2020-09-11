@@ -4,6 +4,7 @@ language: php
 env:
   global:
     - SETUP=stable
+    - COMPOSER_MEMORY_LIMIT=-1
 
 matrix:
   fast_finish: true
