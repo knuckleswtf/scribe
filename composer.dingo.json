@@ -38,7 +38,7 @@
         "dms/phpunit-arraysubset-asserts": "^0.1.0",
         "brianium/paratest": "^4.0",
         "league/fractal": "^0.17.0",
-        "orchestra/testbench": "^3.7|^4.0|^5.0",
+        "orchestra/testbench": "^3.7|^4.0|^5.0|^6.0",
         "phpstan/phpstan": "^0.12.19",
         "phpunit/phpunit": "^8.0|^9.0"
     },
