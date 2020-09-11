@@ -2,10 +2,7 @@
 
 namespace Knuckles\Scribe\Tests;
 
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route as RouteFacade;
-use Illuminate\Support\Str;
 use Knuckles\Scribe\ScribeServiceProvider;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tests\Fixtures\TestGroupController;
@@ -15,7 +12,6 @@ use Knuckles\Scribe\Tests\Fixtures\TestResourceController;
 use Knuckles\Scribe\Tests\Fixtures\TestUser;
 use Knuckles\Scribe\Tools\Utils;
 use Orchestra\Testbench\TestCase;
-use ReflectionException;
 use Symfony\Component\Yaml\Yaml;
 
 class GenerateDocumentationTest extends TestCase
@@ -39,8 +35,8 @@ class GenerateDocumentationTest extends TestCase
 
     public function tearDown(): void
     {
-      //  Utils::deleteDirectoryAndContents('/public/docs');
-      //  Utils::deleteDirectoryAndContents('/resources/docs');
+      Utils::deleteDirectoryAndContents('/public/docs');
+      Utils::deleteDirectoryAndContents('/resources/docs');
     }
 
     /**
@@ -239,6 +235,7 @@ class GenerateDocumentationTest extends TestCase
         // We want to have the same values for params each time
         config(['scribe.faker_seed' => 1234]);
         config(['scribe.title' => 'GREAT API!']);
+        config(['scribe.auth.enabled' => true]);
         config(['scribe.routes.0.match.prefixes' => ['api/*']]);
         config(['scribe.postman.overrides' => [
             'info.version' => '3.9.9',
@@ -253,11 +250,11 @@ class GenerateDocumentationTest extends TestCase
 
         $this->artisan('scribe:generate');
 
-       //  $generatedCollection = json_decode(file_get_contents(__DIR__ . '/../public/docs/collection.json'), true);
-       //  // The Postman ID varies from call to call; erase it to make the test data reproducible.
-       //  $generatedCollection['info']['_postman_id'] = '';
-       //  $fixtureCollection = json_decode(file_get_contents(__DIR__ . '/Fixtures/collection.json'), true);
-       //  $this->assertEquals($fixtureCollection, $generatedCollection);
+       $generatedCollection = json_decode(file_get_contents(__DIR__ . '/../public/docs/collection.json'), true);
+       // The Postman ID varies from call to call; erase it to make the test data reproducible.
+       $generatedCollection['info']['_postman_id'] = '';
+       $fixtureCollection = json_decode(file_get_contents(__DIR__ . '/Fixtures/collection.json'), true);
+       $this->assertEquals($fixtureCollection, $generatedCollection);
     }
 
     /** @test */

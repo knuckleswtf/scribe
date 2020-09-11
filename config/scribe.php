@@ -41,6 +41,12 @@ return [
         'middleware' => [],
     ],
 
+    'output' => [
+        /**
+         * Add a Try It Out button to your endpoints so consumers can test endpoints right from their browser.
+         */
+        'interactive' => true,
+    ],
     /*
      * How is your API authenticated? This information will be used in the displayed docs, generated examples and response calls.
      */
@@ -65,7 +71,7 @@ return [
         /*
          * The name of the parameter (eg token, key, apiKey) or header (eg Authorization, Api-Key).
          */
-        'name' => 'token',
+        'name' => 'key',
 
         /*
          * The value of the parameter to be used by Scribe to authenticate response calls.
@@ -319,6 +325,7 @@ INTRO
             \Knuckles\Scribe\Extracting\Strategies\Metadata\GetFromDocBlocks::class,
         ],
         'urlParameters' => [
+            \Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromLaravelAPI::class,
             \Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromUrlParamTag::class,
         ],
         'queryParameters' => [
