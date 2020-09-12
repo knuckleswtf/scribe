@@ -116,4 +116,23 @@ class Utils
         return (new ReflectionClass($class))->getMethod($method);
     }
 
+    public static function getModelFactory(string $modelName, array $states = [])
+    {
+        if (version_compare(app()->version(), '8.0.0', '>=')) {
+            $factory = call_user_func_array([$modelName, 'factory'], []);
+            if (count($states)) {
+                foreach ($states as $state) {
+                    $factory = $factory->$state();
+                }
+            }
+        } else {
+            $factory = factory($modelName);
+            if (count($states)) {
+                $factory = $factory->states($states);
+            }
+        }
+
+        return $factory;
+    }
+
 }

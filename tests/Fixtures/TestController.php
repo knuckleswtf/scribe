@@ -5,6 +5,7 @@ namespace Knuckles\Scribe\Tests\Fixtures;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Knuckles\Scribe\Tests\Unit\GeneratorTestCase;
+use Knuckles\Scribe\Tools\Utils;
 
 /**
  * @group Group A
@@ -174,7 +175,7 @@ class TestController extends Controller
      */
     public function withEloquentApiResource()
     {
-        return new TestUserApiResource(factory(TestUser::class)->make(['id' => 0]));
+        return new TestUserApiResource(Utils::getModelFactory(TestUser::class)->make(['id' => 0]));
     }
 
     /**
@@ -186,7 +187,7 @@ class TestController extends Controller
     public function withEloquentApiResourceCollection()
     {
         return TestUserApiResource::collection(
-            collect([factory(TestUser::class)->make(['id' => 0])])
+            collect([Utils::getModelFactory(TestUser::class)->make(['id' => 0])])
         );
     }
 
@@ -199,7 +200,7 @@ class TestController extends Controller
     public function withEloquentApiResourceCollectionClass()
     {
         return new TestUserApiResourceCollection(
-            collect([factory(TestUser::class)->make(['id' => 0])])
+            collect([Utils::getModelFactory(TestUser::class)->make(['id' => 0])])
         );
     }
 

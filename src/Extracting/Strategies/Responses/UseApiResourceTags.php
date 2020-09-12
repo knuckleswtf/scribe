@@ -18,6 +18,7 @@ use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\AnnotationParser as a;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\ErrorHandlingUtils as e;
+use Knuckles\Scribe\Tools\Utils;
 use Mpociot\Reflection\DocBlock;
 use Mpociot\Reflection\DocBlock\Tag;
 use ReflectionClass;
@@ -178,10 +179,7 @@ class UseApiResourceTags extends Strategy
             // but the user might write it that way in a comment. Let's be safe.
             $type = ltrim($type, '\\');
 
-            $factory = factory($type);
-            if (count($factoryStates)) {
-                $factory->states($factoryStates);
-            }
+            $factory = Utils::getModelFactory($type, $factoryStates);
             try {
                 return $factory->create();
             } catch (Exception $e) {
