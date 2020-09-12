@@ -36,6 +36,7 @@
   "require-dev": {
     "brianium/paratest": "^4.0",
     "dms/phpunit-arraysubset-asserts": "^0.1.0",
+    "laravel/legacy-factories": "^1.0.4",
     "league/fractal": "^0.19.0",
     "orchestra/testbench": "^3.7|^4.0|^5.0|^6.0",
     "phpstan/phpstan": "^0.12.19",
