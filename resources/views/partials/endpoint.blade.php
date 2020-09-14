@@ -1,4 +1,3 @@
-@php($endpointId = $route['methods'][0].str_replace(['/', '?', '{', '}'], '-', $route['uri']))
 ## {{ $route['metadata']['title'] ?: $route['uri']}}
 
 @component('scribe::components.badges.auth', ['authenticated' => $route['metadata']['authenticated']])
@@ -50,12 +49,11 @@
     <button type="button" style="background-color: #c97a7e; padding: 5px 10px; border-radius 5px; border-width: thin;" id="btn-canceltryout-{{ $endpointId }}" onclick="cancelTryOut('{{ $endpointId }}');" hidden>Cancel</button>&nbsp;&nbsp;
     <button type="submit" style="background-color: #6ac174; padding: 5px 10px; border-radius 5px; border-width: thin;" id="btn-executetryout-{{ $endpointId }}" hidden>Execute</button>
 </h3>
-<p>
 @foreach($route['methods'] as $method)
+<p>
 @component('scribe::components.badges.http-method', ['method' => $method])@endcomponent <b><code>{{$route['uri']}}</code></b>
-
-@endforeach
 </p>
+@endforeach
 @if($route['metadata']['authenticated'] && $auth['location'] === 'header')
 <p>
 <label id="auth-{{ $endpointId }}" hidden>{{ $auth['name'] }} header: <b><code>{{ $auth['prefix'] }}</code></b><input type="text" name="{{ $auth['name'] }}" data-prefix="{{ $auth['prefix'] }}" data-endpoint="{{ $endpointId }}" data-component="header"></label>
@@ -66,7 +64,7 @@
 @foreach($route['urlParameters'] as $attribute => $parameter)
 <p>
 @component('scribe::components.field-details', [
-  'name' => $attribute,
+  'name' => $parameter['name'],
   'type' => $parameter['type'] ?? 'string',
   'required' => $parameter['required'] ?? true,
   'description' => $parameter['description'],
@@ -82,7 +80,7 @@
 @foreach($route['queryParameters'] as $attribute => $parameter)
 <p>
 @component('scribe::components.field-details', [
-  'name' => $attribute,
+  'name' => $parameter['name'],
   'type' => $parameter['type'] ?? 'string',
   'required' => $parameter['required'] ?? true,
   'description' => $parameter['description'],
@@ -106,7 +104,7 @@
 @foreach($route['responseFields'] as $name => $field)
 <p>
 @component('scribe::components.field-details', [
-  'name' => $name,
+  'name' => $field['name'],
   'type' => $field['type'],
   'required' => true,
   'description' => $field['description'],

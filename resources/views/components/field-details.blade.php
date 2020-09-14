@@ -3,8 +3,13 @@
 @if(($isInput ?? true) && empty($hasChildren))
 @php
     $isList = Str::endsWith($type, '[]');
-    $fullName = empty($parent) ? $name : "$parent.$name";
+    $fullName =str_replace('[]', '.0', $name);
     $baseType = $isList ? substr($type, 0, -2) : $type;
+    // Ignore the first '[]': the frontend will take care of it
+    while (\Str::endsWith($baseType, '[]')) {
+        $fullName .= '.0';
+        $baseType = substr($baseType, 0, -2);
+    }
     switch($baseType) {
         case 'number':
         case 'integer':
@@ -18,11 +23,11 @@
     }
 @endphp
 @if($type === 'boolean')
-<label><input type="radio" name="{{ $fullName }}" value="true" data-endpoint="{{ $endpointId }}" data-component="{{ $component }}" @if($required)required @endif hidden><code>true</code></label>
-<label><input type="radio" name="{{ $fullName }}" value="false" data-endpoint="{{ $endpointId }}" data-component="{{ $component }}" @if($required)required @endif hidden><code>false</code></label>
+<label data-endpoint="{{ $endpointId }}" hidden><input type="radio" name="{{ $fullName }}" value="true" data-endpoint="{{ $endpointId }}" data-component="{{ $component }}" @if($required)required @endif><code>true</code></label>
+<label data-endpoint="{{ $endpointId }}" hidden><input type="radio" name="{{ $fullName }}" value="false" data-endpoint="{{ $endpointId }}" data-component="{{ $component }}" @if($required)required @endif><code>false</code></label>
 @elseif($isList)
 <input type="{{ $inputType }}" name="{{ $fullName.".0" }}" data-endpoint="{{ $endpointId }}" data-component="{{ $component }}" @if($required)required @endif hidden>
-<input type="{{ $inputType }}" name="{{ $fullName.".1" }}" data-endpoint="{{ $endpointId }}" data-component="{{ $component }}" @if($required)required @endif hidden>
+<input type="{{ $inputType }}" name="{{ $fullName.".1" }}" data-endpoint="{{ $endpointId }}" data-component="{{ $component }}" hidden>
 @else
 <input type="{{ $inputType }}" name="{{ $fullName }}" data-endpoint="{{ $endpointId }}" data-component="{{ $component }}" @if($required)required @endif hidden>
 @endif

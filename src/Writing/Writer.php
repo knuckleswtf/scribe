@@ -162,6 +162,7 @@ class Writer
                 $route['output'] = (string)view('scribe::partials.endpoint')
                     ->with('hasRequestOptions', $hasRequestOptions)
                     ->with('route', $route)
+                    ->with('endpointId', $route['methods'][0].str_replace(['/', '?', '{', '}'], '-', $route['uri']))
                     ->with('settings', $settings)
                     ->with('auth', $auth)
                     ->with('baseUrl', $this->baseUrl)

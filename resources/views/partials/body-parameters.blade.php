@@ -5,7 +5,7 @@
 <details>
 <summary>
 @component('scribe::components.field-details', [
-  'name' => $name,
+  'name' => $parameter['name'],
   'type' => $parameter['type'] ?? 'string',
   'required' => $parameter['required'] ?? false,
   'description' => $parameter['description'] ?? '',
@@ -17,34 +17,17 @@
 </summary>
 <br>
 @foreach($parameter['fields'] as $subfieldName => $subfield)
-@php
-    // Set the parent name for the field properly.
-   // This allows the input fields used by tryItOut to have the correct dot path
-   // which we pass to lodash set to set the values in our request body
-    $arrayAccessors = '';
-    $type = $parameter['type'];
-    while (\Str::endsWith($type, '[]')) {
-        $arrayAccessors .= '.0';
-        $type = substr($type, 0, -2);
-    }
-    if (empty($parent)) {
-        $parentPath = "$name$arrayAccessors";
-    } else {
-        $parentPath = "$parent$arrayAccessors.$name";
- }
-@endphp
 @if(!empty($subfield['fields']))
-@component('scribe::partials.body-parameters', ['parameters' => [$subfield['name'] => $subfield], 'parent' => $parentPath])
+@component('scribe::partials.body-parameters', ['parameters' => [$subfieldName => $subfield]])
 @endcomponent
 @else
 <p>
 @component('scribe::components.field-details', [
-  'name' => $subfieldName,
+  'name' => $subfield['name'],
   'type' => $subfield['type'] ?? 'string',
   'required' => $subfield['required'] ?? false,
   'description' => $subfield['description'] ?? '',
   'endpointId' => $endpointId,
-  'parent' => $parentPath,
   'hasChildren' => false,
   'component' => 'body',
 ])
@@ -57,7 +40,7 @@
 @else
 <p>
 @component('scribe::components.field-details', [
-  'name' => $name,
+  'name' => $parameter['name'],
   'type' => $parameter['type'] ?? 'string',
   'required' => $parameter['required'] ?? false,
   'description' => $parameter['description'] ?? '',

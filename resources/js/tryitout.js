@@ -4,7 +4,7 @@ function tryItOut(endpointId) {
     document.querySelector(`#btn-canceltryout-${endpointId}`).hidden = false;
 
     // Show all input fields
-    document.querySelectorAll(`input[data-endpoint=${endpointId}]`)
+    document.querySelectorAll(`input[data-endpoint=${endpointId}],label[data-endpoint=${endpointId}]`)
         .forEach(el => el.hidden = false);
 
     if (document.querySelector(`#form-${endpointId}`).dataset.authed === "1") {
@@ -22,7 +22,8 @@ function cancelTryOut(endpointId) {
     executeBtn.hidden = true;
     executeBtn.textContent = "Execute";
     document.querySelector(`#btn-canceltryout-${endpointId}`).hidden = true;
-    document.querySelectorAll(`input[data-endpoint=${endpointId}]`)
+    // hide inputs
+    document.querySelectorAll(`input[data-endpoint=${endpointId}],label[data-endpoint=${endpointId}]`)
         .forEach(el => el.hidden = true);
     document.querySelectorAll(`#form-${endpointId} details`)
         .forEach(el => el.open = false);
@@ -51,10 +52,7 @@ function cancelTryOut(endpointId) {
 }
 
 function makeAPICall(method, path, body, query, headers) {
-    console.log(path);
-    console.log(body);
-    console.log(query);
-    console.log(headers);
+    console.log({path, body, query, headers});
 
     if (!(body instanceof FormData)) {
         body = JSON.stringify(body)
@@ -184,8 +182,4 @@ function getPreviousSiblingUntil(elem, siblingSelector, stopSelector) {
         if (sibling.matches(stopSelector)) return null;
         sibling = sibling.previousElementSibling;
     }
-}
-
-function loadingIndicator() {
-
 }
