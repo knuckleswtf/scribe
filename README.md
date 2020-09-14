@@ -8,10 +8,11 @@ Generate API documentation for humans from your Laravel codebase. [Here's what t
 
 [![Latest Stable Version](https://poser.pugx.org/knuckleswtf/scribe/v/stable)](https://packagist.org/packages/knuckleswtf/scribe) [![Total Downloads](https://poser.pugx.org/knuckleswtf/scribe/downloads)](https://packagist.org/packages/knuckleswtf/scribe) [![Build Status](https://travis-ci.com/knuckleswtf/scribe.svg?branch=master)](https://travis-ci.com/knuckleswtf/scribe)
 
-> Looking to document your Node.js APIs? Check out [Scribe for JS](https://github.com/knuckleswtf/scribe-js).
+> Looking to document your Node.js APIs easily? Check out [Scribe for JS](https://github.com/knuckleswtf/scribe-js).
 
 ## Features
 - Pretty HTML documentation page, with included code samples and friendly text
+- Included "Try It Out" button so users can test your API
 - Markdown source files that can be edited to modify docs
 - Extracts body parameters information from Laravel FormRequests
 - Safely calls API endpoints to generate sample responses, with authentication and other custom configuration supported
@@ -27,7 +28,7 @@ Generate API documentation for humans from your Laravel codebase. [Here's what t
 Check out the documentation at [ReadTheDocs](http://scribe.rtfd.io/).
 
 ## Installation
-PHP 7.2.5 and Laravel/Lumen 5.8 or higher are required.
+PHP 7.2.5 and Laravel/Lumen 6.0 or higher are required.
 
 ```sh
 composer require --dev knuckleswtf/scribe
