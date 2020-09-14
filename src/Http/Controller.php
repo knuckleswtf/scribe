@@ -23,10 +23,13 @@ class Controller
         );
     }
 
+    /**
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     *
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function openapi()
     {
-        return response()->json(
-            json_decode(Storage::disk('local')->get('scribe/openapi.yaml'))
-        );
+        return response()->file(Storage::path('scribe/openapi.yaml'));
     }
 }
