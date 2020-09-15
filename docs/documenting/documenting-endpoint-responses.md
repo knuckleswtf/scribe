@@ -301,7 +301,7 @@ When generating responses from `@apiResource` and `@transformer` tags, Scribe ne
 3. If that fails, Scribe creates an instance using `new YourModel()`.
 
 ### Applying factory states
-If you want specific states to be applied to your model when instantiating via `factory(YourModel::class)`, you can use the `states` attribute on `@apiResourceModel` or `@transformerModel`. Separate multiple states with a comma.
+If you want specific states to be applied to your model when instantiating via the Laravel model factory, you can use the `states` attribute on `@apiResourceModel` or `@transformerModel`. Separate multiple states with a comma.
 
 ```php
 /**

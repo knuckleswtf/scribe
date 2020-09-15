@@ -102,9 +102,9 @@ class Utils
      *
      * @param array $routeControllerAndMethod
      *
-     * @return ReflectionFunctionAbstract
      * @throws ReflectionException
      *
+     * @return ReflectionFunctionAbstract
      */
     public static function getReflectedRouteMethod(array $routeControllerAndMethod): ReflectionFunctionAbstract
     {
@@ -126,4 +126,24 @@ class Utils
     {
         return substr($typeName, 0, -2);
     }
+
+    public static function getModelFactory(string $modelName, array $states = [])
+    {
+        if (!function_exists('factory')) { // Laravel 8 type factory
+            $factory = call_user_func_array([$modelName, 'factory'], []);
+            if (count($states)) {
+                foreach ($states as $state) {
+                    $factory = $factory->$state();
+                }
+            }
+        } else {
+            $factory = factory($modelName);
+            if (count($states)) {
+                $factory = $factory->states($states);
+            }
+        }
+
+        return $factory;
+    }
+
 }

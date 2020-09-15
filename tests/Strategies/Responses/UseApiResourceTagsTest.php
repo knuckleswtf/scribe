@@ -6,11 +6,12 @@ use Knuckles\Scribe\Extracting\Strategies\Responses\UseApiResourceTags;
 use Knuckles\Scribe\ScribeServiceProvider;
 use Knuckles\Scribe\Tests\Fixtures\TestUser;
 use Knuckles\Scribe\Tools\DocumentationConfig;
+use Knuckles\Scribe\Tools\Utils;
 use Mpociot\Reflection\DocBlock\Tag;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Orchestra\Testbench\TestCase;
 
-class UseApiResourceTagsTest extends TestCase
+    class UseApiResourceTagsTest extends TestCase
 {
     use ArraySubsetAsserts;
 
@@ -21,6 +22,9 @@ class UseApiResourceTagsTest extends TestCase
         ];
         if (class_exists(\Dingo\Api\Provider\LaravelServiceProvider::class)) {
             $providers[] = \Dingo\Api\Provider\LaravelServiceProvider::class;
+        }
+        if (class_exists(\Illuminate\Database\Eloquent\LegacyFactoryServiceProvider::class)) {
+            $providers[] = \Illuminate\Database\Eloquent\LegacyFactoryServiceProvider ::class;
         }
         return $providers;
     }
@@ -102,7 +106,7 @@ class UseApiResourceTagsTest extends TestCase
         $factory = app(\Illuminate\Database\Eloquent\Factory::class);
         $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
             if ($user->id === 4) {
-                $child = factory(TestUser::class)->make(['id' => 5, 'parent_id' => 4]);
+                $child = Utils::getModelFactory(TestUser::class)->make(['id' => 5, 'parent_id' => 4]);
                 $user->setRelation('children', collect([$child]));
             }
         });

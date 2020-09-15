@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project aims to adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.8.0 (Tuesday, 15 September, 2020)
+- Lumen 8 support
+- Fixed Laravel 8 + legacy factories support
+- Fixed the OpenAPI route for `laravel` type docs (https://github.com/knuckleswtf/scribe/pull/96)
+
+## 1.7.0 (Saturday, 12 September, 2020)
+Laravel 8 support
+
 ## 1.6.0 (Tuesday, 8 September, 2020)
 ### Additions
 - New `description` field, where you can add a description of your API. This field will be used as the `info.description` field in the Postman collection and OpenAPI spec, and as the first paragraph under the "Introduction" section on the generated webpage, before the `intro_text`. (https://github.com/knuckleswtf/scribe/pull/90/commits/dc356f3f2b13732d567dbee88dad07fc0441f40e)
