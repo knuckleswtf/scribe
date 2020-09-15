@@ -118,7 +118,7 @@ class Utils
 
     public static function getModelFactory(string $modelName, array $states = [])
     {
-        if (version_compare(app()->version(), '8.0.0', '>=')) {
+        if (!function_exists('factory')) {
             $factory = call_user_func_array([$modelName, 'factory'], []);
             if (count($states)) {
                 foreach ($states as $state) {

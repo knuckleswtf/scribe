@@ -11,7 +11,7 @@ use Mpociot\Reflection\DocBlock\Tag;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Orchestra\Testbench\TestCase;
 
-class UseApiResourceTagsTest extends TestCase
+    class UseApiResourceTagsTest extends TestCase
 {
     use ArraySubsetAsserts;
 
