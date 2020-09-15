@@ -94,6 +94,6 @@ Similarly, if you have `auth.default` set to `true` in your config, your endpoin
      }
 ```
 
-A "Requires authentication" badge will be added to that route in the generated documentation. 
+A "Requires authentication" badge will be added to that endpoint in the generated documentation. 
 
 ![](../images/endpoint-auth.png)

@@ -135,7 +135,7 @@ The configuration for response calls is located in the `apply.response_calls` se
 .. Tip:: You can also modify the environment directly by using a :code:`.env.docs` file and running :code:`scribe:generate` with :code:`--env docs`.
 ```
 
-- By default, the package will generate dummy values for your documented query, body and file parameters and send in the request. If you specified example values using `@bodyParam` or `@queryParam`, those will be used instead. You can configure additional parameters or overwrite the existing ones for the request in the `response_calls.queryParams`, `response_calls.bodyParams`, and `response_calls.fileParams` sections. For file parameters, each value should be a valid absolute path to a file on the machine.
+- By default, the package will generate dummy values for your documented query, body and file parameters and send in the request. If you specified example values using `@bodyParam` or `@queryParam`, those will be used instead. You can configure additional parameters or overwrite the existing ones for the request in the `response_calls.queryParams`, `response_calls.bodyParams`, and `response_calls.fileParams` sections. For file parameters, each value should be a valid path (absolute or relative to your project directory) to a file on the machine.
 
 ```eval_rst
 .. Note:: If you specified :code:`No-example` for a parameter earlier, it won't be included when making a response call.

@@ -161,7 +161,7 @@ This gives:
 ## Documenting file uploads
 You can document file inputs by using `@bodyParam` or FormRequest rules with a type `file`. You can add a description and example as usual. 
 
-For files, your example should be the absolute path to a file that exists on your machine. If you don't specify an example, Scribe will generate a fake file for example requests and response calls.
+For files, your example should be the path to a file that exists on your machine. This path should be absolute or relative to your project directory. If you don't specify an example, Scribe will generate a fake file for example requests and response calls.
 
 ```php
 /**
