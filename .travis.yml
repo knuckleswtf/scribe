@@ -15,14 +15,11 @@ matrix:
     - php: 7.4
       env: SETUP=lint
       name: "Lint code"
-    - php: 7.2
-    - php: 7.2
-      env: SETUP=lowest
     - php: 7.3
     - php: 7.3
       env: SETUP=lowest
     - php: 7.4
-      # No lowest for 7.4 because the lowest (Laravel 5.8) doesn't support 7.4
+      # No lowest for 7.4 because the lowest we support (Laravel 5.8) doesn't support 7.4
 
 cache:
   directories:
