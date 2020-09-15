@@ -52,13 +52,13 @@ return [
      */
     'auth' => [
         /*
-         * Set this to true if any endpoints in your API are authenticated.
+         * Set this to true if any endpoints in your API uses authentication.
          */
         'enabled' => false,
 
         /*
-         * Set this to true if your API is authenticated by default.
-         * You can also use @unauthenticated or @authenticated on individual methods to change their status.
+         * Set this to true if your API should be authenticated by default.
+         * You can then use @unauthenticated or @authenticated on individual endpoints to change their status.
          */
         'default' => false,
 
@@ -290,7 +290,7 @@ INTRO
 
                     /*
                      * Files which should be sent with the API call.
-                     * Each value should be a valid absolute path to a file on this machine.
+                     * Each value should be a valid path (absolute or relative to your project directory) to a file on this machine.
                      */
                     'fileParams' => [
                         // 'key' => '/home/me/image.png',

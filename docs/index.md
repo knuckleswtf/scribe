@@ -4,16 +4,20 @@ Generate API documentation for humans from your Laravel/Lumen/[Dingo](https://gi
 
 
 ```eval_rst
-.. admonition:: Wondering where to get started?
+.. admonition:: Wondering where to get started? Try one of these links:
    
-   If you're coming from mpociot/laravel-apidoc-generator, check out `what's new <whats-new.html>`_ and the `migration guide <migrating.html>`_. Otherwise, check out the `getting started guide <guide-getting-started.html>`_.
+   - `what's new in v2 <migrating-v2.html>`_
+   - `migrating from mpociot/laravel-apidoc-generator <migrating.html>`_, or
+   - the `getting started guide <guide-getting-started.html>`_.
 ```
 
 ```eval_rst
 .. Tip:: Looking to document your Node.js APIs? Check out `Scribe for JS <https://github.com/knuckleswtf/scribe-js>`_.
 ```
+
 ## Features
 - Pretty HTML documentation page, with included code samples and friendly text
+- Included "Try It Out" button so users can test your API
 - Markdown source files that can be edited to modify docs
 - Extracts body parameters information from FormRequests
 - Safely calls API endpoints to generate sample responses, with authentication and other custom configuration supported
@@ -29,7 +33,7 @@ Generate API documentation for humans from your Laravel/Lumen/[Dingo](https://gi
    :maxdepth: 2
 
    guide-getting-started
-   whats-new
+   migrating-v2
    migrating
    documenting/index
    generating-documentation
@@ -42,7 +46,7 @@ Generate API documentation for humans from your Laravel/Lumen/[Dingo](https://gi
 ```
 
 ## Installation
-PHP 7.2.5 and Laravel/Lumen 5.8 or higher are required.
+PHP 7.2.5 and Laravel/Lumen 6 or higher are required.
 
 ```sh
 composer require --dev knuckleswtf/scribe
