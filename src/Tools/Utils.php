@@ -118,7 +118,7 @@ class Utils
 
     public static function getModelFactory(string $modelName, array $states = [])
     {
-        if (!function_exists('factory')) {
+        if (!function_exists('factory')) { // Laravel 8 type factory
             $factory = call_user_func_array([$modelName, 'factory'], []);
             if (count($states)) {
                 foreach ($states as $state) {
