@@ -80,6 +80,11 @@ function hideCodeSamples(form) {
 
 function handleResponse(form, endpointId, response, status, headers) {
     hideCodeSamples(form);
+
+    // Hide error views
+    document.querySelector('#execution-error-' + endpointId).hidden = true;
+
+
     const responseContentEl = document.querySelector('#execution-response-content-' + endpointId);
 
     // prettify it if it's JSON
@@ -102,8 +107,12 @@ function handleResponse(form, endpointId, response, status, headers) {
 }
 
 function handleError(form, endpointId, err) {
-    document.querySelector('#execution-error-message-' + endpointId).textContent = err.message || err;
     hideCodeSamples(form);
+    // Hide response views
+    document.querySelector('#execution-results-' + endpointId).hidden = true;
+
+    // Show error views
+    document.querySelector('#execution-error-message-' + endpointId).textContent = err.message || err;
     const errorEl = document.querySelector('#execution-error-' + endpointId);
     errorEl.hidden = false;
     errorEl.scrollIntoView({behavior: "smooth", block: "center"});
