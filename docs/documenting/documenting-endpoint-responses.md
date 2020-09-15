@@ -67,7 +67,7 @@ To indicate a binary response, use `<<binary>>` as the value of the response, fo
 ## `@responseFile`
 `@responseFile` works similarly to `@response`, but instead of inlining the response, you pass a file containing your JSON response. This can be helpful if your response body is large. 
 
-To use `@responseFile`, place the response as a JSON string in a file within your Laravel storage directory and specify the relative path to it. For instance, we can put this response in a file named `users.get.json` in `storage/responses/`:
+To use `@responseFile`, place the response as a JSON string in a file somewhere in your project directory and specify the relative path to it. For instance, we can put this response in a file named `users.get.json` in `storage/responses/`:
 
 ```
 {"id":4,"name":"Jessica Jones"}
@@ -77,12 +77,16 @@ Then in the controller:
 
 ```php
 /**
- * @responseFile responses/users.get.json
+ * @responseFile storage/responses/users.get.json
  */
 public function getUser(int $id)
 {
   // ...
 }
+```
+
+```eval_rst
+.. Tip:: If the file is in your Laravel storage directory, you can omit the :code:`storage/` part from the file name.
 ```
 
 You can also have multiple `@responseFile` tags on a single method, distinguished by status code and/or scenarios.

@@ -61,7 +61,7 @@ Installing dependencies comes in two forms.
 
 Tests are located in the tests/ folder. Currently, feature tests go in the `GenerateDocumentationTest` class in the base folder, unit tests go in their respective classes in the `Unit` folder, and tests for included strategies go in the `Strategies` folder. 
 
-Note that some of the unit and strategy tests extend PHPUnit\Framework\TestCase while others extend Orchestra\Testbench\TestCase. The first case is for tests that don't need any special Laravel functionality. The second case is for tests that depend on some Laravel functionality or helpers (like `storage_path` in `UseResponseFileTagTest` and `ResponseCallsTest` that depends on Laravel routing.)
+Note that some of the unit and strategy tests extend PHPUnit\Framework\TestCase while others extend Orchestra\Testbench\TestCase. The first case is for tests that don't need any special Laravel functionality. The second case is for tests that depend on some Laravel functionality or helpers (like `ResponseCallsTest` that depends on Laravel routing.)
 
 ```eval_rst
 .. Note::  Avoid tests that make assertions on the generated HTML or Markdown output. It's a very unreliable testing approach. Instead assert on structured, consistent data like the parsed route output and Postman collection. 

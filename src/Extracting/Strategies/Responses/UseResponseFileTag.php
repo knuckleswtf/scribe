@@ -23,7 +23,7 @@ class UseResponseFileTag extends Strategy
      * @param array $alreadyExtractedData
      *
      * @return array|null
-     *@throws \Exception If the response file does not exist
+     * @throws \Exception If the response file does not exist
      *
      */
     public function __invoke(Route $route, \ReflectionClass $controller, \ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
@@ -60,14 +60,24 @@ class UseResponseFileTag extends Strategy
             [$_, $status, $mainContent] = $result;
             $json = $result[3] ?? null;
 
-            ['attributes' => $attributes, 'content' => $relativeFilePath] = a::parseIntoContentAndAttributes($mainContent, ['status', 'scenario']);
+            ['attributes' => $attributes, 'content' => $filePath] = a::parseIntoContentAndAttributes($mainContent, ['status', 'scenario']);
 
             $status = $attributes['status'] ?: ($status ?: 200);
             $description = $attributes['scenario'] ? "$status, {$attributes['scenario']}" : "$status";
 
-            $filePath = storage_path($relativeFilePath);
-            if (! file_exists($filePath)) {
-                c::warn("@responseFile {$relativeFilePath} does not exist");
+            if (!file_exists($filePath)) {
+                // Try Laravel storage folder
+                if (!file_exists(storage_path($filePath))) {
+                    c::warn("@responseFile {$filePath} does not exist");
+
+                    return [
+                        'content' => null,
+                        'status' => (int)$status,
+                        'description' => $description,
+                    ];
+                }
+
+                $filePath = storage_path($filePath);
             }
             $content = file_get_contents($filePath, true);
             if ($json) {
@@ -75,10 +85,11 @@ class UseResponseFileTag extends Strategy
                 $content = json_encode(array_merge(json_decode($content, true), json_decode($json, true)));
             }
 
+
             return [
                 'content' => $content,
-                'status' => (int) $status,
-                'description' => $description
+                'status' => (int)$status,
+                'description' => $description,
             ];
         }, $responseFileTags);
 
