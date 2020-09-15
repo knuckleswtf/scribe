@@ -23,6 +23,9 @@ class UseApiResourceTagsTest extends TestCase
         if (class_exists(\Dingo\Api\Provider\LaravelServiceProvider::class)) {
             $providers[] = \Dingo\Api\Provider\LaravelServiceProvider::class;
         }
+        if (class_exists(\Illuminate\Database\Eloquent\LegacyFactoryServiceProvider::class)) {
+            $providers[] = \Illuminate\Database\Eloquent\LegacyFactoryServiceProvider ::class;
+        }
         return $providers;
     }
 
