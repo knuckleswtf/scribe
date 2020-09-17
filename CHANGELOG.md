@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project aims to adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.8.1 (Thursday, 17 September, 2020)
+### Fixes
+- Printing form data body parameters no longer throws an error with nested arrays or objects ()
+
 ## 1.8.0 (Tuesday, 15 September, 2020)
 - Lumen 8 support
 - Fixed Laravel 8 + legacy factories support
