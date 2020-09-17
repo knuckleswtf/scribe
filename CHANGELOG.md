@@ -3,9 +3,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project aims to adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.8.2 (Thursday, 17 September, 2020)
+### Fixes
+- Regex in URL parameters shouldn't fuck the generated examples up anymore (https://github.com/knuckleswtf/scribe/commit/cf44fbbcd3643086859ba724f6e4d4315941b471)
+
 ## 1.8.1 (Thursday, 17 September, 2020)
 ### Fixes
-- Printing form data body parameters no longer throws an error with nested arrays or objects ()
+- Printing form data body parameters no longer throws an error with nested arrays or objects (https://github.com/knuckleswtf/scribe/commit/33a58a18a8712d20ab90c06bf0bb087f6fb5869a)
 
 ## 1.8.0 (Tuesday, 15 September, 2020)
 - Lumen 8 support
