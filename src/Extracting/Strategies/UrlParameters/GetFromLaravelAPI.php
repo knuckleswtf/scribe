@@ -20,12 +20,11 @@ class GetFromLaravelAPI extends Strategy
         $parameters = [];
 
         $path = $alreadyExtractedData['uri'];
-        preg_match_all('#\{([^/]+?)\}#', $path, $matches);
+        preg_match_all('/\{(.*?)\}/', $path, $matches);
 
         foreach ($matches[1] as $match) {
             $optional = Str::endsWith($match, '?');
             $name = rtrim($match, '?');
-            $name = preg_replace('/:.+/', '', $name); // remove any specified regex pattern
             $type = 'string';
             $parameters[$name] = [
                 'name' => $name,
