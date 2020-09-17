@@ -13,11 +13,6 @@
         <testsuite name="Full Test">
             <file>tests/GenerateDocumentationTest.php</file>
         </testsuite>
-        <testsuite name="Generator Tests">
-            <file>tests/Unit/DingoGeneratorTest.php</file>
-            <file>tests/Unit/LaravelGeneratorTest.php</file>
-            <file>tests/Unit/GeneratorPluginSystemTest.php</file>
-        </testsuite>
         <testsuite name="Strategies">
             <directory>tests/Strategies</directory>
         </testsuite>
@@ -25,11 +20,12 @@
             <file>tests/Unit/RouteMatcherDingoTest.php</file>
             <file>tests/Unit/RouteMatcherTest.php</file>
         </testsuite>
-        <testsuite name="Other Unit Tests 1">
-            <file>tests/Unit/OpenAPISpecWriterTest.php</file>
+        <testsuite name="Unit Tests 1">
+            <file>tests/Unit/GeneratorTest.php</file>
             <file>tests/Unit/AnnotationParserTest.php</file>
         </testsuite>
-        <testsuite name="Other Unit Tests 2">
+        <testsuite name="Unit Tests 2">
+            <file>tests/Unit/OpenAPISpecWriterTest.php</file>
             <file>tests/Unit/PostmanCollectionWriterTest.php</file>
         </testsuite>
     </testsuites>

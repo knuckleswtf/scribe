@@ -58,7 +58,7 @@ class GenerateDocumentationTest extends TestCase
     /** @test */
     public function can_process_traditional_laravel_route_syntax()
     {
-        RouteFacade::get('/api/test', TestController::class . '@withEndpointDescription');
+        RouteFacade::get('/api/test', [TestController::class, 'withEndpointDescription']);
 
         config(['scribe.routes.0.match.prefixes' => ['api/*']]);
         $output = $this->artisan('scribe:generate');
@@ -69,7 +69,7 @@ class GenerateDocumentationTest extends TestCase
     /** @test */
     public function can_process_traditional_laravel_head_routes()
     {
-        RouteFacade::addRoute('HEAD', '/api/test', TestController::class . '@withEndpointDescription');
+        RouteFacade::addRoute('HEAD', '/api/test', [TestController::class, 'withEndpointDescription']);
 
         config(['scribe.routes.0.match.prefixes' => ['api/*']]);
         $output = $this->artisan('scribe:generate');
@@ -104,7 +104,7 @@ class GenerateDocumentationTest extends TestCase
             $api->get('/closure', function () {
                 return 'foo';
             });
-            $api->get('/test', TestController::class . '@withEndpointDescription');
+            $api->get('/test', [TestController::class, 'withEndpointDescription']);
         });
 
         config(['scribe.router' => 'dingo']);
@@ -130,9 +130,9 @@ class GenerateDocumentationTest extends TestCase
     /** @test */
     public function can_skip_methods_and_classes_with_hidefromapidocumentation_tag()
     {
-        RouteFacade::get('/api/skip', TestController::class . '@skip');
+        RouteFacade::get('/api/skip', [TestController::class, 'skip']);
         RouteFacade::get('/api/skipClass', TestIgnoreThisController::class . '@dummy');
-        RouteFacade::get('/api/test', TestController::class . '@withEndpointDescription');
+        RouteFacade::get('/api/test', [TestController::class, 'withEndpointDescription']);
 
         config(['scribe.routes.0.match.prefixes' => ['api/*']]);
         $output = $this->artisan('scribe:generate');
@@ -145,12 +145,11 @@ class GenerateDocumentationTest extends TestCase
     /** @test */
     public function can_skip_nonexistent_response_files()
     {
-        RouteFacade::get('/api/non-existent', TestController::class . '@withNonExistentResponseFile');
+        RouteFacade::get('/api/non-existent', [TestController::class, 'withNonExistentResponseFile']);
 
         config(['scribe.routes.0.match.prefixes' => ['api/*']]);
         $output = $this->artisan('scribe:generate');
 
-        $this->assertStringContainsString('Skipping route: [GET] api/non-existent', $output);
         $this->assertStringContainsString('@responseFile i-do-not-exist.json does not exist', $output);
     }
 
@@ -226,11 +225,11 @@ class GenerateDocumentationTest extends TestCase
     /** @test */
     public function generated_postman_collection_file_is_correct()
     {
-        RouteFacade::get('/api/withDescription', [TestController::class, 'withEndpointDescription']);
-        RouteFacade::post('/api/withFormDataParams', TestController::class . '@withFormDataParams');
-        RouteFacade::post('/api/withBodyParameters', TestController::class . '@withBodyParameters');
-        RouteFacade::get('/api/withQueryParameters', TestController::class . '@withQueryParameters');
-        RouteFacade::get('/api/withAuthTag', TestController::class . '@withAuthenticatedTag');
+        // RouteFacade::get('/api/withBodyParametersAsArray', [TestController::class, 'withBodyParametersAsArray']);
+        RouteFacade::post('/api/withFormDataParams', [TestController::class, 'withFormDataParams']);
+        RouteFacade::post('/api/withBodyParameters', [TestController::class, 'withBodyParameters']);
+        RouteFacade::get('/api/withQueryParameters', [TestController::class, 'withQueryParameters']);
+        RouteFacade::get('/api/withAuthTag', [TestController::class, 'withAuthenticatedTag']);
         RouteFacade::get('/api/echoesUrlParameters/{param}-{param2}/{param3?}', [TestController::class, 'echoesUrlParameters']);
         // We want to have the same values for params each time
         config(['scribe.faker_seed' => 1234]);
@@ -260,12 +259,11 @@ class GenerateDocumentationTest extends TestCase
     /** @test */
     public function generated_openapi_spec_file_is_correct()
     {
-        RouteFacade::get('/api/withDescription', [TestController::class, 'withEndpointDescription']);
-        RouteFacade::post('/api/withFormDataParams', TestController::class . '@withFormDataParams');
-        RouteFacade::get('/api/withResponseTag', TestController::class . '@withResponseTag');
-        RouteFacade::get('/api/withQueryParameters', TestController::class . '@withQueryParameters');
-        RouteFacade::get('/api/withAuthTag', TestController::class . '@withAuthenticatedTag');
-        RouteFacade::get('/api/echoesUrlParameters/{param}-{param2}/{param3?}', [TestController::class, 'echoesUrlParameters']);
+        RouteFacade::post('/api/withFormDataParams', [TestController::class, 'withFormDataParams']);
+        RouteFacade::get('/api/withResponseTag', [TestController::class, 'withResponseTag']);
+        RouteFacade::get('/api/withQueryParameters', [TestController::class, 'withQueryParameters']);
+        RouteFacade::get('/api/withAuthTag', [TestController::class, 'withAuthenticatedTag']);
+        RouteFacade::get('/api/echoesUrlParameters/{param}/{param2}/{param3?}/{param4?}', [TestController::class, 'echoesUrlParameters']);
 
         // We want to have the same values for params each time
         config(['scribe.faker_seed' => 1234]);
@@ -291,7 +289,7 @@ class GenerateDocumentationTest extends TestCase
     /** @test */
     public function can_append_custom_http_headers()
     {
-        RouteFacade::get('/api/headers', TestController::class . '@checkCustomHeaders');
+        RouteFacade::get('/api/headers', [TestController::class, 'checkCustomHeaders']);
 
         config(['scribe.routes.0.match.prefixes' => ['api/*']]);
         config([
@@ -309,7 +307,7 @@ class GenerateDocumentationTest extends TestCase
     /** @test */
     public function can_parse_utf8_response()
     {
-        RouteFacade::get('/api/utf8', TestController::class . '@withUtf8ResponseTag');
+        RouteFacade::get('/api/utf8', [TestController::class, 'withUtf8ResponseTag']);
 
         config(['scribe.routes.0.prefixes' => ['api/*']]);
         $this->artisan('scribe:generate');

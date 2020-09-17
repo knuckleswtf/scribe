@@ -234,7 +234,7 @@ class PostmanCollectionWriterTest extends TestCase
         $collection = $writer->generatePostmanCollection($endpoints);
 
         $this->assertEquals(['type' => 'bearer'], $collection['auth']);
-        $this->assertNull($collection['item'][0]['item'][0]['request']['auth']);
+        $this->assertArrayNotHasKey('auth', $collection['item'][0]['item'][0]['request']);
         $this->assertEquals(['type' => 'noauth'], $collection['item'][0]['item'][1]['request']['auth']);
 
         $config['auth']['in'] = 'query';
@@ -257,7 +257,7 @@ class PostmanCollectionWriterTest extends TestCase
                 ],
             ]
         ], $collection['auth']);
-        $this->assertNull($collection['item'][0]['item'][0]['request']['auth']);
+        $this->assertArrayNotHasKey('auth', $collection['item'][0]['item'][0]['request']);
         $this->assertEquals(['type' => 'noauth'], $collection['item'][0]['item'][1]['request']['auth']);
     }
 

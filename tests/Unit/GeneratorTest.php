@@ -3,13 +3,14 @@
 namespace Knuckles\Scribe\Tests\Unit;
 
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
+use Illuminate\Routing\Route;
 use Knuckles\Scribe\ScribeServiceProvider;
 use Knuckles\Scribe\Extracting\Generator;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use PHPUnit\Framework\TestCase;
 
-abstract class GeneratorTestCase extends TestCase
+class GeneratorTest extends TestCase
 {
     use ArraySubsetAsserts;
 
@@ -17,6 +18,7 @@ abstract class GeneratorTestCase extends TestCase
      * @var \Knuckles\Scribe\Extracting\Generator
      */
     protected $generator;
+
     protected $config = [
         'strategies' => [
             'metadata' => [
@@ -51,17 +53,6 @@ abstract class GeneratorTestCase extends TestCase
     ];
 
     public static $globalValue = null;
-
-    protected function getPackageProviders($app)
-    {
-        $providers = [
-            ScribeServiceProvider::class,
-        ];
-        if (class_exists(\Dingo\Api\Provider\LaravelServiceProvider::class)) {
-            $providers[] = \Dingo\Api\Provider\LaravelServiceProvider::class;
-        }
-        return $providers;
-    }
 
     /**
      * Setup the test environment.
@@ -269,11 +260,20 @@ abstract class GeneratorTestCase extends TestCase
         $this->assertSame('Name of the location', $parsed['bodyParameters']['name']['description']);
     }
 
-    abstract public function createRoute(string $httpMethod, string $path, string $controllerMethod, $register = false, $class = TestController::class);
+    public function createRoute(string $httpMethod, string $path, string $controllerMethod, $register = false, $class = TestController::class)
+    {
+        return new Route([$httpMethod], $path, ['uses' => $class . "@$controllerMethod"]);
+    }
 
-    abstract public function createRouteUsesArray(string $httpMethod, string $path, string $controllerMethod, $register = false, $class = TestController::class);
+    public function createRouteUsesArray(string $httpMethod, string $path, string $controllerMethod, $register = false, $class = TestController::class)
+    {
+        return new Route([$httpMethod], $path, ['uses' => [$class, $controllerMethod]]);
+    }
 
-    abstract public function createRouteUsesCallable(string $httpMethod, string $path, callable $handler, $register = false);
+    public function createRouteUsesCallable(string $httpMethod, string $path, callable $handler, $register = false)
+    {
+        return new Route([$httpMethod], $path, ['uses' => $handler]);
+    }
 
     public function authRules()
     {

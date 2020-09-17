@@ -4,7 +4,7 @@ namespace Knuckles\Scribe\Tests\Fixtures;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Knuckles\Scribe\Tests\Unit\GeneratorTestCase;
+use Knuckles\Scribe\Tests\Unit\GeneratorTest;
 use Knuckles\Scribe\Tools\Utils;
 
 /**
@@ -296,7 +296,7 @@ class TestController extends Controller
      */
     public function withResponseTag()
     {
-        GeneratorTestCase::$globalValue = rand();
+        GeneratorTest::$globalValue = rand();
 
         return '';
     }

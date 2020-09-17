@@ -1,28 +1,12 @@
 openapi: 3.0.3
 info:
-    title: null
+    title: Laravel API
     description: ''
     version: 3.9.9
 servers:
     -
         url: 'http://localhost'
 paths:
-    /api/withDescription:
-        get:
-            summary: 'Example title.'
-            description: "This will be the long description.\nIt can also be multiple lines long."
-            parameters:
-                -
-                    in: header
-                    name: Custom-Header
-                    description: ''
-                    example: NotSoCustom
-                    schema:
-                        type: string
-            responses: {  }
-            tags:
-                - 'Group A'
-            security: []
     /api/withFormDataParams:
         post:
             summary: 'Endpoint with body form data parameters.'
@@ -181,7 +165,7 @@ paths:
             responses: {  }
             tags:
                 - 'Group A'
-    '/api/echoesUrlParameters/{param}-{param2}/{param3}':
+    '/api/echoesUrlParameters/{param}/{param2}/{param3}/{param4}':
         get:
             summary: ''
             description: ''
@@ -213,12 +197,12 @@ paths:
                                 example:
                                     param: '4'
                                     param2: consequatur
-                                    param3: null
+                                    param3: consequatur
                                     param4: null
                                 properties:
                                     param: { type: string, example: '4' }
                                     param2: { type: string, example: consequatur }
-                                    param3: { type: string, example: null }
+                                    param3: { type: string, example: consequatur }
                                     param4: { type: string, example: null }
             tags:
                 - Other😎
@@ -235,6 +219,20 @@ paths:
             -
                 in: path
                 name: param2
+                description: 'Optional parameter.'
+                required: true
+                schema:
+                    type: string
+                examples:
+                    omitted:
+                        summary: 'When the value is omitted'
+                        value: ''
+                    present:
+                        summary: 'When the value is present'
+                        value: consequatur
+            -
+                in: path
+                name: param3
                 description: 'Optional parameter.'
                 required: true
                 schema:
