@@ -20,7 +20,7 @@ function cancelTryOut(endpointId) {
     document.querySelector(`#btn-tryout-${endpointId}`).hidden = false;
     const executeBtn = document.querySelector(`#btn-executetryout-${endpointId}`);
     executeBtn.hidden = true;
-    executeBtn.textContent = "Execute";
+    executeBtn.textContent = "Send Request 💥";
     document.querySelector(`#btn-canceltryout-${endpointId}`).hidden = true;
     // hide inputs
     document.querySelectorAll(`input[data-endpoint=${endpointId}],label[data-endpoint=${endpointId}]`)
@@ -112,7 +112,11 @@ function handleError(form, endpointId, err) {
     document.querySelector('#execution-results-' + endpointId).hidden = true;
 
     // Show error views
-    document.querySelector('#execution-error-message-' + endpointId).textContent = err.message || err;
+    let errorMessage = err.message || err;
+    errorMessage += "\n\nTip: Check that you're properly connected to the network.";
+    errorMessage += "\nIf you're a maintainer of ths API, verify that you've enabled CORS.";
+    errorMessage += "\nYou can check the Dev Tools console for debugging information.";
+    document.querySelector('#execution-error-message-' + endpointId).textContent = errorMessage;
     const errorEl = document.querySelector('#execution-error-' + endpointId);
     errorEl.hidden = false;
     errorEl.scrollIntoView({behavior: "smooth", block: "center"});
@@ -121,7 +125,7 @@ function handleError(form, endpointId, err) {
 
 async function executeTryOut(endpointId, form) {
     const executeBtn = document.querySelector(`#btn-executetryout-${endpointId}`);
-    executeBtn.textContent = "⏱ Executing...";
+    executeBtn.textContent = "⏱ Sending...";
     executeBtn.scrollIntoView({behavior: "smooth", block: "center"});
 
     let body;
@@ -180,7 +184,7 @@ async function executeTryOut(endpointId, form) {
             handleError(form, endpointId, err);
         })
         .finally(() => {
-            executeBtn.textContent = "Execute";
+            executeBtn.textContent = "Send Request 💥";
         });
 }
 
