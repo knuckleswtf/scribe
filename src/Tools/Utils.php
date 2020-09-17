@@ -64,7 +64,7 @@ class Utils
         }
 
         foreach ($urlParameters as $parameterName => $example) {
-            $uri = preg_replace('#\{' . $parameterName . '[^/]*?}?}#', $example, $uri); // The second closing brace is present to account for regexes ending in a }
+            $uri = preg_replace('#\{' . $parameterName . '\??}#', $example, $uri);
         }
 
         // Remove unbound optional parameters with nothing
