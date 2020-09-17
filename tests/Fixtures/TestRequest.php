@@ -14,14 +14,14 @@ use Illuminate\Foundation\Http\FormRequest;
  * @bodyParam forever boolean Whether to ban the user forever. Example: false
  * @bodyParam another_one number Just need something here.
  * @bodyParam yet_another_param object required
- * @bodyParam even_more_param array
+ * @bodyParam even_more_param string[]
  * @bodyParam book.name string
  * @bodyParam book.author_id integer
  * @bodyParam book.pages_count integer
  * @bodyParam ids integer[]
- * @bodyParam users OBJECT[] User details
- * @bodyParam users.*.first_name string The first name of the user. Example: John
- * @bodyParam users.*.last_name string The last name of the user. Example: Doe
+ * @bodyParam users object[] User details
+ * @bodyParam users[].first_name string The first name of the user. Example: John
+ * @bodyParam users[].last_name string The last name of the user. Example: Doe
  */
 class TestRequest extends FormRequest
 {

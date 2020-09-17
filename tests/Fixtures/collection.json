@@ -21,35 +21,6 @@
             "description": "",
             "item": [
                 {
-                    "name": "Example title.",
-                    "request": {
-                        "url": {
-                            "protocol": "http",
-                            "host": "{{baseUrl}}",
-                            "path": "api\/withDescription",
-                            "query": [],
-                            "raw": "http:\/\/{{baseUrl}}\/api\/withDescription"
-                        },
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Custom-Header",
-                                "value": "NotSoCustom"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
-                        "description": "This will be the long description.\nIt can also be multiple lines long.",
-                        "auth": {
-                            "type": "noauth"
-                        }
-                    },
-                    "response": []
-                },
-                {
                     "name": "Endpoint with body form data parameters.",
                     "request": {
                         "url": {
@@ -214,8 +185,7 @@
                             }
                         ],
                         "body": null,
-                        "description": "",
-                        "auth": null
+                        "description": ""
                     },
                     "response": []
                 }
@@ -279,6 +249,6 @@
         }
     ],
     "auth": {
-        "type": "noauth"
+        "type": "bearer"
     }
 }

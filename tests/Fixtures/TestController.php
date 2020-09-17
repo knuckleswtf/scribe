@@ -75,8 +75,8 @@ class TestController extends Controller
      * @bodyParam forever boolean Whether to ban the user forever. Example: false
      * @bodyParam another_one number Just need something here.
      * @bodyParam yet_another_param object required Some object params.
-     * @bodyParam yet_another_param.name string required Subkey in the object param.
-     * @bodyParam even_more_param number[] Subkey in the array param.
+     * @bodyParam yet_another_param.name string required
+     * @bodyParam even_more_param number[] A list of numbers
      * @bodyParam book object
      * @bodyParam book.name string
      * @bodyParam book.author_id integer
@@ -105,11 +105,13 @@ class TestController extends Controller
     /**
      * Endpoint with body parameters as array.
      *
-     * @bodyParam [].first_name string The first name of the user. Example: John
-     * @bodyParam [].last_name string The last name of the user. Example: Doe
-     * @bodyParam [].contacts[].first_name string The first name of the contact. Example: John
-     * @bodyParam [].contacts[].last_name string The last name of the contact. Example: Doe
-     * @bodyParam [].roles[] string[] The name of the role. Example: Admin
+     * @bodyParam _ object[] Details.
+     * @bodyParam _[].first_name string The first name of the user. Example: John
+     * @bodyParam _[].last_name string The last name of the user. Example: Doe
+     * @bodyParam _[].contacts object[] Contact info
+     * @bodyParam _[].contacts[].first_name string The first name of the contact. Example: John
+     * @bodyParam _[].contacts[].last_name string The last name of the contact. Example: Doe
+     * @bodyParam _[].roles string[] The name of the role. Example: Admin
      */
     public function withBodyParametersAsArray()
     {

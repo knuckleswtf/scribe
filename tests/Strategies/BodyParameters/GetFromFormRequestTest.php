@@ -59,7 +59,7 @@ class GetFromFormRequestTest extends TestCase
                 'description' => 'Just need something here.',
             ],
             'even_more_param' => [
-                'type' => 'array',
+                'type' => 'string[]',
                 'required' => false,
                 'description' => '',
             ],

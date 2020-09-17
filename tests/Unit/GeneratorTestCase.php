@@ -103,14 +103,16 @@ abstract class GeneratorTestCase extends TestCase
             ],
             'list_of_objects' => [
                 'type' => 'object[]',
-                'value' => [[]],
+                'value' => [[], []],
             ],
             'list_of_objects[].key1' => [
                 'type' => 'string',
+                'required' => true,
                 'value' => 'John',
             ],
             'list_of_objects[].key2' => [
                 'type' => 'boolean',
+                'required' => true,
                 'value' => false,
             ],
         ];
@@ -127,6 +129,10 @@ abstract class GeneratorTestCase extends TestCase
             ],
             'list' => [4],
             'list_of_objects' => [
+                [
+                    'key1' => 'John',
+                    'key2' => false,
+                ],
                 [
                     'key1' => 'John',
                     'key2' => false,

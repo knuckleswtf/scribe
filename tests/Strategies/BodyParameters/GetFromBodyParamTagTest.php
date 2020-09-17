@@ -24,15 +24,16 @@ class GetFromBodyParamTagTest extends TestCase
             new Tag('bodyParam', 'forever boolean Whether to ban the user forever. Example: false'),
             new Tag('bodyParam', 'another_one number Just need something here.'),
             new Tag('bodyParam', 'yet_another_param object required Some object params.'),
-            new Tag('bodyParam', 'yet_another_param.name string required Subkey in the object param.'),
-            new Tag('bodyParam', 'even_more_param array Some array params.'),
-            new Tag('bodyParam', 'even_more_param.* number Subkey in the array param.'),
+            new Tag('bodyParam', 'yet_another_param.name string required'),
+            new Tag('bodyParam', 'even_more_param number[] A list of numbers'),
+            new Tag('bodyParam', 'book object Book information'),
             new Tag('bodyParam', 'book.name string'),
             new Tag('bodyParam', 'book.author_id integer'),
-            new Tag('bodyParam', 'book[pages_count] integer'),
-            new Tag('bodyParam', 'ids.* integer'),
-            new Tag('bodyParam', 'users.*.first_name string The first name of the user. Example: John'),
-            new Tag('bodyParam', 'users.*.last_name string The last name of the user. Example: Doe'),
+            new Tag('bodyParam', 'book.pages_count integer'),
+            new Tag('bodyParam', 'ids integer[]'),
+            new Tag('bodyParam', 'users object[] Users\' details'),
+            new Tag('bodyParam', 'users[].first_name string The first name of the user. Example: John'),
+            new Tag('bodyParam', 'users[].last_name string The last name of the user. Example: Doe'),
         ];
         $results = $strategy->getBodyParametersFromDocBlock($tags);
 
@@ -66,17 +67,17 @@ class GetFromBodyParamTagTest extends TestCase
             ],
             'yet_another_param.name' => [
                 'type' => 'string',
-                'description' => 'Subkey in the object param.',
+                'description' => '',
                 'required' => true,
             ],
             'even_more_param' => [
-                'type' => 'array',
+                'type' => 'number[]',
+                'description' => 'A list of numbers',
                 'required' => false,
-                'description' => 'Some array params.',
             ],
-            'even_more_param.*' => [
-                'type' => 'number',
-                'description' => 'Subkey in the array param.',
+            'book' => [
+                'type' => 'object',
+                'description' => 'Book information',
                 'required' => false,
             ],
             'book.name' => [
@@ -89,23 +90,28 @@ class GetFromBodyParamTagTest extends TestCase
                 'description' => '',
                 'required' => false,
             ],
-            'book[pages_count]' => [
+            'book.pages_count' => [
                 'type' => 'integer',
                 'description' => '',
                 'required' => false,
             ],
-            'ids.*' => [
-                'type' => 'integer',
+            'ids' => [
+                'type' => 'integer[]',
                 'description' => '',
                 'required' => false,
             ],
-            'users.*.first_name' => [
+            'users' => [
+                'type' => 'object[]',
+                'description' => 'Users\' details',
+                'required' => false,
+            ],
+            'users[].first_name' => [
                 'type' => 'string',
                 'description' => 'The first name of the user.',
                 'required' => false,
                 'value' => 'John',
             ],
-            'users.*.last_name' => [
+            'users[].last_name' => [
                 'type' => 'string',
                 'description' => 'The last name of the user.',
                 'required' => false,
@@ -119,44 +125,44 @@ class GetFromBodyParamTagTest extends TestCase
     {
         $strategy = new GetFromBodyParamTag(new DocumentationConfig([]));
         $tags = [
-            new Tag('bodyParam', '*.first_name string The first name of the user. Example: John'),
-            new Tag('bodyParam', '*.last_name string The last name of the user. Example: Doe'),
-            new Tag('bodyParam', '*.contacts.*.first_name string The first name of the contact. Example: John'),
-            new Tag('bodyParam', '*.contacts.*.last_name string The last name of the contact. Example: Doe'),
-            new Tag('bodyParam', '*.roles.* string The name of the role. Example: Admin'),
+            new Tag('bodyParam', '[].first_name string The first name of the user. Example: John'),
+            new Tag('bodyParam', '[].last_name string The last name of the user. Example: Doe'),
+            new Tag('bodyParam', '[].contacts[].first_name string The first name of the contact. Example: John'),
+            new Tag('bodyParam', '[].contacts[].last_name string The last name of the contact. Example: Doe'),
+            new Tag('bodyParam', '[].roles string[] The name of the role. Example: ["Admin"]'),
         ];
         $results = $strategy->getBodyParametersFromDocBlock($tags);
 
         $this->assertArraySubset([
-            '*.first_name' => [
+            '[].first_name' => [
                 'type' => 'string',
                 'description' => 'The first name of the user.',
                 'required' => false,
                 'value' => 'John',
             ],
-            '*.last_name' => [
+            '[].last_name' => [
                 'type' => 'string',
                 'description' => 'The last name of the user.',
                 'required' => false,
                 'value' => 'Doe',
             ],
-            '*.contacts.*.first_name' => [
+            '[].contacts[].first_name' => [
                 'type' => 'string',
                 'description' => 'The first name of the contact.',
                 'required' => false,
                 'value' => 'John',
             ],
-            '*.contacts.*.last_name' => [
+            '[].contacts[].last_name' => [
                 'type' => 'string',
                 'description' => 'The last name of the contact.',
                 'required' => false,
                 'value' => 'Doe',
             ],
-            '*.roles.*' => [
-                'type' => 'string',
+            '[].roles' => [
+                'type' => 'string[]',
                 'description' => 'The name of the role.',
                 'required' => false,
-                'value' => 'Admin',
+                'value' => ['Admin'],
             ],
         ], $results);
     }
@@ -164,9 +170,8 @@ class GetFromBodyParamTagTest extends TestCase
     /** @test */
     public function can_fetch_from_form_request_method_argument()
     {
-        $methodName = 'withFormRequestParameter';
-        $method = new \ReflectionMethod(TestController::class, $methodName);
-        $route = new Route(['POST'], "/$methodName", ['uses' => TestController::class . "@$methodName"]);
+        $method = new \ReflectionMethod(TestController::class, 'withFormRequestParameter');
+        $route = new Route(['POST'], "/withFormRequestParameter", ['uses' => [TestController::class, 'withFormRequestParameter']]);
 
         $strategy = new GetFromBodyParamTag(new DocumentationConfig([]));
         $results = $strategy->getBodyParametersFromDocBlockInFormRequestOrMethod($route, $method);
@@ -178,21 +183,11 @@ class GetFromBodyParamTagTest extends TestCase
                 'description' => 'The id of the user.',
                 'value' => 9,
             ],
-            'room_id' => [
-                'type' => 'string',
-                'required' => false,
-                'description' => 'The id of the room.',
-            ],
             'forever' => [
                 'type' => 'boolean',
                 'required' => false,
                 'description' => 'Whether to ban the user forever.',
                 'value' => false,
-            ],
-            'another_one' => [
-                'type' => 'number',
-                'required' => false,
-                'description' => 'Just need something here.',
             ],
             'yet_another_param' => [
                 'type' => 'object',
@@ -200,9 +195,15 @@ class GetFromBodyParamTagTest extends TestCase
                 'description' => '',
             ],
             'even_more_param' => [
-                'type' => 'array',
+                'type' => 'string[]',
                 'required' => false,
                 'description' => '',
+            ],
+            "ids" => [
+                "name" => "ids",
+                "type" => "integer[]",
+                "description" => "",
+                "required" => false,
             ],
         ], $results);
     }
@@ -212,7 +213,7 @@ class GetFromBodyParamTagTest extends TestCase
     {
         $methodName = 'withNonCommentedFormRequestParameter';
         $method = new \ReflectionMethod(TestController::class, $methodName);
-        $route = new Route(['POST'], "/$methodName", ['uses' => TestController::class . "@$methodName"]);
+        $route = new Route(['POST'], "/$methodName", ['uses' => [TestController::class, $methodName]]);
 
         $strategy = new GetFromBodyParamTag(new DocumentationConfig([]));
         $results = $strategy->getBodyParametersFromDocBlockInFormRequestOrMethod($route, $method);
