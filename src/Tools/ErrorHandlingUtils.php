@@ -23,7 +23,7 @@ class ErrorHandlingUtils
             $message = $e->getMessage();
             $message = "$exceptionType in $file at line $line: $message";
             ConsoleOutputUtils::warn($message);
-            ConsoleOutputUtils::warn('Run again with --verbose for a full stacktrace');
+            ConsoleOutputUtils::warn('Run this again with the --verbose flag to see the full stack trace.');
         }
 
     }
@@ -35,6 +35,7 @@ class ErrorHandlingUtils
             $handler = new \NunoMaduro\Collision\Handler(new \NunoMaduro\Collision\Writer(null, $output));
         } catch (\Exception $e) {
             // Version 3 used a different API
+            // todo remove when Laravel 7 is minimum supported
             $handler = new \NunoMaduro\Collision\Handler(new \NunoMaduro\Collision\Writer($output));
         }
         $handler->setInspector(new \Whoops\Exception\Inspector($e));

@@ -353,6 +353,7 @@ class Generator
                 $parsedRoute['auth'] = "cleanQueryParameters.$parameterName." . ($valueToUse ?: $token);
                 $parsedRoute['queryParameters'][$parameterName] = [
                     'name' => $parameterName,
+                    'type' => 'string',
                     'value' => $valueToDisplay ?: $token,
                     'description' => 'Authentication key.',
                     'required' => true,

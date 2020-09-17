@@ -8,7 +8,6 @@ use Illuminate\Support\Str;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Ramsey\Uuid\Uuid;
 use ReflectionMethod;
-use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 
 class PostmanCollectionWriter
 {
@@ -98,7 +97,7 @@ class PostmanCollectionWriter
 
     protected function generateEndpointItem($endpoint): array
     {
-        return [
+        $endpointItem = [
             'name' => $endpoint['metadata']['title'] !== '' ? $endpoint['metadata']['title'] : $endpoint['uri'],
             'request' => [
                 'url' => $this->generateUrlObject($endpoint),
@@ -106,10 +105,16 @@ class PostmanCollectionWriter
                 'header' => $this->resolveHeadersForEndpoint($endpoint),
                 'body' => empty($endpoint['bodyParameters']) ? null : $this->getBodyData($endpoint),
                 'description' => $endpoint['metadata']['description'] ?? null,
-                'auth' => ($endpoint['metadata']['authenticated'] ?? false) ? null : ['type' => 'noauth'],
             ],
             'response' => [],
         ];
+
+
+        if (($endpoint['metadata']['authenticated'] ?? false) === false) {
+            $endpointItem['request']['auth'] = ['type' => 'noauth'];
+        }
+
+        return $endpointItem;
     }
 
     protected function getBodyData(array $endpoint): array
@@ -155,9 +160,14 @@ class PostmanCollectionWriter
 
     protected function resolveHeadersForEndpoint($route)
     {
-        $headers = collect($route['headers']);
+        [$where, $authParam] = $this->getAuthParamToExclude();
 
-        return $headers
+        $headers = collect($route['headers']);
+        if ($where === 'header') {
+            unset($headers[$authParam]);
+        }
+
+        $headers = $headers
             ->union([
                 'Accept' => 'application/json',
             ])
@@ -172,6 +182,8 @@ class PostmanCollectionWriter
             })
             ->values()
             ->all();
+
+        return $headers;
     }
 
     protected function generateUrlObject($route)
@@ -192,7 +204,12 @@ class PostmanCollectionWriter
         ];
 
         $query = [];
+        [$where, $authParam] = $this->getAuthParamToExclude();
         foreach ($route['queryParameters'] ?? [] as $name => $parameterData) {
+            if ($where === 'query' && $authParam === $name) {
+                continue;
+            }
+
             if (Str::endsWith($parameterData['type'], '[]')) {
                 $values = empty($parameterData['value']) ? [] : $parameterData['value'];
                 foreach ($values as $index => $value) {
@@ -260,6 +277,19 @@ class PostmanCollectionWriter
             return URL::formatRoot('', $baseUrl);
         } catch (\Throwable $e) {
             return $baseUrl;
+        }
+    }
+
+    private function getAuthParamToExclude(): array
+    {
+        if (!$this->config->get('auth.enabled')) {
+            return [null, null];
+        }
+
+        if (in_array($this->config->get('auth.in'), ['bearer', 'basic'])) {
+            return ['header', 'Authorization'];
+        } else {
+            return [$this->config->get('auth.in'), $this->config->get('auth.name')];
         }
     }
 }

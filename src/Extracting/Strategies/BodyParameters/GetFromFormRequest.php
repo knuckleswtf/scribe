@@ -256,7 +256,7 @@ class GetFromFormRequest extends Strategy
                 $parameterData['setter'] = function () {
                     return [$this->generateDummyValue('string')];
                 };
-                $parameterData['type'] = $rule;
+                $parameterData['type'] = 'array'; // The cleanup code in normaliseArrayAndObjectParameters() will set this to a valid type (x[] or object)
                 break;
             case 'file':
                 $parameterData['type'] = 'file';
@@ -422,6 +422,15 @@ class GetFromFormRequest extends Strategy
     {
         $results = [];
         foreach ($bodyParametersFromValidationRules as $name => $details) {
+            if (isset($results[$name])) {
+                continue;
+            }
+            if ($details['type'] === 'array') {
+                // Generic array type. If a child item exists,
+                // this will be overwritten with the correct type (such as object or object[]) by the code below
+                $details['type'] = 'string[]';
+            }
+
             // Change cars.*.dogs.things.*.* with type X to cars.*.dogs.things with type X[][]
             while (Str::endsWith($name, '.*')) {
                 $details['type'] .= '[]';
