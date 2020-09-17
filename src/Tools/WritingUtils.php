@@ -117,15 +117,34 @@ class WritingUtils
             return [$parameter => $value];
         }
 
-        if (array_keys($value)[0] === 0) {
-            // We assume it's a list if its first key is 0
-            return [$parameter . '[]' => $value[0]];
+        // We assume it's a list if its first key is 0
+        $keys = array_keys($value);
+        if (count($keys) && $keys[0] === 0) {
+            if (is_array($value[0])) {
+                // handle nested arrays/objects
+                $params = [];
+                $expanded = self::getParameterNamesAndValuesForFormData('', $value[0]);
+                foreach ($expanded as $fieldName => $itemValue) {
+                    $paramName = $parameter.'[]'.$fieldName;
+                    $params[$paramName] = $itemValue;
+                }
+                return $params;
+            }
+            return [$parameter.'[]' => $value[0]];
         }
 
         // Transform maps
         $params = [];
         foreach ($value as $item => $itemValue) {
-            $params[$parameter . "[$item]"] = $itemValue;
+            if (is_array($itemValue)) {
+                $expanded = self::getParameterNamesAndValuesForFormData('', $itemValue);
+                foreach ($expanded as $fieldName => $subItemValue) {
+                    $paramName = $parameter . "[$item]".$fieldName;
+                    $params[$paramName] = $subItemValue;
+                }
+            } else {
+                $params[$parameter . "[$item]"] = $itemValue;
+            }
         }
         return $params;
     }
