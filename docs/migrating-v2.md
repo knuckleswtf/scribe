@@ -1,19 +1,42 @@
-Scribe 2 comes with a bunch of changes focused on making the documentation process easier and the output better. Some of these changes were introduced in recent minor versions, so we'll highlight them here in case you missed them.
+# Scribe 2: what's new, and how to migrate
 
-- "Try It Out" button gives you free interactive documentation 
+Scribe 2 comes with a bunch of changes focused on making the documentation process easier and the output nicer. There aren't many "shiny" changes, mostly improvements to what works. For the most part, you won't need to do much work. We've marked required changes in the list below with a "Migration Required" label.
 
-## The new `description` field replaces `postman.description`
-The `description` field, where you can add a description of your API. This field will be used in the following ways:
-- as the `info.description` field in the Postman collection
-- as the `info.description` field in the OpenAPI spec
-- as the first paragraph under the "Introduction" section on the webpage, before the `intro_text`
+This is also a release announcement for Scribe for JS! [Version 1 has now been released]()!🎉 
 
-Since we've added this field, we've removed the Postman-specific `postman.description`.
+# Changes in the output 
 
-## `postman.auth` has been removed in favour of `postman.overrides`
+## "Try It Out": interactive documentation with (probably) zero config ⚡💥
+Big news: Your docs will now include a "Try t Out" button that allows users to test out an endpoint, right from their browser.
+
+![](./images/tryitout-button.png)
+
+![](./images/tryitout-button-2.png)
+
+To enable this, set `interactive` to true. Don't forget to enable CORS headers in your API! Here's the [full doc](./generating-documentation.html#configuring-interactive-documentation).
+
+## Object fields are now represented better in the docs
+Object fields are now wrapped in a `<details>` element, so you can expand the dropdown to see fields within an object.
+
+![](./images/object-fields.png)
+
+![](./images/object-fields-expanded.png)
+
+
+# Changes to the config file
+   
+## `auth.default`: Specify the default auth status of endpoints
+Previously, if you had an API with all endpoints authenticated, you had to set `auth.enabled` to true, AND use `@authenticated` on every endpoint. Pain in the ass. Now you can mark all endpoints as authenticated, by setting `auth.default` to true (don't forget to set `uaht.enabled` to true as well). You can also remove auth from specific endpoints with `@unauthenticated`.
+   
+## [Migration Required] `description` replaces `postman.description`
+In 1.6.0, we added a `description` config item, where you can add a description of your API. This field is used as the `info.description` field in the Postman collection and OpenAPI spec, and as the first paragraph under the "Introduction" section on the docs webpage, before the `intro_text`. We've now removed `postman.description`.
+
+**How to migrate**: Move the contents of your `postman.description` to `description`.
+
+## [Migration Required] `postman.auth` has been removed in favour of `postman.overrides`
 We've removed `postman.auth`. It didn't make sense to have two ways of setting Postman-specific auth information (`postman.auth` and `postman.overrides`).
 
-How to migrate: If you need to set Postman-specific auth now, use an `auth` key in `postman.overrides`:
+**How to migrate**: If you need to set Postman-specific auth now, use an `auth` key in `postman.overrides`:
 
 ```php
 'postman' => [
@@ -23,53 +46,72 @@ How to migrate: If you need to set Postman-specific auth now, use an `auth` key 
 ]
 ```
 
+Note that Scribe now automatically populates auth info in the collection (based on your config file), so you might not even need this.
+
+# Changes in extracting docs
+## [Migration Required] New syntax for array and object parameters
+The old dot notation syntax was based on Laravel's validation syntax. However, it had a few limitations in our case. It was based on PHP semantics (eg JSON objects are PHP arrays), which meant it didn't fit well for documenting types. It was also unclear whether you needed or were able to document parent fields as well as individual fields.
+
+So we've switched to a new syntax. It uses some elements of the old, but is clearer and easier to work with. It also makes the output more intuitive to an end user.
+
+Here's a comparison of the two, using `@bodyParam` as an example:
+
+- To denote an array `cars` of elements of type `integer`.
+  
+  **Old syntax**: `@bodyParam cars.* integer` + `@bodyParam cars array` (optional).
+  
+  **New syntax**: `@bodyParam cars integer[]`
+- To denote an object `cars` with a field `name` of type `string`. No changes!
+  
+  **Syntax**: `@bodyParam cars object` + `@bodyParam cars.name string`.
+- To denote an array of objects `cars` with each item having field `name`.
+  
+  **Old syntax**: `@bodyParam cars.* object` + `@bodyParam cars.*.name string`.
+  
+  **New syntax**: `@bodyParam cars object[]` + `@bodyParam cars[].name string`.
+
+**How to migrate:**
+You'll need to run a search through all your docblocks:
+- Replace `.*.` with '[].'
+- Make sure `.*` fields and fields with `array` type are replaced with the correct `x[]` type field. 
+- Ensure there's a parent object for object fields. For instance, you can't have a `cars.name string` field without a `cars object` field.
+
+If you're using FormRequests, you don't need to worry about those. Scribe can handle those.
 
 ## Types are now supported for URL and query parameters
-Previously, you couldn't specify types for URL and query parameters. The idea was that it didn't make sense, since they're all passed as strings in the URL anyway. But we've changed that. The thinking now is that these types can pass semantic information to your API consumers—even though they're strings in the URL, they have actual significance outside of that. You can now pass types for URL and query parameters.
+Previously, you couldn't specify types for URL and query parameters. The idea was that it didn't make sense, since they're all passed as strings in the URL anyway. But we've changed that. The thinking now is that these types can hold semantic information, which matters to your API consumers—even though they're strings in the URL, they have actual significance outside of that. You can now pass types for URL and query parameters.
 
-How to migrate:
-If you don't want to use this, no problem! All URL and query parameters will remain `string` by default. If you'd like to add types, just specify a type with @urlParam and @queryParam like you'd  do with @bodyParam (after the parameter name).
+**How to migrate**:
+- In your annotations: If you don't want to use this, no problem! All URL and query parameters will remain `string` by default. If you'd like to add types, just specify a type with `@urlParam` and `@queryParam` like you'd do with `@bodyParam` (after the parameter name).
+- In custom strategies: Update any custom strategies you've written so they return a `type` field for each URL and query parameter
 
-If you have custom strategies, you should update them
+# Other changes
+### `@responseFile` supports other directories
+You can now specify a file located anywhere on your machine with `@responseFile`. The file path can either be an absolute path, a path relative to your project root, or a path relative to the Laravel storage directory.
 
-## New syntax for array and object parameters
-The old dot notation syntax was based on Laravel's validation syntax. However, it had a few limitations in our case. It wasn't well-thought out, and was based on PHP semantics rather than JSON, which meant it didn't fit really well for documenting types. The new syntax uses some elements of the old.
+### `add_routes`: Postman collection route renamed
+When you use `laravel` type docs and have `add_routes` set to `true`, you get three routes added to your Laravel app: one for the webpage, one for the Postman collection and one for the OpenAPI spec. The route for the Postman collection was previously named `scribe.json`, but has now been renamed to `scribe.postman`, to bring it in line with the OpenAPI route, which is named `scribe.openapi`.
 
-How to migrate: 
+### Postman base URL now uses Postman variables
+Postman collection base URL now uses a `{{baseUrl}}` variable, so you can change the base URL for all endpoints in your collection easier.
 
-Description | Old | New
------------|------|---------
-To denote an array `cars` of elements of type x | cars array, cars.* x | cars x[]
-To denote an object `cars` | cars object | cars object
-To denote an object `cars` with fields | cars object, cars.name string | cars object, cars.name string
-To denote an array of objects `cars` with fields | cars.* object, cars.*.name string | cars object[], cars[].name string
+### [Migration Required] Plugin API changes: include 'name' in parameter details
+This only applies if you have custom strategies. All strategies that return URL, query or body parameters or response fields must now include the name of the field as a `name` field in the returned array. This means that the parameter name is going to be mentioned twice in the result from the strategy:
 
-Replace `.*.` in docblocks with '[].'
-Replace `.*` in docblocks with `[]` appended to the type name 
-Ensure there's parent object for object fields
+```php
+return [
+  'param1' => [ // <-- here
+    'name' => 'param1',  // <-- and here
+    'description' => '...'
+  ],
+  'param2' => [ // <-- here
+    'name' => 'param2',  // <-- and here
+    'description' => '...'
+  ],
+];
+```
 
-## add_routes: Postman collection route renamed
-When you use `laravel` type docs and have `add_routes` set to `true`, you'll have three routes added to your Laravel app: one for the webpage, one for the Postman collection and one for the OpenAPI spec. The route for the Postman collection was previously named `scribe.json`, but has now been renamed to `scribe.postman`, to bring it in line with the OpenAPI route, which is named `scribe.openapi`.
+We know it's kinda silly 🙄, but it's actually a small optimisation that makes things easier in the long run.
 
-## Switch Postman base URL to use variables
-Postman collection base URL now uses a variale, so you can change the base URL for all endpoints in your collection easier.
-
-## Represent object/array fields better in docs
-
-## New config file structure
-
-- title
-- description
-- output => 
-    'webpage' => type, intro_text, output_path, logo, etc
-    'postman' =>
-    'openapi' => 
-   ]
-   
-   
-   
-   ## `auth.default` key added
-   
-   # API: include 'name' in parameter details
-   
-   ## @responseFile supports other directories
+<hr>
+Thanks for using Scribe! We hope you have fun and write kickass API docs! And if you'd like to get better at API documentation, I recently launched a course you might want to check out: [apidocsfordevs.com](https://apidocsfordevs.com).

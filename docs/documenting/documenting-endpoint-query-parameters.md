@@ -3,13 +3,15 @@
 ## Specifying query parameters
 To describe query parameters for your endpoint, use the `@queryParam` annotation on the method handling it.
 
-The `@queryParam` annotation takes the name of the parameter, an optional "required" label, and a description.
+The `@queryParam` annotation takes the name of the parameter, an optional type, an optional "required" label, and a description.
+
+If you don't specify a type, Scribe will assume it's `string`. See [the documentation on body parameters](./documenting/documenting-endpoint-body-parameters.html) for a list of valid types.
 
 Here's an example:
 
 ```php
 /**
- * @queryParam sort Field to sort by. Defaults to 'id'.
+ * @queryParam sort string Field to sort by. Defaults to 'id'.
  * @queryParam fields required Comma-separated fields to include in the response
  * @queryParam filters[published_at] Filter by date published.
  * @queryParam filters[title] Filter by title.
@@ -72,11 +74,13 @@ To describe parameters in the URL, use the `@urlParam` annotation. For instance,
 Route::get("/post/{id}/{lang?}");
 ```
 
-you can use this annotation to describe the `id` and `lang` parameters as shown below. The annotation takes the name of the parameter, an optional "required" label, and then its description. Like with `@queryParams`, a random value will be generated, but you can specify the value to be used in examples and response calls using the `Example: ` syntax.
+you can use this annotation to describe the `id` and `lang` parameters as shown below. The annotation takes the name of the parameter, an optional type, an optional "required" label, and then its description. Like with `@queryParams`, a random value will be generated, but you can specify the value to be used in examples and response calls using the `Example: ` syntax.
+
+If you don't specify a type, Scribe will assume it's `string`. Valid types are `string`, `integer`, and `number`.
 
 ```php
 /**
- * @urlParam id required The ID of the post.
+ * @urlParam id integer required The ID of the post.
  * @urlParam lang The language. Example: en
  */
 public function getPost()

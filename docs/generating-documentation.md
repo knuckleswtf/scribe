@@ -16,6 +16,11 @@ Accessing your generated docs depends on the `type` you specified in `scribe.php
 - If you're using `static` type, find the `docs/index.html` file in your `public/` folder and open that in your browser.
 - If you're using `laravel` type, start your app (`php artisan serve`), then visit `/docs`.
 
+## Configuring interactive documentation
+When `interactive` is set to `true` (which is also the default value) in your config, Scribe will add a "Try It Out" button to your endpoints so users can test them from their browser.
+
+For this to work, though, you'll need to make sure CORS is enabled. An easy package for this is [`fruitcake/laravel-cors`](https://github.com/fruitcake/laravel-cors).
+
 ## Postman collection generation
 By default, a Postman collection file which you can import into API clients like Postman or Insomnia is generated alongside your docs. You can view it by visiting `public/docs/collection.json` for `static` type, and `<your-app>/docs.json` for `laravel` type. This link will also be added to the sidebar of your docs.
 

@@ -214,12 +214,14 @@ Each strategy class must implement the `__invoke` method with the parameters as 
 
 ```php
 [
+  'name' => 'Parameter name',
   'type' => 'valid type',
   'description' => 'An optional description.', 
   'required => true, // or false
   'value' => "An example value for the parameter",
 ];
 ```
+See [the documentation on body parameters](./documenting/documenting-endpoint-body-parameters.html) for a list of valid types.
 
 ```eval_rst
 .. Tip:: If you would like a parameter (body or query) to be included in the documentation but excluded from examples, set `required` to false and `value` property to `null`, like we did in our example above.
@@ -251,6 +253,7 @@ Each strategy class must implement the `__invoke` method with the parameters as 
 
 ```
 [
+  'name' => '',
   'type' => '',
   'description' => '',
 ]

@@ -41,6 +41,13 @@ The HTML `<title>` for the generated documentation, and the name of the generate
 ### `description`
 A description for your API. This will be placed in the "Introduction" section, before the `intro_text`. It will also be used as the `info.description` field in the generated Postman collection and OpenAPI spec.
 
+### `interactive`
+Set this to `true` if you'd like Scribe to add a "Try It Out" button to your endpoints so users can test them from their browser. Default: `true`.
+
+```eval_rst
+..Important:: For "Try It Out" to work, you'll need to make sure CORS is enabled on your endpoints. An easy package for this is `fruitcake/laravel-cors <https://github.com/fruitcake/laravel-cors>`_.
+```
+
 ### `logo`
 Path to an image file to use as your logo in the generated docs. This will be used as the value of the src attribute for the `<img>` tag, so make sure it points to a public URL or path accessible from your web server. For best results, the image width should be 230px. Set this to `false` if you're not using a logo. Default: `false`.
 
