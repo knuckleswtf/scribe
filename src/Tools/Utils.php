@@ -59,18 +59,14 @@ class Utils
      */
     public static function replaceUrlParameterPlaceholdersWithValues(string $uri, array $urlParameters)
     {
-        $matches = preg_match_all('/{.+?}/i', $uri, $parameterPaths);
-        if (!$matches) {
+        if (empty($urlParameters)) {
             return $uri;
         }
 
-        foreach ($parameterPaths[0] as $parameterPath) {
-            $key = trim($parameterPath, '{?}');
-            if (isset($urlParameters[$key])) {
-                $example = $urlParameters[$key];
-                $uri = str_replace($parameterPath, $example, $uri);
-            }
+        foreach ($urlParameters as $parameterName => $example) {
+            $uri = preg_replace('#\{' . $parameterName . '[^/]*?}?}#', $example, $uri); // The second closing brace is present to account for regexes ending in a }
         }
+
         // Remove unbound optional parameters with nothing
         $uri = preg_replace('#{([^/]+\?)}#', '', $uri);
         // Replace any unbound non-optional parameters with '1'
