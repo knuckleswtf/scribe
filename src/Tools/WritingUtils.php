@@ -44,9 +44,7 @@ class WritingUtils
     public static function printQueryParamsAsString(array $cleanQueryParams): string
     {
         $qs = '';
-        foreach ($cleanQueryParams as $parameter => $value) {
-            $paramName = urlencode($parameter);
-
+        foreach ($cleanQueryParams as $paramName => $value) {
             if (!is_array($value)) {
                 $qs .= "$paramName=" . urlencode($value) . "&";
             } else {

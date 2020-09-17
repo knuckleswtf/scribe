@@ -210,7 +210,7 @@ class PostmanCollectionWriter
                 continue;
             }
 
-            if (Str::endsWith($parameterData['type'], '[]')) {
+            if (Str::endsWith($parameterData['type'], '[]') || $parameterData['type'] === 'object') {
                 $values = empty($parameterData['value']) ? [] : $parameterData['value'];
                 foreach ($values as $index => $value) {
                     // PHP's parse_str supports array query parameters as filters[0]=name&filters[1]=age OR filters[]=name&filters[]=age

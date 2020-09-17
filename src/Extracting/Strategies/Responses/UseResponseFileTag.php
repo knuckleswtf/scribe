@@ -23,7 +23,6 @@ class UseResponseFileTag extends Strategy
      * @param array $alreadyExtractedData
      *
      * @return array|null
-     * @throws \Exception If the response file does not exist
      *
      */
     public function __invoke(Route $route, \ReflectionClass $controller, \ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
