@@ -109,6 +109,7 @@ class Generator
         $bodyParameters = $this->fetchBodyParameters($controller, $method, $route, $routeRules, $parsedRoute);
         $parsedRoute['bodyParameters'] = $bodyParameters;
         $parsedRoute['cleanBodyParameters'] = self::cleanParams($bodyParameters);
+
         if (count($parsedRoute['cleanBodyParameters']) && !isset($parsedRoute['headers']['Content-Type'])) {
             // Set content type if the user forgot to set it
             $parsedRoute['headers']['Content-Type'] = 'application/json';
@@ -285,7 +286,7 @@ class Generator
             }
 
             if (Str::contains($paramName, '.')) { // Object field (or array of objects)
-                self::setObject($cleanParameters, $paramName, $details['value'], $parameters);
+                self::setObject($cleanParameters, $paramName, $details['value'], $parameters, ($details['required'] ?? false));
             } else {
                 $cleanParameters[$paramName] = $details['value'];
             }
@@ -294,7 +295,7 @@ class Generator
         return $cleanParameters;
     }
 
-    public static function setObject(array &$results, string $path, $value, array $source)
+    public static function setObject(array &$results, string $path, $value, array $source, bool $isRequired)
     {
         $parts = array_reverse(explode('.', $path));
 
@@ -302,24 +303,26 @@ class Generator
 
         $baseName = join('.', array_reverse($parts));
         // The type should be indicated in the source object by now; we don't need it in the name
-        $normalisedBaseName = str_replace('[]', '', $baseName);
+        $normalisedBaseName = Str::replaceLast('[]', '', $baseName);
 
         $parentData = Arr::get($source, $normalisedBaseName);
         if ($parentData) {
             // Path we use for data_set
             $dotPath = str_replace('[]', '.0', $path);
-            $noValue = new \stdClass();
             if ($parentData['type'] === 'object') {
-                if (Arr::get($results, $dotPath, $noValue) === $noValue) {
+                if (!Arr::has($results, $dotPath)) {
                     Arr::set($results, $dotPath, $value);
                 }
             } else if ($parentData['type'] === 'object[]') {
-                if (Arr::get($results, $dotPath, $noValue) === $noValue) {
+                if (!Arr::has($results, $dotPath)) {
                     Arr::set($results, $dotPath, $value);
                 }
                 // If there's a second item in the array, set for that too.
-                if ($value !== null && Arr::get($results, str_replace('[]', '.1', $baseName), $noValue) !== $noValue) {
-                    Arr::set($results, str_replace('.0', '.1', $dotPath), $value);
+                if ($value !== null && Arr::has($results, Str::replaceLast('[]', '.1', $baseName))) {
+                    // If value is optional, toss a coin on whether to set or not
+                    if ($isRequired || array_rand([true, false], 1)) {
+                        Arr::set($results, Str::replaceLast('.0', '.1', $dotPath), $value);
+                    }
                 }
             }
         }

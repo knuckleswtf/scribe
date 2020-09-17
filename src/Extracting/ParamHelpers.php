@@ -48,9 +48,6 @@ trait ParamHelpers
             'string' => function () use ($faker) {
                 return $faker->word;
             },
-            'array' => function () {
-                return [];
-            },
             'object' => function () {
                 return [];
             },
@@ -75,8 +72,6 @@ trait ParamHelpers
             'boolean',
             'bool',
             'string',
-            'list', // todo remove this
-            'array', // todo remove this
             'object',
         ];
         return in_array(str_replace('[]', '', $type), $types);
@@ -103,11 +98,8 @@ trait ParamHelpers
             }, $value) : json_decode($value);
         }
 
-        if ($type === 'array' && is_string($value)) {
-            $value = trim($value);
-            if ($value[0] == '[' && $value[strlen($value) - 1] == ']') {
-                return json_decode($value, true);
-            }
+        if ($type === 'object') {
+            return is_array($value) ? $value : json_decode($value, true);
         }
 
         $casts = [
