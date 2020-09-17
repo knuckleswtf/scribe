@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## 1.8.3 (Thursday, 17 September, 2020)
 ### Fixes
-- Reverts 1.8.2 as it broke a few things
+- Reverts 1.8.2 as it broke a few things (https://github.com/knuckleswtf/scribe/commit/5a2217513945bcb92ca26e463f7717c0efb99ac1)
 
 ## 1.8.2 (Thursday, 17 September, 2020)
 ### Fixes
