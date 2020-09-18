@@ -23,8 +23,8 @@
     }
 @endphp
 @if($type === 'boolean')
-<label data-endpoint="{{ $endpointId }}" hidden><input type="radio" name="{{ $fullName }}" value="true" data-endpoint="{{ $endpointId }}" data-component="{{ $component }}" @if($required)required @endif><code>true</code></label>
-<label data-endpoint="{{ $endpointId }}" hidden><input type="radio" name="{{ $fullName }}" value="false" data-endpoint="{{ $endpointId }}" data-component="{{ $component }}" @if($required)required @endif><code>false</code></label>
+<label data-endpoint="{{ $endpointId }}" hidden><input type="radio" name="{{ $fullName }}" value="{{$component === 'body' ? 'true' : 1}}" data-endpoint="{{ $endpointId }}" data-component="{{ $component }}" @if($required)required @endif><code>true</code></label>
+<label data-endpoint="{{ $endpointId }}" hidden><input type="radio" name="{{ $fullName }}" value="{{$component === 'body' ? 'false' : 0}}" data-endpoint="{{ $endpointId }}" data-component="{{ $component }}" @if($required)required @endif><code>false</code></label>
 @elseif($isList)
 <input type="{{ $inputType }}" name="{{ $fullName.".0" }}" data-endpoint="{{ $endpointId }}" data-component="{{ $component }}" @if($required)required @endif hidden>
 <input type="{{ $inputType }}" name="{{ $fullName.".1" }}" data-endpoint="{{ $endpointId }}" data-component="{{ $component }}" hidden>
