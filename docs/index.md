@@ -6,8 +6,8 @@ Generate API documentation for humans from your Laravel/Lumen/[Dingo](https://gi
 ```eval_rst
 .. admonition:: Wondering where to get started? Try one of these links:
    
-   - `what's new in v2 <migrating-v2.html>`_
-   - `migrating from mpociot/laravel-apidoc-generator <migrating.html>`_, or
+   - `What's new in v2 <migrating-v2.html>`_
+   - `Migrating from mpociot/laravel-apidoc-generator <migrating.html>`_, or
    - the `getting started guide <guide-getting-started.html>`_.
 ```
 
@@ -17,7 +17,7 @@ Generate API documentation for humans from your Laravel/Lumen/[Dingo](https://gi
 
 ## Features
 - Pretty HTML documentation page, with included code samples and friendly text
-- Included "Try It Out" button so users can test your API
+- Included "Try It Out" button so users can test endpoints right from their browser
 - Markdown source files that can be edited to modify docs
 - Extracts body parameters information from FormRequests
 - Safely calls API endpoints to generate sample responses, with authentication and other custom configuration supported
@@ -72,3 +72,5 @@ $app->register(\Knuckles\Scribe\ScribeServiceProvider::class);
 ```php
 $app->configure('scribe');
 ```
+
+Next up: follow the [Getting Started guide](./guide-getting-started.html) to see what you can do with Scribe.

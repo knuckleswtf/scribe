@@ -1,39 +1,35 @@
-# Scribe 2: what's new, and how to migrate
+# Scribe 2: What's new, and how to migrate
 
 Scribe 2 comes with a bunch of changes focused on making the documentation process easier and the output nicer. There aren't many "shiny" changes, mostly improvements to what works. For the most part, you won't need to do much work. We've marked required changes in the list below with a "Migration Required" label.
 
 This is also a release announcement for Scribe for JS! [Version 1 has now been released]()!🎉 
 
-# Changes in the output 
+## Changes in the output 
 
-## "Try It Out": interactive documentation with (probably) zero config ⚡💥
+### "Try It Out": interactive documentation with (probably) zero config ⚡💥
 Big news: Your docs will now include a "Try t Out" button that allows users to test out an endpoint, right from their browser.
 
-![](./images/tryitout-button.png)
-
-![](./images/tryitout-button-2.png)
+![](./images/tryitout-button.jpg)
 
 To enable this, set `interactive` to true. Don't forget to enable CORS headers in your API! Here's the [full doc](./generating-documentation.html#configuring-interactive-documentation).
 
-## Object fields are now represented better in the docs
-Object fields are now wrapped in a `<details>` element, so you can expand the dropdown to see fields within an object.
+### Object fields are now represented better in the docs
+Object fields are now wrapped in a `<details>` element, so you can expand the dropdown to see fields within an object. This way, it's clearer that these are subfields within a parent.
 
-![](./images/object-fields.png)
-
-![](./images/object-fields-expanded.png)
+![](./images/object-fields.jpg)
 
 
-# Changes to the config file
+## Changes to the config file
    
-## `auth.default`: Specify the default auth status of endpoints
+### `auth.default`: Specify the default auth status of endpoints
 Previously, if you had an API with all endpoints authenticated, you had to set `auth.enabled` to true, AND use `@authenticated` on every endpoint. Pain in the ass. Now you can mark all endpoints as authenticated, by setting `auth.default` to true (don't forget to set `uaht.enabled` to true as well). You can also remove auth from specific endpoints with `@unauthenticated`.
    
-## [Migration Required] `description` replaces `postman.description`
+### [Migration Required] `description` replaces `postman.description`
 In 1.6.0, we added a `description` config item, where you can add a description of your API. This field is used as the `info.description` field in the Postman collection and OpenAPI spec, and as the first paragraph under the "Introduction" section on the docs webpage, before the `intro_text`. We've now removed `postman.description`.
 
 **How to migrate**: Move the contents of your `postman.description` to `description`.
 
-## [Migration Required] `postman.auth` has been removed in favour of `postman.overrides`
+### [Migration Required] `postman.auth` has been removed in favour of `postman.overrides`
 We've removed `postman.auth`. It didn't make sense to have two ways of setting Postman-specific auth information (`postman.auth` and `postman.overrides`).
 
 **How to migrate**: If you need to set Postman-specific auth now, use an `auth` key in `postman.overrides`:
@@ -48,8 +44,8 @@ We've removed `postman.auth`. It didn't make sense to have two ways of setting P
 
 Note that Scribe now automatically populates auth info in the collection (based on your config file), so you might not even need this.
 
-# Changes in extracting docs
-## [Migration Required] New syntax for array and object parameters
+## Changes in extracting docs
+### [Migration Required] New syntax for array and object parameters
 The old dot notation syntax was based on Laravel's validation syntax. However, it had a few limitations in our case. It was based on PHP semantics (eg JSON objects are PHP arrays), which meant it didn't fit well for documenting types. It was also unclear whether you needed or were able to document parent fields as well as individual fields.
 
 So we've switched to a new syntax. It uses some elements of the old, but is clearer and easier to work with. It also makes the output more intuitive to an end user.
@@ -72,20 +68,20 @@ Here's a comparison of the two, using `@bodyParam` as an example:
 
 **How to migrate:**
 You'll need to run a search through all your docblocks:
-- Replace `.*.` with '[].'
+- Replace `.*.` with `[].` (you can automate this part safely)
 - Make sure `.*` fields and fields with `array` type are replaced with the correct `x[]` type field. 
-- Ensure there's a parent object for object fields. For instance, you can't have a `cars.name string` field without a `cars object` field.
+- Ensure there's a parent object for any object fields. For instance, you can't have a `car.make string` field without a `car object` field, or a  `dogs[].name string` field without a `dogs object[]`.
 
-If you're using FormRequests, you don't need to worry about those. Scribe can handle those.
+If you're using FormRequests, you don't need to worry about those. Scribe will transform those appropriately.
 
-## Types are now supported for URL and query parameters
+### Types are now supported for URL and query parameters
 Previously, you couldn't specify types for URL and query parameters. The idea was that it didn't make sense, since they're all passed as strings in the URL anyway. But we've changed that. The thinking now is that these types can hold semantic information, which matters to your API consumers—even though they're strings in the URL, they have actual significance outside of that. You can now pass types for URL and query parameters.
 
 **How to migrate**:
 - In your annotations: If you don't want to use this, no problem! All URL and query parameters will remain `string` by default. If you'd like to add types, just specify a type with `@urlParam` and `@queryParam` like you'd do with `@bodyParam` (after the parameter name).
 - In custom strategies: Update any custom strategies you've written so they return a `type` field for each URL and query parameter
 
-# Other changes
+## Other changes
 ### `@responseFile` supports other directories
 You can now specify a file located anywhere on your machine with `@responseFile`. The file path can either be an absolute path, a path relative to your project root, or a path relative to the Laravel storage directory.
 
@@ -114,4 +110,5 @@ return [
 We know it's kinda silly 🙄, but it's actually a small optimisation that makes things easier in the long run.
 
 <hr>
+
 Thanks for using Scribe! We hope you have fun and write kickass API docs! And if you'd like to get better at API documentation, I recently launched a course you might want to check out: [apidocsfordevs.com](https://apidocsfordevs.com).

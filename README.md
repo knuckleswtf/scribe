@@ -12,7 +12,7 @@ Generate API documentation for humans from your Laravel codebase. [Here's what t
 
 ## Features
 - Pretty HTML documentation page, with included code samples and friendly text
-- Included "Try It Out" button so users can test your API
+- Included "Try It Out" button so users can test endpoints right from their browser
 - Markdown source files that can be edited to modify docs
 - Extracts body parameters information from Laravel FormRequests
 - Safely calls API endpoints to generate sample responses, with authentication and other custom configuration supported
