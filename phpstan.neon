@@ -15,5 +15,3 @@ parameters:
         - '#Instantiated class Whoops\\Exception\\Inspector not found\.#'
         - '#.+Dingo.+#'
         - '#Right side of && is always false.#'
-        - '#Inner named functions#'
-        - '#Function isPresentInThisPossibility#'

@@ -6,6 +6,7 @@ use Illuminate\Routing\Route;
 use Illuminate\Support\Str;
 use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
+use Knuckles\Scribe\Tools\Utils;
 use ReflectionClass;
 use ReflectionFunctionAbstract;
 
@@ -17,6 +18,10 @@ class GetFromLaravelAPI extends Strategy
 
     public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
     {
+        if (Utils::isLumen()) {
+            return null;
+        }
+
         $parameters = [];
 
         $path = $alreadyExtractedData['uri'];

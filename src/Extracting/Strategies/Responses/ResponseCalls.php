@@ -117,7 +117,7 @@ class ResponseCalls extends Strategy
      */
     protected function prepareRequest(Route $route, array $rulesToApply, array $urlParams, array $bodyParams, array $queryParams, array $fileParameters, array $headers)
     {
-        $uri = Utils::getFullUrl($route, $urlParams);
+        $uri = Utils::getUrlWithBoundParameters($route, $urlParams);
         $routeMethods = $this->getMethods($route);
         $method = array_shift($routeMethods);
         $cookies = isset($rulesToApply['cookies']) ? $rulesToApply['cookies'] : [];

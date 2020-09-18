@@ -95,7 +95,7 @@ class Generator
         $urlParameters = $this->fetchUrlParameters($controller, $method, $route, $routeRules, $parsedRoute);
         $parsedRoute['urlParameters'] = $urlParameters;
         $parsedRoute['cleanUrlParameters'] = self::cleanParams($urlParameters);
-        $parsedRoute['boundUri'] = u::getFullUrl($route, $parsedRoute['cleanUrlParameters']);
+        $parsedRoute['boundUri'] = u::getUrlWithBoundParameters($route, $parsedRoute['cleanUrlParameters']);
 
         $parsedRoute = $this->addAuthField($parsedRoute);
 
@@ -198,6 +198,7 @@ class Generator
             ],
             'urlParameters' => [
                 \Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromLaravelAPI::class,
+                \Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromLumenAPI::class,
                 \Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromUrlParamTag::class,
             ],
             'queryParameters' => [
