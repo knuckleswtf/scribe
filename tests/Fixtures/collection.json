@@ -196,12 +196,12 @@
             "description": "",
             "item": [
                 {
-                    "name": "api\/echoesUrlParameters\/{param}-{param2}\/{param3?}",
+                    "name": "api\/echoesUrlParameters\/{param}\/{param2}\/{param3?}\/{param4?}",
                     "request": {
                         "url": {
                             "protocol": "http",
                             "host": "{{baseUrl}}",
-                            "path": "api\/echoesUrlParameters\/:param-:param2\/:param3",
+                            "path": "api\/echoesUrlParameters\/:param\/:param2\/:param3\/:param4",
                             "query": [
                                 {
                                     "key": "something",
@@ -210,7 +210,7 @@
                                     "disabled": false
                                 }
                             ],
-                            "raw": "http:\/\/{{baseUrl}}\/api\/echoesUrlParameters\/:param-:param2\/:param3?something=consequatur",
+                            "raw": "http:\/\/{{baseUrl}}\/api\/echoesUrlParameters\/:param\/:param2\/:param3\/:param4?something=consequatur",
                             "variable": [
                                 {
                                     "id": "param",
@@ -222,6 +222,18 @@
                                     "id": "param2",
                                     "key": "param2",
                                     "value": "consequatur",
+                                    "description": ""
+                                },
+                                {
+                                    "id": "param3",
+                                    "key": "param3",
+                                    "value": "consequatur",
+                                    "description": ""
+                                },
+                                {
+                                    "id": "param4",
+                                    "key": "param4",
+                                    "value": null,
                                     "description": ""
                                 }
                             ]

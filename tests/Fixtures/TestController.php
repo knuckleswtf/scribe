@@ -242,7 +242,7 @@ class TestController extends Controller
      * @group Other😎
      *
      * @urlParam param required Example: 4
-     * @urlParam param2
+     * @urlParam param2 required
      * @urlParam param4 No-example.
      *
      * @queryParam something

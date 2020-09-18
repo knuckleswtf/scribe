@@ -188,12 +188,6 @@ class PostmanCollectionWriter
 
     protected function generateUrlObject($route)
     {
-        // URL Parameters are collected by the `UrlParameters` strategies, but only make sense if they're in the route
-        // definition. Filter out any URL parameters that don't appear in the URL.
-        $urlParams = collect($route['urlParameters'])->filter(function ($_, $key) use ($route) {
-            return Str::contains($route['uri'], '{' . $key . '}');
-        });
-
         $base = [
             'protocol' => Str::startsWith($this->baseUrl, 'https') ? 'https' : 'http',
             'host' => '{{baseUrl}}',
@@ -245,8 +239,8 @@ class PostmanCollectionWriter
             $base['protocol'], $base['host'], $base['path'], $queryString ? "?{$queryString}" : null
         );
 
-        // If there aren't any url parameters described then return what we've got
         /** @var $urlParams Collection */
+        $urlParams = collect($route['urlParameters']);
         if ($urlParams->isEmpty()) {
             return $base;
         }

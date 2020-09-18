@@ -135,14 +135,14 @@ class PostmanCollectionWriterTest extends TestCase
             'disabled' => false,
         ], $variableData[0]);
         $this->assertEquals([
-            'key' => 'filters[0]',
-            'value' => 34,
+            'key' => urlencode('filters[0]'),
+            'value' => '34',
             'description' => 'Filters',
             'disabled' => false,
         ], $variableData[1]);
         $this->assertEquals([
-            'key' => 'filters[1]',
-            'value' => 12,
+            'key' => urlencode('filters[1]'),
+            'value' => '12',
             'description' => 'Filters',
             'disabled' => false,
         ], $variableData[2]);

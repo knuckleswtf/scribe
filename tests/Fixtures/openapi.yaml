@@ -219,17 +219,11 @@ paths:
             -
                 in: path
                 name: param2
-                description: 'Optional parameter.'
+                description: ''
                 required: true
                 schema:
                     type: string
-                examples:
-                    omitted:
-                        summary: 'When the value is omitted'
-                        value: ''
-                    present:
-                        summary: 'When the value is present'
-                        value: consequatur
+                example: consequatur
             -
                 in: path
                 name: param3

@@ -230,7 +230,7 @@ class GenerateDocumentationTest extends TestCase
         RouteFacade::post('/api/withBodyParameters', [TestController::class, 'withBodyParameters']);
         RouteFacade::get('/api/withQueryParameters', [TestController::class, 'withQueryParameters']);
         RouteFacade::get('/api/withAuthTag', [TestController::class, 'withAuthenticatedTag']);
-        RouteFacade::get('/api/echoesUrlParameters/{param}-{param2}/{param3?}', [TestController::class, 'echoesUrlParameters']);
+        RouteFacade::get('/api/echoesUrlParameters/{param}/{param2}/{param3?}/{param4?}', [TestController::class, 'echoesUrlParameters']);
         // We want to have the same values for params each time
         config(['scribe.faker_seed' => 1234]);
         config(['scribe.title' => 'GREAT API!']);

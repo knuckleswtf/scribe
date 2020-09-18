@@ -58,6 +58,10 @@ class Utils
             return $boundUri;
         }
 
+        foreach ($urlParameters as $parameterName => $example) {
+            $uri = preg_replace('#\{' . $parameterName . '\??}#', $example, $uri);
+        }
+
         // Remove unbound optional parameters with nothing
         $uri = preg_replace('#{([^/]+\?)}#', '', $uri);
         // Replace any unbound non-optional parameters with '1'
