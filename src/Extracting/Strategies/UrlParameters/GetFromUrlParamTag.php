@@ -57,7 +57,7 @@ class GetFromUrlParamTag extends Strategy
     /**
      * @param Tag[] $tags
      *
-     * @return <string, array>[]
+     * @return array[]
      */
     public function getUrlParametersFromDocBlock($tags)
     {

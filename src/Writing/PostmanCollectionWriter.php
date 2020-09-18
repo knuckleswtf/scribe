@@ -217,7 +217,7 @@ class PostmanCollectionWriter
                     // Going with the first to also support object query parameters
                     // See https://www.php.net/manual/en/function.parse-str.php
                     $query[] = [
-                        'key' => "{$name}[$index]",
+                        'key' => urlencode("{$name}[$index]"),
                         'value' => urlencode($value),
                         'description' => strip_tags($parameterData['description']),
                         // Default query params to disabled if they aren't required and have empty values
@@ -226,7 +226,7 @@ class PostmanCollectionWriter
                 }
             } else {
                 $query[] = [
-                    'key' => $name,
+                    'key' => urlencode($name),
                     'value' => urlencode($parameterData['value']),
                     'description' => strip_tags($parameterData['description']),
                     // Default query params to disabled if they aren't required and have empty values

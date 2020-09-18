@@ -62,7 +62,7 @@ class GetFromQueryParamTag extends Strategy
     /**
      * @param Tag[] $tags
      *
-     * @return <string, array>[]
+     * @return array[]
      */
     public function getQueryParametersFromDocBlock(array $tags)
     {

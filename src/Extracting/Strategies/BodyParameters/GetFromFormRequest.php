@@ -414,7 +414,7 @@ class GetFromFormRequest extends Strategy
      * 'cars.*.things.*.*' with type 'string' becomes 'cars[].things' with type 'string[][]' and 'cars' with type
      * 'object[]'
      *
-     * @param <string, array>[] $bodyParametersFromValidationRules
+     * @param array[] $bodyParametersFromValidationRules
      *
      * @return array
      */
