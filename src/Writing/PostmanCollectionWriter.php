@@ -239,7 +239,6 @@ class PostmanCollectionWriter
             $base['protocol'], $base['host'], $base['path'], $queryString ? "?{$queryString}" : null
         );
 
-        /** @var $urlParams Collection */
         $urlParams = collect($route['urlParameters']);
         if ($urlParams->isEmpty()) {
             return $base;
