@@ -4,6 +4,11 @@ Scribe 2 comes with a bunch of changes focused on making the documentation proce
 
 This is also a release announcement for Scribe for JS! [Version 1 has now been released]()!🎉 
 
+```eval_rst
+.. contents:: 
+   :local:
+```
+
 ## Changes in the output 
 
 ### "Try It Out": interactive documentation with (probably) zero config ⚡💥
@@ -21,7 +26,7 @@ Object fields are now wrapped in a `<details>` element, so you can expand the dr
 
 ## Changes to the config file
    
-### `auth.default`: Specify the default auth status of endpoints
+### Specify the default auth status of endpoints with `auth.default`
 Previously, if you had an API with all endpoints authenticated, you had to set `auth.enabled` to true, AND use `@authenticated` on every endpoint. Pain in the ass. Now you can mark all endpoints as authenticated, by setting `auth.default` to true (don't forget to set `uaht.enabled` to true as well). You can also remove auth from specific endpoints with `@unauthenticated`.
    
 ### [Migration Required] `description` replaces `postman.description`
@@ -46,30 +51,33 @@ Note that Scribe now automatically populates auth info in the collection (based 
 
 ## Changes in extracting docs
 ### [Migration Required] New syntax for array and object parameters
-The old dot notation syntax was based on Laravel's validation syntax. However, it had a few limitations in our case. It was based on PHP semantics (eg JSON objects are PHP arrays), which meant it didn't fit well for documenting types. It was also unclear whether you needed or were able to document parent fields as well as individual fields.
+The old dot notation syntax was based on Laravel's validation syntax. However, it had a few limitations in our case. It was based on PHP semantics (for instance, JSON objects are PHP arrays), which meant it didn't fit well for documenting types. It was also unclear whether you needed or were able to document parent fields as well as individual fields.
 
-So we've switched to a new syntax. It uses some elements of the old, but is clearer and easier to work with. It also makes the output more intuitive to an end user.
+So we've switched to a new syntax. It uses some elements of the old, but is clearer and easier to work with, and is based on JSON semantics. We believe this should make the output more intuitive to an end user.
 
 Here's a comparison of the two, using `@bodyParam` as an example:
 
 - To denote an array `cars` of elements of type `integer`.
   
-  **Old syntax**: `@bodyParam cars.* integer` + `@bodyParam cars array` (optional).
+  **Old syntax**: `@bodyParam cars array` (optional) + `@bodyParam cars.* integer`.
   
   **New syntax**: `@bodyParam cars integer[]`
+  
 - To denote an object `cars` with a field `name` of type `string`. No changes!
   
   **Syntax**: `@bodyParam cars object` + `@bodyParam cars.name string`.
+  
 - To denote an array of objects `cars` with each item having field `name`.
   
-  **Old syntax**: `@bodyParam cars.* object` + `@bodyParam cars.*.name string`.
+  **Old syntax**: `@bodyParam cars.* object` (optional) + `@bodyParam cars.*.name string`.
   
   **New syntax**: `@bodyParam cars object[]` + `@bodyParam cars[].name string`.
 
 **How to migrate:**
 You'll need to run a search through all your docblocks:
 - Replace `.*.` with `[].` (you can automate this part safely)
-- Make sure `.*` fields and fields with `array` type are replaced with the correct `x[]` type field. 
+- Replace `.*` fields that have an `x` type with the correct `x[]` type field. 
+- `array` is no longer a valid type. Replace fields that have type `array` with the correct `x[]` type field.
 - Ensure there's a parent object for any object fields. For instance, you can't have a `car.make string` field without a `car object` field, or a  `dogs[].name string` field without a `dogs object[]`.
 
 If you're using FormRequests, you don't need to worry about those. Scribe will transform those appropriately.
@@ -107,8 +115,8 @@ return [
 ];
 ```
 
-We know it's kinda silly 🙄, but it's actually a small optimisation that makes things easier in the long run.
+We know it seems silly🙂, but it's actually a small optimisation that makes things easier in the long run.
 
 <hr>
 
-Thanks for using Scribe! We hope you have fun and write kickass API docs! And if you'd like to get better at API documentation, I recently launched a course you might want to check out: [apidocsfordevs.com](https://apidocsfordevs.com).
+Thanks for using Scribe! We hope you have fun and write kickass API docs! And if you'd like to get better at API documentation, I;m making a course just for you: [apidocsfordevs.com](https://apidocsfordevs.com).
