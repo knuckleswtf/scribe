@@ -24,6 +24,10 @@ class TestUserApiResource extends JsonResource
             }),
         ];
 
+        if($request->route()->named('test')) {
+            $result['test'] = true;
+        }
+
         if ($this['state1'] && $this['random-state']) {
             $result['state1'] = $this['state1'];
             $result['random-state'] = $this['random-state'];

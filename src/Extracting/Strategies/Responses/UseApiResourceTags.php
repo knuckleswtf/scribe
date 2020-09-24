@@ -49,7 +49,7 @@ class UseApiResourceTags extends Strategy
         $methodDocBlock = $docBlocks['method'];
 
         try {
-            return $this->getApiResourceResponse($methodDocBlock->getTags());
+            return $this->getApiResourceResponse($methodDocBlock->getTags(), $route);
         } catch (Exception $e) {
             c::warn('Exception thrown when fetching Eloquent API resource response for [' . implode(',', $route->methods) . "] {$route->uri}.");
             e::dumpExceptionIfVerbose($e);
@@ -64,7 +64,7 @@ class UseApiResourceTags extends Strategy
      *
      * @return array|null
      */
-    public function getApiResourceResponse(array $tags)
+    public function getApiResourceResponse(array $tags, Route $route)
     {
         if (empty($apiResourceTag = $this->getApiResourceTag($tags))) {
             return null;
@@ -111,8 +111,12 @@ class UseApiResourceTags extends Strategy
                 : $apiResourceClass::collection($list);
         }
 
+        $this->endDbTransaction();
+
         /** @var Response $response */
-        $response = $resource->toResponse(app(Request::class));
+        $response = $resource->toResponse(app(Request::class)->setRouteResolver(function () use ($route) {
+            return $route;
+        }));
 
         return [
             [
@@ -181,7 +185,10 @@ class UseApiResourceTags extends Strategy
 
             $factory = Utils::getModelFactory($type, $factoryStates);
             try {
-                return $factory->create();
+                $model =  $factory->create();
+                $model->load($relations);
+
+                return $model;
             } catch (Exception $e) {
                 // If there was no working database, it would fail.
                 return $factory->make();
@@ -204,8 +211,6 @@ class UseApiResourceTags extends Strategy
                     e::dumpExceptionIfVerbose($e);
                 }
             }
-        } finally {
-            $this->endDbTransaction();
         }
 
         return $instance;
