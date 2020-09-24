@@ -49,11 +49,14 @@ class UseApiResourceTags extends Strategy
         $methodDocBlock = $docBlocks['method'];
 
         try {
+            $this->startDbTransaction();
             return $this->getApiResourceResponse($methodDocBlock->getTags(), $route);
         } catch (Exception $e) {
             c::warn('Exception thrown when fetching Eloquent API resource response for [' . implode(',', $route->methods) . "] {$route->uri}.");
             e::dumpExceptionIfVerbose($e);
             return null;
+        } finally {
+            $this->endDbTransaction();
         }
     }
 
@@ -66,59 +69,51 @@ class UseApiResourceTags extends Strategy
      */
     public function getApiResourceResponse(array $tags, Route $route)
     {
-        try {
-            $this->startDbTransaction();
-
-            if (empty($apiResourceTag = $this->getApiResourceTag($tags))) {
-                return null;
-            }
-
-            [$statusCode, $apiResourceClass] = $this->getStatusCodeAndApiResourceClass($apiResourceTag);
-            [$model, $factoryStates, $relations, $pagination] = $this->getClassToBeTransformedAndAttributes($tags);
-            $modelInstance = $this->instantiateApiResourceModel($model, $factoryStates, $relations);
-
-            try {
-                $resource = new $apiResourceClass($modelInstance);
-            } catch (Exception $e) {
-                // If it is a ResourceCollection class, it might throw an error
-                // when trying to instantiate with something other than a collection
-                $resource = new $apiResourceClass(collect([$modelInstance]));
-            }
-            if (strtolower($apiResourceTag->getName()) == 'apiresourcecollection') {
-                // Collections can either use the regular JsonResource class (via `::collection()`,
-                // or a ResourceCollection (via `new`)
-                // See https://laravel.com/docs/5.8/eloquent-resources
-                $models = [$modelInstance, $this->instantiateApiResourceModel($model, $factoryStates, $relations)];
-                // Pagination can be in two forms:
-                // [15] : means ::paginate(15)
-                // [15, 'simple'] : means ::simplePaginate(15)
-                if (count($pagination) == 1) {
-                    $perPage = $pagination[0];
-                    $paginator = new LengthAwarePaginator(
-                    // For some reason, the LengthAware paginator needs only first page items to work correctly
-                        collect($models)->slice(0, $perPage),
-                        count($models),
-                        $perPage
-                    );
-                    $list = $paginator;
-                } elseif (count($pagination) == 2 && $pagination[1] == 'simple') {
-                    $perPage = $pagination[0];
-                    $paginator = new Paginator($models, $perPage);
-                    $list = $paginator;
-                } else {
-                    $list = collect($models);
-                }
-                /** @var JsonResource $resource */
-                $resource = $resource instanceof ResourceCollection
-                    ? new $apiResourceClass($list)
-                    : $apiResourceClass::collection($list);
-            }
-        }  catch (Exception $e) {
-            c::debug($e->getMessage());
-            e::dumpExceptionIfVerbose($e);
-        } finally {
-            $this->endDbTransaction();
+        if (empty($apiResourceTag = $this->getApiResourceTag($tags))) {
+            return null;
         }
+
+        [$statusCode, $apiResourceClass] = $this->getStatusCodeAndApiResourceClass($apiResourceTag);
+        [$model, $factoryStates, $relations, $pagination] = $this->getClassToBeTransformedAndAttributes($tags);
+        $modelInstance = $this->instantiateApiResourceModel($model, $factoryStates, $relations);
+
+        try {
+            $resource = new $apiResourceClass($modelInstance);
+        } catch (Exception $e) {
+            // If it is a ResourceCollection class, it might throw an error
+            // when trying to instantiate with something other than a collection
+            $resource = new $apiResourceClass(collect([$modelInstance]));
+        }
+        if (strtolower($apiResourceTag->getName()) == 'apiresourcecollection') {
+            // Collections can either use the regular JsonResource class (via `::collection()`,
+            // or a ResourceCollection (via `new`)
+            // See https://laravel.com/docs/5.8/eloquent-resources
+            $models = [$modelInstance, $this->instantiateApiResourceModel($model, $factoryStates, $relations)];
+            // Pagination can be in two forms:
+            // [15] : means ::paginate(15)
+            // [15, 'simple'] : means ::simplePaginate(15)
+            if (count($pagination) == 1) {
+                $perPage = $pagination[0];
+                $paginator = new LengthAwarePaginator(
+                // For some reason, the LengthAware paginator needs only first page items to work correctly
+                    collect($models)->slice(0, $perPage),
+                    count($models),
+                    $perPage
+                );
+                $list = $paginator;
+            } elseif (count($pagination) == 2 && $pagination[1] == 'simple') {
+                $perPage = $pagination[0];
+                $paginator = new Paginator($models, $perPage);
+                $list = $paginator;
+            } else {
+                $list = collect($models);
+            }
+            /** @var JsonResource $resource */
+            $resource = $resource instanceof ResourceCollection
+                ? new $apiResourceClass($list)
+                : $apiResourceClass::collection($list);
+        }
+
 
         /** @var Response $response */
         $response = $resource->toResponse(app(Request::class)->setRouteResolver(function () use ($route) {
