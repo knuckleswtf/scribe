@@ -320,7 +320,7 @@ class Generator
                 }
                 // If there's a second item in the array, set for that too.
                 if ($value !== null && Arr::has($results, Str::replaceLast('[]', '.1', $baseName))) {
-                    // If value is optional, toss a coin on whether to set or not
+                    // If value is optional, flip a coin on whether to set or not
                     if ($isRequired || array_rand([true, false], 1)) {
                         Arr::set($results, Str::replaceLast('.0', '.1', $dotPath), $value);
                     }

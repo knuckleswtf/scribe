@@ -13,3 +13,9 @@
 </script>
 <script src="js/tryitout.js"></script>
 @endif
+
+> Base URL:
+
+```yaml
+{!! $baseUrl !!}
+```
