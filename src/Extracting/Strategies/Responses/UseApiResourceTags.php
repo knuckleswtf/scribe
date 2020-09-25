@@ -54,6 +54,7 @@ class UseApiResourceTags extends Strategy
         } catch (Exception $e) {
             c::warn('Exception thrown when fetching Eloquent API resource response for [' . implode(',', $route->methods) . "] {$route->uri}.");
             e::dumpExceptionIfVerbose($e);
+
             return null;
         } finally {
             $this->endDbTransaction();
@@ -65,7 +66,9 @@ class UseApiResourceTags extends Strategy
      *
      * @param Tag[] $tags
      *
+     * @param \Illuminate\Routing\Route $route
      * @return array|null
+     * @throws \Exception
      */
     public function getApiResourceResponse(array $tags, Route $route)
     {
