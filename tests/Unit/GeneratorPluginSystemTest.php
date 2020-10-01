@@ -51,6 +51,7 @@ class GeneratorPluginSystemTest extends TestCase
                 'bodyParameters' => [
                     EmptyStrategy1::class,
                 ],
+                'responses' => [], // Making this empty so the Laravel-dependent strategies are not called
             ],
         ];
         $route = $this->createRoute('GET', '/api/test', 'dummy', true, TestController::class);
@@ -95,6 +96,7 @@ class GeneratorPluginSystemTest extends TestCase
         $config = [
             'strategies' => [
                 'metadata' => [PartialDummyMetadataStrategy1::class, PartialDummyMetadataStrategy2::class],
+                'responses' => [],
             ],
         ];
         $route = $this->createRoute('GET', '/api/test', 'dummy', true, TestController::class);
@@ -117,6 +119,7 @@ class GeneratorPluginSystemTest extends TestCase
         $config = [
             'strategies' => [
                 'metadata' => [PartialDummyMetadataStrategy2::class],
+                'responses' => [],
             ],
         ];
         $route = $this->createRoute('GET', '/api/test', 'dummy', true, TestController::class);
@@ -139,6 +142,7 @@ class GeneratorPluginSystemTest extends TestCase
         $config = [
             'strategies' => [
                 'metadata' => [NotDummyMetadataStrategy::class, PartialDummyMetadataStrategy1::class],
+                'responses' => [],
             ],
         ];
         $route = $this->createRoute('GET', '/api/test', 'dummy', true, TestController::class);

@@ -23,6 +23,7 @@
         <testsuite name="Unit Tests 1">
             <file>tests/Unit/GeneratorTest.php</file>
             <file>tests/Unit/AnnotationParserTest.php</file>
+            <file>tests/Unit/GeneratorPluginSystemTest.php</file>
         </testsuite>
         <testsuite name="Unit Tests 2">
             <file>tests/Unit/OpenAPISpecWriterTest.php</file>

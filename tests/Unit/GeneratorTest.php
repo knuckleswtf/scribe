@@ -4,7 +4,6 @@ namespace Knuckles\Scribe\Tests\Unit;
 
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Illuminate\Routing\Route;
-use Knuckles\Scribe\ScribeServiceProvider;
 use Knuckles\Scribe\Extracting\Generator;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
@@ -39,10 +38,8 @@ class GeneratorTest extends TestCase
                 \Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromBodyParamTag::class,
             ],
             'responses' => [
-                \Knuckles\Scribe\Extracting\Strategies\Responses\UseTransformerTags::class,
                 \Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseTag::class,
                 \Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseFileTag::class,
-                \Knuckles\Scribe\Extracting\Strategies\Responses\UseApiResourceTags::class,
                 \Knuckles\Scribe\Extracting\Strategies\Responses\ResponseCalls::class,
             ],
             'responseFields' => [
