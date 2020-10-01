@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project aims to adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.9.0 (Thursday, 1 October, 2020)
+### Changes
+- Start database transaction much earlier and close it much later for ApiResource and Transformer strategies. Also set current route properly when resolving (https://github.com/knuckleswtf/scribe/pull/104)
+
 ## 1.8.3 (Thursday, 17 September, 2020)
 ### Fixes
 - Reverts 1.8.2 as it broke a few things (https://github.com/knuckleswtf/scribe/commit/5a2217513945bcb92ca26e463f7717c0efb99ac1)
