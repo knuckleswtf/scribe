@@ -177,6 +177,7 @@ use Orchestra\Testbench\TestCase;
             });
             $config = new DocumentationConfig([]);
 
+            // Creating a mock route so we can test that the route is set properly during resolution
             $route = Mockery::mock(Route::class);
             $route->shouldReceive('named')
                 ->times(2)
