@@ -15,11 +15,17 @@ class TestUserApiResourceCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        return [
+        $data = [
             'data' => $this->collection,
             'links' => [
                 'self' => 'link-value',
             ],
         ];
+
+        if($request->route()->named('test')) {
+            $data['test'] = true;
+        }
+
+        return $data;
     }
 }
