@@ -67,11 +67,11 @@ In the template, you have the `$baseUrl` and `$route` variables available to you
 .. Important:: Parameters which have been excluded from the example requests (see `Specifying Example Values <documenting-endpoint-query-parameters.html#specifying-example-values>`_) will not be present in :code:`cleanQueryParameters`, :code:`cleanBodyParameters`, or :code:`fileParameters`.
 ```
 
-```eval_rst
-.. Tip:: You can make use of some utilities in the class :code:`\Knuckles\Scribe\Tools\WritingUtils` to help you easily output data in various forms (such as in key=value format or as a PHP array). Please take a look at that class and its usages in the included example request templates for details.
-```
-
 Finally, add the language to the `example_languages` array in your config and generate your documentation as usual. 
+
+```eval_rst
+.. Note:: Scribe makes use of CSS from [ighlight.js](https://highlightjs.org) for its syntax highlighting. The bundle we use only includes support for a bunch of the most popular languages. If your language isn't supported (all code appears white), you can [download a new CSS bundle](https://highlightjs.org/download/) yourself, and include your desired language. Then locate the highlight.js CSS file that Scribe outputs for you after generation, and replace that with the one you downloaded. 
+```
 
 ## Customizing the code used in examples
 Customising existing language templates follows the same process as described above: publish assets, then modify the Blade templates in `resources/views/vendor/scribe/partials/example-requests` as necessary.
@@ -124,4 +124,4 @@ There are also a number of included components that you can utilize in your Blad
 - `badges/base.blade.php`: The base badge component, used by `auth` and `http-method`. Takes in `colour` and `text` attributes, and uses Pastel's badge classes to create a badge.
 
 ## Changing the CSS styles
-The CSS styling is provided by Pastel, which currently supports only one template. Consider making a pull request to add your alternative styles.
+The CSS styling is provided by Pastel, which currently supports only one template. Consider making a pull request to add your alternative styles. In the meantime, you can manualy add CSS files to the generated output directory.

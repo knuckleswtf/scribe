@@ -47,12 +47,15 @@ class UseTransformerTags extends Strategy
         $methodDocBlock = $docBlocks['method'];
 
         try {
+            $this->startDbTransaction();
             return $this->getTransformerResponse($methodDocBlock->getTags());
         } catch (Exception $e) {
             c::warn('Exception thrown when fetching transformer response for [' . implode(',', $route->methods) . "] {$route->uri}.");
             e::dumpExceptionIfVerbose($e);
 
             return null;
+        } finally {
+            $this->endDbTransaction();
         }
     }
 
@@ -160,7 +163,6 @@ class UseTransformerTags extends Strategy
 
     protected function instantiateTransformerModel(string $type, array $factoryStates = [], array $relations = [])
     {
-        $this->startDbTransaction();
         try {
             // try Eloquent model factory
 
@@ -193,8 +195,6 @@ class UseTransformerTags extends Strategy
                     e::dumpExceptionIfVerbose($e);
                 }
             }
-        } finally {
-            $this->endDbTransaction();
         }
 
         return $instance;
