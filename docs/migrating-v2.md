@@ -1,6 +1,6 @@
 # Scribe 2: What's new, and how to migrate
 
-Scribe 2 comes with a bunch of changes focused on making the documentation process easier and the output nicer. There aren't many "shiny" changes, mostly improvements to what works. For the most part, you won't need to do much work. We've marked required changes in the list below with a "Migration Required" label.
+Scribe 2 comes with a bunch of changes focused on making the documentation process easier and the output nicer. There aren't many "shiny" changes, mostly improvements to what works. We've marked required changes in the list below with a "Migration Required" label.
 
 This is also a release announcement for Scribe for JS! [Version 1 has now been released]()!🎉 
 
@@ -9,6 +9,8 @@ This is also a release announcement for Scribe for JS! [Version 1 has now been r
    :local:
 ```
 
+Start by upgrading the package version in your composer.json to `^2.0` and running `composer update knuckleswtf/scribe`. Next, make a copy of your config file before publishing the new one (`php artisan vendor:publish --tag=scribe-config`). Then, when you're done applying the changes described here, copy in any custom config for your setup.
+
 ## Changes in the output 
 
 ### "Try It Out": interactive documentation with (probably) zero config ⚡💥
@@ -16,7 +18,9 @@ Big news: Your docs will now include a "Try t Out" button that allows users to t
 
 ![](./images/tryitout-button.jpg)
 
-To enable this, set `interactive` to true. Don't forget to enable CORS headers in your API! Here's the [full doc](./generating-documentation.html#configuring-interactive-documentation).
+To enable this, set `interactive` to true. Don't forget to enable CORS headers for your domain in your API! Here's the [full doc](./generating-documentation.html#configuring-interactive-documentation).
+
+**Note**: If you've published the views previously, you may need to re- publish them to get the included "Try It Out" functionality.
 
 ### Object fields are now represented better in the docs
 Object fields are now wrapped in a `<details>` element, so you can expand the dropdown to see fields within an object. This way, it's clearer that these are subfields within a parent.
@@ -27,7 +31,7 @@ Object fields are now wrapped in a `<details>` element, so you can expand the dr
 ## Changes to the config file
    
 ### Specify the default auth status of endpoints with `auth.default`
-Previously, if you had an API with all endpoints authenticated, you had to set `auth.enabled` to true, AND use `@authenticated` on every endpoint. Pain in the ass. Now you can mark all endpoints as authenticated, by setting `auth.default` to true (don't forget to set `uaht.enabled` to true as well). You can also remove auth from specific endpoints with `@unauthenticated`.
+Previously, if you had an API with all endpoints authenticated, you had to set `auth.enabled` to true AND use `@authenticated` on every endpoint. Pain in the ass. Now you can mark all endpoints as authenticated, by setting `auth.default` to true (don't forget to set `auth.enabled` to true as well). You can also remove auth from specific endpoints with `@unauthenticated`.
    
 ### [Migration Required] `description` replaces `postman.description`
 In 1.6.0, we added a `description` config item, where you can add a description of your API. This field is used as the `info.description` field in the Postman collection and OpenAPI spec, and as the first paragraph under the "Introduction" section on the docs webpage, before the `intro_text`. We've now removed `postman.description`.
@@ -90,17 +94,17 @@ Previously, you couldn't specify types for URL and query parameters. The idea wa
 - In custom strategies: Update any custom strategies you've written so they return a `type` field for each URL and query parameter
 
 ## Other changes
+### `add_routes`: Postman collection route changed
+When you use `laravel` type docs and have `add_routes` set to `true`, you get three routes added to your Laravel app: one for the webpage, one for the Postman collection and one for the OpenAPI spec. The route for the Postman collection was previously `/docs.json`, but has now been renamed to `/docs.postman`, to bring it in line with the OpenAPI route, which is `/docs.openapi`.
+
 ### `@responseFile` supports other directories
 You can now specify a file located anywhere on your machine with `@responseFile`. The file path can either be an absolute path, a path relative to your project root, or a path relative to the Laravel storage directory.
 
-### `add_routes`: Postman collection route renamed
-When you use `laravel` type docs and have `add_routes` set to `true`, you get three routes added to your Laravel app: one for the webpage, one for the Postman collection and one for the OpenAPI spec. The route for the Postman collection was previously named `scribe.json`, but has now been renamed to `scribe.postman`, to bring it in line with the OpenAPI route, which is named `scribe.openapi`.
-
 ### Postman base URL now uses Postman variables
-Postman collection base URL now uses a `{{baseUrl}}` variable, so you can change the base URL for all endpoints in your collection easier.
+Postman collection base URL now uses a `{{baseUrl}}` Postman variable, so you can easily change the base URL for all endpoints in your collection from within Postman.
 
 ### [Migration Required] Plugin API changes: include 'name' in parameter details
-This only applies if you have custom strategies. All strategies that return URL, query or body parameters or response fields must now include the name of the field as a `name` field in the returned array. This means that the parameter name is going to be mentioned twice in the result from the strategy:
+This only applies if you have created any custom strategies. All strategies that return URL, query or body parameters or response fields must now include the name of the field as a `name` field in the returned array. This means that the parameter name is going to be mentioned twice in the result from the strategy:
 
 ```php
 return [
