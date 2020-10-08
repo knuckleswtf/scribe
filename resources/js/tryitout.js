@@ -114,7 +114,7 @@ function handleError(form, endpointId, err) {
     // Show error views
     let errorMessage = err.message || err;
     errorMessage += "\n\nTip: Check that you're properly connected to the network.";
-    errorMessage += "\nIf you're a maintainer of ths API, verify that you've enabled CORS.";
+    errorMessage += "\nIf you're a maintainer of ths API, verify that your API is running and you've enabled CORS.";
     errorMessage += "\nYou can check the Dev Tools console for debugging information.";
     document.querySelector('#execution-error-message-' + endpointId).textContent = errorMessage;
     const errorEl = document.querySelector('#execution-error-' + endpointId);
