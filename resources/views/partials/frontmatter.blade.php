@@ -16,9 +16,9 @@ logo: {{ $settings['logo'] ?? false }}
 
 toc_footers:
 @if($showPostmanCollectionButton)
-- <a href="{{ $postmanCollectionLink }}">View Postman Collection</a>
+- <a href="{{ $postmanCollectionLink }}">View Postman collection</a>
 @endif
 @if($showOpenAPISpecButton)
-- <a href="{{ $openAPISpecLink }}">View OpenAPI (Swagger) Spec</a>
+- <a href="{{ $openAPISpecLink }}">View OpenAPI (Swagger) spec</a>
 @endif
 - <a href='http://github.com/knuckleswtf/scribe'>Documentation powered by Scribe ✍</a>

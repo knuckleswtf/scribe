@@ -257,7 +257,7 @@ class Writer
     protected function performFinalTasksForLaravelType(): void
     {
         if (!is_dir($this->laravelTypeOutputPath)) {
-            mkdir($this->laravelTypeOutputPath);
+            mkdir($this->laravelTypeOutputPath, 0777, true);
         }
         if (!is_dir("public/vendor/scribe")) {
             mkdir("public/vendor/scribe", 0777, true);
@@ -284,14 +284,14 @@ class Writer
 
     public function writeHtmlDocs(): void
     {
-        ConsoleOutputUtils::info('Generating API HTML code');
+        ConsoleOutputUtils::info('Transforming Markdown docs to HTML...');
 
         $this->pastel->generate($this->sourceOutputPath . '/index.md', $this->staticTypeOutputPath);
+        // Add our custom JS
+        copy(__DIR__.'/../../resources/js/tryitout.js', $this->staticTypeOutputPath . '/js/tryitout.js');
 
         if (!$this->isStatic) {
             $this->performFinalTasksForLaravelType();
-        } else {
-            copy(__DIR__.'/../../resources/js/tryitout.js', $this->staticTypeOutputPath . '/js/tryitout.js');
         }
 
         ConsoleOutputUtils::success("Wrote HTML documentation to: " . ($this->isStatic ? $this->staticTypeOutputPath : $this->laravelTypeOutputPath));
@@ -312,7 +312,7 @@ class Writer
         $frontmatter = view('scribe::partials.frontmatter')
             ->with('showPostmanCollectionButton', $this->shouldGeneratePostmanCollection)
             ->with('showOpenAPISpecButton', $this->shouldGenerateOpenAPISpec)
-            // This path is wrong for laravel type but will be replaced in post
+            // These paths are wrong for laravel type but will be replaced in the performFinalTasksForLaravelType() method
             ->with('postmanCollectionLink', './collection.json')
             ->with('openAPISpecLink', './openapi.yaml')
             ->with('outputPath', 'docs')
