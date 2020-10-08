@@ -42,7 +42,7 @@ class PostmanCollectionWriter
                 ],
             ],
             'info' => [
-                'name' => $this->config->get('title') ?: config('app.name') . ' API',
+                'name' => $this->config->get('title') ?: config('app.name'),
                 '_postman_id' => Uuid::uuid4()->toString(),
                 'description' => $this->config->get('description', ''),
                 'schema' => "https://schema.getpostman.com/json/collection/v" . self::VERSION . "/collection.json",

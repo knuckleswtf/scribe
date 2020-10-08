@@ -120,7 +120,7 @@ class Writer
         $settings = [
             'languages' => $this->config->get('example_languages'),
             'logo' => $this->config->get('logo'),
-            'title' => $this->config->get('title', config('app.name', '') . ' API Documentation'),
+            'title' => $this->config->get('title') ?: config('app.name', '') . ' Documentation',
             'auth' => $this->config->get('auth'),
             'interactive' => $this->config->get('interactive', true)
         ];
