@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-    title: Laravel API
+    title: Laravel
     description: ''
     version: 3.9.9
 servers:
