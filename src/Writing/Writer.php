@@ -321,6 +321,7 @@ class Writer
         $introText = $this->config->get('intro_text', '');
         $introMarkdown = view('scribe::index')
             ->with('frontmatter', $frontmatter)
+            ->with('description', $this->config->get('description', ''))
             ->with('introText', $introText)
             ->with('baseUrl', $this->baseUrl)
             ->with('isInteractive', $this->config->get('interactive', true));

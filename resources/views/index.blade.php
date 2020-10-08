@@ -4,6 +4,8 @@
 
 # Introduction
 
+{!! $description !!}
+
 {!! $introText !!}
 
 @if($isInteractive)
@@ -14,7 +16,7 @@
 <script src="js/tryitout.js"></script>
 @endif
 
-> Base URL:
+> Base URL
 
 ```yaml
 {!! $baseUrl !!}

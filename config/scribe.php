@@ -8,7 +8,7 @@ return [
     'title' => null,
 
     /*
-     * A short description of your API.
+     * A short description of your API. Will be included in the docs webpage, Postman collection and OpenAPI spec.
      */
     'description' => '',
 
@@ -176,7 +176,7 @@ return [
      */
     'auth' => [
         /*
-         * Set this to true if any endpoints in your API uses authentication.
+         * Set this to true if any endpoints in your API use authentication.
          */
         'enabled' => false,
 
@@ -221,9 +221,10 @@ return [
      * Text to place in the "Introduction" section, right after the `description`. Markdown and HTML are supported.
      */
     'intro_text' => <<<INTRO
-Welcome to our API documentation!
+This documentation aims to provide all the information you need to work with our API.
 
-<aside>As you scroll, you'll see code examples for working with the API in different programming languages in the dark area to the right (or as part of the content on mobile), and you can switch the programming language of the examples with the tabs in the top right (or from the nav menu at the top left on mobile).</aside>
+<aside>As you scroll, you'll see code examples for working with the API in different programming languages in the dark area to the right (or as part of the content on mobile).
+You can switch the language used with the tabs at the top right (or from the nav menu at the top left on mobile).</aside>
 INTRO
     ,
 
