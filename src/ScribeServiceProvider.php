@@ -40,10 +40,15 @@ class ScribeServiceProvider extends ServiceProvider
 
         // Bind the route matcher implementation
         $this->app->bind(RouteMatcherInterface::class, config('scribe.routeMatcher', RouteMatcher::class));
+
+        if (!class_exists('Str')) {
+            // Lumen may not have the aliases set up, and we don't want to have to use the FQN in our blade files.
+            class_alias(\Illuminate\Support\Str::class, 'Str');
+        }
     }
 
     /**
-     * Initializing routes in the application.
+     * Add docs routes for users that want their docs to pass through their Laravel app.
      */
     protected function bootRoutes()
     {
