@@ -29,10 +29,10 @@ class GetFromFormRequest extends Strategy
 
     public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = []): array
     {
-        return $this->getBodyParametersFromFormRequest($method);
+        return $this->getBodyParametersFromFormRequest($method, $route);
     }
 
-    public function getBodyParametersFromFormRequest(ReflectionFunctionAbstract $method): array
+    public function getBodyParametersFromFormRequest(ReflectionFunctionAbstract $method, $route = null): array
     {
         foreach ($method->getParameters() as $param) {
             $paramType = $param->getType();
@@ -58,8 +58,12 @@ class GetFromFormRequest extends Strategy
             if (
                 (class_exists(LaravelFormRequest::class) && $parameterClass->isSubclassOf(LaravelFormRequest::class))
                 || (class_exists(DingoFormRequest::class) && $parameterClass->isSubclassOf(DingoFormRequest::class))) {
-                /** @var LaravelFormRequest|DingoFormRequest\ $formRequest */
+                /** @var LaravelFormRequest|DingoFormRequest $formRequest */
                 $formRequest = new $parameterClassName;
+                // Set the route properly so it works for people who have code that checks for the route.
+                $formRequest->setRouteResolver(function () use ($route) {
+                    return $route;
+                });
                 $bodyParametersFromFormRequest = $this->getBodyParametersFromValidationRules(
                     $this->getRouteValidationRules($formRequest),
                     $this->getCustomParameterData($formRequest)
