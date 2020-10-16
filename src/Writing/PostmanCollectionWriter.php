@@ -200,9 +200,10 @@ class PostmanCollectionWriter
             return Str::contains($route['uri'], '{' . $key . '}');
         });
 
+        $protocol = Str::startsWith($this->config->get('postman.base_url', $this->config->get('base_url')), 'https') ? 'https' : 'http';
         $baseUrl = $this->getBaseUrl($this->config->get('postman.base_url', $this->config->get('base_url')));
         $base = [
-            'protocol' => Str::startsWith($baseUrl, 'https') ? 'https' : 'http',
+            'protocol' => $protocol,
             'host' => $baseUrl,
             // Change laravel/symfony URL params ({example}) to Postman style, prefixed with a colon
             'path' => preg_replace_callback('/\{(\w+)\??}/', function ($matches) {
