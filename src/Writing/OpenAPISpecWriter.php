@@ -452,24 +452,26 @@ class OpenAPISpecWriter
                 'description' => $field['description'] ?? '',
                 'example' => $field['value'] ?? null,
                 'items' => Utils::isArrayType($baseType)
-                    ? $this->generateFieldData(['name' => '', 'type' => $baseType, 'value' => ($field['value'] ?? [null])[0]])
-                : [
-                'type' => $baseType,
-            ],
-        ];
+                    ? $this->generateFieldData([
+                        'name' => '',
+                        'type' => $baseType,
+                        'value' => ($field['value'] ?? [null])[0],
+                    ])
+                    : ['type' => $baseType],
+            ];
 
-        if ($baseType === 'object') {
-            foreach ($field['fields'] as $subfield) {
-                $fieldSimpleName = preg_replace("/^{$field['name']}\\[\]\\./", '', $subfield['name']);
-                $fieldData['items']['properties'][$fieldSimpleName] = $this->generateFieldData($subfield);
-                if ($subfield['required']) {
-                    $fieldData['items']['required'][] = $fieldSimpleName;
+            if ($baseType === 'object' && !empty($field['fields'])) {
+                foreach ($field['fields'] as $subfield) {
+                    $fieldSimpleName = preg_replace("/^{$field['name']}\\[\]\\./", '', $subfield['name']);
+                    $fieldData['items']['properties'][$fieldSimpleName] = $this->generateFieldData($subfield);
+                    if ($subfield['required']) {
+                        $fieldData['items']['required'][] = $fieldSimpleName;
+                    }
                 }
             }
-        }
 
-        return $fieldData;
-    } else if ($field['type'] === 'object') {
+            return $fieldData;
+        } else if ($field['type'] === 'object') {
             return [
                 'type' => 'object',
                 'description' => $field['description'] ?? '',

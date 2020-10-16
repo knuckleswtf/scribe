@@ -131,7 +131,7 @@ class Generator
         $parsedRoute['responseFields'] = $responseFields;
 
 
-        $parsedRoute['nestedBodyParameters'] = $this->nestArrayAndObjectFields($parsedRoute['bodyParameters']);
+        $parsedRoute['nestedBodyParameters'] = self::nestArrayAndObjectFields($parsedRoute['bodyParameters']);
 
         self::$routeBeingProcessed = null;
 
