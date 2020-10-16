@@ -59,7 +59,6 @@ class GetFromLumenAPI extends Strategy
             ];
         }
 
-        dd($parameters);
         return $parameters;
     }
 }
