@@ -26,7 +26,7 @@ class PostmanCollectionWriter
     public function __construct(DocumentationConfig $config = null)
     {
         $this->config = $config ?: new DocumentationConfig(config('scribe', []));
-        $this->baseUrl = $this->getBaseUrl($this->config->get('postman.base_url', $this->config->get('base_url')));
+        $this->baseUrl = $this->config->get('postman.base_url', $this->config->get('base_url'));
     }
 
     public function generatePostmanCollection(Collection $groupedEndpoints)
@@ -254,23 +254,6 @@ class PostmanCollectionWriter
         })->values()->toArray();
 
         return $base;
-    }
-
-    protected function getBaseUrl($baseUrl)
-    {
-        try {
-            if (Str::contains(app()->version(), 'Lumen')) { //Is Lumen
-                $reflectionMethod = new ReflectionMethod(\Laravel\Lumen\Routing\UrlGenerator::class, 'getRootUrl');
-                $reflectionMethod->setAccessible(true);
-                $url = app('url');
-
-                return $reflectionMethod->invokeArgs($url, ['', $baseUrl]);
-            }
-
-            return URL::formatRoot('', $baseUrl);
-        } catch (\Throwable $e) {
-            return $baseUrl;
-        }
     }
 
     private function getAuthParamToExclude(): array
