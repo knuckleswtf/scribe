@@ -105,7 +105,7 @@ trait ParamHelpers
 
         if ($type === 'array' && is_string($value)) {
             $value = trim($value);
-            if ($value[0] == '[' && $value[strlen($value) - 1] == ']') {
+            if (($value[0] == '[' && $value[strlen($value) - 1] == ']') || ($value[0] == '{' && $value[strlen($value) - 1] == '}')) {
                 return json_decode($value, true);
             }
         }
