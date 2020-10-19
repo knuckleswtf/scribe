@@ -208,7 +208,7 @@ class OpenAPISpecWriter
                     ];
                     if ($fieldData['type'] === 'array') {
                         $fieldData['items'] = [
-                            'type' => empty($details['value'] ?? null) ? 'object' : $this->convertScribeOrPHPTypeToOpenAPIType(gettype($details['value'][0])),
+                            'type' => empty($details['value'] ?? null) ? 'object' : $this->convertScribeOrPHPTypeToOpenAPIType(gettype($details['value'][0] ?? $details['value'])),
                         ];
                     }
                 }
