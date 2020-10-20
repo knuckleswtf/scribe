@@ -4,6 +4,8 @@ namespace Knuckles\Scribe\Tests\Strategies\Responses;
 
 use Dingo\Api\Routing\Router;
 use Illuminate\Routing\Route;
+use Illuminate\Support\Facades\Route as RouteFacade;
+use Knuckles\Scribe\Extracting\Generator;
 use Knuckles\Scribe\Extracting\Strategies\Responses\ResponseCalls;
 use Knuckles\Scribe\ScribeServiceProvider;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
@@ -53,6 +55,22 @@ class ResponseCallsTest extends TestCase
             'weight' => '1 kg',
             'delicious' => true,
         ], json_decode($results[0]['content'], true));
+    }
+
+    /** @test */
+    public function can_upload_file_parameters_in_response_calls()
+    {
+        $route = RouteFacade::post('/withFormDataParams', [TestController::class, 'withFormDataParams']);
+
+        config(['scribe.routes.0.apply.response_calls.methods' => ['POST']]);
+        $parsed = (new Generator())->processRoute($route, config('scribe.routes.0.apply'));
+
+        $this->assertEquals([
+            [
+                "status" => 200,
+                "content" => '{"filename":"scribe.php","filepath":"config","name":"cat.jpg"}',
+            ],
+        ], $parsed['responses']);
     }
 
     /** @test */
@@ -160,7 +178,7 @@ class ResponseCallsTest extends TestCase
      */
     public function uses_configured_settings_when_calling_route_with_dingo()
     {
-        $route = $this->registerDingoRoute('post','/echo/{id}', 'shouldFetchRouteResponseWithEchoedSettings');
+        $route = $this->registerDingoRoute('post', '/echo/{id}', 'shouldFetchRouteResponseWithEchoedSettings');
 
         $rules = [
             'response_calls' => [
@@ -198,7 +216,7 @@ class ResponseCallsTest extends TestCase
      */
     public function can_override_application_config_during_response_call_with_dingo()
     {
-        $route = $this->registerDingoRoute('post','/echoesConfig', 'echoesConfig');
+        $route = $this->registerDingoRoute('post', '/echoesConfig', 'echoesConfig');
 
         $rules = [
             'response_calls' => [
@@ -245,8 +263,8 @@ class ResponseCallsTest extends TestCase
                 [
                     'status' => 200,
                     'content' => json_encode(['message' => 'LOL']),
-                ]
-            ]
+                ],
+            ],
         ];
         $strategy = new ResponseCalls(new DocumentationConfig([]));
         $results = $strategy->makeResponseCallIfEnabledAndNoSuccessResponses($route, $rules, $context);

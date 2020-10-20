@@ -129,6 +129,7 @@ class ResponseCalls extends Strategy
         // The second is so they get added to the request bag
         // (where Symfony usually reads from and Laravel sometimes does)
         // Adding to both ensures consistency
+
         $request = Request::create($uri, $method, [], $cookies, $fileParameters, $this->transformHeadersToServerVars($headers), json_encode($bodyParams));
         // Doing it again to catch any ones we didn't transform properly.
         $request = $this->addHeaders($request, $route, $headers);

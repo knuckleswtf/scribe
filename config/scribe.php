@@ -108,7 +108,7 @@ return [
 
                     /*
                      * Files which should be sent with the API call.
-                     * Each value should be a valid path (absolute or relative to your project directory) to a file on this machine.
+                     * Each value should be a valid path (absolute or relative to your project directory) to a file on this machine (but not in the project root).
                      */
                     'fileParams' => [
                         // 'key' => 'storage/app/image.png',

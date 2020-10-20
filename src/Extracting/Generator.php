@@ -3,13 +3,13 @@
 namespace Knuckles\Scribe\Extracting;
 
 use Faker\Factory;
+use Illuminate\Http\Testing\File;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\DocumentationConfig;
-use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\Utils as u;
 use ReflectionClass;
 use ReflectionFunctionAbstract;
@@ -390,9 +390,7 @@ class Generator
     protected static function convertStringValueToUploadedFileInstance(string $filePath): UploadedFile
     {
         $fileName = basename($filePath);
-        return new UploadedFile(
-            $filePath, $fileName, mime_content_type($filePath), 0, false
-        );
+        return new File($fileName, fopen($filePath, 'r'));
     }
 
     /**

@@ -4,6 +4,7 @@ namespace Knuckles\Scribe\Tests\Fixtures;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Validation\ValidationException;
 use Knuckles\Scribe\Tests\Unit\GeneratorTest;
 use Knuckles\Scribe\Tools\Utils;
 
@@ -95,11 +96,17 @@ class TestController extends Controller
      * Endpoint with body form data parameters.
      *
      * @bodyParam name string required Name of image. Example: cat.jpg
-     * @bodyParam image file required The image.
+     * @bodyParam image file required The image. Example: config/scribe.php
      */
     public function withFormDataParams()
     {
-        return '';
+        dump(request()->file('image')->isValid());
+        request()->validate(['image' => 'file|required']);
+        return [
+            'filename' => request()->file('image')->getFilename(),
+            'filepath' => request()->file('image')->getPath(),
+            'name' => request('name'),
+        ];
     }
 
     /**
