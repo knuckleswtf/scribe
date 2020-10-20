@@ -15,7 +15,7 @@ class PostmanCollectionWriterTest extends TestCase
 
     public function testCorrectStructureIsFollowed()
     {
-        $config = ['title' => 'Test API', 'description' => 'A fake description'];
+        $config = ['title' => 'Test API', 'description' => 'A fake description', 'base_url' => 'http://localhost'];
 
         $writer = new PostmanCollectionWriter(new DocumentationConfig($config));
         $collection = $writer->generatePostmanCollection(new Collection());
