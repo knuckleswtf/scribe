@@ -26,7 +26,7 @@ class PostmanCollectionWriter
     public function __construct(DocumentationConfig $config = null)
     {
         $this->config = $config ?: new DocumentationConfig(config('scribe', []));
-        $this->baseUrl = $this->config->get('postman.base_url', $this->config->get('base_url'));
+        $this->baseUrl = ($this->config->get('postman.base_url') ?: $this->config->get('base_url')) ?: config('app.url');
     }
 
     public function generatePostmanCollection(Collection $groupedEndpoints)
