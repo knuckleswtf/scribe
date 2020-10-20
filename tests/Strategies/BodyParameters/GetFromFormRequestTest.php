@@ -108,6 +108,8 @@ class GetFromFormRequestTest extends TestCase
                 'value' => 'Doe',
             ],
         ], $results);
+
+        $this->assertIsArray($results['ids']['value']);
     }
 
     /**

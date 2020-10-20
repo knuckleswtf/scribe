@@ -426,6 +426,7 @@ class GetFromFormRequest extends Strategy
     {
         $results = [];
         foreach ($bodyParametersFromValidationRules as $name => $details) {
+
             if (isset($results[$name])) {
                 continue;
             }
@@ -435,10 +436,25 @@ class GetFromFormRequest extends Strategy
                 $details['type'] = 'string[]';
             }
 
-            // Change cars.*.dogs.things.*.* with type X to cars.*.dogs.things with type X[][]
-            while (Str::endsWith($name, '.*')) {
-                $details['type'] .= '[]';
-                $name = substr($name, 0, -2);
+            if (Str::endsWith($name, '.*')) {
+                // Wrap array example properly
+                $needsWrapping = !is_array($details['value']);
+
+                $nestingLevel = 0;
+                // Change cars.*.dogs.things.*.* with type X to cars.*.dogs.things with type X[][]
+                while (Str::endsWith($name, '.*')) {
+                    $details['type'] .= '[]';
+                    if ($needsWrapping) {
+                        // Make it two items in each array
+                        $secondItem = $secondValue = $details['setter']();
+                        for ($i = 0; $i < $nestingLevel; $i++) {
+                            $secondItem = [$secondValue];
+                        }
+                        $details['value'] = [$details['value'], $secondItem];
+                    }
+                    $name = substr($name, 0, -2);
+                    $nestingLevel++;
+                }
             }
 
             // Now make sure the field cars.*.dogs exists
@@ -498,6 +514,7 @@ class GetFromFormRequest extends Strategy
                 $details['type'] = 'object';
             }
             $results[$name] = $details;
+
         }
 
         return $results;
