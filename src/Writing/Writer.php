@@ -341,43 +341,44 @@ class Writer
         }
 
         $isAuthed = $this->config->get('auth.enabled', false);
-        $text = '';
+        $authDescription = '';
         $extraInfo = '';
 
         if ($isAuthed) {
             $strategy = $this->config->get('auth.in');
             $parameterName = $this->config->get('auth.name');
-            $text = Arr::random([
+            $authDescription = Arr::random([
                 "This API is authenticated by sending ",
                 "To authenticate requests, include ",
                 "Authenticate requests to this API's endpoints by sending ",
             ]);
             switch ($strategy) {
                 case 'query':
-                    $text .= "a query parameter **`$parameterName`** in the request.";
+                    $authDescription .= "a query parameter **`$parameterName`** in the request.";
                     break;
                 case 'body':
-                    $text .= "a parameter **`$parameterName`** in the body of the request.";
+                    $authDescription .= "a parameter **`$parameterName`** in the body of the request.";
                     break;
                 case 'query_or_body':
-                    $text .= "a parameter **`$parameterName`** either in the query string or in the request body.";
+                    $authDescription .= "a parameter **`$parameterName`** either in the query string or in the request body.";
                     break;
                 case 'bearer':
-                    $text .= sprintf('an **`Authorization`** header with the value **`"Bearer %s"`**.', $this->config->get('auth.placeholder') ?: 'your-token');;
+                    $authDescription .= sprintf('an **`Authorization`** header with the value **`"Bearer %s"`**.', $this->config->get('auth.placeholder') ?: 'your-token');;
                     break;
                 case 'basic':
-                    $text .= "an **`Authorization`** header in the form **`\"Basic {credentials}\"`**. The value of `{credentials}` should be your username/id and your password, joined with a colon (:), and then base64-encoded.";
+                    $authDescription .= "an **`Authorization`** header in the form **`\"Basic {credentials}\"`**. The value of `{credentials}` should be your username/id and your password, joined with a colon (:), and then base64-encoded.";
                     break;
                 case 'header':
-                    $text .= sprintf('a **`%s`** header with the value **`"%s"`**.', $parameterName, $this->config->get('auth.placeholder') ?: 'your-token');
+                    $authDescription .= sprintf('a **`%s`** header with the value **`"%s"`**.', $parameterName, $this->config->get('auth.placeholder') ?: 'your-token');
                     break;
             }
+            $authDescription .= '\n\nAll authenticated endpoints are marked with a **requires authentication** badge in the documentation below.';
             $extraInfo = $this->config->get('auth.extra_info', '');
         }
 
         $authMarkdown = view('scribe::authentication', [
             'isAuthed' => $isAuthed,
-            'authDescription' => $text,
+            'authDescription' => $authDescription,
             'extraAuthInfo' => $extraInfo,
         ]);
         $this->writeFile($authMarkdownFile, $authMarkdown);
