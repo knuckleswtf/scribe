@@ -363,13 +363,13 @@ class Writer
                     $text .= "a parameter **`$parameterName`** either in the query string or in the request body.";
                     break;
                 case 'bearer':
-                    $text .= "an **`Authorization`** header with the value **`\"Bearer {your-token}\"`**.";
+                    $text .= sprintf('an **`Authorization`** header with the value **`"Bearer %s"`**.', $this->config->get('auth.placeholder') ?: 'your-token');;
                     break;
                 case 'basic':
                     $text .= "an **`Authorization`** header in the form **`\"Basic {credentials}\"`**. The value of `{credentials}` should be your username/id and your password, joined with a colon (:), and then base64-encoded.";
                     break;
                 case 'header':
-                    $text .= "a **`$parameterName`** header with the value **`\"{your-token}\"`**.";
+                    $text .= sprintf('a **`%s`** header with the value **`"%s"`**.', $parameterName, $this->config->get('auth.placeholder') ?: 'your-token');
                     break;
             }
             $extraInfo = $this->config->get('auth.extra_info', '');
