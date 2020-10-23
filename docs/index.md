@@ -4,7 +4,7 @@ Generate API documentation for humans from your Laravel/Lumen/[Dingo](https://gi
 
 
 ```eval_rst
-.. admonition:: Wondering where to get started? Try one of these links:
+.. admonition:: Wondering where to start? Try one of these links:
    
    - `What's new in v2 <migrating-v2.html>`_
    - `Migrating from mpociot/laravel-apidoc-generator <migrating.html>`_, or

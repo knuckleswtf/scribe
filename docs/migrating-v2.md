@@ -2,7 +2,7 @@
 
 Scribe 2 comes with a bunch of changes focused on making the documentation process easier and the output nicer. There aren't many "shiny" changes, mostly improvements to what works. We've marked required changes in the list below with a "Migration Required" label.
 
-This is also a release announcement for Scribe for JS! [Version 1 has now been released]()!🎉 
+This is also a release announcement for Scribe for JS! [Version 1 is now in beta](https://github.com/knuckleswtf/scribe-js) !🎉 
 
 ```eval_rst
 .. contents:: 
