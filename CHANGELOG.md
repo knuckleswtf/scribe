@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project aims to adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.9.1 (Monday, 19 October, 2020)
+### Fixes
+- Set correct base URL protocol for Postman collection (https://github.com/knuckleswtf/scribe/pull/114)
+
 ## 1.9.0 (Thursday, 1 October, 2020)
 ### Changes
 - Start database transaction much earlier and close it much later for ApiResource and Transformer strategies. Also set current route properly when resolving (https://github.com/knuckleswtf/scribe/pull/104)
