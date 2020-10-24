@@ -372,7 +372,7 @@ class Writer
                     $authDescription .= sprintf('a **`%s`** header with the value **`"%s"`**.', $parameterName, $this->config->get('auth.placeholder') ?: 'your-token');
                     break;
             }
-            $authDescription .= '\n\nAll authenticated endpoints are marked with a **requires authentication** badge in the documentation below.';
+            $authDescription .= '\n\nAll authenticated endpoints are marked with a `requires authentication` badge in the documentation below.';
             $extraInfo = $this->config->get('auth.extra_info', '');
         }
 

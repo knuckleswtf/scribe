@@ -131,7 +131,7 @@ class WritingUtils
             return [$parameter.'[]' => $value[0]];
         }
 
-        // Transform maps
+        // Transform hashes
         $params = [];
         foreach ($value as $item => $itemValue) {
             if (is_array($itemValue)) {
