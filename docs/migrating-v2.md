@@ -72,7 +72,7 @@ Here's a comparison of the two, using `@bodyParam` as an example:
   
   - **New syntax**: 
   ```
-  @bodyParam cars integer[]`
+  @bodyParam cars integer[]
   ```
 
 
