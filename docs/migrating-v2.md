@@ -63,19 +63,45 @@ Here's a comparison of the two, using `@bodyParam` as an example:
 
 - To denote an array `cars` of elements of type `integer`.
   
-  **Old syntax**: `@bodyParam cars array` (optional) + `@bodyParam cars.* integer`.
+  - **Old syntax**:
   
-  **New syntax**: `@bodyParam cars integer[]`
+  ```
+  @bodyParam cars array
+  @bodyParam cars.* integer
+  ```
   
+  - **New syntax**: 
+  ```
+  @bodyParam cars integer[]`
+  ```
+
+
 - To denote an object `cars` with a field `name` of type `string`. No changes!
   
-  **Syntax**: `@bodyParam cars object` + `@bodyParam cars.name string`.
-  
+  - **Syntax**: 
+  ```
+  @bodyParam cars object
+  @bodyParam cars.name string
+  ```
+
+
 - To denote an array of objects `cars` with each item having field `name`.
   
-  **Old syntax**: `@bodyParam cars.* object` (optional) + `@bodyParam cars.*.name string`.
+  - **Old syntax**: 
+  ```
+  @bodyParam cars.* object
+  @bodyParam cars.*.name string
+  ```
   
-  **New syntax**: `@bodyParam cars object[]` + `@bodyParam cars[].name string`.
+  - **New syntax**: 
+  ```
+  @bodyParam cars object[]
+  @bodyParam cars[].name string
+  ```
+
+```eval_rst
+.. Important:: In the old syntax for objects and arrays of objects, the first line was optional. In the new syntax, both lines are required. 
+```
 
 **How to migrate:**
 You'll need to run a search through all your docblocks:

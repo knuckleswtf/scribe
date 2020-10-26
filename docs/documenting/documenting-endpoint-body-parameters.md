@@ -64,9 +64,26 @@ public function createPost(CreatePostRequest $request)
 ### Handling array and object parameters
 Sometimes you have body parameters that are arrays or objects. To handle them in `@bodyparam`, Scribe follows this convention:
 
-- To denote an array `cars` of elements of type `integer`: `@bodyParam cars integer[]`
-- To denote an object `cars` with a field `name` of type `string`: `@bodyParam cars object` + `@bodyParam cars.name string`.
-- To denote an array of objects `cars` with each item having field `name`: `@bodyParam cars object[]` + `@bodyParam cars[].name string`.
+- For arrays: use a single field with type `<type of items>[]`. For instance, to denote an array `cars` of elements of type `integer`:
+  ```
+  @bodyParam cars integer[]
+  ```
+  
+- For objects: you need a parent field with type `object` and an entry for each field, named with the dot notation `<parent name>.<field>`. For instance, to denote an object `cars` with a field `name` of type `string`:
+  ```
+  @bodyParam cars object
+  @bodyParam cars.name string
+  ```
+
+- For an array of objects, you need a parent field with type `object[]`, and an entry for each field, named with the dot notation `<parent name>[].<field>`. For instance, to denote an array of objects `cars` with each item having field `name`:
+  ```
+  @bodyParam cars object[]
+  @bodyParam cars[].name string
+  ```
+
+```eval_rst
+.. Important:: For objects and arrays of objects, both lines are required, otherwise you might run into strange errors.
+```
 
 ```php
 /**
