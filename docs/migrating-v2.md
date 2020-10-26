@@ -59,6 +59,8 @@ The old dot notation syntax was based on Laravel's validation syntax. However, i
 
 So we've switched to a new syntax. It uses some elements of the old, but is clearer and easier to work with, and is based on JSON semantics. We believe this should make the output more intuitive to an end user.
 
+Note that the new syntax only applies to docblocks. If you're using FormRequest validation rules, you don't need to worry about the parameter format. Scribe will transform those appropriately.
+
 Here's a comparison of the two, using `@bodyParam` as an example:
 
 - To denote an array `cars` of elements of type `integer`.
@@ -109,8 +111,6 @@ You'll need to run a search through all your docblocks:
 - Replace `.*` fields that have an `x` type with the correct `x[]` type field. 
 - `array` is no longer a valid type. Replace fields that have type `array` with the correct `x[]` type field.
 - Ensure there's a parent object for any object fields. For instance, you can't have a `car.make string` field without a `car object` field, or a  `dogs[].name string` field without a `dogs object[]`.
-
-If you're using FormRequests, you don't need to worry about those. Scribe will transform those appropriately.
 
 ### Types are now supported for URL and query parameters
 Previously, you couldn't specify types for URL and query parameters. The idea was that it didn't make sense, since they're all passed as strings in the URL anyway. But we've changed that. The thinking now is that these types can hold semantic information, which matters to your API consumers—even though they're strings in the URL, they have actual significance outside of that. You can now pass types for URL and query parameters.
