@@ -44,10 +44,10 @@
 <h3>
     Request&nbsp;&nbsp;&nbsp;
     @if($settings['interactive'])
-    <button type="button" style="background-color: #8fbcd4; padding: 5px 10px; border-radius 5px; border-width: thin;" id="btn-tryout-{{ $endpointId }}" onclick="tryItOut('{{ $endpointId }}');">Try it out ⚡</button>
+    <button type="button" style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;" id="btn-tryout-{{ $endpointId }}" onclick="tryItOut('{{ $endpointId }}');">Try it out ⚡</button>
     @endif
-    <button type="button" style="background-color: #c97a7e; padding: 5px 10px; border-radius 5px; border-width: thin;" id="btn-canceltryout-{{ $endpointId }}" onclick="cancelTryOut('{{ $endpointId }}');" hidden>Cancel</button>&nbsp;&nbsp;
-    <button type="submit" style="background-color: #6ac174; padding: 5px 10px; border-radius 5px; border-width: thin;" id="btn-executetryout-{{ $endpointId }}" hidden>Send Request 💥</button>
+    <button type="button" style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;" id="btn-canceltryout-{{ $endpointId }}" onclick="cancelTryOut('{{ $endpointId }}');" hidden>Cancel</button>&nbsp;&nbsp;
+    <button type="submit" style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;" id="btn-executetryout-{{ $endpointId }}" hidden>Send Request 💥</button>
 </h3>
 @foreach($route['methods'] as $method)
 <p>
