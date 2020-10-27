@@ -51,6 +51,17 @@ function cancelTryOut(endpointId) {
     }
 }
 
+function recursiveAddSearchParams(url, previousAppend, previousKey, obj) {
+    if (typeof obj === 'object') {
+        Object.keys(obj).forEach(objKey => {
+            const nextParam = !previousKey ? previousAppend : `${previousAppend}[${previousKey}]`;
+            recursiveAddSearchParams(url, nextParam, objKey, obj[objKey]);
+        });
+    } else {
+        url.searchParams.append(`${previousAppend}[${previousKey}]`, obj);
+    }
+}
+
 function makeAPICall(method, path, body, query, headers) {
     console.log({path, body, query, headers});
 
@@ -61,9 +72,7 @@ function makeAPICall(method, path, body, query, headers) {
     const url = new URL(window.baseUrl + '/' + path.replace(/^\//, ''));
     Object.keys(query).forEach(key => {
         if (typeof query[key] === 'object') {
-            Object.keys(query[key]).forEach(objKey => {
-                url.searchParams.append(`${key}[${objKey}]`, query[key][objKey]);
-            });
+            recursiveAddSearchParams(url, key, null, query[key]);
         } else {
             url.searchParams.append(key, query[key]);
         }
