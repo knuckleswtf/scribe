@@ -59,8 +59,15 @@ function makeAPICall(method, path, body, query, headers) {
     }
 
     const url = new URL(window.baseUrl + '/' + path.replace(/^\//, ''));
-    Object.keys(query)
-        .forEach(key => url.searchParams.append(key, query[key]));
+    Object.keys(query).forEach(key => {
+        if (typeof query[key] === 'object') {
+            Object.keys(query[key]).forEach(objKey => {
+                url.searchParams.append(`${key}[${objKey}]`, query[key][objKey]);
+            });
+        } else {
+            url.searchParams.append(key, query[key]);
+        }
+    });
 
     return fetch(url, {
         method,
