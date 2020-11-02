@@ -20,7 +20,7 @@
     "ext-fileinfo": "*",
     "ext-json": "*",
     "erusev/parsedown": "^1.7.4",
-    "fzaninotto/faker": "^1.9.1",
+    "fakerphp/faker": "^1.9.1",
     "illuminate/console": "^6.0|^7.0|^8.0",
     "illuminate/routing": "^6.0|^7.0|^8.0",
     "illuminate/support": "^6.0|^7.0|^8.0",
