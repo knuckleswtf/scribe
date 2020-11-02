@@ -46,7 +46,7 @@ php artisan vendor:publish --provider="Knuckles\Scribe\ScribeServiceProvider" --
 This will create a `scribe.php` file in your `config` folder.
 
 ### Lumen
-- When using Lumen, you will need to run `composer require knuckleswtf/scribe` instead (no `--dev`.
+- When using Lumen, you will need to run `composer require knuckleswtf/scribe` instead (no `--dev`).
 - Register the service provider in your `bootstrap/app.php`:
 
 ```php
