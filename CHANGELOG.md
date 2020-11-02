@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 2.0.3 (Monday, 2 November 2020)
+### Changes
+- Switch to fakerphp/faker (https://github.com/knuckleswtf/scribe/commit/bad1b1fe98ff50253d88cb2fece943e8f5e600f4)
+
 ## 2.0.2 (Friday, 30 October 2020)
 ### Fixes
 - Properly exclude package's routes when generating (https://github.com/knuckleswtf/scribe/commit/a57a7fe232e44894b5fe542463ff27a1cc9e6405)
