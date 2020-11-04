@@ -1,7 +1,9 @@
 # Migrating from mpociot/laravel-apidoc-generator to Scribe v1
 There's quite a few changes in Scribe, and this guide aims to show you the key parts you need to look out for so things don't break. After migrating, you should also check out the [list of new features](./whats-new.html).
 
-> Note: this guide describes how to migrate to Scribe version 1. Scribe 2 is the current release, so you should follow the [migration guide](./migrating-v2.html) for that when you're done with this.
+```eval_rst
+.. Important:: This guide describes how to migrate to Scribe version 1. Scribe 2 is the current release, so you should follow the `migration guide <./migrating-v2.html>`_ for that when you're done with this.
+```
 
 ## Requirements
 - PHP version: 7.2.5+
@@ -11,8 +13,13 @@ There's quite a few changes in Scribe, and this guide aims to show you the key p
 - Remove the old package and install the new one:
 
 ```bash
-composer remove mpociot/laravel-apidoc-generator 
-composer require --dev knuckleswtf/scribe 
+composer remove mpociot/laravel-apidoc-generator
+
+# For Laravel
+composer require --dev "knuckleswtf/scribe:^1.0.0" 
+
+# For Lumen
+composer require "knuckleswtf/scribe:^1.0.0" 
 ```
 
 - Publish the new config file: 
