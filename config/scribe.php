@@ -362,7 +362,11 @@ INTRO
     /**
      * [Advanced] If one of your app's database drivers does not support transactions,
      * docs generation (instantiating Eloquent models and making response calls) will likely fail.
-     * To avoid that, you can add the driver class name here. Be warned: that means all database changes will persist.
+     * We loop over all of your database connections and start a transaction if supported.
+     * Here you can list all of the connections you want us to start a transaction on.
+     * Typically you would list the name of every connection your database will connect to while running this command.
      */
-    'continue_without_database_transactions' => [],
+    'enable_transactions_for_database_connections'       => [
+        config('database.default')
+    ],
 ];

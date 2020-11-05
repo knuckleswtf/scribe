@@ -10,11 +10,12 @@ use Knuckles\Scribe\Tools\DocumentationConfig;
 
 trait DatabaseTransactionHelpers
 {
+
     private function startDbTransaction()
     {
-        $connections = array_keys(config('database.connections', []));
 
-        foreach ($connections as $connection) {
+
+        foreach (config('scribe.enable_transactions_for_database_connections', [config('database.default')]) as $connection) {
             try {
                 $driver = app('db')->connection($connection);
 
@@ -25,11 +26,6 @@ trait DatabaseTransactionHelpers
                 }
 
                 $driverClassName = get_class($driver);
-
-                if ($this->shouldAllowDatabasePersistence($driverClassName)) {
-                    throw DatabaseTransactionsNotSupported::create($connection, $driverClassName);
-                }
-
                 c::warn("Database driver [$driverClassName] for the connection [{$connection}] does not support transactions. Any changes made to your database will persist.");
             } catch (ScribeException $e) {
                 throw $e;
@@ -43,9 +39,8 @@ trait DatabaseTransactionHelpers
      */
     private function endDbTransaction()
     {
-        $connections = array_keys(config('database.connections', []));
+        foreach (config('scribe.enable_transactions_for_database_connections', [config('database.default')]) as $connection) {
 
-        foreach ($connections as $connection) {
             try {
                 $driver = app('db')->connection($connection);
 
@@ -67,7 +62,7 @@ trait DatabaseTransactionHelpers
         $methods = ['beginTransaction', 'rollback'];
 
         foreach ($methods as $method) {
-            if (! method_exists($driver, $method)) {
+            if (!method_exists($driver, $method)) {
                 return false;
             }
         }
@@ -76,24 +71,10 @@ trait DatabaseTransactionHelpers
     }
 
     /**
-     * Assesses whether drivers without transaction support can proceed
-     *
-     * @param string $driverClassName
-     *
-     * @return bool
-     */
-    private function shouldAllowDatabasePersistence(string $driverClassName): bool
-    {
-        $config = $this->getConfig();
-
-        $whitelistedDrivers = $config->get('continue_without_database_transactions', []);
-        return in_array($driverClassName, $whitelistedDrivers);
-    }
-
-    /**
      * Returns an instance of the documentation config
      *
      * @return DocumentationConfig
      */
     abstract public function getConfig();
+
 }
