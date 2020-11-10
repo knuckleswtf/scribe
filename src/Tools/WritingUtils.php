@@ -48,6 +48,9 @@ class WritingUtils
             if (!is_array($value)) {
                 $qs .= "$paramName=" . urlencode($value) . "&";
             } else {
+                if (count($value) == 0) {
+                    continue;
+                }
                 if (array_keys($value)[0] === 0) {
                     // List query param (eg filter[]=haha should become "filter[]": "haha")
                     $qs .= "$paramName" . '[]=' . urlencode($value[0]) . '&';
@@ -80,6 +83,9 @@ class WritingUtils
                 $output .= str_repeat(" ", $spacesIndentation);
                 $output .= "$startLinesWith$quote$parameter$quote$delimiter $quote$value$quote$endLinesWith\n";
             } else {
+                if (count($value) == 0) {
+                    continue;
+                }
                 if (array_keys($value)[0] === 0) {
                     // List query param (eg filter[]=haha should become "filter[]": "haha")
                     $output .= str_repeat(" ", $spacesIndentation);
