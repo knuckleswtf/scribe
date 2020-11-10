@@ -12,6 +12,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 2.1.0 (Tuesday, 10 November 2020)
+### Changes
+- tryitout.js will now include the current Scribe version number in its filename, for automatic cache busting (https://github.com/knuckleswtf/scribe/commit/69a643c47ad3756ba0a78e322b58df4955508f76)
+
+### Changes
+- Fixed bug where query param values that were objects were set as [object Object] in Try It Out url (https://github.com/knuckleswtf/scribe/commit/a507945c4da84f96feefd42967fb9c4d3b7f68e8)
+- Renamed internal property 'fields' to '__fields' to prevent possible clashes with a user-supplied field called 'fields'. (https://github.com/knuckleswtf/scribe/commit/72d530b18a8851412d771177c998779557ca2a68)
+- Don't crash when printing empty arrays or object for query params (https://github.com/knuckleswtf/scribe/commit/eaa820fe7c2f605d5fb8f9914f7a9e7b0e19efdd)
+
+
 ## 2.0.3 (Monday, 2 November 2020)
 ### Changes
 - Switch to fakerphp/faker (https://github.com/knuckleswtf/scribe/commit/bad1b1fe98ff50253d88cb2fece943e8f5e600f4)
