@@ -1,6 +1,6 @@
 
 @foreach($parameters as $name => $parameter)
-@if(!empty($parameter['fields']))
+@if(!empty($parameter['__fields']))
 <p>
 <details>
 <summary>
@@ -16,8 +16,8 @@
 @endcomponent
 </summary>
 <br>
-@foreach($parameter['fields'] as $subfieldName => $subfield)
-@if(!empty($subfield['fields']))
+@foreach($parameter['__fields'] as $subfieldName => $subfield)
+@if(!empty($subfield['__fields']))
 @component('scribe::partials.body-parameters', ['parameters' => [$subfieldName => $subfield], 'endpointId' => $endpointId,])
 @endcomponent
 @else

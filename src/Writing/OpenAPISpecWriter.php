@@ -460,8 +460,8 @@ class OpenAPISpecWriter
                     : ['type' => $baseType],
             ];
 
-            if ($baseType === 'object' && !empty($field['fields'])) {
-                foreach ($field['fields'] as $subfield) {
+            if ($baseType === 'object' && !empty($field['__fields'])) {
+                foreach ($field['__fields'] as $subfield) {
                     $fieldSimpleName = preg_replace("/^{$field['name']}\\[\]\\./", '', $subfield['name']);
                     $fieldData['items']['properties'][$fieldSimpleName] = $this->generateFieldData($subfield);
                     if ($subfield['required']) {
@@ -476,7 +476,7 @@ class OpenAPISpecWriter
                 'type' => 'object',
                 'description' => $field['description'] ?? '',
                 'example' => $field['value'] ?? null,
-                'properties' => collect($field['fields'])->mapWithKeys(function ($subfield) use ($field) {
+                'properties' => collect($field['__fields'])->mapWithKeys(function ($subfield) use ($field) {
                     return [preg_replace("/^{$field['name']}\\./", '', $subfield['name']) => $this->generateFieldData($subfield)];
                 })->all(),
             ];

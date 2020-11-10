@@ -397,7 +397,7 @@ class Generator
      * Transform body parameters such that object fields have a `fields` property containing a list of all subfields
      * Subfields will be removed from the main parameter map
      * For instance, if $parameters is ['dad' => [], 'dad.cars' => [], 'dad.age' => []],
-     * normalise this into ['dad' => [..., 'fields' => ['dad.cars' => [], 'dad.age' => []]]
+     * normalise this into ['dad' => [..., '__fields' => ['dad.cars' => [], 'dad.age' => []]]
      */
     public static function nestArrayAndObjectFields(array $parameters)
     {
@@ -409,14 +409,14 @@ class Generator
 
                 $fieldName = array_shift($parts);
 
-                $baseName = join('.fields.', array_reverse($parts));
+                $baseName = join('.__fields.', array_reverse($parts));
                 // The type should be indicated in the source object by now; we don't need it in the name
-                $normalisedBaseName = str_replace('[]', '.fields', $baseName);
+                $normalisedBaseName = str_replace('[]', '.__fields', $baseName);
 
-                $dotPath = preg_replace('/\.fields$/', '', $normalisedBaseName) . '.fields.' . $fieldName;
+                $dotPath = preg_replace('/\.__fields$/', '', $normalisedBaseName) . '.__fields.' . $fieldName;
                 Arr::set($finalParameters, $dotPath, $parameter);
             } else { // A regular field
-                $parameter['fields'] = [];
+                $parameter['__fields'] = [];
                 $finalParameters[$name] = $parameter;
             }
 
