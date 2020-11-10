@@ -12,7 +12,7 @@ There's a [Node.js version](https://github.com/knuckleswtf/scribe-js), too!
 
 [![Latest Stable Version](https://poser.pugx.org/knuckleswtf/scribe/v/stable)](https://packagist.org/packages/knuckleswtf/scribe) [![Total Downloads](https://poser.pugx.org/knuckleswtf/scribe/downloads)](https://packagist.org/packages/knuckleswtf/scribe) [![Build Status](https://travis-ci.com/knuckleswtf/scribe.svg?branch=master)](https://travis-ci.com/knuckleswtf/scribe)
 
-> 👋 Want to learn how to make friendly, testable, and maintainable API documentation? I made [a course](https://apidocsfordevs.com) for you!
+> 👋 Want to learn how to make friendly, testable, and maintainable API documentation? I made [a course](https://apidocsfordevs.com?utm_source=scribe-laravel&utm_medium=referral&utm_campaign=launch) for you! Get 40% off until 28 November with the code KICKASSDOCSYEAH.
 
 ## Features
 - Pretty HTML documentation page, with included code samples and friendly text

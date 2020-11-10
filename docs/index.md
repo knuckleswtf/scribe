@@ -13,7 +13,7 @@ There's a [Node.js version](https://github.com/knuckleswtf/scribe-js), too!
 ```
 
 ```eval_rst
-.. Tip:: 👋 Want to learn how to make friendly, testable, and maintainable API documentation? I made `a course <https://apidocsfordevs.com>`_ for you!
+.. Tip:: 👋 Want to learn how to make friendly, testable, and maintainable API documentation? I made `a course <https://apidocsfordevs.com?utm_source=scribe-laravel&utm_medium=referral&utm_campaign=launch>`_ for you! Get 40% off until 28 November with the code KICKASSDOCSYEAH.
 ```
 
 ## Features
