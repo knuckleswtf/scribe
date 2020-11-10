@@ -8,9 +8,11 @@
 
 Generate API documentation for humans from your Laravel codebase. [Here's what the output looks like](https://shalvah.me/TheCensorshipAPI/).
 
+There's a [Node.js version](https://github.com/knuckleswtf/scribe-js), too!
+
 [![Latest Stable Version](https://poser.pugx.org/knuckleswtf/scribe/v/stable)](https://packagist.org/packages/knuckleswtf/scribe) [![Total Downloads](https://poser.pugx.org/knuckleswtf/scribe/downloads)](https://packagist.org/packages/knuckleswtf/scribe) [![Build Status](https://travis-ci.com/knuckleswtf/scribe.svg?branch=master)](https://travis-ci.com/knuckleswtf/scribe)
 
-> Looking to document your Node.js APIs easily? Check out [Scribe for JS](https://github.com/knuckleswtf/scribe-js).
+> 👋 Want to learn how to make friendly, testable, and maintainable API documentation? I made [a course](https://apidocsfordevs.com) for you!
 
 ## Features
 - Pretty HTML documentation page, with included code samples and friendly text
@@ -25,7 +27,7 @@ Generate API documentation for humans from your Laravel codebase. [Here's what t
 - Easily extensible with custom strategies
 
 ## Documentation
-> Scribe is a fork of [mpociot/laravel-apidoc-generator](https://github.com/mpociot/laravel-apidoc-generator), so see the [migration guide](https://scribe.rtfd.io/en/latest/migrating.html) if you're coming from there.
+> See the [migration guide](https://scribe.rtfd.io/en/latest/migrating.html) if you're coming from [mpociot/laravel-apidoc-generator](https://github.com/mpociot/laravel-apidoc-generator).
 
 Check out the documentation at [ReadTheDocs](http://scribe.rtfd.io/).
 

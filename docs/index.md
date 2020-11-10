@@ -2,6 +2,7 @@
 
 Generate API documentation for humans from your Laravel/Lumen/[Dingo](https://github.com/dingo/api) codebase. [Here's what the output looks like](https://shalvah.me/TheCensorshipAPI/).
 
+There's a [Node.js version](https://github.com/knuckleswtf/scribe-js), too!
 
 ```eval_rst
 .. admonition:: Wondering where to start? Try one of these links:
@@ -12,7 +13,7 @@ Generate API documentation for humans from your Laravel/Lumen/[Dingo](https://gi
 ```
 
 ```eval_rst
-.. Tip:: Looking to document your Node.js APIs? Check out `Scribe for JS <https://github.com/knuckleswtf/scribe-js>`_.
+.. Tip:: 👋 Want to learn how to make friendly, testable, and maintainable API documentation? I made `a course <https://apidocsfordevs.com>`_ for you!
 ```
 
 ## Features
