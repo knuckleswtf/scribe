@@ -4,6 +4,7 @@ language: php
 env:
   global:
     - SETUP=stable
+    - LOWEST=6.0
     - COMPOSER_MEMORY_LIMIT=-1
 
 matrix:
@@ -19,7 +20,8 @@ matrix:
     - php: 7.3
       env: SETUP=lowest
     - php: 7.4
-      # No lowest for 7.4 because the lowest we support (Laravel 5.8) doesn't support 7.4
+    - php: 7.4
+      env: SETUP=lowest
 
 cache:
   directories:
@@ -29,9 +31,9 @@ before_install:
   - travis_retry composer self-update
 
 install:
-  - if [[ $SETUP = 'stable' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-stable --no-suggest; fi
-  - if [[ $SETUP = 'lowest' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-lowest --prefer-stable --no-suggest; fi
-  - if [[ $SETUP = 'lint' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-stable --no-suggest; composer lint -- --memory-limit 1G; fi
+  - if [[ $SETUP = 'stable' ]]; then travis_retry composer update --prefer-dist --prefer-stable; fi
+  - if [[ $SETUP = 'lowest' ]]; then travis_retry composer require laravel/framework:^$LOWEST; composer require laravel/lumen-framework:^$LOWEST; fi
+  - if [[ $SETUP = 'lint' ]]; then travis_retry composer update --prefer-dist --prefer-stable; composer lint; fi
 
 script:
   - if [[ $SETUP = 'lint' ]]; then exit 0; fi; composer test-parallel-ci;
