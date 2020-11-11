@@ -100,7 +100,6 @@ class TestController extends Controller
      */
     public function withFormDataParams()
     {
-        dump(request()->file('image')->isValid());
         request()->validate(['image' => 'file|required']);
         return [
             'filename' => request()->file('image')->getFilename(),
