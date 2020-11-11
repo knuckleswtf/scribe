@@ -19,7 +19,7 @@ class ErrorHandlingUtils
         } else if (!$completelySilent) {
             if ($e instanceof MultiReasonException) {
                 $message = join("\n", array_map(function (\Throwable $reason) {
-                    return $reason->getMessage();
+                    return get_class($reason).": ".$reason->getMessage();
                 }, $e->getReasons()));
             } else {
                 [$firstFrame, $secondFrame] = $e->getTrace();
