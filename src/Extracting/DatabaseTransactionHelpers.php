@@ -7,6 +7,8 @@ use Knuckles\Scribe\Exceptions\DatabaseTransactionsNotSupported;
 use Knuckles\Scribe\Exceptions\ScribeException;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\DocumentationConfig;
+use function Amp\ParallelFunctions\parallelMap;
+use function Amp\Promise\wait;
 
 trait DatabaseTransactionHelpers
 {
@@ -14,14 +16,14 @@ trait DatabaseTransactionHelpers
     {
         $connections = array_keys(config('database.connections', []));
 
-        foreach ($connections as $connection) {
+        wait(parallelMap($connections, function ($connection) {
             try {
                 $driver = app('db')->connection($connection);
 
                 if (self::driverSupportsTransactions($driver)) {
                     $driver->beginTransaction();
 
-                    continue;
+                    return;
                 }
 
                 $driverClassName = get_class($driver);
@@ -35,7 +37,7 @@ trait DatabaseTransactionHelpers
                 throw $e;
             } catch (Exception $e) {
             }
-        }
+        }));
     }
 
     /**
@@ -45,21 +47,21 @@ trait DatabaseTransactionHelpers
     {
         $connections = array_keys(config('database.connections', []));
 
-        foreach ($connections as $connection) {
+        wait(parallelMap($connections, function ($connection) {
             try {
                 $driver = app('db')->connection($connection);
 
                 if (self::driverSupportsTransactions($driver)) {
                     $driver->rollBack();
 
-                    continue;
+                    return;
                 }
 
                 $driverClassName = get_class($driver);
                 c::warn("Database driver [$driverClassName] for the connection [{$connection}] does not support transactions. Any changes made to your database have been persisted.");
             } catch (Exception $e) {
             }
-        }
+        }));
     }
 
     private static function driverSupportsTransactions($driver): bool

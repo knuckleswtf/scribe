@@ -19,6 +19,7 @@
     "php": ">=7.2.5",
     "ext-fileinfo": "*",
     "ext-json": "*",
+    "amphp/parallel-functions": "^1.0",
     "erusev/parsedown": "^1.7.4",
     "fakerphp/faker": "^1.9.1",
     "illuminate/console": "^6.0|^7.0|^8.0",
