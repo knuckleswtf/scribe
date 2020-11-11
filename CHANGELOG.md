@@ -12,6 +12,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 2.2.0 (Wednesday, 11 November 2020)
+Scribe is now **much** faster! In my tests, processing an application with about a dozen routes went from 4 minutes to 3 seconds. Fixed a pain point by using amphp/parallel-functions to start/stop database transactions for all connections in parallel. (https://github.com/knuckleswtf/scribe/commit/20980712e5ed46c059d1d4a2d67aee3051ef84c4)
+
 ## 2.1.0 (Tuesday, 10 November 2020)
 ### Changes
 - tryitout.js will now include the current Scribe version number in its filename, for automatic cache busting (https://github.com/knuckleswtf/scribe/commit/69a643c47ad3756ba0a78e322b58df4955508f76)
