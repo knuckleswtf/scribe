@@ -51,7 +51,7 @@ class RouteMatcher implements RouteMatcherInterface
 
         /** @var \Dingo\Api\Routing\Router $router */
         $router = app(\Dingo\Api\Routing\Router::class);
-        $allRouteCollections = app(\Dingo\Api\Routing\Router::class)->getRoutes();
+        $allRouteCollections = $router->getRoutes();
 
         return collect($allRouteCollections)
             ->flatMap(function (RouteCollection $collection) {

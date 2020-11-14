@@ -12,6 +12,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 2.2.1 (Saturday, 14 November 2020)
+### Fixes
+- Fixed errors with handling arrays of files (https://github.com/knuckleswtf/scribe/commit/b57eae26d048fb37833d6b47e98df47b0c5cf7b6)
+- Fixed errors with handling nested objects in arrays of objects (https://github.com/knuckleswtf/scribe/commit/13b15797e07ee2f7c3e558fc11ca6a4bddf4f264)
+- Fixed a little problem with escaped newlines in auth text (https://github.com/knuckleswtf/scribe/commit/a27d8c7aa9079b5f6b6155220639926aac2466f2)
+
+
 ## 2.2.0 (Wednesday, 11 November 2020)
 Scribe is now **much** faster! In my tests, processing an application with about a dozen routes went from 4 minutes to 3 seconds. Fixed a pain point by using amphp/parallel-functions to start/stop database transactions for all connections in parallel. (https://github.com/knuckleswtf/scribe/commit/20980712e5ed46c059d1d4a2d67aee3051ef84c4)
 
