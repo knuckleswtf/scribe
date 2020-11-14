@@ -461,8 +461,7 @@ class OpenAPISpecWriter
             ];
 
             if ($baseType === 'object' && !empty($field['__fields'])) {
-                foreach ($field['__fields'] as $subfield) {
-                    $fieldSimpleName = preg_replace("/^{$field['name']}\\[\]\\./", '', $subfield['name']);
+                foreach ($field['__fields'] as $fieldSimpleName => $subfield) {
                     $fieldData['items']['properties'][$fieldSimpleName] = $this->generateFieldData($subfield);
                     if ($subfield['required']) {
                         $fieldData['items']['required'][] = $fieldSimpleName;

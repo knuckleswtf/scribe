@@ -49,6 +49,8 @@ class RouteMatcher implements RouteMatcherInterface
             return RouteFacade::getRoutes();
         }
 
+        /** @var \Dingo\Api\Routing\Router $router */
+        $router = app(\Dingo\Api\Routing\Router::class);
         $allRouteCollections = app(\Dingo\Api\Routing\Router::class)->getRoutes();
 
         return collect($allRouteCollections)
