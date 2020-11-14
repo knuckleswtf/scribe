@@ -476,8 +476,8 @@ class OpenAPISpecWriter
                 'type' => 'object',
                 'description' => $field['description'] ?? '',
                 'example' => $field['value'] ?? null,
-                'properties' => collect($field['__fields'])->mapWithKeys(function ($subfield) use ($field) {
-                    return [preg_replace("/^{$field['name']}\\./", '', $subfield['name']) => $this->generateFieldData($subfield)];
+                'properties' => collect($field['__fields'])->mapWithKeys(function ($subfield, $subfieldName) use ($field) {
+                    return [$subfieldName => $this->generateFieldData($subfield)];
                 })->all(),
             ];
         } else {

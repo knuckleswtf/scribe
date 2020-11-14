@@ -298,16 +298,21 @@ class Generator
 
     public static function setObject(array &$results, string $path, $value, array $source, bool $isRequired)
     {
-        $parts = array_reverse(explode('.', $path));
+        $parts = explode('.', $path);
 
-        array_shift($parts); // Get rid of the field name
+        array_pop($parts); // Get rid of the field name
 
-        $baseName = join('.', array_reverse($parts));
-        // The type should be indicated in the source object by now; we don't need it in the name
-        $normalisedBaseName = Str::replaceLast('[]', '', $baseName);
+        $baseName = join('.', $parts);
+        // For array fields, the type should be indicated in the source object by now;
+        // eg test.items[] would actually be described as name: test.items, type: object[]
+        // So we get rid of that ending []
+        // For other fields (eg test.items[].name), it remains as-is
+        $baseNameInOriginalParams = Str::endsWith($baseName, '[]')
+            ? substr($baseName, 0, -2)
+            : $baseName;
 
-        $parentData = Arr::get($source, $normalisedBaseName);
-        if ($parentData) {
+        if (Arr::has($source, $baseNameInOriginalParams)) {
+            $parentData = Arr::get($source, $baseNameInOriginalParams);
             // Path we use for data_set
             $dotPath = str_replace('[]', '.0', $path);
             if ($parentData['type'] === 'object') {
@@ -405,17 +410,19 @@ class Generator
         foreach ($parameters as $name => $parameter) {
             if (Str::contains($name, '.')) { // Likely an object field
                 // Get the various pieces of the name
-                $parts = array_reverse(explode('.', $name));
+                $parts = explode('.', $name);
+                $fieldName = array_pop($parts);
+                $baseName = join('.__fields.', $parts);
 
-                $fieldName = array_shift($parts);
+                // For subfields, the type is indicated in the source object
+                // eg test.items[].more and test.items.more would both have parent field with name `items` and containing __fields => more
+                // The difference would be in the parent field's `type` property (object[] vs object)
+                // So we can get rid of all [] to get the parent name
+                $dotPathToParent = str_replace('[]', '', $baseName);
 
-                $baseName = join('.__fields.', array_reverse($parts));
-                // The type should be indicated in the source object by now; we don't need it in the name
-                $normalisedBaseName = str_replace('[]', '.__fields', $baseName);
-
-                $dotPath = preg_replace('/\.__fields$/', '', $normalisedBaseName) . '.__fields.' . $fieldName;
+                $dotPath = $dotPathToParent . '.__fields.' . $fieldName;
                 Arr::set($finalParameters, $dotPath, $parameter);
-            } else { // A regular field
+            } else { // A regular field, not a subfield of anything
                 $parameter['__fields'] = [];
                 $finalParameters[$name] = $parameter;
             }
