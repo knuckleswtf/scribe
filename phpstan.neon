@@ -15,3 +15,4 @@ parameters:
         - '#Instantiated class Whoops\\Exception\\Inspector not found\.#'
         - '#.+Dingo.+#'
         - '#Right side of && is always false.#'
+        - '#Function factory invoked with 1 parameter, 0 required.#'
