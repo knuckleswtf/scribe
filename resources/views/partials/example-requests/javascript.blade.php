@@ -23,12 +23,14 @@ let headers = {
 @if(count($route['fileParameters']))
 const body = new FormData();
 @foreach($route['cleanBodyParameters'] as $parameter => $value)
-@foreach( \Knuckles\Scribe\Tools\WritingUtils::getParameterNamesAndValuesForFormData($parameter,$value) as $key => $actualValue)
+@foreach( \Knuckles\Scribe\Tools\WritingUtils::getParameterNamesAndValuesForFormData($parameter, $value) as $key => $actualValue)
 body.append('{!! $key !!}', '{!! $actualValue !!}');
 @endforeach
 @endforeach
-@foreach($route['fileParameters'] as $parameter => $file)
-body.append('{!! $parameter !!}', document.querySelector('input[name="{!! $parameter !!}"]').files[0]);
+@foreach($route['fileParameters'] as $parameter => $value)
+@foreach( \Knuckles\Scribe\Tools\WritingUtils::getParameterNamesAndValuesForFormData($parameter, $value) as $key => $file)
+body.append('{!! $key !!}', document.querySelector('input[name="{!! $key !!}"]').files[0]);
+@endforeach
 @endforeach
 @elseif(count($route['cleanBodyParameters']))
 let body = {!! json_encode($route['cleanBodyParameters'], JSON_PRETTY_PRINT) !!}

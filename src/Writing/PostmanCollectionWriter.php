@@ -143,6 +143,10 @@ class PostmanCollectionWriter
                     $body[$inputMode][] = $params;
                 }
                 foreach ($endpoint['fileParameters'] as $key => $value) {
+                    while (is_array($value)) { // For arrays of files, just send the first one
+                        $key .= '[]';
+                        $value = $value[0];
+                    }
                     $params = [
                         'key' => $key,
                         'src' => [],

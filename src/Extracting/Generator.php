@@ -115,7 +115,8 @@ class Generator
             $parsedRoute['headers']['Content-Type'] = 'application/json';
         }
         [$files, $regularParameters] = collect($parsedRoute['cleanBodyParameters'])->partition(function ($example) {
-            return $example instanceof UploadedFile;
+            return $example instanceof UploadedFile
+                || (is_array($example) && !empty($example) && $example[0] instanceof UploadedFile);
         });
         if (count($files)) {
             $parsedRoute['headers']['Content-Type'] = 'multipart/form-data';

@@ -5,9 +5,11 @@ import json
 url = '{{ rtrim($baseUrl, '/') }}/{{ $route['boundUri'] }}'
 @if(count($route['fileParameters']))
 files = {
-@foreach($route['fileParameters'] as $name => $file)
-  '{!! $name !!}': open('{!! $file->path() !!}', 'rb')@if(!($loop->last)),
+@foreach($route['fileParameters'] as $parameter => $value)
+@foreach(\Knuckles\Scribe\Tools\WritingUtils::getParameterNamesAndValuesForFormData($parameter, $value) as $key => $file)
+  '{!! $key !!}': open('{!! $file->path() !!}', 'rb')@if(!($loop->last)),
 @endif
+@endforeach
 @endforeach
 
 }
