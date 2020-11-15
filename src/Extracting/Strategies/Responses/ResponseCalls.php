@@ -325,7 +325,7 @@ class ResponseCalls extends Strategy
             $kernel->terminate($request, $response);
         } else {
             // Handle the request using the Lumen application.
-            /** @var \Laravel\Lumen\Application $kernel */
+            /** @var \Laravel\Lumen\Application $app */
             $app = app();
             $app->bind('request', function () use ($request) {
                 return $request;

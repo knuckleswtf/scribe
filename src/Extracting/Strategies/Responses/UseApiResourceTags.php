@@ -131,7 +131,7 @@ class UseApiResourceTags extends Strategy
         /** @var Response $response */
         $response = $resource->toResponse(
             // Set the route properly so it works for users who have code that checks for the route.
-            $request->setRouteResolver(function () use ($request, $route) {
+            $request->setRouteResolver(function () use ($route) {
                 return $route;
             })
         );

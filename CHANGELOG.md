@@ -12,6 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 2.3.0 (Sunday, 15 November 2020)
+### Changes
+- Create and bind the current request globally in ApiResource strategy so accessing `request()` works (https://github.com/knuckleswtf/scribe/commit/cb3fa1fa4c09447c65650a4ad7dff9e969f344c8)
+- Bind the form request in route in FormRequest strategy (https://github.com/knuckleswtf/scribe/commit/de67b760daf149fbfbf379531567eb89ea6ae198)
+
 ## 2.2.1 (Saturday, 14 November 2020)
 ### Fixes
 - Fixed errors with handling arrays of files (https://github.com/knuckleswtf/scribe/commit/b57eae26d048fb37833d6b47e98df47b0c5cf7b6)
