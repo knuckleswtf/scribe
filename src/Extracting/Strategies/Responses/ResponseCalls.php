@@ -65,7 +65,7 @@ class ResponseCalls extends Strategy
         $hardcodedFileParams = collect($hardcodedFileParams)->map(function ($filePath) {
             $fileName = basename($filePath);
             return new UploadedFile(
-                $filePath, $fileName, mime_content_type($filePath), 0,false
+                $filePath, $fileName, mime_content_type($filePath), 0, false
             );
         })->toArray();
         $fileParameters = array_merge($context['fileParameters'] ?? [], $hardcodedFileParams);
@@ -187,7 +187,7 @@ class ResponseCalls extends Strategy
         // set URL and query parameters
         $uri = $request->getRequestUri();
         $query = $request->getQueryString();
-        if (! empty($query)) {
+        if (!empty($query)) {
             $uri .= "?$query";
         }
 
@@ -198,7 +198,7 @@ class ResponseCalls extends Strategy
 
         // the response from the Dingo dispatcher is the 'raw' response from the controller,
         // so we have to ensure it's JSON first
-        if (! $response instanceof Response) {
+        if (!$response instanceof Response) {
             $response = response()->json($response);
         }
 
@@ -311,21 +311,26 @@ class ResponseCalls extends Strategy
     /**
      * @param Request $request
      *
+     * @return \Symfony\Component\HttpFoundation\Response
      * @throws Exception
      *
-     * @return \Symfony\Component\HttpFoundation\Response
      */
     protected function callLaravelOrLumenRoute(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         // Confirm we're running in Laravel, not Lumen
         if (app()->bound(Kernel::class)) {
+            /** @var \Illuminate\Foundation\Http\Kernel $kernel */
             $kernel = app(Kernel::class);
             $response = $kernel->handle($request);
             $kernel->terminate($request, $response);
         } else {
             // Handle the request using the Lumen application.
-            $kernel = app();
-            $response = $kernel->handle($request);
+            /** @var \Laravel\Lumen\Application $kernel */
+            $app = app();
+            $app->bind('request', function () use ($request) {
+                return $request;
+            });
+            $response = $app->handle($request);
         }
 
         return $response;
@@ -346,7 +351,7 @@ class ResponseCalls extends Strategy
 
         // Don't attempt a response call if there are already successful responses
         $successResponses = collect($context['responses'] ?? [])->filter(function ($response) {
-            return ((string) $response['status'])[0] == '2';
+            return ((string)$response['status'])[0] == '2';
         })->count();
         if ($successResponses) {
             return false;
@@ -371,7 +376,7 @@ class ResponseCalls extends Strategy
     /**
      * Transform headers array to array of $_SERVER vars with HTTP_* format.
      *
-     * @param  array  $headers
+     * @param array $headers
      *
      * @return array
      */
@@ -381,7 +386,7 @@ class ResponseCalls extends Strategy
         $prefix = 'HTTP_';
         foreach ($headers as $name => $value) {
             $name = strtr(strtoupper($name), '-', '_');
-            if (! Str::startsWith($name, $prefix) && $name !== 'CONTENT_TYPE') {
+            if (!Str::startsWith($name, $prefix) && $name !== 'CONTENT_TYPE') {
                 $name = $prefix . $name;
             }
             $server[$name] = $value;
