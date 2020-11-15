@@ -24,8 +24,8 @@ class TestUserApiResource extends JsonResource
             }),
         ];
 
-        if($request->route()->named('test')) {
-            $result['test'] = true;
+        if($request->route()->named('someone')) {
+            return ['someone' => true];
         }
 
         if ($this['state1'] && $this['random-state']) {

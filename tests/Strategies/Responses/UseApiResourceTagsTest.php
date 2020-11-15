@@ -5,10 +5,10 @@ namespace Knuckles\Scribe\Tests\Strategies\Responses;
 use Illuminate\Routing\Route;
 use Knuckles\Scribe\Extracting\Strategies\Responses\UseApiResourceTags;
 use Knuckles\Scribe\ScribeServiceProvider;
+use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tests\Fixtures\TestUser;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\Utils;
-use Mockery;
 use Mpociot\Reflection\DocBlock\Tag;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Orchestra\Testbench\TestCase;
@@ -53,11 +53,7 @@ use Orchestra\Testbench\TestCase;
     {
         $config = new DocumentationConfig([]);
 
-        $route = Mockery::mock(Route::class);
-        $route->shouldReceive('named')
-            ->once()
-            ->with('test')
-            ->andReturn(true);
+        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
 
         $strategy = new UseApiResourceTags($config);
         $tags = [
@@ -74,7 +70,33 @@ use Orchestra\Testbench\TestCase;
                         'id' => 4,
                         'name' => 'Tested Again',
                         'email' => 'a@b.com',
-                        'test' => true
+                    ],
+                ]),
+            ],
+        ], $results);
+    }
+
+    /** @test */
+    public function properly_binds_route_and_request_when_fetching_apiresource_response()
+    {
+        $config = new DocumentationConfig([]);
+
+        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+        $route->name('someone');
+
+        $strategy = new UseApiResourceTags($config);
+        $tags = [
+            new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
+            new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser'),
+        ];
+        $results = $strategy->getApiResourceResponse($tags, $route);
+
+        $this->assertArraySubset([
+            [
+                'status' => 200,
+                'content' => json_encode([
+                    'data' => [
+                        'someone' => true,
                     ],
                 ]),
             ],
@@ -86,11 +108,7 @@ use Orchestra\Testbench\TestCase;
     {
         $config = new DocumentationConfig([]);
 
-        $route = Mockery::mock(Route::class);
-        $route->shouldReceive('named')
-            ->once()
-            ->with('test')
-            ->andReturn(true);
+        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
 
         $strategy = new UseApiResourceTags($config);
         $tags = [
@@ -107,7 +125,6 @@ use Orchestra\Testbench\TestCase;
                         'id' => 4,
                         'name' => 'Tested Again',
                         'email' => 'a@b.com',
-                        'test' => true,
                         'state1' => true,
                         'random-state' => true,
                     ],
@@ -129,11 +146,7 @@ use Orchestra\Testbench\TestCase;
 
             $config = new DocumentationConfig([]);
 
-            $route = Mockery::mock(Route::class);
-            $route->shouldReceive('named')
-                ->times(2)
-                ->with('test')
-                ->andReturn(true);
+            $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
 
             $strategy = new UseApiResourceTags($config);
             $tags = [
@@ -155,10 +168,8 @@ use Orchestra\Testbench\TestCase;
                                     'id' => 5,
                                     'name' => 'Tested Again',
                                     'email' => 'a@b.com',
-                                    "test" => true
                                 ],
                             ],
-                            "test" => true
                         ],
                     ]),
                 ],
@@ -177,12 +188,7 @@ use Orchestra\Testbench\TestCase;
             });
             $config = new DocumentationConfig([]);
 
-            // Creating a mock route so we can test that the route is set properly during resolution
-            $route = Mockery::mock(Route::class);
-            $route->shouldReceive('named')
-                ->times(2)
-                ->with('test')
-                ->andReturn(true);
+            $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
 
             $strategy = new UseApiResourceTags($config);
             $tags = [
@@ -204,10 +210,8 @@ use Orchestra\Testbench\TestCase;
                                     'id' => 5,
                                     'name' => 'Tested Again',
                                     'email' => 'a@b.com',
-                                    'test' => true
                                 ],
                             ],
-                            'test' => true
                         ],
                     ]),
                 ],
@@ -219,11 +223,7 @@ use Orchestra\Testbench\TestCase;
     {
         $config = new DocumentationConfig([]);
 
-        $route = Mockery::mock(Route::class);
-        $route->shouldReceive('named')
-            ->times(2)
-            ->with('test')
-            ->andReturn(true);
+        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
 
         $strategy = new UseApiResourceTags($config);
         $tags = [
@@ -241,13 +241,11 @@ use Orchestra\Testbench\TestCase;
                             'id' => 4,
                             'name' => 'Tested Again',
                             'email' => 'a@b.com',
-                            'test' => true,
                         ],
                         [
                             'id' => 4,
                             'name' => 'Tested Again',
                             'email' => 'a@b.com',
-                            'test' => true,
                         ],
                     ],
                 ]),
@@ -260,11 +258,7 @@ use Orchestra\Testbench\TestCase;
     {
         $config = new DocumentationConfig([]);
 
-        $route = Mockery::mock(Route::class);
-        $route->shouldReceive('named')
-            ->times(3)
-            ->with('test')
-            ->andReturn(true);
+        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
 
         $strategy = new UseApiResourceTags($config);
         $tags = [
@@ -282,19 +276,16 @@ use Orchestra\Testbench\TestCase;
                             'id' => 4,
                             'name' => 'Tested Again',
                             'email' => 'a@b.com',
-                            'test' => true
                         ],
                         [
                             'id' => 4,
                             'name' => 'Tested Again',
                             'email' => 'a@b.com',
-                            'test' => true
                         ],
                     ],
                     'links' => [
                         'self' => 'link-value',
                     ],
-                    'test' => true,
                 ]),
             ],
         ], $results);
@@ -305,11 +296,7 @@ use Orchestra\Testbench\TestCase;
     {
         $config = new DocumentationConfig([]);
 
-        $route = Mockery::mock(Route::class);
-        $route->shouldReceive('named')
-            ->times(2)
-            ->with('test')
-            ->andReturn(true);
+        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
 
         $strategy = new UseApiResourceTags($config);
         $tags = [
@@ -327,7 +314,6 @@ use Orchestra\Testbench\TestCase;
                             'id' => 4,
                             'name' => 'Tested Again',
                             'email' => 'a@b.com',
-                            'test' => true,
                         ],
                     ],
                     'links' => [
@@ -337,7 +323,6 @@ use Orchestra\Testbench\TestCase;
                         "prev" => null,
                         "next" => '/?page=2',
                     ],
-                    'test' => true,
                     "meta" => [
                         "current_page" => 1,
                         "from" => 1,

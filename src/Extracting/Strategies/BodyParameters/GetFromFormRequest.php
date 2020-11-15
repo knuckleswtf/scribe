@@ -4,6 +4,7 @@ namespace Knuckles\Scribe\Extracting\Strategies\BodyParameters;
 
 use Dingo\Api\Http\FormRequest as DingoFormRequest;
 use Illuminate\Foundation\Http\FormRequest as LaravelFormRequest;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
@@ -13,6 +14,7 @@ use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Extracting\ValidationRuleDescriptionParser as d;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
+use Knuckles\Scribe\Tools\Utils;
 use Knuckles\Scribe\Tools\WritingUtils as w;
 use ReflectionClass;
 use ReflectionException;

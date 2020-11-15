@@ -22,10 +22,6 @@ class TestUserApiResourceCollection extends ResourceCollection
             ],
         ];
 
-        if($request->route()->named('test')) {
-            $data['test'] = true;
-        }
-
         return $data;
     }
 }

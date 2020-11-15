@@ -50,7 +50,7 @@ class UseApiResourceTags extends Strategy
 
         try {
             $this->startDbTransaction();
-            return $this->getApiResourceResponse($methodDocBlock->getTags(), $route);
+            return $this->getApiResourceResponse($methodDocBlock->getTags(), $route, $alreadyExtractedData);
         } catch (Exception $e) {
             c::warn('Exception thrown when fetching Eloquent API resource response for [' . implode(',', $route->methods) . "] {$route->uri}.");
             e::dumpExceptionIfVerbose($e);
@@ -68,10 +68,12 @@ class UseApiResourceTags extends Strategy
      *
      * @param \Illuminate\Routing\Route $route
      *
+     * @param array $alreadyExtractedData
+     *
      * @return array|null
-     * @throws \Exception
+     * @throws Exception
      */
-    public function getApiResourceResponse(array $tags, Route $route)
+    public function getApiResourceResponse(array $tags, Route $route, array $alreadyExtractedData = [])
     {
         if (empty($apiResourceTag = $this->getApiResourceTag($tags))) {
             return null;
@@ -118,15 +120,19 @@ class UseApiResourceTags extends Strategy
                 : $apiResourceClass::collection($list);
         }
 
+        $uri = Utils::getUrlWithBoundParameters($route, $alreadyExtractedData['cleanUrlParameters'] ?? []);
+        $method = array_diff($route->methods(), ['HEAD'])[0];
+        $request = Request::create($uri, $method);
+        $request->headers->add(['Accept' => 'application/json']);
+        app()->bind('request', function () use ($request) {
+            return $request;
+        });
 
-        /** @var Request $request */
-        $request = app(Request::class);
         /** @var Response $response */
         $response = $resource->toResponse(
             // Set the route properly so it works for users who have code that checks for the route.
             $request->setRouteResolver(function () use ($request, $route) {
-                // Also need to bind the request to the route in case their code tries to inspect current request
-                return $route->bind($request);
+                return $route;
             })
         );
 
