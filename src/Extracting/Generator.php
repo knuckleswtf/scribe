@@ -308,9 +308,10 @@ class Generator
         // eg test.items[] would actually be described as name: test.items, type: object[]
         // So we get rid of that ending []
         // For other fields (eg test.items[].name), it remains as-is
-        $baseNameInOriginalParams = Str::endsWith($baseName, '[]')
-            ? substr($baseName, 0, -2)
-            : $baseName;
+        $baseNameInOriginalParams = $baseName;
+        while (Str::endsWith($baseNameInOriginalParams, '[]')) {
+            $baseNameInOriginalParams = substr($baseNameInOriginalParams, 0, -2);
+        }
 
         if (Arr::has($source, $baseNameInOriginalParams)) {
             $parentData = Arr::get($source, $baseNameInOriginalParams);
