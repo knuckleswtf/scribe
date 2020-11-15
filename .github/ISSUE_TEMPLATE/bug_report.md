@@ -23,7 +23,7 @@ instead of...
 **My environment:**
  - PHP version (from `php -v`): 
  - Framework (Laravel/Lumen):
- - Laravel/Lumen version (from `composer show laravel/framework` or `composer show lumen/framework`): 
+ - Laravel/Lumen version (from `composer show laravel/framework` or `composer show laravel/lumen-framework`): 
  - Scribe version (from `composer show knuckleswtf/scribe`): 
 
 **My Scribe config (minus the comments):**
