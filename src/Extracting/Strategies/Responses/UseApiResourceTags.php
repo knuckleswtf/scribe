@@ -67,6 +67,7 @@ class UseApiResourceTags extends Strategy
      * @param Tag[] $tags
      *
      * @param \Illuminate\Routing\Route $route
+     *
      * @return array|null
      * @throws \Exception
      */
@@ -118,10 +119,16 @@ class UseApiResourceTags extends Strategy
         }
 
 
+        /** @var Request $request */
+        $request = app(Request::class);
         /** @var Response $response */
-        $response = $resource->toResponse(app(Request::class)->setRouteResolver(function () use ($route) {
-            return $route;
-        }));
+        $response = $resource->toResponse(
+            // Set the route properly so it works for users who have code that checks for the route.
+            $request->setRouteResolver(function () use ($request, $route) {
+                // Also need to bind the request to the route in case their code tries to inspect current request
+                return $route->bind($request);
+            })
+        );
 
         return [
             [
@@ -189,7 +196,7 @@ class UseApiResourceTags extends Strategy
 
             $factory = Utils::getModelFactory($type, $factoryStates);
             try {
-                $model =  $factory->create();
+                $model = $factory->create();
                 $model->load($relations);
 
                 return $model;

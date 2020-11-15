@@ -60,9 +60,10 @@ class GetFromFormRequest extends Strategy
                 || (class_exists(DingoFormRequest::class) && $parameterClass->isSubclassOf(DingoFormRequest::class))) {
                 /** @var LaravelFormRequest|DingoFormRequest $formRequest */
                 $formRequest = new $parameterClassName;
-                // Set the route properly so it works for people who have code that checks for the route.
-                $formRequest->setRouteResolver(function () use ($route) {
-                    return $route;
+                // Set the route properly so it works for users who have code that checks for the route.
+                $formRequest->setRouteResolver(function () use ($formRequest, $route) {
+                    // Also need to bind the request to the route in case their code tries to inspect current request
+                    return $route->bind($formRequest);
                 });
                 $bodyParametersFromFormRequest = $this->getBodyParametersFromValidationRules(
                     $this->getRouteValidationRules($formRequest),
