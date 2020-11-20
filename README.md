@@ -6,13 +6,11 @@
 
 > Still on v1? Here's the [v2 migration guide](https://scribe.rtfd.io/en/latest/migrating-v2.html).
 
-Generate API documentation for humans from your Laravel codebase. [Here's what the output looks like](https://shalvah.me/TheCensorshipAPI/).
-
-There's a [Node.js version](https://github.com/knuckleswtf/scribe-js), too!
+Generate API documentation for humans from your Laravel codebase. [Here's what the output looks like](https://shalvah.me/TheCensorshipAPI/). There's a [Node.js version](https://github.com/knuckleswtf/scribe-js), too!
 
 [![Latest Stable Version](https://poser.pugx.org/knuckleswtf/scribe/v/stable)](https://packagist.org/packages/knuckleswtf/scribe) [![Total Downloads](https://poser.pugx.org/knuckleswtf/scribe/downloads)](https://packagist.org/packages/knuckleswtf/scribe) [![Build Status](https://travis-ci.com/knuckleswtf/scribe.svg?branch=master)](https://travis-ci.com/knuckleswtf/scribe)
 
-> 👋 Want to learn how to make friendly, testable, and maintainable API documentation? I made [a course](https://apidocsfordevs.com?utm_source=scribe-laravel&utm_medium=referral&utm_campaign=launch) for you! Get 40% off until 28 November with the code KICKASSDOCSYEAH.
+> 👋 Scribe helps you generate docs automatically, but if you really want to make friendly, maintainable and testable API docs, there's a few more things you need to know. So we made [a course](https://apidocsfordevs.com?utm_source=scribe-laravel&utm_medium=referral&utm_campaign=launch) for you. And it's 40% off until 30 November with.
 
 ## Features
 - Pretty HTML documentation page, with included code samples and friendly text
