@@ -47,7 +47,7 @@ class ValidationRuleDescriptionParser
             $description = str_replace($placeholder, $argument, $description);
         }
 
-        $description = str_replace("The :attribute", "The value", $description);
+        $description = str_replace(":attribute", "value", $description);
 
         return $description;
     }
