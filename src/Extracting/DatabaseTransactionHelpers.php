@@ -83,7 +83,7 @@ trait DatabaseTransactionHelpers
 
         $excludedDrivers = $this->getConfig()->get('continue_without_database_transactions', []);
         if (count($excludedDrivers)) {
-            c::deprecated('`continue_without_database_transactions`', 'use `database_connections_to_transact`');
+            c::deprecated('`continue_without_database_transactions`', '2.4.0', 'use `database_connections_to_transact`');
         }
 
         return Globals::$excludedDbDrivers = $excludedDrivers;
