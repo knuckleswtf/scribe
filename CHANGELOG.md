@@ -12,6 +12,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 2.4.0 (Monday, 30 November 2020)
+Turns out 2.2.0 wasn't really working.😕 This version fixes that, but introduces a behaviour change, so it may be a breaking change.
+
+This version introduces the config key `database_connections_to_transact` (and deprecates `continue_without_database_transactions`). To enable database transactions for a connection, add it to `database_connections_to_transact`; To skip it, remove it. By default `database_connections_to_transact` is set to `config('database.default')`, so most people shouldn't need to do anything.
+
+Commit: https://github.com/knuckleswtf/scribe/commit/5c51486a138b831aa9b6bad549dace80bfcc3e5d
+
 ## 2.3.0 (Sunday, 15 November 2020)
 ### Changes
 - Create and bind the current request globally in ApiResource strategy so accessing `request()` works (https://github.com/knuckleswtf/scribe/commit/cb3fa1fa4c09447c65650a4ad7dff9e969f344c8)
