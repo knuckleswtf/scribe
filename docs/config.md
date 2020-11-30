@@ -251,7 +251,7 @@ By default, this is set to your default database connection (`[config('database.
 
 ```php
 'database_connections_to_transact' => [
-    config('database.default),
+    config('database.default'),
     'pgsql',
 ],
 ```

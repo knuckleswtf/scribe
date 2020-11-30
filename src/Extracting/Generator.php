@@ -408,9 +408,32 @@ class Generator
      */
     public static function nestArrayAndObjectFields(array $parameters)
     {
-        $finalParameters = [];
+        // First, we'll make sure all object fields have parent fields properly set
+        $normalisedParameters = [];
         foreach ($parameters as $name => $parameter) {
-            if (Str::contains($name, '.')) { // Likely an object field
+            if (Str::contains($name, '.')) {
+                // Get the various pieces of the name
+                $parts = explode('.', $name);
+                $fieldName = array_pop($parts);
+
+                // If the user didn't add a parent field, we'll conveniently add it for them
+                $parentName = rtrim(join('.', $parts), '[]');
+                if (empty($parameters[$parentName])) {
+                    $normalisedParameters[$parentName] = [
+                        "name" => $parentName,
+                        "type" => "object",
+                        "description" => "",
+                        "required" => false,
+                        "value" => [$fieldName => $parameter['value']],
+                    ];
+                }
+            }
+            $normalisedParameters[$name] = $parameter;
+        }
+
+        $finalParameters = [];
+        foreach ($normalisedParameters as $name => $parameter) {
+            if (Str::contains($name, '.')) { // An object field
                 // Get the various pieces of the name
                 $parts = explode('.', $name);
                 $fieldName = array_pop($parts);
@@ -425,6 +448,9 @@ class Generator
                 $dotPath = $dotPathToParent . '.__fields.' . $fieldName;
                 Arr::set($finalParameters, $dotPath, $parameter);
             } else { // A regular field, not a subfield of anything
+                // Note: we're assuming any subfields of this field are listed *after* it,
+                // and will set __fields correctly when we iterate over them
+                // Hence why we create a new "normalisedParameters" array above and push the parent to that first
                 $parameter['__fields'] = [];
                 $finalParameters[$name] = $parameter;
             }
