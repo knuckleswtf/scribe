@@ -46,8 +46,9 @@ class UseTransformerTags extends Strategy
         /** @var DocBlock $methodDocBlock */
         $methodDocBlock = $docBlocks['method'];
 
+        $this->startDbTransaction();
+
         try {
-            $this->startDbTransaction();
             return $this->getTransformerResponse($methodDocBlock->getTags());
         } catch (Exception $e) {
             c::warn('Exception thrown when fetching transformer response for [' . implode(',', $route->methods) . "] {$route->uri}.");

@@ -13,7 +13,7 @@
 <script>
     var baseUrl = "{{ $baseUrl }}";
 </script>
-<script src="js/tryitout-{{ \Knuckles\Scribe\Tools\Flags::SCRIBE_VERSION }}.js"></script>
+<script src="js/tryitout-{{ \Knuckles\Scribe\Tools\Globals::SCRIBE_VERSION }}.js"></script>
 @endif
 
 > Base URL

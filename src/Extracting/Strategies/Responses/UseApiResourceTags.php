@@ -48,8 +48,9 @@ class UseApiResourceTags extends Strategy
         /** @var DocBlock $methodDocBlock */
         $methodDocBlock = $docBlocks['method'];
 
+        $this->startDbTransaction();
+
         try {
-            $this->startDbTransaction();
             return $this->getApiResourceResponse($methodDocBlock->getTags(), $route, $alreadyExtractedData);
         } catch (Exception $e) {
             c::warn('Exception thrown when fetching Eloquent API resource response for [' . implode(',', $route->methods) . "] {$route->uri}.");

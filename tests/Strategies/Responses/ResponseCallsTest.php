@@ -29,6 +29,12 @@ class ResponseCallsTest extends TestCase
         return $providers;
     }
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        config(['scribe.database_connections_to_transact' => []]);
+    }
+
     /** @test */
     public function can_call_route_and_fetch_response()
     {

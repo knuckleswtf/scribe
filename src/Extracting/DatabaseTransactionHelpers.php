@@ -2,39 +2,46 @@
 
 namespace Knuckles\Scribe\Extracting;
 
-use Exception;
 use Knuckles\Scribe\Exceptions\DatabaseTransactionsNotSupported;
 use Knuckles\Scribe\Exceptions\ScribeException;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\DocumentationConfig;
-use function Amp\ParallelFunctions\parallelMap;
-use function Amp\Promise\wait;
+use Knuckles\Scribe\Tools\Globals;
+use PDOException;
 
 trait DatabaseTransactionHelpers
 {
+    private function connectionsToTransact()
+    {
+        return $this->getConfig()->get('database_connections_to_transact', []);
+    }
+
     private function startDbTransaction()
     {
-        $connection = config('database.default', 'mysql');
+        $database = app('db');
 
-        try {
-            $driver = app('db')->connection($connection);
+        $excludedDrivers = $this->excludedDrivers();
+        foreach ($this->connectionsToTransact() as $connection) {
+            $driver = $database->connection($connection);
 
             if (self::driverSupportsTransactions($driver)) {
-                $driver->beginTransaction();
-
-                return;
-            }
-
-            $driverClassName = get_class($driver);
-
-            if ($this->shouldAllowDatabasePersistence($driverClassName)) {
+                try {
+                    if (in_array(get_class($driver), $excludedDrivers)) {
+                        continue;
+                    }
+                    $driver->beginTransaction();
+                } catch (PDOException $e) {
+                    throw new \Exception(
+                        "Failed to connect to database connection '$connection'." .
+                        " Is the database running?" .
+                        " If you aren't using this database, remove it from the `database_connections_to_transact` config array."
+                    );
+                }
+                continue;
+            } else {
+                $driverClassName = get_class($driver);
                 throw DatabaseTransactionsNotSupported::create($connection, $driverClassName);
             }
-
-            c::warn("Database driver [$driverClassName] for the connection [{$connection}] does not support transactions. Any changes made to your database will persist.");
-        } catch (ScribeException $e) {
-            throw $e;
-        } catch (Exception $e) {
         }
     }
 
@@ -43,20 +50,15 @@ trait DatabaseTransactionHelpers
      */
     private function endDbTransaction()
     {
-        $connection = config('database.default', 'mysql');
+        $database = app('db');
 
-        try {
-            $driver = app('db')->connection($connection);
-
-            if (self::driverSupportsTransactions($driver)) {
-                $driver->rollBack();
-
-                return;
+        foreach ($this->connectionsToTransact() as $connection) {
+            $driver = $database->connection($connection);
+            try {
+                $driver->rollback();
+            } catch (\Exception $e) {
+                // Any error handling should have been done on the startDbTransaction() side
             }
-
-            $driverClassName = get_class($driver);
-            c::warn("Database driver [$driverClassName] for the connection [{$connection}] does not support transactions. Any changes made to your database have been persisted.");
-        } catch (Exception $e) {
         }
     }
 
@@ -65,7 +67,7 @@ trait DatabaseTransactionHelpers
         $methods = ['beginTransaction', 'rollback'];
 
         foreach ($methods as $method) {
-            if (! method_exists($driver, $method)) {
+            if (!method_exists($driver, $method)) {
                 return false;
             }
         }
@@ -73,19 +75,18 @@ trait DatabaseTransactionHelpers
         return true;
     }
 
-    /**
-     * Assesses whether drivers without transaction support can proceed
-     *
-     * @param string $driverClassName
-     *
-     * @return bool
-     */
-    private function shouldAllowDatabasePersistence(string $driverClassName): bool
+    private function excludedDrivers(): array
     {
-        $config = $this->getConfig();
+        if (!is_null(Globals::$excludedDbDrivers)) {
+            return Globals::$excludedDbDrivers;
+        }
 
-        $whitelistedDrivers = $config->get('continue_without_database_transactions', []);
-        return in_array($driverClassName, $whitelistedDrivers);
+        $excludedDrivers = $this->getConfig()->get('continue_without_database_transactions', []);
+        if (count($excludedDrivers)) {
+            c::deprecated('`continue_without_database_transactions`', 'use `database_connections_to_transact`');
+        }
+
+        return Globals::$excludedDbDrivers = $excludedDrivers;
     }
 
     /**

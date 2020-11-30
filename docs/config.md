@@ -244,7 +244,24 @@ This section only applies if you're using [transformers](https://fractal.thephpl
 ### `routeMatcher`
 The route matcher class provides the algorithm that determines what routes should be documented. The default matcher used is the included `\Knuckles\Scribe\Matching\RouteMatcher::class`, and you can provide your own custom implementation if you wish to programmatically change the algorithm. The provided matcher should be an instance of `\Knuckles\Scribe\Matching\RouteMatcherInterface`.
 
-### `continue_without_database_transactions`
+### `database_connections_to_transact`
+Scribe tries to run response calls and example model creation (API Resource and Transformer strategies) in a database transaction, and then roll it back so no changes are persisted. This item is where you specify which connections Scribe should run in transactions for.
+
+By default, this is set to your default database connection (`[config('database.default)]`), so if you only use one database connections, you should be fine. If you use multiple connections, you can add the rest to the array:
+
+```php
+'database_connections_to_transact' => [
+    config('database.default),
+    'pgsql',
+],
+```
+
+### `continue_without_database_transactions` [deprecated]
+
+```eval_rst
+.. Warning:: This config item is deprecated and going away in v3. Use :code:`database_connections_to_transact` instead.
+```
+
 By default, Scribe runs response calls and example model creation in a database transaction, and then rolls them back so no changes are persisted. If one of your database drivers does not support database transactions, Scribe will log an error and exit. If you would like Scribe to proceed (and persist the data), add the database driver class name to this array. For example:
 
 ```php

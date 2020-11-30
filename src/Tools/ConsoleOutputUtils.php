@@ -15,7 +15,7 @@ class ConsoleOutputUtils
 
     public static function bootstrapOutput(OutputInterface $outputInterface)
     {
-        $showDebug = Flags::$shouldBeVerbose;
+        $showDebug = Globals::$shouldBeVerbose;
         self::$clara = clara('knuckleswtf/scribe', $showDebug)
             ->useOutput($outputInterface)
             ->only();
@@ -31,7 +31,9 @@ class ConsoleOutputUtils
         if ($should) {
             $message .= "\nYou should $should instead.";
         }
-        $message .= $link ? " See $link for details" : " See the changelog for details";
+        $message .= $link
+            ? " See $link for details"
+            : (" See the changelog for details (v".Globals::SCRIBE_VERSION.").");
 
         self::$clara->warn($message);
     }
@@ -66,6 +68,14 @@ class ConsoleOutputUtils
             self::bootstrapOutput(new ConsoleOutput);
         }
         self::$clara->success($message);
+    }
+
+    public static function error($message)
+    {
+        if (!self::$clara) {
+            self::bootstrapOutput(new ConsoleOutput);
+        }
+        self::$clara->error($message);
     }
 
     /**

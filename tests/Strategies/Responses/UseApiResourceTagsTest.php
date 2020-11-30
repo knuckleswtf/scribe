@@ -13,7 +13,7 @@ use Mpociot\Reflection\DocBlock\Tag;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Orchestra\Testbench\TestCase;
 
-    class UseApiResourceTagsTest extends TestCase
+class UseApiResourceTagsTest extends TestCase
 {
     use ArraySubsetAsserts;
 
@@ -31,9 +31,11 @@ use Orchestra\Testbench\TestCase;
         return $providers;
     }
 
-        public function setUp(): void
+    public function setUp(): void
     {
         parent::setUp();
+
+        config(['scribe.database_connections_to_transact' => []]);
 
         $factory = app(\Illuminate\Database\Eloquent\Factory::class);
         $factory->define(TestUser::class, function () {
@@ -133,90 +135,90 @@ use Orchestra\Testbench\TestCase;
         ], $results);
     }
 
-        /** @test */
-        public function loads_specified_relations_for_model()
-        {
-            $factory = app(\Illuminate\Database\Eloquent\Factory::class);
-            $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
-                if ($user->id === 4) {
-                    $child = Utils::getModelFactory(TestUser::class)->make(['id' => 5, 'parent_id' => 4]);
-                    $user->setRelation('children', collect([$child]));
-                }
-            });
+    /** @test */
+    public function loads_specified_relations_for_model()
+    {
+        $factory = app(\Illuminate\Database\Eloquent\Factory::class);
+        $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
+            if ($user->id === 4) {
+                $child = Utils::getModelFactory(TestUser::class)->make(['id' => 5, 'parent_id' => 4]);
+                $user->setRelation('children', collect([$child]));
+            }
+        });
 
-            $config = new DocumentationConfig([]);
+        $config = new DocumentationConfig([]);
 
-            $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
 
-            $strategy = new UseApiResourceTags($config);
-            $tags = [
-                new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
-                new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser'),
-            ];
-            $results = $strategy->getApiResourceResponse($tags, $route);
+        $strategy = new UseApiResourceTags($config);
+        $tags = [
+            new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
+            new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser'),
+        ];
+        $results = $strategy->getApiResourceResponse($tags, $route);
 
-            $this->assertArraySubset([
-                [
-                    'status' => 200,
-                    'content' => json_encode([
-                        'data' => [
-                            'id' => 4,
-                            'name' => 'Tested Again',
-                            'email' => 'a@b.com',
-                            'children' => [
-                                [
-                                    'id' => 5,
-                                    'name' => 'Tested Again',
-                                    'email' => 'a@b.com',
-                                ],
+        $this->assertArraySubset([
+            [
+                'status' => 200,
+                'content' => json_encode([
+                    'data' => [
+                        'id' => 4,
+                        'name' => 'Tested Again',
+                        'email' => 'a@b.com',
+                        'children' => [
+                            [
+                                'id' => 5,
+                                'name' => 'Tested Again',
+                                'email' => 'a@b.com',
                             ],
                         ],
-                    ]),
-                ],
-            ], $results);
-        }
+                    ],
+                ]),
+            ],
+        ], $results);
+    }
 
-        /** @test */
-        public function loads_specified_relations_for_generated_model()
-        {
-            $factory = app(\Illuminate\Database\Eloquent\Factory::class);
-            $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
-                if ($user->id === 4) {
-                    $child = Utils::getModelFactory(TestUser::class)->make(['id' => 5, 'parent_id' => 4]);
-                    $user->setRelation('children', collect([$child]));
-                }
-            });
-            $config = new DocumentationConfig([]);
+    /** @test */
+    public function loads_specified_relations_for_generated_model()
+    {
+        $factory = app(\Illuminate\Database\Eloquent\Factory::class);
+        $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
+            if ($user->id === 4) {
+                $child = Utils::getModelFactory(TestUser::class)->make(['id' => 5, 'parent_id' => 4]);
+                $user->setRelation('children', collect([$child]));
+            }
+        });
+        $config = new DocumentationConfig([]);
 
-            $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
 
-            $strategy = new UseApiResourceTags($config);
-            $tags = [
-                new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
-                new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser with=children')
-            ];
-            $results = $strategy->getApiResourceResponse($tags, $route);
+        $strategy = new UseApiResourceTags($config);
+        $tags = [
+            new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
+            new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser with=children'),
+        ];
+        $results = $strategy->getApiResourceResponse($tags, $route);
 
-            $this->assertArraySubset([
-                [
-                    'status' => 200,
-                    'content' => json_encode([
-                        'data' => [
-                            'id' => 4,
-                            'name' => 'Tested Again',
-                            'email' => 'a@b.com',
-                            'children' => [
-                                [
-                                    'id' => 5,
-                                    'name' => 'Tested Again',
-                                    'email' => 'a@b.com',
-                                ],
+        $this->assertArraySubset([
+            [
+                'status' => 200,
+                'content' => json_encode([
+                    'data' => [
+                        'id' => 4,
+                        'name' => 'Tested Again',
+                        'email' => 'a@b.com',
+                        'children' => [
+                            [
+                                'id' => 5,
+                                'name' => 'Tested Again',
+                                'email' => 'a@b.com',
                             ],
                         ],
-                    ]),
-                ],
-            ], $results);
-        }
+                    ],
+                ]),
+            ],
+        ], $results);
+    }
 
     /** @test */
     public function can_parse_apiresourcecollection_tags()

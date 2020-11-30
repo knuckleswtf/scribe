@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 use Knuckles\Pastel\Pastel;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils;
 use Knuckles\Scribe\Tools\DocumentationConfig;
-use Knuckles\Scribe\Tools\Flags;
+use Knuckles\Scribe\Tools\Globals;
 use Knuckles\Scribe\Tools\Utils;
 use Symfony\Component\Yaml\Yaml;
 
@@ -289,7 +289,7 @@ class Writer
 
         $this->pastel->generate($this->sourceOutputPath . '/index.md', $this->staticTypeOutputPath);
         // Add our custom JS
-        copy(__DIR__.'/../../resources/js/tryitout.js', $this->staticTypeOutputPath . '/js/tryitout-'.Flags::SCRIBE_VERSION.'.js');
+        copy(__DIR__.'/../../resources/js/tryitout.js', $this->staticTypeOutputPath . '/js/tryitout-'.Globals::SCRIBE_VERSION.'.js');
 
         if (!$this->isStatic) {
             $this->performFinalTasksForLaravelType();

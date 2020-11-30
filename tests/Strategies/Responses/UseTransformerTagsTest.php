@@ -25,6 +25,12 @@ class UseTransformerTagsTest extends TestCase
         return $providers;
     }
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        config(['scribe.database_connections_to_transact' => []]);
+    }
+
     /**
      * @param $serializer
      * @param $expected

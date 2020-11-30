@@ -13,7 +13,7 @@ use Knuckles\Scribe\Matching\RouteMatcherInterface;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\ErrorHandlingUtils as e;
-use Knuckles\Scribe\Tools\Flags;
+use Knuckles\Scribe\Tools\Globals;
 use Knuckles\Scribe\Tools\Utils as u;
 use Knuckles\Scribe\Writing\Writer;
 use Mpociot\Reflection\DocBlock;
@@ -115,10 +115,11 @@ class GenerateDocumentation extends Command
             }
 
             try {
+                c::info('Processing route: '. c::getRouteRepresentation($route));
                 $parsedRoutes[] = $generator->processRoute($route, $routeItem->getRules());
-                c::info('Processed route: '. c::getRouteRepresentation($route));
+                c::success('Processed route: '. c::getRouteRepresentation($route));
             } catch (\Exception $exception) {
-                c::warn('Skipping route: '. c::getRouteRepresentation($route) . ' - Exception encountered.');
+                c::error('Failed processing route: '. c::getRouteRepresentation($route) . ' - Exception encountered.');
                 e::dumpExceptionIfVerbose($exception);
             }
         }
@@ -197,7 +198,7 @@ class GenerateDocumentation extends Command
     {
         // Using a global static variable here, so 🙄 if you don't like it.
         // Also, the --verbose option is included with all Artisan commands.
-        Flags::$shouldBeVerbose = $this->option('verbose');
+        Globals::$shouldBeVerbose = $this->option('verbose');
 
         c::bootstrapOutput($this->output);
 

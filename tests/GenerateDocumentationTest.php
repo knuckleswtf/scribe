@@ -22,6 +22,8 @@ class GenerateDocumentationTest extends TestCase
     {
         parent::setUp();
 
+        config(['scribe.database_connections_to_transact' => []]);
+
         $factory = app(\Illuminate\Database\Eloquent\Factory::class);
         $factory->define(TestUser::class, function () {
             return [
