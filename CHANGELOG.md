@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 2.4.2 (Tuesday, 1 December 2020)
+### Fixes
+- Specify the `local` disk when fetching `openapi.yaml` file. (https://github.com/knuckleswtf/scribe/pull/150)
+
 ## 2.4.1 (Monday, 30 November 2020)
 ### Changes
 - Scribe will no longer throw an error if you describe an object subfield without adding the parent. We'll add it automatically for you (but you really should). (https://github.com/knuckleswtf/scribe/commit/77d516cbdbc6aa66466a640e20092d6e7a8df456)

@@ -10,7 +10,7 @@ Generate API documentation for humans from your Laravel codebase. [Here's what t
 
 [![Latest Stable Version](https://poser.pugx.org/knuckleswtf/scribe/v/stable)](https://packagist.org/packages/knuckleswtf/scribe) [![Total Downloads](https://poser.pugx.org/knuckleswtf/scribe/downloads)](https://packagist.org/packages/knuckleswtf/scribe) [![Build Status](https://travis-ci.com/knuckleswtf/scribe.svg?branch=master)](https://travis-ci.com/knuckleswtf/scribe)
 
-> 👋 Scribe helps you generate docs automatically, but if you really want to make friendly, maintainable and testable API docs, there's a few more things you need to know. So we made [a course](https://apidocsfordevs.com?utm_source=scribe-laravel&utm_medium=referral&utm_campaign=launch) for you. (PS. it's 40% off until 30 November!)
+> 👋 Scribe helps you generate docs automatically, but if you really want to make friendly, maintainable and testable API docs, there's some more things you need to know. So I made [a course](https://apidocsfordevs.com?utm_source=scribe-laravel&utm_medium=referral&utm_campaign=launch) for you.🤗
 
 ## Features
 - Pretty HTML documentation page, with included code samples and friendly text
