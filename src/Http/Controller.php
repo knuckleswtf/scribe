@@ -30,6 +30,6 @@ class Controller
      */
     public function openapi()
     {
-        return response()->file(Storage::path('scribe/openapi.yaml'));
+        return response()->file(Storage::disk('local')->path('scribe/openapi.yaml'));
     }
 }
