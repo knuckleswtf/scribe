@@ -12,6 +12,7 @@ use Mpociot\Reflection\DocBlock;
 use Mpociot\Reflection\DocBlock\Tag;
 use ReflectionClass;
 use ReflectionFunctionAbstract;
+use ReflectionUnionType;
 
 class GetFromHeaderTag extends Strategy
 {
@@ -24,6 +25,11 @@ class GetFromHeaderTag extends Strategy
         foreach ($method->getParameters() as $param) {
             $paramType = $param->getType();
             if ($paramType === null) {
+                continue;
+            }
+
+            if (class_exists(ReflectionUnionType::class)
+                && $paramType instanceof ReflectionUnionType) {
                 continue;
             }
 
