@@ -12,6 +12,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 2.5.1 (Wednesday, 16 December 2020)
+- PHP 8 support (https://github.com/knuckleswtf/scribe/pull/162)
+
 ## 2.4.2 (Tuesday, 1 December 2020)
 ### Fixes
 - Specify the `local` disk when fetching `openapi.yaml` file. (https://github.com/knuckleswtf/scribe/pull/150)
