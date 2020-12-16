@@ -35,7 +35,7 @@ class RouteMatcher implements RouteMatcherInterface
                 }
 
                 if ($this->shouldIncludeRoute($route, $routeRule, $includes, $usingDingoRouter)) {
-                    $matchedRoutes[] = new Match($route, $routeRule['apply'] ?? []);
+                    $matchedRoutes[] = new MatchedRoute($route, $routeRule['apply'] ?? []);
                 }
             }
         }

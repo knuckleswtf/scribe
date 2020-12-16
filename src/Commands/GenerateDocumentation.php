@@ -8,7 +8,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Knuckles\Scribe\Extracting\Generator;
-use Knuckles\Scribe\Matching\Match;
+use Knuckles\Scribe\Matching\MatchedRoute;
 use Knuckles\Scribe\Matching\RouteMatcherInterface;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\DocumentationConfig;
@@ -84,7 +84,7 @@ class GenerateDocumentation extends Command
     }
 
     /**
-     * @param Match[] $matches
+     * @param MatchedRoute[] $matches
      *
      * @return array
      * @throws \ReflectionException

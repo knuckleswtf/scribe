@@ -169,7 +169,7 @@ class PostmanCollectionWriterTest extends TestCase
     }
 
     /** @test */
-    public function query_parameters_are_disabled_with_no_value_when_notRequired()
+    public function query_parameters_are_disabled_with_no_value_when_not_required()
     {
         $fakeRoute = $this->createMockRouteData('fake/path');
         $fakeRoute['queryParameters'] = [
@@ -198,13 +198,13 @@ class PostmanCollectionWriterTest extends TestCase
         $this->assertCount(2, $variableData);
         $this->assertContains([
             'key' => 'required',
-            'value' => null,
+            'value' => '',
             'description' => 'A required param with a null value',
             'disabled' => false,
         ], $variableData);
         $this->assertContains([
             'key' => 'not_required',
-            'value' => null,
+            'value' => '',
             'description' => 'A not required param with a null value',
             'disabled' => true,
         ], $variableData);

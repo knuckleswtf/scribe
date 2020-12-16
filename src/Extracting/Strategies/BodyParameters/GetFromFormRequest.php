@@ -20,6 +20,7 @@ use ReflectionClass;
 use ReflectionException;
 use ReflectionFunctionAbstract;
 use Illuminate\Contracts\Validation\Factory as ValidationFactory;
+use ReflectionUnionType;
 
 class GetFromFormRequest extends Strategy
 {
@@ -39,6 +40,11 @@ class GetFromFormRequest extends Strategy
         foreach ($method->getParameters() as $param) {
             $paramType = $param->getType();
             if ($paramType === null) {
+                continue;
+            }
+
+            if (class_exists(ReflectionUnionType::class)
+                && $paramType instanceof ReflectionUnionType) {
                 continue;
             }
 

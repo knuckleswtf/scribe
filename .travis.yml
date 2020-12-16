@@ -22,6 +22,7 @@ matrix:
     - php: 7.4
     - php: 7.4
       env: SETUP=lowest
+    - php: 8.0
 
 cache:
   directories:

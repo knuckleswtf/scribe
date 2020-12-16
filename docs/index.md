@@ -11,7 +11,7 @@ Generate API documentation for humans from your Laravel/Lumen/[Dingo](https://gi
 ```
 
 ```eval_rst
-.. Tip:: Scribe helps you generate docs automatically, but if you really want to make friendly, maintainable and testable API docs, there's some more stuff you need to know. So I made `a course <https://apidocsfordevs.com?utm_source=scribe-laravel-docs&utm_medium=referral&utm_campaign=launch>`_ for you.🤗
+.. Tip:: Scribe helps you generate docs automatically, but if you really want to make friendly, maintainable and testable API docs, there's some more stuff you need to know. So I made `a course <https://apidocsfordevs.com?utm_source=scribe-laravel-docs&utm_medium=referral&utm_campaign=none>`_ for you.🤗
 ```
 
 ## Features

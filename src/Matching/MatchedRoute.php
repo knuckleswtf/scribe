@@ -4,7 +4,7 @@ namespace Knuckles\Scribe\Matching;
 
 use Illuminate\Routing\Route;
 
-class Match implements \ArrayAccess
+class MatchedRoute implements \ArrayAccess
 {
     /**
      * @var Route

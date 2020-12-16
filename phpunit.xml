@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit backupGlobals="false"
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         backupGlobals="false"
          backupStaticAttributes="false"
          bootstrap="vendor/autoload.php"
          cacheResult="true"
@@ -8,7 +9,17 @@
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
          processIsolation="false"
-         stopOnFailure="false">
+         stopOnFailure="false"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+    <coverage>
+        <include>
+            <directory suffix=".php">src/</directory>
+        </include>
+        <exclude>
+            <file>src/ScribeServiceProvider.php</file>
+            <file>resources/views/pastel.blade.php</file>
+        </exclude>
+    </coverage>
     <testsuites>
         <testsuite name="Full Test">
             <file>tests/GenerateDocumentationTest.php</file>
@@ -30,13 +41,4 @@
             <file>tests/Unit/PostmanCollectionWriterTest.php</file>
         </testsuite>
     </testsuites>
-    <filter>
-        <whitelist>
-            <directory suffix=".php">src/</directory>
-            <exclude>
-                <file>src/ScribeServiceProvider.php</file>
-                <file>resources/views/pastel.blade.php</file>
-            </exclude>
-        </whitelist>
-    </filter>
 </phpunit>
