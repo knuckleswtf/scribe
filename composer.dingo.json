@@ -16,7 +16,7 @@
         }
     ],
     "require": {
-        "php": ">=7.2.5",
+        "php": ">=7.4",
         "ext-fileinfo": "*",
         "ext-json": "*",
         "ext-pdo": "*",
@@ -36,7 +36,7 @@
         "symfony/yaml": "^4.0|^5.0"
     },
     "require-dev": {
-        "brianium/paratest": "^5.0|^6.0",
+        "brianium/paratest": "^6.0",
         "dms/phpunit-arraysubset-asserts": "^0.2.0",
         "league/fractal": "^0.19.0",
         "laravel/legacy-factories": "^1.0.4",
