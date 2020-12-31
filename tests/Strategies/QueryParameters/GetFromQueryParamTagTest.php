@@ -43,19 +43,19 @@ class GetFromQueryParamTagTest extends TestCase
                 'type' => 'string',
                 'required' => true,
                 'description' => 'The id of the user.',
-                'value' => 'me',
+                'example' => 'me',
             ],
             'page' => [
                 'type' => 'integer',
                 'required' => false,
                 'description' => 'The page number.',
-                'value' => 4,
+                'example' => 4,
             ],
             'with_type' => [
                 'type' => 'number',
                 'required' => false,
                 'description' => '',
-                'value' => 13.0,
+                'example' => 13.0,
             ],
             'with_list_type' => [
                 'type' => 'integer[]',
@@ -66,7 +66,7 @@ class GetFromQueryParamTagTest extends TestCase
                 'type' => 'string[]',
                 'required' => false,
                 'description' => 'The fields.',
-                'value' => ['age', 'name']
+                'example' => ['age', 'name']
             ],
             'filters' => [
                 'type' => 'object',
@@ -77,7 +77,7 @@ class GetFromQueryParamTagTest extends TestCase
                 'type' => 'number',
                 'required' => false,
                 'description' => 'Class.',
-                'value' => 11.0
+                'example' => 11.0
             ],
             'filters.other' => [
                 'type' => 'string',
@@ -88,13 +88,13 @@ class GetFromQueryParamTagTest extends TestCase
                 'type' => 'string',
                 'required' => false,
                 'description' => '',
-                'value' => null
+                'example' => null
             ],
             'noExample' => [
                 'type' => 'string',
                 'required' => false,
                 'description' => 'Something',
-                'value' => null
+                'example' => null
             ],
         ], $results);
     }
@@ -117,12 +117,12 @@ class GetFromQueryParamTagTest extends TestCase
             'user_id' => [
                 'required' => true,
                 'description' => 'The id of the user.',
-                'value' => 'me',
+                'example' => 'me',
             ],
             'page' => [
                 'required' => true,
                 'description' => 'The page number.',
-                'value' => '4',
+                'example' => '4',
             ],
         ], $results);
     }

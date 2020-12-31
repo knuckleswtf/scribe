@@ -63,7 +63,7 @@ class GetFromResponseFieldTag extends Strategy
                         $status = intval($r->status);
                         return $status >= 200 && $status < 300;
                     });
-                    $validResponseContent = json_decode($validResponse->content ?? null, true);
+                    $validResponseContent = json_decode($validResponse->content, true);
                     if (!$validResponseContent) {
                         $type = '';
                     } else {

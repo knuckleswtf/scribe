@@ -82,7 +82,7 @@ class PostmanCollectionWriterTest extends TestCase
             'name' => 'param',
             'description' => 'A test description for the test param',
             'required' => true,
-            'value' => 'foobar',
+            'example' => 'foobar',
         ]);
         $endpoints = $this->createMockEndpointGroup([$endpointData]);
 
@@ -115,14 +115,14 @@ class PostmanCollectionWriterTest extends TestCase
                 'type' => 'integer',
                 'description' => 'A fake limit for my fake endpoint',
                 'required' => true,
-                'value' => 5,
+                'example' => 5,
             ]),
             'filters' => new QueryParameter([
                 'name' => 'filters',
                 'type' => 'integer[]',
                 'description' => 'Filters',
                 'required' => true,
-                'value' => [34, 12],
+                'example' => [34, 12],
             ]),
         ];
         $endpointData->cleanQueryParameters = Generator::cleanParams($endpointData->queryParameters);
@@ -163,7 +163,7 @@ class PostmanCollectionWriterTest extends TestCase
             'name' => 'limit',
             'description' => 'A fake limit for my fake endpoint',
             'required' => false,
-            'value' => 5,
+            'example' => 5,
         ]);
 
         $endpoints = $this->createMockEndpointGroup([$endpointData]);
@@ -186,14 +186,14 @@ class PostmanCollectionWriterTest extends TestCase
                 'type' => 'string',
                 'description' => 'A required param with a null value',
                 'required' => true,
-                'value' => null,
+                'example' => null,
             ]),
             'not_required' => new QueryParameter([
                 'name' => 'not_required',
                 'type' => 'string',
                 'description' => 'A not required param with a null value',
                 'required' => false,
-                'value' => null,
+                'example' => null,
             ]),
         ];
         $endpointData->cleanQueryParameters = Generator::cleanParams($endpointData->queryParameters);
@@ -225,7 +225,6 @@ class PostmanCollectionWriterTest extends TestCase
      */
     public function auth_info_is_added_correctly()
     {
-
         $endpointData1 = $this->createMockEndpointData('some/path');
         $endpointData1->metadata->authenticated = true;
         $endpointData2 = $this->createMockEndpointData('some/other/path');

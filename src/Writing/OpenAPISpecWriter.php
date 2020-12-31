@@ -107,7 +107,7 @@ class OpenAPISpecWriter
                         'in' => 'path',
                         'name' => $name,
                         'description' => $details->description,
-                        'example' => $details->value,
+                        'example' => $details->example,
                         // Currently, Swagger requires path parameters to be required
                         'required' => true,
                         'schema' => [
@@ -164,7 +164,7 @@ class OpenAPISpecWriter
                     'in' => 'query',
                     'name' => $name,
                     'description' => $details->description,
-                    'example' => $details->value,
+                    'example' => $details->example,
                     'required' => $details->required,
                     'schema' => $this->generateFieldData($details),
                 ];
@@ -270,7 +270,7 @@ class OpenAPISpecWriter
             return trim(str_replace("<<binary>>", "", $response->content));
         }
 
-        return strval($response->description ?? '');
+        return strval($response->description);
     }
 
     protected function generateResponseContentSpec(?string $responseContent, EndpointData $endpoint)
@@ -475,13 +475,13 @@ class OpenAPISpecWriter
             $baseType = Utils::getBaseTypeFromArrayType($field->type);
             $fieldData = [
                 'type' => 'array',
-                'description' => $field->description ?? '',
-                'example' => $field->value ?? null,
+                'description' => $field->description ?: '',
+                'example' => $field->example,
                 'items' => Utils::isArrayType($baseType)
                     ? $this->generateFieldData([
                         'name' => '',
                         'type' => $baseType,
-                        'value' => ($field->value ?: [null])[0],
+                        'value' => ($field->example ?: [null])[0],
                     ])
                     : ['type' => $baseType],
             ];
@@ -499,8 +499,8 @@ class OpenAPISpecWriter
         } else if ($field->type === 'object') {
             return [
                 'type' => 'object',
-                'description' => $field->description ?? '',
-                'example' => $field->value ?? null,
+                'description' => $field->description ?: '',
+                'example' => $field->example,
                 'properties' => collect($field->__fields)->mapWithKeys(function ($subfield, $subfieldName) {
                     return [$subfieldName => $this->generateFieldData($subfield)];
                 })->all(),
@@ -509,7 +509,7 @@ class OpenAPISpecWriter
             return [
                 'type' => $this->normalizeTypeName($field->type),
                 'description' => $field->description ?: '',
-                'example' => $field->value,
+                'example' => $field->example,
             ];
         }
     }

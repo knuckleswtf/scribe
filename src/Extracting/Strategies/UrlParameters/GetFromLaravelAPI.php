@@ -33,7 +33,7 @@ class GetFromLaravelAPI extends Strategy
                 'name' => $name,
                 'description' => '',
                 'required' => !$optional,
-                'value' => $this->generateDummyValue($type),
+                'example' => $this->generateDummyValue($type),
                 'type' => $type,
             ];
         }

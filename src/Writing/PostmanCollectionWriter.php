@@ -213,7 +213,7 @@ class PostmanCollectionWriter
             }
 
             if (Str::endsWith($parameterData->type, '[]') || $parameterData->type === 'object') {
-                $values = empty($parameterData->value) ? [] : $parameterData->value;
+                $values = empty($parameterData->example) ? [] : $parameterData->example;
                 foreach ($values as $index => $value) {
                     // PHP's parse_str supports array query parameters as filters[0]=name&filters[1]=age OR filters[]=name&filters[]=age
                     // Going with the first to also support object query parameters
@@ -223,16 +223,16 @@ class PostmanCollectionWriter
                         'value' => urlencode($value),
                         'description' => strip_tags($parameterData->description),
                         // Default query params to disabled if they aren't required and have empty values
-                        'disabled' => !$parameterData->required && empty($parameterData->value),
+                        'disabled' => !$parameterData->required && empty($parameterData->example),
                     ];
                 }
             } else {
                 $query[] = [
                     'key' => urlencode($name),
-                    'value' => urlencode($parameterData->value),
+                    'value' => urlencode($parameterData->example),
                     'description' => strip_tags($parameterData->description),
                     // Default query params to disabled if they aren't required and have empty values
-                    'disabled' => !$parameterData->required && empty($parameterData->value),
+                    'disabled' => !$parameterData->required && empty($parameterData->example),
                 ];
             }
         }
@@ -256,7 +256,7 @@ class PostmanCollectionWriter
             return [
                 'id' => $name,
                 'key' => $name,
-                'value' => urlencode($parameter->value),
+                'value' => urlencode($parameter->example),
                 'description' => $parameter->description,
             ];
         })->values()->toArray();

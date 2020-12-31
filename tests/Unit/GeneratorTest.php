@@ -69,49 +69,49 @@ class GeneratorTest extends TestCase
             'object' => [
                 'name' => 'object',
                 'type' => 'object',
-                'value' => [],
+                'example' => [],
             ],
             'object.key1' => [
                 'name' => 'object.key1',
                 'type' => 'string',
-                'value' => '43',
+                'example' => '43',
             ],
             'object.key2' => [
                 'name' => 'object.key2',
                 'type' => 'integer',
-                'value' => 77,
+                'example' => 77,
             ],
             'object.key3' => [
                 'name' => 'object.key3',
                 'type' => 'object',
-                'value'=> [],
+                'example'=> [],
             ],
             'object.key3.key1' => [
                 'name' => 'object.key3.key1',
                 'type' => 'string',
-                'value' => 'hoho',
+                'example' => 'hoho',
             ],
             'list' => [
                 'name' => 'list',
                 'type' => 'integer[]',
-                'value' => [4],
+                'example' => [4],
             ],
             'list_of_objects' => [
                 'name' => 'list_of_objects',
                 'type' => 'object[]',
-                'value' => [[], []],
+                'example' => [[], []],
             ],
             'list_of_objects[].key1' => [
                 'name' => 'list_of_objects.key1',
                 'type' => 'string',
                 'required' => true,
-                'value' => 'John',
+                'example' => 'John',
             ],
             'list_of_objects[].key2' => [
                 'name' => 'list_of_objects.key2',
                 'type' => 'boolean',
                 'required' => true,
-                'value' => false,
+                'example' => false,
             ],
         ]);
 

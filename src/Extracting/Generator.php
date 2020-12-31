@@ -253,18 +253,18 @@ class Generator
          */
         foreach ($parameters as $paramName => $details) {
             // Remove params which have no examples and are optional.
-            if (is_null($details->value) && $details->required === false) {
+            if (is_null($details->example) && $details->required === false) {
                 continue;
             }
 
-            if (($details->type ?? '') === 'file' && is_string($details->value)) {
-                $details->value = self::convertStringValueToUploadedFileInstance($details->value);
+            if (($details->type ?? '') === 'file' && is_string($details->example)) {
+                $details->example = self::convertStringValueToUploadedFileInstance($details->example);
             }
 
             if (Str::contains($paramName, '.')) { // Object field (or array of objects)
-                self::setObject($cleanParameters, $paramName, $details->value, $parameters, $details->required);
+                self::setObject($cleanParameters, $paramName, $details->example, $parameters, $details->required);
             } else {
-                $cleanParameters[$paramName] = $details->value;
+                $cleanParameters[$paramName] = $details->example;
             }
         }
 
@@ -336,7 +336,7 @@ class Generator
                 $endpointData->queryParameters[$parameterName] = new QueryParameter([
                     'name' => $parameterName,
                     'type' => 'string',
-                    'value' => $valueToDisplay ?: $token,
+                    'example' => $valueToDisplay ?: $token,
                     'description' => 'Authentication key.',
                     'required' => true,
                 ]);
@@ -346,7 +346,7 @@ class Generator
                 $endpointData->bodyParameters[$parameterName] = new BodyParameter([
                     'name' => $parameterName,
                     'type' => 'string',
-                    'value' => $valueToDisplay ?: $token,
+                    'example' => $valueToDisplay ?: $token,
                     'description' => 'Authentication key.',
                     'required' => true,
                 ]);

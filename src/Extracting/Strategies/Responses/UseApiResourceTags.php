@@ -104,7 +104,7 @@ class UseApiResourceTags extends Strategy
                 : $apiResourceClass::collection($list);
         }
 
-        $uri = Utils::getUrlWithBoundParameters($endpointData->route, $endpointData->cleanUrlParameters ?? []);
+        $uri = Utils::getUrlWithBoundParameters($endpointData->route, $endpointData->cleanUrlParameters);
         $method = $endpointData->route->methods()[0];
         $request = Request::create($uri, $method);
         $request->headers->add(['Accept' => 'application/json']);

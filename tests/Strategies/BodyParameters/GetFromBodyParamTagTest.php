@@ -42,7 +42,7 @@ class GetFromBodyParamTagTest extends TestCase
                 'type' => 'integer',
                 'required' => true,
                 'description' => 'The id of the user.',
-                'value' => 9,
+                'example' => 9,
             ],
             'room_id' => [
                 'type' => 'string',
@@ -53,7 +53,7 @@ class GetFromBodyParamTagTest extends TestCase
                 'type' => 'boolean',
                 'required' => false,
                 'description' => 'Whether to ban the user forever.',
-                'value' => false,
+                'example' => false,
             ],
             'another_one' => [
                 'type' => 'number',
@@ -109,13 +109,13 @@ class GetFromBodyParamTagTest extends TestCase
                 'type' => 'string',
                 'description' => 'The first name of the user.',
                 'required' => false,
-                'value' => 'John',
+                'example' => 'John',
             ],
             'users[].last_name' => [
                 'type' => 'string',
                 'description' => 'The last name of the user.',
                 'required' => false,
-                'value' => 'Doe',
+                'example' => 'Doe',
             ],
         ], $results);
     }
@@ -138,31 +138,31 @@ class GetFromBodyParamTagTest extends TestCase
                 'type' => 'string',
                 'description' => 'The first name of the user.',
                 'required' => false,
-                'value' => 'John',
+                'example' => 'John',
             ],
             '[].last_name' => [
                 'type' => 'string',
                 'description' => 'The last name of the user.',
                 'required' => false,
-                'value' => 'Doe',
+                'example' => 'Doe',
             ],
             '[].contacts[].first_name' => [
                 'type' => 'string',
                 'description' => 'The first name of the contact.',
                 'required' => false,
-                'value' => 'John',
+                'example' => 'John',
             ],
             '[].contacts[].last_name' => [
                 'type' => 'string',
                 'description' => 'The last name of the contact.',
                 'required' => false,
-                'value' => 'Doe',
+                'example' => 'Doe',
             ],
             '[].roles' => [
                 'type' => 'string[]',
                 'description' => 'The name of the role.',
                 'required' => false,
-                'value' => ['Admin'],
+                'example' => ['Admin'],
             ],
         ], $results);
     }
@@ -181,13 +181,13 @@ class GetFromBodyParamTagTest extends TestCase
                 'type' => 'integer',
                 'required' => true,
                 'description' => 'The id of the user.',
-                'value' => 9,
+                'example' => 9,
             ],
             'forever' => [
                 'type' => 'boolean',
                 'required' => false,
                 'description' => 'Whether to ban the user forever.',
-                'value' => false,
+                'example' => false,
             ],
             'yet_another_param' => [
                 'type' => 'object',

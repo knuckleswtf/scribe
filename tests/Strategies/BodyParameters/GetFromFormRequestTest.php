@@ -40,7 +40,7 @@ class GetFromFormRequestTest extends TestCase
                 'type' => 'integer',
                 'required' => true,
                 'description' => 'The id of the user.',
-                'value' => 9,
+                'example' => 9,
             ],
             'room_id' => [
                 'type' => 'string',
@@ -51,7 +51,7 @@ class GetFromFormRequestTest extends TestCase
                 'type' => 'boolean',
                 'required' => false,
                 'description' => 'Whether to ban the user forever.',
-                'value' => false,
+                'example' => false,
             ],
             'another_one' => [
                 'type' => 'number',
@@ -67,7 +67,7 @@ class GetFromFormRequestTest extends TestCase
                 'type' => 'object',
                 'description' => '',
                 'required' => false,
-                'value' => [],
+                'example' => [],
             ],
             'book.name' => [
                 'type' => 'string',
@@ -93,23 +93,23 @@ class GetFromFormRequestTest extends TestCase
                 'type' => 'object[]',
                 'description' => '',
                 'required' => false,
-                'value' => [[]],
+                'example' => [[]],
             ],
             'users[].first_name' => [
                 'type' => 'string',
                 'description' => 'The first name of the user.',
                 'required' => false,
-                'value' => 'John',
+                'example' => 'John',
             ],
             'users[].last_name' => [
                 'type' => 'string',
                 'description' => 'The last name of the user.',
                 'required' => false,
-                'value' => 'Doe',
+                'example' => 'Doe',
             ],
         ], $results);
 
-        $this->assertIsArray($results['ids']['value']);
+        $this->assertIsArray($results['ids']['example']);
     }
 
     /**
@@ -136,11 +136,11 @@ class GetFromFormRequestTest extends TestCase
         }
 
         // Validate that the generated values actually pass
-        $validator = Validator::make([$parameterName => $results[$parameterName]['value']], $ruleset);
+        $validator = Validator::make([$parameterName => $results[$parameterName]['example']], $ruleset);
         try {
             $validator->validate();
         } catch (ValidationException $e) {
-            dump('Value: ', $results[$parameterName]['value']);
+            dump('Value: ', $results[$parameterName]['example']);
             dump($e->errors());
             throw $e;
         }

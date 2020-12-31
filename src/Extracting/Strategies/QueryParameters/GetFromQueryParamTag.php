@@ -131,12 +131,12 @@ class GetFromQueryParamTag extends Strategy
 
             }
 
-            [$description, $value] = $this->parseExampleFromParamDescription($description, $type);
-            if (is_null($value) && !$this->shouldExcludeExample($tagContent)) {
-                $value = $this->generateDummyValue($type);
+            [$description, $example] = $this->parseExampleFromParamDescription($description, $type);
+            if (is_null($example) && !$this->shouldExcludeExample($tagContent)) {
+                $example = $this->generateDummyValue($type);
             }
 
-            $parameters[$name] = compact('name', 'description', 'required', 'value', 'type');
+            $parameters[$name] = compact('name', 'description', 'required', 'example', 'type');
         }
 
         return $parameters;

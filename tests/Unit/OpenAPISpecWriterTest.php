@@ -124,14 +124,14 @@ class OpenAPISpecWriterTest extends TestCase
             'urlParameters.param' => new UrlParameter([
                 'description' => 'Something',
                 'required' => true,
-                'value' => 56,
+                'example' => 56,
                 'type' => 'integer',
                 'name' => 'param',
             ]),
             'urlParameters.optionalParam' => new UrlParameter([
                 'description' => 'Another',
                 'required' => false,
-                'value' => '69',
+                'example' => '69',
                 'type' => 'string',
                 'name' => 'optionalParam',
             ]),
@@ -169,7 +169,7 @@ class OpenAPISpecWriterTest extends TestCase
     /** @test */
     public function adds_headers_correctly_as_parameters_on_operation_object()
     {
-        $endpointData1 = $this->createMockEndpointData(['methods' => ['POST'], 'uri' => 'path1', 'headers.Extra-Header' => 'Some-Value']);
+        $endpointData1 = $this->createMockEndpointData(['methods' => ['POST'], 'uri' => 'path1', 'headers.Extra-Header' => 'Some-example']);
         $endpointData2 = $this->createMockEndpointData(['uri' => 'path1', 'methods' => ['GET'], 'headers' => []]);
         $groupedEndpoints = collect([$endpointData1, $endpointData2])->groupBy('metadata.groupName');
 
@@ -189,7 +189,7 @@ class OpenAPISpecWriterTest extends TestCase
             'in' => 'header',
             'name' => 'Extra-Header',
             'description' => '',
-            'example' => 'Some-Value',
+            'example' => 'Some-example',
             'schema' => ['type' => 'string'],
         ], $results['paths']['/path1']['post']['parameters'][1]);
     }
@@ -205,7 +205,7 @@ class OpenAPISpecWriterTest extends TestCase
                 'param' => new QueryParameter([
                     'description' => 'A query param',
                     'required' => false,
-                    'value' => 'hahoho',
+                    'example' => 'hahoho',
                     'type' => 'string',
                     'name' => 'param',
                 ]),
@@ -245,35 +245,35 @@ class OpenAPISpecWriterTest extends TestCase
                     'name' => 'stringParam',
                     'description' => 'String param',
                     'required' => false,
-                    'value' => 'hahoho',
+                    'example' => 'hahoho',
                     'type' => 'string',
                 ],
                 'integerParam' => [
                     'name' => 'integerParam',
                     'description' => 'Integer param',
                     'required' => true,
-                    'value' => 99,
+                    'example' => 99,
                     'type' => 'integer',
                 ],
                 'booleanParam' => [
                     'name' => 'booleanParam',
                     'description' => 'Boolean param',
                     'required' => true,
-                    'value' => false,
+                    'example' => false,
                     'type' => 'boolean',
                 ],
                 'objectParam' => [
                     'name' => 'objectParam',
                     'description' => 'Object param',
                     'required' => false,
-                    'value' => [],
+                    'example' => [],
                     'type' => 'object',
                 ],
                 'objectParam.field' => [
                     'name' => 'objectParam.field',
                     'description' => 'Object param field',
                     'required' => false,
-                    'value' => 119.0,
+                    'example' => 119.0,
                     'type' => 'number',
                 ],
             ]),
@@ -288,35 +288,35 @@ class OpenAPISpecWriterTest extends TestCase
                     'name' => 'fileParam',
                     'description' => 'File param',
                     'required' => false,
-                    'value' => null,
+                    'example' => null,
                     'type' => 'file',
                 ],
                 'numberArrayParam' => [
                     'name' => 'numberArrayParam',
                     'description' => 'Number array param',
                     'required' => false,
-                    'value' => [186.9],
+                    'example' => [186.9],
                     'type' => 'number[]',
                 ],
                 'objectArrayParam' => [
                     'name' => 'objectArrayParam',
                     'description' => 'Object array param',
                     'required' => false,
-                    'value' => [[]],
+                    'example' => [[]],
                     'type' => 'object[]',
                 ],
                 'objectArrayParam[].field1' => [
                     'name' => 'objectArrayParam[].field1',
                     'description' => 'Object array param first field',
                     'required' => true,
-                    'value' => ["hello"],
+                    'example' => ["hello"],
                     'type' => 'string[]',
                 ],
                 'objectArrayParam[].field2' => [
                     'name' => 'objectArrayParam[].field2',
                     'description' => '',
                     'required' => false,
-                    'value' => "hi",
+                    'example' => "hi",
                     'type' => 'string',
                 ],
             ]),
