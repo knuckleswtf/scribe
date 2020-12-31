@@ -85,6 +85,7 @@ class EndpointData extends BaseDTO
 
     public bool $showresponse = false;
     public ?string $boundUri;
+    public ?string $output;
 
     public function __construct(array $parameters = [])
     {
@@ -130,5 +131,10 @@ class EndpointData extends BaseDTO
     public function name()
     {
         return sprintf("[%s] {$this->route->uri}.", implode(',', $this->route->methods));
+    }
+
+    public function endpointId()
+    {
+        return $this->methods[0].str_replace(['/', '?', '{', '}', ':'], '-', $this->uri);
     }
 }

@@ -2,6 +2,6 @@
 {!! $groupDescription !!}
 
 @foreach($routes as $route)
-{!! $route['output'] !!}
+{!! $route->output !!}
 @endforeach
 

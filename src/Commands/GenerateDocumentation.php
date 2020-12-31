@@ -76,7 +76,7 @@ class GenerateDocumentation extends Command
             ->groupBy('metadata.groupName')
             ->sortBy(static function ($group) {
                 /* @var $group Collection */
-                return $group->first()['metadata']['groupName'];
+                return $group->first()->metadata->groupName;
             }, SORT_NATURAL);
 
         $writer = new Writer($this->docConfig, $this->option('force'));

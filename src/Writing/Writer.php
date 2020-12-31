@@ -6,6 +6,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Knuckles\Camel\Endpoint\EndpointData;
 use Knuckles\Pastel\Pastel;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils;
 use Knuckles\Scribe\Tools\DocumentationConfig;
@@ -146,10 +147,10 @@ class Writer
     public function generateMarkdownOutputForEachRoute(Collection $parsedRoutes, array $settings): Collection
     {
         $routesWithOutput = $parsedRoutes->map(function (Collection $routeGroup) use ($settings) {
-            return $routeGroup->map(function (array $route) use ($settings) {
-                $hasRequestOptions = !empty($route['headers'])
-                    || !empty($route['cleanQueryParameters'])
-                    || !empty($route['cleanBodyParameters']);
+            return $routeGroup->map(function (EndpointData $endpointData) use ($settings) {
+                $hasRequestOptions = !empty($endpointData->headers)
+                    || !empty($endpointData->cleanQueryParameters)
+                    || !empty($endpointData->cleanBodyParameters);
                 // Needed for Try It Out
                 $auth = $settings['auth'];
                 if ($auth['in'] === 'bearer' || $auth['in'] === 'basic') {
@@ -160,16 +161,16 @@ class Writer
                     $auth['location'] = $auth['in'];
                     $auth['prefix'] = '';
                 }
-                $route['output'] = (string)view('scribe::partials.endpoint')
+                $endpointData->output = (string)view('scribe::partials.endpoint')
                     ->with('hasRequestOptions', $hasRequestOptions)
-                    ->with('route', $route)
-                    ->with('endpointId', $route['methods'][0].str_replace(['/', '?', '{', '}', ':'], '-', $route['uri']))
+                    ->with('route', $endpointData->toArray())
+                    ->with('endpointId', $endpointData->endpointId())
                     ->with('settings', $settings)
                     ->with('auth', $auth)
                     ->with('baseUrl', $this->baseUrl)
                     ->render();
 
-                return $route;
+                return $endpointData;
             });
         });
 
@@ -406,9 +407,9 @@ class Writer
                 }
             }
 
-            $groupDescription = Arr::first($routesInGroup, function ($route) {
-                    return $route['metadata']['groupDescription'] !== '';
-                })['metadata']['groupDescription'] ?? '';
+            $groupDescription = Arr::first($routesInGroup, function (EndpointData $endpointData) {
+                    return $endpointData->metadata->groupDescription !== '';
+                })->metadata->groupDescription ?? '';
 
             $groupMarkdown = view('scribe::partials.group')
                 ->with('groupName', $groupName)
