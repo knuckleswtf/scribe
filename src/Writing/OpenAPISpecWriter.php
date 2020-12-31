@@ -4,6 +4,11 @@ namespace Knuckles\Scribe\Writing;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Knuckles\Camel\Endpoint\BodyParameter;
+use Knuckles\Camel\Endpoint\EndpointData;
+use Knuckles\Camel\Endpoint\Parameter;
+use Knuckles\Camel\Endpoint\QueryParameter;
+use Knuckles\Camel\Endpoint\UrlParameter;
 use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\Utils;
@@ -63,50 +68,54 @@ class OpenAPISpecWriter
         $allEndpoints = $groupedEndpoints->flatten(1);
         // OpenAPI groups endpoints by path, then method
         $groupedByPath = $allEndpoints->groupBy(function ($endpoint) {
-            $path = str_replace("?}", "}", $endpoint['uri']); // Remove optional parameters indicator in path
+            $path = str_replace("?}", "}", $endpoint->uri); // Remove optional parameters indicator in path
             return '/' . ltrim($path, '/');
         });
         return $groupedByPath->mapWithKeys(function (Collection $endpoints, $path) {
-            $operations = $endpoints->mapWithKeys(function ($endpoint) {
+            $operations = $endpoints->mapWithKeys(function (EndpointData $endpoint) {
                 $spec = [
-                    'summary' => $endpoint['metadata']['title'],
-                    'description' => $endpoint['metadata']['description'] ?? '',
+                    'summary' => $endpoint->metadata->title,
+                    'description' => $endpoint->metadata->description,
                     'parameters' => $this->generateEndpointParametersSpec($endpoint),
                     'responses' => $this->generateEndpointResponsesSpec($endpoint),
-                    'tags' => [$endpoint['metadata']['groupName']],
+                    'tags' => [$endpoint->metadata->groupName],
                 ];
 
-                if (count($endpoint['bodyParameters'])) {
+                if (count($endpoint->bodyParameters)) {
                     $spec['requestBody'] = $this->generateEndpointRequestBodySpec($endpoint);
                 }
 
-                if (!($endpoint['metadata']['authenticated'] ?? false)) {
+                if (!$endpoint->metadata->authenticated) {
                     // Make sure to exclude non-auth endpoints from auth
                     $spec['security'] = [];
                 }
 
-                return [strtolower($endpoint['methods'][0]) => $spec];
+                return [strtolower($endpoint->methods[0]) => $spec];
             });
 
             $pathItem = $operations;
 
             // Placing all URL parameters at the path level, since it's the same path anyway
-            if (count($endpoints[0]['urlParameters'])) {
+            if (count($endpoints[0]->urlParameters)) {
                 $parameters = [];
-                foreach ($endpoints[0]['urlParameters'] as $name => $details) {
+                /**
+                 * @var string $name
+                 * @var UrlParameter $details
+                 */
+                foreach ($endpoints[0]->urlParameters as $name => $details) {
                     $parameterData = [
                         'in' => 'path',
                         'name' => $name,
-                        'description' => $details['description'] ?? '',
-                        'example' => $details['value'] ?? null,
+                        'description' => $details->description,
+                        'example' => $details->value,
                         // Currently, Swagger requires path parameters to be required
                         'required' => true,
                         'schema' => [
-                            'type' => $details['type'] ?? 'string',
+                            'type' => $details->type,
                         ],
                     ];
                     // Workaround for optional parameters
-                    if (empty($details['required'])) {
+                    if (empty($details->required)) {
                         $parameterData['description'] = rtrim('Optional parameter. ' . $parameterData['description']);
                         $parameterData['examples'] = [
                             'omitted' => [
@@ -136,27 +145,35 @@ class OpenAPISpecWriter
 
     /**
      * Add query parameters and headers.
+     *
+     * @param EndpointData $endpoint
+     *
+     * @return array
      */
-    protected function generateEndpointParametersSpec($endpoint)
+    protected function generateEndpointParametersSpec(EndpointData $endpoint): array
     {
         $parameters = [];
 
-        if (count($endpoint['queryParameters'])) {
-            foreach ($endpoint['queryParameters'] as $name => $details) {
+        if (count($endpoint->queryParameters)) {
+            /**
+             * @var string $name
+             * @var QueryParameter $details
+             */
+            foreach ($endpoint->queryParameters as $name => $details) {
                 $parameterData = [
                     'in' => 'query',
                     'name' => $name,
-                    'description' => $details['description'] ?? '',
-                    'example' => $details['value'] ?? null,
-                    'required' => $details['required'] ?? false,
+                    'description' => $details->description,
+                    'example' => $details->value,
+                    'required' => $details->required,
                     'schema' => $this->generateFieldData($details),
                 ];
                 $parameters[] = $parameterData;
             }
         }
 
-        if (count($endpoint['headers'])) {
-            foreach ($endpoint['headers'] as $name => $value) {
+        if (count($endpoint->headers)) {
+            foreach ($endpoint->headers as $name => $value) {
                 $parameters[] = [
                     'in' => 'header',
                     'name' => $name,
@@ -172,11 +189,11 @@ class OpenAPISpecWriter
         return $parameters;
     }
 
-    protected function generateEndpointRequestBodySpec($endpoint)
+    protected function generateEndpointRequestBodySpec(EndpointData $endpoint)
     {
         $body = [];
 
-        if (count($endpoint['bodyParameters'])) {
+        if (count($endpoint->bodyParameters)) {
             $schema = [
                 'type' => 'object',
                 'properties' => [],
@@ -185,7 +202,7 @@ class OpenAPISpecWriter
             $hasRequiredParameter = false;
             $hasFileParameter = false;
 
-            foreach ($endpoint['nestedBodyParameters'] as $name => $details) {
+            foreach ($endpoint->nestedBodyParameters as $name => $details) {
                 if ($details['required']) {
                     $hasRequiredParameter = true;
                     // Don't declare this earlier.
@@ -208,8 +225,8 @@ class OpenAPISpecWriter
             if ($hasFileParameter) {
                 // If there are file parameters, content type changes to multipart
                 $contentType = 'multipart/form-data';
-            } elseif (isset($endpoint['headers']['Content-Type'])) {
-                $contentType = $endpoint['headers']['Content-Type'];
+            } elseif (isset($endpoint->headers['Content-Type'])) {
+                $contentType = $endpoint->headers['Content-Type'];
             } else {
                 $contentType = 'application/json';
             }
@@ -222,23 +239,23 @@ class OpenAPISpecWriter
         return count($body) > 0 ? $body : $this->EMPTY;
     }
 
-    protected function generateEndpointResponsesSpec($endpoint)
+    protected function generateEndpointResponsesSpec(EndpointData $endpoint)
     {
         // See https://swagger.io/docs/specification/describing-responses/
         $responses = [];
 
-        foreach ($endpoint['responses'] as $response) {
+        foreach ($endpoint->responses as $response) {
             // OpenAPI groups responses by status code
             // Only one response type per status code, so only the last one will be used
-            if (intval($response['status']) === 204) {
+            if (intval($response->status) === 204) {
                 // Must not add content for 204
                 $responses[204] = [
                     'description' => $this->getResponseDescription($response),
                 ];
             } else {
-                $responses[$response['status']] = [
+                $responses[$response->status] = [
                     'description' => $this->getResponseDescription($response),
-                    'content' => $this->generateResponseContentSpec($response['content'], $endpoint),
+                    'content' => $this->generateResponseContentSpec($response->content, $endpoint),
                 ];
             }
         }
@@ -249,14 +266,14 @@ class OpenAPISpecWriter
 
     protected function getResponseDescription($response)
     {
-        if (Str::startsWith($response['content'], "<<binary>>")) {
-            return trim(str_replace("<<binary>>", "", $response['content']));
+        if (Str::startsWith($response->content, "<<binary>>")) {
+            return trim(str_replace("<<binary>>", "", $response->content));
         }
 
-        return strval($response['description'] ?? '');
+        return strval($response->description ?? '');
     }
 
-    protected function generateResponseContentSpec($responseContent, $endpoint)
+    protected function generateResponseContentSpec(?string $responseContent, EndpointData $endpoint)
     {
         if (Str::startsWith($responseContent, '<<binary>>')) {
             return [
@@ -274,7 +291,7 @@ class OpenAPISpecWriter
                 'application/json' => [
                     'schema' => [
                         'type' => 'object',
-                        // Sww https://swagger.io/docs/specification/data-models/data-types/#null
+                        // See https://swagger.io/docs/specification/data-models/data-types/#null
                         'nullable' => true,
                     ],
                 ],
@@ -344,8 +361,8 @@ class OpenAPISpecWriter
                         'example' => $value,
 
                     ];
-                    if (isset($endpoint['responseFields'][$key]['description'])) {
-                        $spec['description'] = $endpoint['responseFields'][$key]['description'];
+                    if (isset($endpoint->responseFields[$key]->description)) {
+                        $spec['description'] = $endpoint->responseFields[$key]->description;
                     }
                     if ($spec['type'] === 'array' && !empty($value)) {
                         $spec['items']['type'] = $this->convertScribeOrPHPTypeToOpenAPIType(gettype($value[0]));
@@ -436,32 +453,41 @@ class OpenAPISpecWriter
         }
     }
 
-    public function generateFieldData(array $field): array
+    /**
+     * @param Parameter|array $field
+     *
+     * @return array
+     */
+    public function generateFieldData($field): array
     {
-        if ($field['type'] === 'file') {
+        if (is_array($field)) {
+            $field = new Parameter($field);
+        }
+
+        if ($field->type === 'file') {
             // See https://swagger.io/docs/specification/describing-request-body/file-upload/
             return [
                 'type' => 'string',
                 'format' => 'binary',
-                'description' => $field['description'] ?? '',
+                'description' => $field->description ?: '',
             ];
-        } else if (Utils::isArrayType($field['type'])) {
-            $baseType = Utils::getBaseTypeFromArrayType($field['type']);
+        } else if (Utils::isArrayType($field->type)) {
+            $baseType = Utils::getBaseTypeFromArrayType($field->type);
             $fieldData = [
                 'type' => 'array',
-                'description' => $field['description'] ?? '',
-                'example' => $field['value'] ?? null,
+                'description' => $field->description ?? '',
+                'example' => $field->value ?? null,
                 'items' => Utils::isArrayType($baseType)
                     ? $this->generateFieldData([
                         'name' => '',
                         'type' => $baseType,
-                        'value' => ($field['value'] ?? [null])[0],
+                        'value' => ($field->value ?: [null])[0],
                     ])
                     : ['type' => $baseType],
             ];
 
-            if ($baseType === 'object' && !empty($field['__fields'])) {
-                foreach ($field['__fields'] as $fieldSimpleName => $subfield) {
+            if ($baseType === 'object' && !empty($field->__fields)) {
+                foreach ($field->__fields as $fieldSimpleName => $subfield) {
                     $fieldData['items']['properties'][$fieldSimpleName] = $this->generateFieldData($subfield);
                     if ($subfield['required']) {
                         $fieldData['items']['required'][] = $fieldSimpleName;
@@ -470,20 +496,20 @@ class OpenAPISpecWriter
             }
 
             return $fieldData;
-        } else if ($field['type'] === 'object') {
+        } else if ($field->type === 'object') {
             return [
                 'type' => 'object',
-                'description' => $field['description'] ?? '',
-                'example' => $field['value'] ?? null,
-                'properties' => collect($field['__fields'])->mapWithKeys(function ($subfield, $subfieldName) {
+                'description' => $field->description ?? '',
+                'example' => $field->value ?? null,
+                'properties' => collect($field->__fields)->mapWithKeys(function ($subfield, $subfieldName) {
                     return [$subfieldName => $this->generateFieldData($subfield)];
                 })->all(),
             ];
         } else {
             return [
-                'type' => $this->normalizeTypeName($field['type']),
-                'description' => $field['description'] ?? '',
-                'example' => $field['value'] ?? null,
+                'type' => $this->normalizeTypeName($field->type),
+                'description' => $field->description ?: '',
+                'example' => $field->value,
             ];
         }
     }

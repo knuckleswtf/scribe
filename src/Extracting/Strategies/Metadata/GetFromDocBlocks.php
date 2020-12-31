@@ -2,22 +2,18 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\Metadata;
 
-use Illuminate\Routing\Route;
+use Knuckles\Camel\Endpoint\EndpointData;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Mpociot\Reflection\DocBlock;
-use Mpociot\Reflection\DocBlock\Tag;
-use ReflectionClass;
-use ReflectionFunctionAbstract;
 
 class GetFromDocBlocks extends Strategy
 {
-    public $stage = 'metadata';
+    public string $stage = 'metadata';
 
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
+    public function __invoke(EndpointData $endpointData, array $routeRules)
     {
-        $docBlocks = RouteDocBlocker::getDocBlocksFromRoute($route);
-        /** @var DocBlock $methodDocBlock */
+        $docBlocks = RouteDocBlocker::getDocBlocksFromRoute($endpointData->route);
         $methodDocBlock = $docBlocks['method'];
         $classDocBlock = $docBlocks['class'];
 
@@ -37,13 +33,7 @@ class GetFromDocBlocks extends Strategy
         ];
     }
 
-    /**
-     * @param DocBlock $methodDocBlock Method docblock
-     * @param DocBlock $classDocBlock Class docblock
-     *
-     * @return bool
-     */
-    protected function getAuthStatusFromDocBlock(DocBlock $methodDocBlock, DocBlock $classDocBlock = null)
+    protected function getAuthStatusFromDocBlock(DocBlock $methodDocBlock, DocBlock $classDocBlock = null): bool
     {
         foreach ($methodDocBlock->getTags() as $tag) {
             if (strtolower($tag->getName()) === 'authenticated') {

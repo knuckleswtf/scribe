@@ -2,10 +2,9 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\BodyParameters;
 
+use Knuckles\Camel\Endpoint\EndpointData;
 use Dingo\Api\Http\FormRequest as DingoFormRequest;
 use Illuminate\Foundation\Http\FormRequest as LaravelFormRequest;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -24,15 +23,15 @@ use ReflectionUnionType;
 
 class GetFromFormRequest extends Strategy
 {
-    public $stage = 'bodyParameters';
+    public string $stage = 'bodyParameters';
 
     public static $MISSING_VALUE;
 
     use ParamHelpers;
 
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = []): array
+    public function __invoke(EndpointData $endpointData, array $routeRules): array
     {
-        return $this->getBodyParametersFromFormRequest($method, $route);
+        return $this->getBodyParametersFromFormRequest($endpointData->method, $endpointData->route);
     }
 
     public function getBodyParametersFromFormRequest(ReflectionFunctionAbstract $method, $route = null): array

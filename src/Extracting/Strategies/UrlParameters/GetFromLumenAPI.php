@@ -2,29 +2,26 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\UrlParameters;
 
+use Knuckles\Camel\Endpoint\EndpointData;
 use FastRoute\RouteParser\Std;
-use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\Utils;
-use ReflectionClass;
-use ReflectionFunctionAbstract;
 
 class GetFromLumenAPI extends Strategy
 {
-    public $stage = 'urlParameters';
-
     use ParamHelpers;
 
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
+    public string $stage = 'urlParameters';
+
+    public function __invoke(EndpointData $endpointData, array $routeRules)
     {
         if (!Utils::isLumen()) {
             return null;
         }
 
-        $path = $alreadyExtractedData['uri'];
+        $path = $endpointData->uri;
 
         $parameters = [];
         $possibilities = (new Std)->parse($path);

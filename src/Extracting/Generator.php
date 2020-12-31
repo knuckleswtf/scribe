@@ -2,17 +2,22 @@
 
 namespace Knuckles\Scribe\Extracting;
 
+use Knuckles\Camel\Endpoint\BodyParameter;
+use Knuckles\Camel\Endpoint\EndpointData;
+use Knuckles\Camel\Endpoint\Metadata;
+use Knuckles\Camel\Endpoint\Parameter;
 use Faker\Factory;
 use Illuminate\Http\Testing\File;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Knuckles\Camel\Endpoint\QueryParameter;
+use Knuckles\Camel\Endpoint\ResponseField;
+use Knuckles\Camel\Endpoint\UrlParameter;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\Utils as u;
-use ReflectionClass;
-use ReflectionFunctionAbstract;
 
 class Generator
 {
@@ -25,6 +30,38 @@ class Generator
      * @var Route|null
      */
     private static $routeBeingProcessed = null;
+
+    private static $defaultStrategies = [
+        'metadata' => [
+            \Knuckles\Scribe\Extracting\Strategies\Metadata\GetFromDocBlocks::class,
+        ],
+        'urlParameters' => [
+            \Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromLaravelAPI::class,
+            \Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromLumenAPI::class,
+            \Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromUrlParamTag::class,
+        ],
+        'queryParameters' => [
+            \Knuckles\Scribe\Extracting\Strategies\QueryParameters\GetFromQueryParamTag::class,
+        ],
+        'headers' => [
+            \Knuckles\Scribe\Extracting\Strategies\Headers\GetFromRouteRules::class,
+            \Knuckles\Scribe\Extracting\Strategies\Headers\GetFromHeaderTag::class,
+        ],
+        'bodyParameters' => [
+            \Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromFormRequest::class,
+            \Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromBodyParamTag::class,
+        ],
+        'responses' => [
+            \Knuckles\Scribe\Extracting\Strategies\Responses\UseTransformerTags::class,
+            \Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseTag::class,
+            \Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseFileTag::class,
+            \Knuckles\Scribe\Extracting\Strategies\Responses\UseApiResourceTags::class,
+            \Knuckles\Scribe\Extracting\Strategies\Responses\ResponseCalls::class,
+        ],
+        'responseFields' => [
+            \Knuckles\Scribe\Extracting\Strategies\ResponseFields\GetFromResponseFieldTag::class,
+        ],
+    ];
 
     public function __construct(DocumentationConfig $config = null)
     {
@@ -42,219 +79,152 @@ class Generator
 
     /**
      * @param Route $route
-     *
-     * @return mixed
-     */
-    public function getUri(Route $route)
-    {
-        return $route->uri();
-    }
-
-    /**
-     * @param Route $route
-     *
-     * @return mixed
-     */
-    public function getMethods(Route $route)
-    {
-        $methods = $route->methods();
-
-        // Laravel adds an automatic "HEAD" endpoint for each GET request, so we'll strip that out,
-        // but not if there's only one method (means it was intentional)
-        if (count($methods) === 1) {
-            return $methods;
-        }
-
-        return array_diff($methods, ['HEAD']);
-    }
-
-    /**
-     * @param \Illuminate\Routing\Route $route
      * @param array $routeRules Rules to apply when generating documentation for this route
      *
-     * @return array
+     * @return EndpointData
      * @throws \ReflectionException
      *
      */
-    public function processRoute(Route $route, array $routeRules = [])
+    public function processRoute(Route $route, array $routeRules = []): EndpointData
     {
         self::$routeBeingProcessed = $route;
 
-        [$controllerName, $methodName] = u::getRouteClassAndMethodNames($route);
-        $controller = new ReflectionClass($controllerName);
-        $method = u::getReflectedRouteMethod([$controllerName, $methodName]);
+        $endpointData = EndpointData::fromRoute($route);
+        $this->fetchMetadata($endpointData, $routeRules);
 
-        $parsedRoute = [
-            'id' => md5($this->getUri($route) . ':' . implode($this->getMethods($route))),
-            'methods' => $this->getMethods($route),
-            'uri' => $this->getUri($route),
-        ];
-        $metadata = $this->fetchMetadata($controller, $method, $route, $routeRules, $parsedRoute);
-        $parsedRoute['metadata'] = $metadata;
+        $this->fetchUrlParameters($endpointData, $routeRules);
+        $endpointData->cleanUrlParameters = self::cleanParams($endpointData->urlParameters);
 
-        $urlParameters = $this->fetchUrlParameters($controller, $method, $route, $routeRules, $parsedRoute);
-        $parsedRoute['urlParameters'] = $urlParameters;
-        $parsedRoute['cleanUrlParameters'] = self::cleanParams($urlParameters);
-        $parsedRoute['boundUri'] = u::getUrlWithBoundParameters($route, $parsedRoute['cleanUrlParameters']);
+        $this->addAuthField($endpointData);
 
-        $parsedRoute = $this->addAuthField($parsedRoute);
+        $this->fetchQueryParameters($endpointData, $routeRules);
+        $endpointData->cleanQueryParameters = self::cleanParams($endpointData->queryParameters);
 
-        $queryParameters = $this->fetchQueryParameters($controller, $method, $route, $routeRules, $parsedRoute);
-        $parsedRoute['queryParameters'] = $queryParameters;
-        $parsedRoute['cleanQueryParameters'] = self::cleanParams($queryParameters);
+        $this->fetchRequestHeaders($endpointData, $routeRules);
 
-        $headers = $this->fetchRequestHeaders($controller, $method, $route, $routeRules, $parsedRoute);
-        $parsedRoute['headers'] = $headers;
+        $this->fetchBodyParameters($endpointData, $routeRules);
+        $endpointData->cleanBodyParameters = self::cleanParams($endpointData->bodyParameters);
 
-        $bodyParameters = $this->fetchBodyParameters($controller, $method, $route, $routeRules, $parsedRoute);
-        $parsedRoute['bodyParameters'] = $bodyParameters;
-        $parsedRoute['cleanBodyParameters'] = self::cleanParams($bodyParameters);
-
-        if (count($parsedRoute['cleanBodyParameters']) && !isset($parsedRoute['headers']['Content-Type'])) {
+        if (count($endpointData->cleanBodyParameters) && !isset($endpointData->headers['Content-Type'])) {
             // Set content type if the user forgot to set it
-            $parsedRoute['headers']['Content-Type'] = 'application/json';
+            $endpointData->headers['Content-Type'] = 'application/json';
         }
-        [$files, $regularParameters] = collect($parsedRoute['cleanBodyParameters'])->partition(function ($example) {
+        [$files, $regularParameters] = collect($endpointData->cleanBodyParameters)->partition(function ($example) {
             return $example instanceof UploadedFile
                 || (is_array($example) && !empty($example[0]) && $example[0] instanceof UploadedFile);
         });
         if (count($files)) {
-            $parsedRoute['headers']['Content-Type'] = 'multipart/form-data';
+            $endpointData->headers['Content-Type'] = 'multipart/form-data';
         }
-        $parsedRoute['fileParameters'] = $files->toArray();
-        $parsedRoute['cleanBodyParameters'] = $regularParameters->toArray();
+        $endpointData->fileParameters = $files->toArray();
+        $endpointData->cleanBodyParameters = $regularParameters->toArray();
 
-        $responses = $this->fetchResponses($controller, $method, $route, $routeRules, $parsedRoute);
-        $parsedRoute['responses'] = $responses;
-        $parsedRoute['showresponse'] = !empty($responses);
+        $this->fetchResponses($endpointData, $routeRules);
 
-        $responseFields = $this->fetchResponseFields($controller, $method, $route, $routeRules, $parsedRoute);
-        $parsedRoute['responseFields'] = $responseFields;
+        $this->fetchResponseFields($endpointData, $routeRules);
 
-
-        $parsedRoute['nestedBodyParameters'] = self::nestArrayAndObjectFields($parsedRoute['bodyParameters']);
+        // Todo split these to writing section
+        $endpointData->nestedBodyParameters = self::nestArrayAndObjectFields($endpointData->bodyParameters);
+        $endpointData->boundUri = u::getUrlWithBoundParameters($endpointData->route, $endpointData->cleanUrlParameters);
+        $endpointData->showresponse = count($endpointData->responses) > 0;
 
         self::$routeBeingProcessed = null;
 
-        return $parsedRoute;
+        return $endpointData;
     }
 
-    protected function fetchMetadata(ReflectionClass $controller, ReflectionFunctionAbstract $method, Route $route, array $rulesToApply, array $context = [])
+    protected function fetchMetadata(EndpointData $endpointData, array $rulesToApply): void
     {
-        $context['metadata'] = [
+        $endpointData->metadata = new Metadata([
             'groupName' => $this->config->get('default_group', ''),
-            'groupDescription' => '',
-            'title' => '',
-            'description' => '',
-            'authenticated' => false,
-        ];
+        ]);
 
-        return $this->iterateThroughStrategies('metadata', $context, [$route, $controller, $method, $rulesToApply]);
+        $this->iterateThroughStrategies('metadata', $endpointData, $rulesToApply, function ($results) use ($endpointData) {
+            foreach ($results as $key => $item) {
+                $endpointData->metadata->$key = $item;
+            }
+        });
     }
 
-    protected function fetchUrlParameters(ReflectionClass $controller, ReflectionFunctionAbstract $method, Route $route, array $rulesToApply, array $context = [])
+    protected function fetchUrlParameters(EndpointData $endpointData, array $rulesToApply): void
     {
-        return $this->iterateThroughStrategies('urlParameters', $context, [$route, $controller, $method, $rulesToApply]);
+        $this->iterateThroughStrategies('urlParameters', $endpointData, $rulesToApply, function ($results) use ($endpointData) {
+            foreach ($results as $key => $item) {
+                $endpointData->urlParameters[$key] = UrlParameter::create($item);
+            }
+        });
     }
 
-    protected function fetchQueryParameters(ReflectionClass $controller, ReflectionFunctionAbstract $method, Route $route, array $rulesToApply, array $context = [])
+    protected function fetchQueryParameters(EndpointData $endpointData, array $rulesToApply): void
     {
-        return $this->iterateThroughStrategies('queryParameters', $context, [$route, $controller, $method, $rulesToApply]);
+        $this->iterateThroughStrategies('queryParameters', $endpointData, $rulesToApply, function ($results) use ($endpointData) {
+            foreach ($results as $key => $item) {
+                $endpointData->queryParameters[$key] = QueryParameter::create($item);
+            }
+        });
     }
 
-    protected function fetchBodyParameters(ReflectionClass $controller, ReflectionFunctionAbstract $method, Route $route, array $rulesToApply, array $context = [])
+    protected function fetchBodyParameters(EndpointData $endpointData, array $rulesToApply): void
     {
-        return $this->iterateThroughStrategies('bodyParameters', $context, [$route, $controller, $method, $rulesToApply]);
+        $this->iterateThroughStrategies('bodyParameters', $endpointData, $rulesToApply, function ($results) use ($endpointData) {
+            foreach ($results as $key => $item) {
+                $endpointData->bodyParameters[$key] = BodyParameter::create($item);
+            }
+        });
     }
 
-    protected function fetchResponses(ReflectionClass $controller, ReflectionFunctionAbstract $method, Route $route, array $rulesToApply, array $context = [])
+    protected function fetchResponses(EndpointData $endpointData, array $rulesToApply): void
     {
-        $responses = $this->iterateThroughStrategies('responses', $context, [$route, $controller, $method, $rulesToApply]);
-        if (count($responses)) {
-            return array_filter($responses, function ($response) {
-                return $response['content'] != null;
-            });
-        }
+        $this->iterateThroughStrategies('responses', $endpointData, $rulesToApply, function ($results) use ($endpointData) {
+            // Responses from different strategies are all added, not overwritten
+            $endpointData->responses->concat($results);
+        });
 
-        return [];
     }
 
-    protected function fetchResponseFields(ReflectionClass $controller, ReflectionFunctionAbstract $method, Route $route, array $rulesToApply, array $context = [])
+    protected function fetchResponseFields(EndpointData $endpointData, array $rulesToApply): void
     {
-        return $this->iterateThroughStrategies('responseFields', $context, [$route, $controller, $method, $rulesToApply]);
+        $this->iterateThroughStrategies('responseFields', $endpointData, $rulesToApply, function ($results) use ($endpointData) {
+            foreach ($results as $key => $item) {
+                $endpointData->responseFields[$key] = ResponseField::create($item);
+            }
+        });
     }
 
-    protected function fetchRequestHeaders(ReflectionClass $controller, ReflectionFunctionAbstract $method, Route $route, array $rulesToApply, array $context = [])
+    protected function fetchRequestHeaders(EndpointData $endpointData, array $rulesToApply): void
     {
-        $headers = $this->iterateThroughStrategies('headers', $context, [$route, $controller, $method, $rulesToApply]);
-
-        return array_filter($headers);
+        $this->iterateThroughStrategies('headers', $endpointData, $rulesToApply, function ($results) use ($endpointData) {
+            foreach ($results as $key => $item) {
+                if ($item) {
+                    $endpointData->headers[$key] = $item;
+                }
+            }
+        });
     }
 
-    protected function iterateThroughStrategies(string $stage, array $extractedData, array $arguments)
+    /**
+     * Iterate through all defined strategies for this stage.
+     * A strategy may return an array of attributes
+     * to be added to that stage data, or it may modify the stage data directly.
+     *
+     * @param string $stage
+     * @param EndpointData $endpointData
+     * @param array $rulesToApply
+     * @param callable $handler Function to run after each strategy returns its results (an array).
+     *
+     */
+    protected function iterateThroughStrategies(string $stage, EndpointData $endpointData, array $rulesToApply, callable $handler): void
     {
-        $defaultStrategies = [
-            'metadata' => [
-                \Knuckles\Scribe\Extracting\Strategies\Metadata\GetFromDocBlocks::class,
-            ],
-            'urlParameters' => [
-                \Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromLaravelAPI::class,
-                \Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromLumenAPI::class,
-                \Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromUrlParamTag::class,
-            ],
-            'queryParameters' => [
-                \Knuckles\Scribe\Extracting\Strategies\QueryParameters\GetFromQueryParamTag::class,
-            ],
-            'headers' => [
-                \Knuckles\Scribe\Extracting\Strategies\Headers\GetFromRouteRules::class,
-                \Knuckles\Scribe\Extracting\Strategies\Headers\GetFromHeaderTag::class,
-            ],
-            'bodyParameters' => [
-                \Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromFormRequest::class,
-                \Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromBodyParamTag::class,
-            ],
-            'responses' => [
-                \Knuckles\Scribe\Extracting\Strategies\Responses\UseTransformerTags::class,
-                \Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseTag::class,
-                \Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseFileTag::class,
-                \Knuckles\Scribe\Extracting\Strategies\Responses\UseApiResourceTags::class,
-                \Knuckles\Scribe\Extracting\Strategies\Responses\ResponseCalls::class,
-            ],
-            'responseFields' => [
-                \Knuckles\Scribe\Extracting\Strategies\ResponseFields\GetFromResponseFieldTag::class,
-            ],
-        ];
+        $strategies = $this->config->get("strategies.$stage", self::$defaultStrategies[$stage]);
 
-        // Use the default strategies for the stage, unless they were explicitly set
-        $strategies = $this->config->get("strategies.$stage", $defaultStrategies[$stage]);
-        $extractedData[$stage] = $extractedData[$stage] ?? [];
         foreach ($strategies as $strategyClass) {
             /** @var Strategy $strategy */
             $strategy = new $strategyClass($this->config);
-            $strategyArgs = $arguments;
-            $strategyArgs[] = $extractedData;
-            $results = $strategy(...$strategyArgs);
-            if (!is_null($results)) {
-                foreach ($results as $index => $item) {
-                    if ($stage == 'responses') {
-                        // Responses from different strategies are all added, not overwritten
-                        $extractedData[$stage][] = $item;
-                        continue;
-                    }
-                    // We're using a for loop rather than array_merge or +=
-                    // so it does not renumber numeric keys and also allows values to be overwritten
-
-                    // Don't allow overwriting if an empty value is trying to replace a set one
-                    if (!in_array($extractedData[$stage], [null, ''], true) && in_array($item, [null, ''], true)) {
-                        continue;
-                    } else {
-                        $extractedData[$stage][$index] = $item;
-                    }
-                }
+            $results = $strategy($endpointData, $rulesToApply);
+            if (is_array($results)) {
+                $handler($results);
             }
         }
-
-        return $extractedData[$stage];
     }
 
     /**
@@ -269,7 +239,7 @@ class Generator
      * It also filters out parameters which have null values and have 'required' as false.
      * It converts all file params that have string examples to actual files (instances of UploadedFile).
      *
-     * @param array $parameters
+     * @param array<string,Parameter> $parameters
      *
      * @return array
      */
@@ -277,20 +247,24 @@ class Generator
     {
         $cleanParameters = [];
 
+        /**
+         * @var string $paramName
+         * @var Parameter $details
+         */
         foreach ($parameters as $paramName => $details) {
             // Remove params which have no examples and are optional.
-            if (is_null($details['value']) && $details['required'] === false) {
+            if (is_null($details->value) && $details->required === false) {
                 continue;
             }
 
-            if (($details['type'] ?? '') === 'file' && is_string($details['value'])) {
-                $details['value'] = self::convertStringValueToUploadedFileInstance($details['value']);
+            if (($details->type ?? '') === 'file' && is_string($details->value)) {
+                $details->value = self::convertStringValueToUploadedFileInstance($details->value);
             }
 
             if (Str::contains($paramName, '.')) { // Object field (or array of objects)
-                self::setObject($cleanParameters, $paramName, $details['value'], $parameters, ($details['required'] ?? false));
+                self::setObject($cleanParameters, $paramName, $details->value, $parameters, $details->required);
             } else {
-                $cleanParameters[$paramName] = $details['value'];
+                $cleanParameters[$paramName] = $details->value;
             }
         }
 
@@ -314,14 +288,15 @@ class Generator
         }
 
         if (Arr::has($source, $baseNameInOriginalParams)) {
+            /** @var Parameter $parentData */
             $parentData = Arr::get($source, $baseNameInOriginalParams);
             // Path we use for data_set
             $dotPath = str_replace('[]', '.0', $path);
-            if ($parentData['type'] === 'object') {
+            if ($parentData->type === 'object') {
                 if (!Arr::has($results, $dotPath)) {
                     Arr::set($results, $dotPath, $value);
                 }
-            } else if ($parentData['type'] === 'object[]') {
+            } else if ($parentData->type === 'object[]') {
                 if (!Arr::has($results, $dotPath)) {
                     Arr::set($results, $dotPath, $value);
                 }
@@ -336,12 +311,11 @@ class Generator
         }
     }
 
-    public function addAuthField(array $parsedRoute): array
+    public function addAuthField(EndpointData $endpointData): void
     {
-        $parsedRoute['auth'] = null;
         $isApiAuthed = $this->config->get('auth.enabled', false);
-        if (!$isApiAuthed || !$parsedRoute['metadata']['authenticated']) {
-            return $parsedRoute;
+        if (!$isApiAuthed || !$endpointData->metadata->authenticated) {
+            return;
         }
 
         $strategy = $this->config->get('auth.in');
@@ -358,40 +332,38 @@ class Generator
         switch ($strategy) {
             case 'query':
             case 'query_or_body':
-                $parsedRoute['auth'] = "cleanQueryParameters.$parameterName." . ($valueToUse ?: $token);
-                $parsedRoute['queryParameters'][$parameterName] = [
+                $endpointData->auth = ["queryParameters", $parameterName, $valueToUse ?: $token];
+                $endpointData->queryParameters[$parameterName] = new QueryParameter([
                     'name' => $parameterName,
                     'type' => 'string',
                     'value' => $valueToDisplay ?: $token,
                     'description' => 'Authentication key.',
                     'required' => true,
-                ];
-                break;
+                ]);
+                return;
             case 'body':
-                $parsedRoute['auth'] = "cleanBodyParameters.$parameterName." . ($valueToUse ?: $token);
-                $parsedRoute['bodyParameters'][$parameterName] = [
+                $endpointData->auth = ["bodyParameters", $parameterName, $valueToUse ?: $token];
+                $endpointData->bodyParameters[$parameterName] = new BodyParameter([
                     'name' => $parameterName,
                     'type' => 'string',
                     'value' => $valueToDisplay ?: $token,
                     'description' => 'Authentication key.',
                     'required' => true,
-                ];
-                break;
+                ]);
+                return;
             case 'bearer':
-                $parsedRoute['auth'] = "headers.Authorization.Bearer " . ($valueToUse ?: $token);
-                $parsedRoute['headers']['Authorization'] = "Bearer " . ($valueToDisplay ?: $token);
-                break;
+                $endpointData->auth = ["headers", "Authorization", "Bearer " . ($valueToUse ?: $token)];
+                $endpointData->headers['Authorization'] = "Bearer " . ($valueToDisplay ?: $token);
+                return;
             case 'basic':
-                $parsedRoute['auth'] = "headers.Authorization.Basic " . ($valueToUse ?: base64_encode($token));
-                $parsedRoute['headers']['Authorization'] = "Basic " . ($valueToDisplay ?: base64_encode($token));
-                break;
+                $endpointData->auth = ["headers", "Authorization", "Basic " . ($valueToUse ?: base64_encode($token))];
+                $endpointData->headers['Authorization'] = "Basic " . ($valueToDisplay ?: base64_encode($token));
+                return;
             case 'header':
-                $parsedRoute['auth'] = "headers.$parameterName." . ($valueToUse ?: $token);
-                $parsedRoute['headers'][$parameterName] = $valueToDisplay ?: $token;
-                break;
+                $endpointData->auth = ["headers", $parameterName, $valueToUse ?: $token];
+                $endpointData->headers[$parameterName] = $valueToDisplay ?: $token;
+                return;
         }
-
-        return $parsedRoute;
     }
 
     protected static function convertStringValueToUploadedFileInstance(string $filePath): UploadedFile
@@ -405,8 +377,12 @@ class Generator
      * Subfields will be removed from the main parameter map
      * For instance, if $parameters is ['dad' => [], 'dad.cars' => [], 'dad.age' => []],
      * normalise this into ['dad' => [..., '__fields' => ['dad.cars' => [], 'dad.age' => []]]
+     *
+     * @param array $parameters
+     *
+     * @return array
      */
-    public static function nestArrayAndObjectFields(array $parameters)
+    public static function nestArrayAndObjectFields(array $parameters): array
     {
         // First, we'll make sure all object fields have parent fields properly set
         $normalisedParameters = [];
@@ -419,13 +395,13 @@ class Generator
                 // If the user didn't add a parent field, we'll conveniently add it for them
                 $parentName = rtrim(join('.', $parts), '[]');
                 if (empty($parameters[$parentName])) {
-                    $normalisedParameters[$parentName] = [
+                    $normalisedParameters[$parentName] = new Parameter([
                         "name" => $parentName,
                         "type" => "object",
                         "description" => "",
                         "required" => false,
-                        "value" => [$fieldName => $parameter['value']],
-                    ];
+                        "value" => [$fieldName => $parameter->value],
+                    ]);
                 }
             }
             $normalisedParameters[$name] = $parameter;
@@ -433,6 +409,7 @@ class Generator
 
         $finalParameters = [];
         foreach ($normalisedParameters as $name => $parameter) {
+            $parameter = $parameter->toArray();
             if (Str::contains($name, '.')) { // An object field
                 // Get the various pieces of the name
                 $parts = explode('.', $name);

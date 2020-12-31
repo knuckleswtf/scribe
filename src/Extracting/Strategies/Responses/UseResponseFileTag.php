@@ -2,12 +2,11 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 
-use Illuminate\Routing\Route;
+use Knuckles\Camel\Endpoint\EndpointData;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\AnnotationParser as a;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
-use Mpociot\Reflection\DocBlock;
 use Mpociot\Reflection\DocBlock\Tag;
 
 /**
@@ -15,20 +14,9 @@ use Mpociot\Reflection\DocBlock\Tag;
  */
 class UseResponseFileTag extends Strategy
 {
-    /**
-     * @param Route $route
-     * @param \ReflectionClass $controller
-     * @param \ReflectionFunctionAbstract $method
-     * @param array $routeRules
-     * @param array $alreadyExtractedData
-     *
-     * @return array|null
-     *
-     */
-    public function __invoke(Route $route, \ReflectionClass $controller, \ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
+    public function __invoke(EndpointData $endpointData, array $routeRules)
     {
-        $docBlocks = RouteDocBlocker::getDocBlocksFromRoute($route);
-        /** @var DocBlock $methodDocBlock */
+        $docBlocks = RouteDocBlocker::getDocBlocksFromRoute($endpointData->route);
         $methodDocBlock = $docBlocks['method'];
 
         return $this->getFileResponses($methodDocBlock->getTags());

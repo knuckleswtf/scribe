@@ -3,6 +3,7 @@
 namespace Knuckles\Scribe\Tests\Strategies\Responses;
 
 use Illuminate\Routing\Route;
+use Knuckles\Camel\Endpoint\EndpointData;
 use Knuckles\Scribe\Extracting\Strategies\Responses\UseApiResourceTags;
 use Knuckles\Scribe\ScribeServiceProvider;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
@@ -62,7 +63,7 @@ class UseApiResourceTagsTest extends TestCase
             new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
             new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser'),
         ];
-        $results = $strategy->getApiResourceResponse($tags, $route);
+        $results = $strategy->getApiResourceResponse($tags, EndpointData::fromRoute($route));
 
         $this->assertArraySubset([
             [
@@ -91,7 +92,7 @@ class UseApiResourceTagsTest extends TestCase
             new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
             new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser'),
         ];
-        $results = $strategy->getApiResourceResponse($tags, $route);
+        $results = $strategy->getApiResourceResponse($tags, EndpointData::fromRoute($route));
 
         $this->assertArraySubset([
             [
@@ -117,7 +118,7 @@ class UseApiResourceTagsTest extends TestCase
             new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
             new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser states=state1,random-state'),
         ];
-        $results = $strategy->getApiResourceResponse($tags, $route);
+        $results = $strategy->getApiResourceResponse($tags, EndpointData::fromRoute($route));
 
         $this->assertArraySubset([
             [
@@ -155,7 +156,7 @@ class UseApiResourceTagsTest extends TestCase
             new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
             new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser'),
         ];
-        $results = $strategy->getApiResourceResponse($tags, $route);
+        $results = $strategy->getApiResourceResponse($tags, EndpointData::fromRoute($route));
 
         $this->assertArraySubset([
             [
@@ -197,7 +198,7 @@ class UseApiResourceTagsTest extends TestCase
             new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
             new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser with=children'),
         ];
-        $results = $strategy->getApiResourceResponse($tags, $route);
+        $results = $strategy->getApiResourceResponse($tags, EndpointData::fromRoute($route));
 
         $this->assertArraySubset([
             [
@@ -232,7 +233,7 @@ class UseApiResourceTagsTest extends TestCase
             new Tag('apiResourceCollection', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
             new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser'),
         ];
-        $results = $strategy->getApiResourceResponse($tags, $route);
+        $results = $strategy->getApiResourceResponse($tags, EndpointData::fromRoute($route));
 
         $this->assertArraySubset([
             [
@@ -267,7 +268,7 @@ class UseApiResourceTagsTest extends TestCase
             new Tag('apiResourceCollection', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResourceCollection'),
             new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser'),
         ];
-        $results = $strategy->getApiResourceResponse($tags, $route);
+        $results = $strategy->getApiResourceResponse($tags, EndpointData::fromRoute($route));
 
         $this->assertArraySubset([
             [
@@ -305,7 +306,7 @@ class UseApiResourceTagsTest extends TestCase
             new Tag('apiResourceCollection', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResourceCollection'),
             new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser paginate=1,simple'),
         ];
-        $results = $strategy->getApiResourceResponse($tags, $route);
+        $results = $strategy->getApiResourceResponse($tags, EndpointData::fromRoute($route));
 
         $this->assertArraySubset([
             [

@@ -4,6 +4,7 @@ namespace Knuckles\Scribe\Tests\Unit;
 
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Illuminate\Routing\Route;
+use Knuckles\Camel\Endpoint\BodyParameter;
 use Knuckles\Scribe\Extracting\Generator;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
@@ -64,46 +65,55 @@ class GeneratorTest extends TestCase
     /** @test */
     public function clean_can_properly_parse_array_keys()
     {
-        $parameters = [
+        $parameters = BodyParameter::arrayOf([
             'object' => [
+                'name' => 'object',
                 'type' => 'object',
                 'value' => [],
             ],
             'object.key1' => [
+                'name' => 'object.key1',
                 'type' => 'string',
                 'value' => '43',
             ],
             'object.key2' => [
+                'name' => 'object.key2',
                 'type' => 'integer',
                 'value' => 77,
             ],
             'object.key3' => [
+                'name' => 'object.key3',
                 'type' => 'object',
                 'value'=> [],
             ],
             'object.key3.key1' => [
+                'name' => 'object.key3.key1',
                 'type' => 'string',
                 'value' => 'hoho',
             ],
             'list' => [
+                'name' => 'list',
                 'type' => 'integer[]',
                 'value' => [4],
             ],
             'list_of_objects' => [
+                'name' => 'list_of_objects',
                 'type' => 'object[]',
                 'value' => [[], []],
             ],
             'list_of_objects[].key1' => [
+                'name' => 'list_of_objects.key1',
                 'type' => 'string',
                 'required' => true,
                 'value' => 'John',
             ],
             'list_of_objects[].key2' => [
+                'name' => 'list_of_objects.key2',
                 'type' => 'boolean',
                 'required' => true,
                 'value' => false,
             ],
-        ];
+        ]);
 
         $cleanBodyParameters = Generator::cleanParams($parameters);
 
@@ -133,7 +143,7 @@ class GeneratorTest extends TestCase
     public function does_not_generate_values_for_excluded_params_and_excludes_them_from_clean_params()
     {
         $route = $this->createRoute('GET', '/api/test', 'withExcludedExamples');
-        $parsed = $this->generator->processRoute($route);
+        $parsed = $this->generator->processRoute($route)->toArray();
         $cleanBodyParameters = $parsed['cleanBodyParameters'];
         $cleanQueryParameters = $parsed['cleanQueryParameters'];
         $bodyParameters = $parsed['bodyParameters'];
@@ -167,19 +177,19 @@ class GeneratorTest extends TestCase
     {
         $route = $this->createRoute('GET', '/get', 'withEndpointDescription');
         $parsed = $this->generator->processRoute($route);
-        $this->assertEquals(['GET'], $parsed['methods']);
+        $this->assertEquals(['GET'], $parsed->methods);
 
         $route = $this->createRoute('POST', '/post', 'withEndpointDescription');
         $parsed = $this->generator->processRoute($route);
-        $this->assertEquals(['POST'], $parsed['methods']);
+        $this->assertEquals(['POST'], $parsed->methods);
 
         $route = $this->createRoute('PUT', '/put', 'withEndpointDescription');
         $parsed = $this->generator->processRoute($route);
-        $this->assertEquals(['PUT'], $parsed['methods']);
+        $this->assertEquals(['PUT'], $parsed->methods);
 
         $route = $this->createRoute('DELETE', '/delete', 'withEndpointDescription');
         $parsed = $this->generator->processRoute($route);
-        $this->assertEquals(['DELETE'], $parsed['methods']);
+        $this->assertEquals(['DELETE'], $parsed->methods);
     }
 
     /**
@@ -190,9 +200,10 @@ class GeneratorTest extends TestCase
     {
         $route = $this->createRoute('POST', '/withAuthenticatedTag', 'withAuthenticatedTag', true);
         $generator = new Generator(new DocumentationConfig(array_merge($this->config, $config)));
-        $parsed = $generator->processRoute($route, []);
+        $parsed = $generator->processRoute($route, [])->toArray();
         $this->assertNotNull($parsed[$expected['where']][$expected['name']]);
-        $this->assertStringStartsWith("{$expected['where']}.{$expected['name']}.", $parsed['auth']);
+        $this->assertEquals($expected['where'], $parsed['auth'][0]);
+        $this->assertEquals($expected['name'], $parsed['auth'][1]);
     }
 
     /** @test */
@@ -202,20 +213,20 @@ class GeneratorTest extends TestCase
 
         $paramName = 'room_id';
         $results = [];
-        $results[$this->generator->processRoute($route)['cleanBodyParameters'][$paramName]] = true;
-        $results[$this->generator->processRoute($route)['cleanBodyParameters'][$paramName]] = true;
-        $results[$this->generator->processRoute($route)['cleanBodyParameters'][$paramName]] = true;
-        $results[$this->generator->processRoute($route)['cleanBodyParameters'][$paramName]] = true;
-        $results[$this->generator->processRoute($route)['cleanBodyParameters'][$paramName]] = true;
+        $results[$this->generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
+        $results[$this->generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
+        $results[$this->generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
+        $results[$this->generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
+        $results[$this->generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
         // Examples should have different values
         $this->assertNotEquals(count($results), 1);
 
         $generator = new Generator(new DocumentationConfig($this->config + ['faker_seed' => 12345]));
         $results = [];
-        $results[$generator->processRoute($route)['cleanBodyParameters'][$paramName]] = true;
-        $results[$generator->processRoute($route)['cleanBodyParameters'][$paramName]] = true;
-        $results[$generator->processRoute($route)['cleanBodyParameters'][$paramName]] = true;
-        $results[$generator->processRoute($route)['cleanBodyParameters'][$paramName]] = true;
+        $results[$generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
+        $results[$generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
+        $results[$generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
+        $results[$generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
         // Examples should have same values
         $this->assertEquals(count($results), 1);
     }
@@ -227,8 +238,8 @@ class GeneratorTest extends TestCase
 
         $parsed = $this->generator->processRoute($route);
 
-        $this->assertSame('Example title.', $parsed['metadata']['title']);
-        $this->assertSame("This will be the long description.\nIt can also be multiple lines long.", $parsed['metadata']['description']);
+        $this->assertSame('Example title.', $parsed->metadata->title);
+        $this->assertSame("This will be the long description.\nIt can also be multiple lines long.", $parsed->metadata->description);
     }
 
     /** @test */
@@ -249,12 +260,12 @@ class GeneratorTest extends TestCase
 
         $parsed = $this->generator->processRoute($route);
 
-        $this->assertSame('A short title.', $parsed['metadata']['title']);
-        $this->assertSame("A longer description.\nCan be multiple lines.", $parsed['metadata']['description']);
-        $this->assertCount(1, $parsed['queryParameters']);
-        $this->assertCount(1, $parsed['bodyParameters']);
-        $this->assertSame('The id of the location.', $parsed['queryParameters']['location_id']['description']);
-        $this->assertSame('Name of the location', $parsed['bodyParameters']['name']['description']);
+        $this->assertSame('A short title.', $parsed->metadata->title);
+        $this->assertSame("A longer description.\nCan be multiple lines.", $parsed->metadata->description);
+        $this->assertCount(1, $parsed->queryParameters);
+        $this->assertCount(1, $parsed->bodyParameters);
+        $this->assertSame('The id of the location.', $parsed->queryParameters['location_id']->description);
+        $this->assertSame('Name of the location', $parsed->bodyParameters['name']->description);
     }
 
     public function createRoute(string $httpMethod, string $path, string $controllerMethod, $register = false, $class = TestController::class)
@@ -324,7 +335,7 @@ class GeneratorTest extends TestCase
                 ],
                 [
                     'name' => 'apiKey',
-                    'where' => 'cleanQueryParameters',
+                    'where' => 'queryParameters',
                 ]
             ],
             [
@@ -337,7 +348,7 @@ class GeneratorTest extends TestCase
                 ],
                 [
                     'name' => 'access_token',
-                    'where' => 'cleanBodyParameters',
+                    'where' => 'bodyParameters',
                 ]
             ],
         ];

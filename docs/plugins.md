@@ -233,7 +233,7 @@ See [the documentation on body parameters](./documenting/documenting-endpoint-bo
 
 ```php
 
-    public function __invoke(Route $route, \ReflectionClass $controller, \ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
+    public function __invoke(EndpointData $endpointData, array $routeRules)
     {
         return [
             [

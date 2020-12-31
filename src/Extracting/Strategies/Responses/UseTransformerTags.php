@@ -2,10 +2,10 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 
+use Knuckles\Camel\Endpoint\EndpointData;
 use Exception;
 use Illuminate\Database\Eloquent\Model as IlluminateModel;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use Knuckles\Scribe\Extracting\DatabaseTransactionHelpers;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
@@ -17,7 +17,6 @@ use Knuckles\Scribe\Tools\Utils;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
-use Mpociot\Reflection\DocBlock;
 use Mpociot\Reflection\DocBlock\Tag;
 use ReflectionClass;
 use ReflectionFunctionAbstract;
@@ -29,21 +28,9 @@ class UseTransformerTags extends Strategy
 {
     use DatabaseTransactionHelpers;
 
-    /**
-     * @param Route $route
-     * @param ReflectionClass $controller
-     * @param ReflectionFunctionAbstract $method
-     * @param array $rulesToApply
-     * @param array $alreadyExtractedData
-     *
-     * @return array|null
-     * @throws \Exception
-     *
-     */
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $rulesToApply, array $alreadyExtractedData = [])
+    public function __invoke(EndpointData $endpointData, array $routeRules)
     {
-        $docBlocks = RouteDocBlocker::getDocBlocksFromRoute($route);
-        /** @var DocBlock $methodDocBlock */
+        $docBlocks = RouteDocBlocker::getDocBlocksFromRoute($endpointData->route);
         $methodDocBlock = $docBlocks['method'];
 
         $this->startDbTransaction();
@@ -51,7 +38,7 @@ class UseTransformerTags extends Strategy
         try {
             return $this->getTransformerResponse($methodDocBlock->getTags());
         } catch (Exception $e) {
-            c::warn('Exception thrown when fetching transformer response for [' . implode(',', $route->methods) . "] {$route->uri}.");
+            c::warn('Exception thrown when fetching transformer response for '. $endpointData->name());
             e::dumpExceptionIfVerbose($e);
 
             return null;

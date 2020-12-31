@@ -87,15 +87,13 @@ class GenerateDocumentation extends Command
      * @param MatchedRoute[] $matches
      *
      * @return array
-     * @throws \ReflectionException
      *
      */
-    private function processRoutes(array $matches)
+    private function processRoutes(array $matches): array
     {
         $generator = new Generator($this->docConfig);
         $parsedRoutes = [];
         foreach ($matches as $routeItem) {
-            /** @var Route $route */
             $route = $routeItem->getRoute();
 
             $routeControllerAndMethod = u::getRouteClassAndMethodNames($route);
@@ -127,12 +125,7 @@ class GenerateDocumentation extends Command
         return $parsedRoutes;
     }
 
-    /**
-     * @param array $routeControllerAndMethod
-     *
-     * @return bool
-     */
-    private function isValidRoute(array $routeControllerAndMethod = null)
+    private function isValidRoute(array $routeControllerAndMethod = null): bool
     {
         if (is_array($routeControllerAndMethod)) {
             [$classOrObject, $method] = $routeControllerAndMethod;
@@ -145,14 +138,7 @@ class GenerateDocumentation extends Command
         return ! is_callable($routeControllerAndMethod) && ! is_null($routeControllerAndMethod);
     }
 
-    /**
-     * @param array $routeControllerAndMethod
-     *
-     * @throws ReflectionException
-     *
-     * @return bool
-     */
-    private function doesControllerMethodExist(array $routeControllerAndMethod)
+    private function doesControllerMethodExist(array $routeControllerAndMethod): bool
     {
         [$class, $method] = $routeControllerAndMethod;
         $reflection = new ReflectionClass($class);
@@ -164,14 +150,7 @@ class GenerateDocumentation extends Command
         return false;
     }
 
-    /**
-     * @param array $routeControllerAndMethod
-     *
-     * @throws ReflectionException
-     *
-     * @return bool
-     */
-    private function isRouteHiddenFromDocumentation(array $routeControllerAndMethod)
+    private function isRouteHiddenFromDocumentation(array $routeControllerAndMethod): bool
     {
         if (! ($class = $routeControllerAndMethod[0]) instanceof \Closure) {
             $classDocBlock = new DocBlock((new ReflectionClass($class))->getDocComment() ?: '');

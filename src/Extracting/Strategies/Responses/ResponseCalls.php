@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 
+use Knuckles\Camel\Endpoint\EndpointData;
 use Dingo\Api\Dispatcher;
 use Dingo\Api\Routing\Route as DingoRoute;
 use Exception;
@@ -27,39 +28,47 @@ class ResponseCalls extends Strategy
 {
     use ParamHelpers, DatabaseTransactionHelpers;
 
-    /**
-     * @param Route $route
-     * @param ReflectionClass $controller
-     * @param ReflectionFunctionAbstract $method
-     * @param array $routeRules
-     * @param array $alreadyExtractedData
-     *
-     * @return array|null
-     */
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
+    public function __invoke(EndpointData $endpointData, array $routeRules)
     {
-        return $this->makeResponseCallIfEnabledAndNoSuccessResponses($route, $routeRules, $alreadyExtractedData);
+        return $this->makeResponseCallIfEnabledAndNoSuccessResponses($endpointData, $routeRules);
     }
 
-    public function makeResponseCallIfEnabledAndNoSuccessResponses(Route $route, array $routeRules, array $context)
+    public function makeResponseCallIfEnabledAndNoSuccessResponses(EndpointData $endpointData, array $routeRules)
     {
         $rulesToApply = $routeRules['response_calls'] ?? [];
-        if (!$this->shouldMakeApiCall($route, $rulesToApply, $context)) {
+        if (!$this->shouldMakeApiCall($endpointData, $rulesToApply)) {
             return null;
         }
 
-        return $this->makeResponseCall($route, $context, $rulesToApply);
+        return $this->makeResponseCall($endpointData, $rulesToApply);
     }
 
-    public function makeResponseCall(Route $route, array $context, array $rulesToApply)
+    public function makeResponseCall(EndpointData $endpointData, array $rulesToApply)
     {
         $this->configureEnvironment($rulesToApply);
 
         // Mix in parsed parameters with manually specified parameters.
-        $context = $this->setAuthFieldProperly($context, $context['auth'] ?? null);
-        $bodyParameters = array_merge($context['cleanBodyParameters'] ?? [], $rulesToApply['bodyParams'] ?? []);
-        $queryParameters = array_merge($context['cleanQueryParameters'] ?? [], $rulesToApply['queryParams'] ?? []);
-        $urlParameters = $context['cleanUrlParameters'] ?? [];
+        $bodyParameters = array_merge($endpointData->cleanBodyParameters, $rulesToApply['bodyParams'] ?? []);
+        $queryParameters = array_merge($endpointData->cleanQueryParameters, $rulesToApply['queryParams'] ?? []);
+        $urlParameters = $endpointData->cleanUrlParameters;
+        $headers = $endpointData->headers;
+
+        if ($endpointData->auth) {
+            [$where, $name, $value] = $endpointData->auth;
+            switch ($where) {
+                case 'queryParameters':
+                    $queryParameters[$name] = $value;
+                    break;
+                case 'bodyParameters':
+                    $bodyParameters[$name] = $value;
+                    break;
+                case 'headers':
+                    $headers[$name] = $value;
+                    break;
+                default:
+                    throw new \InvalidArgumentException("Unknown auth location: $where");
+            }
+        }
 
         $hardcodedFileParams = $rulesToApply['fileParams'] ?? [];
         $hardcodedFileParams = collect($hardcodedFileParams)->map(function ($filePath) {
@@ -68,12 +77,12 @@ class ResponseCalls extends Strategy
                 $filePath, $fileName, mime_content_type($filePath), 0, false
             );
         })->toArray();
-        $fileParameters = array_merge($context['fileParameters'] ?? [], $hardcodedFileParams);
+        $fileParameters = array_merge($endpointData->fileParameters, $hardcodedFileParams);
 
-        $request = $this->prepareRequest($route, $rulesToApply, $urlParameters, $bodyParameters, $queryParameters, $fileParameters, $context['headers'] ?? []);
+        $request = $this->prepareRequest($endpointData->route, $rulesToApply, $urlParameters, $bodyParameters, $queryParameters, $fileParameters, $headers);
 
         try {
-            $response = $this->makeApiCall($request, $route);
+            $response = $this->makeApiCall($request, $endpointData->route);
             $response = [
                 [
                     'status' => $response->getStatusCode(),
@@ -81,7 +90,7 @@ class ResponseCalls extends Strategy
                 ],
             ];
         } catch (Exception $e) {
-            c::warn('Exception thrown during response call for [' . implode(',', $route->methods) . "] {$route->uri}.");
+            c::warn('Exception thrown during response call for' . $endpointData->name());
             e::dumpExceptionIfVerbose($e);
 
             $response = null;
@@ -272,24 +281,6 @@ class ResponseCalls extends Strategy
     }
 
     /**
-     * @param array $context
-     * @param string $authInfo in the format "<location>.<paramName>.<value>" eg "headers.Authorization.Bearer ahjuda"
-     *
-     * @return array
-     */
-    private function setAuthFieldProperly(array $context, ?string $authInfo)
-    {
-        if (!$authInfo) {
-            return $context;
-        }
-
-        [$where, $name, $value] = explode('.', $authInfo, 3);
-        $context[$where][$name] = $value;
-
-        return $context;
-    }
-
-    /**
      * @param Request $request
      *
      * @param Route $route
@@ -336,13 +327,7 @@ class ResponseCalls extends Strategy
         return $response;
     }
 
-    /**
-     * @param Route $route
-     * @param array $rulesToApply
-     *
-     * @return bool
-     */
-    protected function shouldMakeApiCall(Route $route, array $rulesToApply, array $context): bool
+    protected function shouldMakeApiCall(EndpointData $endpointData, array $rulesToApply): bool
     {
         $allowedMethods = $rulesToApply['methods'] ?? [];
         if (empty($allowedMethods)) {
@@ -350,10 +335,7 @@ class ResponseCalls extends Strategy
         }
 
         // Don't attempt a response call if there are already successful responses
-        $successResponses = collect($context['responses'] ?? [])->filter(function ($response) {
-            return ((string)$response['status'])[0] == '2';
-        })->count();
-        if ($successResponses) {
+        if ($endpointData->responses->hasSuccessResponse()) {
             return false;
         }
 
@@ -365,7 +347,7 @@ class ResponseCalls extends Strategy
             return true;
         }
 
-        $routeMethods = $this->getMethods($route);
+        $routeMethods = $this->getMethods($endpointData->route);
         if (in_array(array_shift($routeMethods), $allowedMethods)) {
             return true;
         }

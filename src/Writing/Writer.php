@@ -409,6 +409,7 @@ class Writer
             $groupDescription = Arr::first($routesInGroup, function ($route) {
                     return $route['metadata']['groupDescription'] !== '';
                 })['metadata']['groupDescription'] ?? '';
+
             $groupMarkdown = view('scribe::partials.group')
                 ->with('groupName', $groupName)
                 ->with('groupDescription', $groupDescription)

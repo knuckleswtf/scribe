@@ -2,36 +2,34 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\ResponseFields;
 
-use Illuminate\Routing\Route;
+use Knuckles\Camel\Endpoint\EndpointData;
+use Knuckles\Camel\Endpoint\Response;
+use Knuckles\Camel\Endpoint\ResponseCollection;
 use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
-use Mpociot\Reflection\DocBlock;
 use Mpociot\Reflection\DocBlock\Tag;
-use ReflectionClass;
-use ReflectionFunctionAbstract;
 
 class GetFromResponseFieldTag extends Strategy
 {
-    public $stage = 'responseFields';
+    public string $stage = 'responseFields';
 
     use ParamHelpers;
 
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
+    public function __invoke(EndpointData $endpointData, array $routeRules)
     {
-        /** @var DocBlock $methodDocBlock */
-        $methodDocBlock = RouteDocBlocker::getDocBlocksFromRoute($route)['method'];
+        $methodDocBlock = RouteDocBlocker::getDocBlocksFromRoute($endpointData->route)['method'];
 
-        return $this->getResponseFieldsFromDocBlock($methodDocBlock->getTags(), $alreadyExtractedData['responses']);
+        return $this->getResponseFieldsFromDocBlock($methodDocBlock->getTags(), $endpointData->responses);
     }
 
     /**
      * @param Tag[] $tags
-     * @param array $responses
+     * @param ResponseCollection|null $responses
      *
      * @return array
      */
-    public function getResponseFieldsFromDocBlock($tags, $responses)
+    public function getResponseFieldsFromDocBlock(array $tags, ResponseCollection $responses = null): array
     {
         $parameters = collect($tags)
             ->filter(function ($tag) {
@@ -61,19 +59,19 @@ class GetFromResponseFieldTag extends Strategy
                     $description = trim("$type $description");
 
                     // Try to get a type from first 2xx response
-                    $validResponse = collect($responses)->first(function ($r) {
-                        $status = intval($r['status']);
+                    $validResponse = collect($responses ?: [])->first(function (Response $r) {
+                        $status = intval($r->status);
                         return $status >= 200 && $status < 300;
                     });
-                    $validResponse = json_decode($validResponse['content'] ?? null, true);
-                    if (!$validResponse) {
+                    $validResponseContent = json_decode($validResponse->content ?? null, true);
+                    if (!$validResponseContent) {
                         $type = '';
                     } else {
                         $nonexistent = new \stdClass();
-                        $value = $validResponse[$name]
-                            ?? $validResponse['data'][$name] // Maybe it's a Laravel ApiResource
-                            ?? $validResponse[0][$name] // Maybe it's a list
-                            ?? $validResponse['data'][0][$name] // Maybe an Api Resource Collection?
+                        $value = $validResponseContent[$name]
+                            ?? $validResponseContent['data'][$name] // Maybe it's a Laravel ApiResource
+                            ?? $validResponseContent[0][$name] // Maybe it's a list
+                            ?? $validResponseContent['data'][0][$name] // Maybe an Api Resource Collection?
                             ?? $nonexistent;
                         if ($value !== $nonexistent) {
                             $type =  $this->normalizeTypeName(gettype($value));

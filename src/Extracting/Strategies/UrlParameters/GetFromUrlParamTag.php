@@ -2,9 +2,9 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\UrlParameters;
 
+use Knuckles\Camel\Endpoint\EndpointData;
 use Dingo\Api\Http\FormRequest as DingoFormRequest;
 use Illuminate\Foundation\Http\FormRequest as LaravelFormRequest;
-use Illuminate\Routing\Route;
 use Illuminate\Support\Str;
 use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
@@ -12,18 +12,18 @@ use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Mpociot\Reflection\DocBlock;
 use Mpociot\Reflection\DocBlock\Tag;
 use ReflectionClass;
-use ReflectionFunctionAbstract;
+use ReflectionException;
 use ReflectionUnionType;
 
 class GetFromUrlParamTag extends Strategy
 {
-    public $stage = 'urlParameters';
-
     use ParamHelpers;
 
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
+    public string $stage = 'urlParameters';
+
+    public function __invoke(EndpointData $endpointData, array $routeRules)
     {
-        foreach ($method->getParameters() as $param) {
+        foreach ($endpointData->method->getParameters() as $param) {
             $paramType = $param->getType();
             if ($paramType === null) {
                 continue;
@@ -38,7 +38,7 @@ class GetFromUrlParamTag extends Strategy
 
             try {
                 $parameterClass = new ReflectionClass($parameterClassName);
-            } catch (\ReflectionException $e) {
+            } catch (ReflectionException $e) {
                 continue;
             }
 
@@ -54,8 +54,7 @@ class GetFromUrlParamTag extends Strategy
             }
         }
 
-        /** @var DocBlock $methodDocBlock */
-        $methodDocBlock = RouteDocBlocker::getDocBlocksFromRoute($route)['method'];
+        $methodDocBlock = RouteDocBlocker::getDocBlocksFromRoute($endpointData->route)['method'];
 
         return $this->getUrlParametersFromDocBlock($methodDocBlock->getTags());
     }

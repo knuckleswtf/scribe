@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\BodyParameters;
 
+use Knuckles\Camel\Endpoint\EndpointData;
 use Dingo\Api\Http\FormRequest as DingoFormRequest;
 use Illuminate\Foundation\Http\FormRequest as LaravelFormRequest;
 use Illuminate\Routing\Route;
@@ -9,7 +10,6 @@ use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Mpociot\Reflection\DocBlock;
-use Mpociot\Reflection\DocBlock\Tag;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionFunctionAbstract;
@@ -17,13 +17,13 @@ use ReflectionUnionType;
 
 class GetFromBodyParamTag extends Strategy
 {
-    public $stage = 'bodyParameters';
+    public string $stage = 'bodyParameters';
 
     use ParamHelpers;
 
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
+    public function __invoke(EndpointData $endpointData, array $routeRules)
     {
-        return $this->getBodyParametersFromDocBlockInFormRequestOrMethod($route, $method);
+        return $this->getBodyParametersFromDocBlockInFormRequestOrMethod($endpointData->route, $endpointData->method);
     }
 
     public function getBodyParametersFromDocBlockInFormRequestOrMethod(Route $route, ReflectionFunctionAbstract $method): array
@@ -59,7 +59,6 @@ class GetFromBodyParamTag extends Strategy
             }
         }
 
-        /** @var DocBlock $methodDocBlock */
         $methodDocBlock = RouteDocBlocker::getDocBlocksFromRoute($route)['method'];
 
         return $this->getBodyParametersFromDocBlock($methodDocBlock->getTags());

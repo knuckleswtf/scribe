@@ -2,27 +2,27 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\Headers;
 
+use Knuckles\Camel\Endpoint\EndpointData;
 use Dingo\Api\Http\FormRequest as DingoFormRequest;
 use Illuminate\Foundation\Http\FormRequest as LaravelFormRequest;
-use Illuminate\Routing\Route;
 use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Mpociot\Reflection\DocBlock;
 use Mpociot\Reflection\DocBlock\Tag;
 use ReflectionClass;
-use ReflectionFunctionAbstract;
+use ReflectionException;
 use ReflectionUnionType;
 
 class GetFromHeaderTag extends Strategy
 {
-    public $stage = 'headers';
-
     use ParamHelpers;
 
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
+    public string $stage = 'headers';
+
+    public function __invoke(EndpointData $endpointData, array $routeRules)
     {
-        foreach ($method->getParameters() as $param) {
+        foreach ($endpointData->method->getParameters() as $param) {
             $paramType = $param->getType();
             if ($paramType === null) {
                 continue;
@@ -37,7 +37,7 @@ class GetFromHeaderTag extends Strategy
 
             try {
                 $parameterClass = new ReflectionClass($parameterClassName);
-            } catch (\ReflectionException $e) {
+            } catch (ReflectionException $e) {
                 continue;
             }
 
@@ -53,8 +53,7 @@ class GetFromHeaderTag extends Strategy
             }
         }
 
-        /** @var DocBlock $methodDocBlock */
-        $methodDocBlock = RouteDocBlocker::getDocBlocksFromRoute($route)['method'];
+        $methodDocBlock = RouteDocBlocker::getDocBlocksFromRoute($endpointData->route)['method'];
 
         return $this->getHeadersFromDocBlock($methodDocBlock->getTags());
     }

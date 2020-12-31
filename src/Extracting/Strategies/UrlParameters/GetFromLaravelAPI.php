@@ -2,21 +2,19 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\UrlParameters;
 
-use Illuminate\Routing\Route;
+use Knuckles\Camel\Endpoint\EndpointData;
 use Illuminate\Support\Str;
 use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\Utils;
-use ReflectionClass;
-use ReflectionFunctionAbstract;
 
 class GetFromLaravelAPI extends Strategy
 {
-    public $stage = 'urlParameters';
-
     use ParamHelpers;
 
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
+    public string $stage = 'urlParameters';
+
+    public function __invoke(EndpointData $endpointData, array $routeRules)
     {
         if (Utils::isLumen()) {
             return null;
@@ -24,7 +22,7 @@ class GetFromLaravelAPI extends Strategy
 
         $parameters = [];
 
-        $path = $alreadyExtractedData['uri'];
+        $path = $endpointData->uri;
         preg_match_all('/\{(.*?)\}/', $path, $matches);
 
         foreach ($matches[1] as $match) {

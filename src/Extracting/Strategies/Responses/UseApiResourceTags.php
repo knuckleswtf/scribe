@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 
+use Knuckles\Camel\Endpoint\EndpointData;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -10,7 +11,6 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
-use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use Knuckles\Scribe\Extracting\DatabaseTransactionHelpers;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
@@ -21,8 +21,6 @@ use Knuckles\Scribe\Tools\ErrorHandlingUtils as e;
 use Knuckles\Scribe\Tools\Utils;
 use Mpociot\Reflection\DocBlock;
 use Mpociot\Reflection\DocBlock\Tag;
-use ReflectionClass;
-use ReflectionFunctionAbstract;
 
 /**
  * Parse an Eloquent API resource response from the docblock ( @apiResource || @apiResourcecollection ).
@@ -31,29 +29,17 @@ class UseApiResourceTags extends Strategy
 {
     use DatabaseTransactionHelpers;
 
-    /**
-     * @param Route $route
-     * @param ReflectionClass $controller
-     * @param ReflectionFunctionAbstract $method
-     * @param array $rulesToApply
-     * @param array $alreadyExtractedData
-     *
-     * @return array|null
-     * @throws Exception
-     *
-     */
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $rulesToApply, array $alreadyExtractedData = [])
+    public function __invoke(EndpointData $endpointData, array $routeRules)
     {
-        $docBlocks = RouteDocBlocker::getDocBlocksFromRoute($route);
-        /** @var DocBlock $methodDocBlock */
+        $docBlocks = RouteDocBlocker::getDocBlocksFromRoute($endpointData->route);
         $methodDocBlock = $docBlocks['method'];
 
         $this->startDbTransaction();
 
         try {
-            return $this->getApiResourceResponse($methodDocBlock->getTags(), $route, $alreadyExtractedData);
+            return $this->getApiResourceResponse($methodDocBlock->getTags(), $endpointData);
         } catch (Exception $e) {
-            c::warn('Exception thrown when fetching Eloquent API resource response for [' . implode(',', $route->methods) . "] {$route->uri}.");
+            c::warn('Exception thrown when fetching Eloquent API resource response for ' . $endpointData->name());
             e::dumpExceptionIfVerbose($e);
 
             return null;
@@ -65,16 +51,13 @@ class UseApiResourceTags extends Strategy
     /**
      * Get a response from the @apiResource/@apiResourceCollection and @apiResourceModel tags.
      *
-     * @param Tag[] $tags
+     * @param array $tags
+     * @param EndpointData $endpointData
      *
-     * @param \Illuminate\Routing\Route $route
-     *
-     * @param array $alreadyExtractedData
-     *
-     * @return array|null
+     * @return array[]|null
      * @throws Exception
      */
-    public function getApiResourceResponse(array $tags, Route $route, array $alreadyExtractedData = [])
+    public function getApiResourceResponse(array $tags, EndpointData $endpointData)
     {
         if (empty($apiResourceTag = $this->getApiResourceTag($tags))) {
             return null;
@@ -121,14 +104,15 @@ class UseApiResourceTags extends Strategy
                 : $apiResourceClass::collection($list);
         }
 
-        $uri = Utils::getUrlWithBoundParameters($route, $alreadyExtractedData['cleanUrlParameters'] ?? []);
-        $method = array_diff($route->methods(), ['HEAD'])[0];
+        $uri = Utils::getUrlWithBoundParameters($endpointData->route, $endpointData->cleanUrlParameters ?? []);
+        $method = $endpointData->route->methods()[0];
         $request = Request::create($uri, $method);
         $request->headers->add(['Accept' => 'application/json']);
         app()->bind('request', function () use ($request) {
             return $request;
         });
 
+        $route = $endpointData->route;
         /** @var Response $response */
         $response = $resource->toResponse(
             // Set the route properly so it works for users who have code that checks for the route.

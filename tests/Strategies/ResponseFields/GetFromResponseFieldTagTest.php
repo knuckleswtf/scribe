@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\ResponseFields;
 
+use Knuckles\Camel\Endpoint\ResponseCollection;
 use Knuckles\Scribe\Extracting\Strategies\ResponseFields\GetFromResponseFieldTag;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Mpociot\Reflection\DocBlock\Tag;
@@ -19,7 +20,7 @@ class GetFromResponseFieldTagTest extends TestCase
         $tags = [
             new Tag('responseField', 'id int The id of the newly created user.'),
         ];
-        $results = $strategy->getResponseFieldsFromDocBlock($tags, []);
+        $results = $strategy->getResponseFieldsFromDocBlock($tags);
 
         $this->assertArraySubset([
             'id' => [
@@ -50,7 +51,7 @@ class GetFromResponseFieldTagTest extends TestCase
                 'content' => json_encode(['id' => 'haha']),
             ],
         ];
-        $results = $strategy->getResponseFieldsFromDocBlock($tags, $responses);
+        $results = $strategy->getResponseFieldsFromDocBlock($tags, new ResponseCollection($responses));
 
         $this->assertArraySubset([
             'id' => [
@@ -73,7 +74,7 @@ class GetFromResponseFieldTagTest extends TestCase
                 'content' => json_encode([['id' => 6]]),
             ],
         ];
-        $results = $strategy->getResponseFieldsFromDocBlock($tags, $responses);
+        $results = $strategy->getResponseFieldsFromDocBlock($tags, new ResponseCollection($responses));
 
         $this->assertArraySubset([
             'id' => [
@@ -90,7 +91,7 @@ class GetFromResponseFieldTagTest extends TestCase
         $tags = [
             new Tag('responseField', 'id The id of the newly created user.'),
         ];
-        $results = $strategy->getResponseFieldsFromDocBlock($tags, []);
+        $results = $strategy->getResponseFieldsFromDocBlock($tags);
 
         $this->assertArraySubset([
             'id' => [

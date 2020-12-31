@@ -3,11 +3,12 @@
 namespace Knuckles\Scribe\Writing;
 
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
+use Knuckles\Camel\Endpoint\EndpointData;
+use Knuckles\Camel\Endpoint\QueryParameter;
+use Knuckles\Camel\Endpoint\UrlParameter;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Ramsey\Uuid\Uuid;
-use ReflectionMethod;
 
 class PostmanCollectionWriter
 {
@@ -50,7 +51,7 @@ class PostmanCollectionWriter
             'item' => $groupedEndpoints->map(function (Collection $routes, $groupName) {
                 return [
                     'name' => $groupName,
-                    'description' => $routes->first()['metadata']['groupDescription'],
+                    'description' => $routes->first()->metadata->groupDescription,
                     'item' => $routes->map(\Closure::fromCallable([$this, 'generateEndpointItem']))->toArray(),
                 ];
             })->values()->toArray(),
@@ -95,32 +96,32 @@ class PostmanCollectionWriter
         }
     }
 
-    protected function generateEndpointItem($endpoint): array
+    protected function generateEndpointItem(EndpointData $endpoint): array
     {
         $endpointItem = [
-            'name' => $endpoint['metadata']['title'] !== '' ? $endpoint['metadata']['title'] : $endpoint['uri'],
+            'name' => $endpoint->metadata->title !== '' ? $endpoint->metadata->title : $endpoint->uri,
             'request' => [
                 'url' => $this->generateUrlObject($endpoint),
-                'method' => $endpoint['methods'][0],
+                'method' => $endpoint->methods[0],
                 'header' => $this->resolveHeadersForEndpoint($endpoint),
-                'body' => empty($endpoint['bodyParameters']) ? null : $this->getBodyData($endpoint),
-                'description' => $endpoint['metadata']['description'] ?? null,
+                'body' => empty($endpoint->bodyParameters) ? null : $this->getBodyData($endpoint),
+                'description' => $endpoint->metadata->description,
             ],
             'response' => [],
         ];
 
 
-        if (($endpoint['metadata']['authenticated'] ?? false) === false) {
+        if ($endpoint->metadata->authenticated === false) {
             $endpointItem['request']['auth'] = ['type' => 'noauth'];
         }
 
         return $endpointItem;
     }
 
-    protected function getBodyData(array $endpoint): array
+    protected function getBodyData(EndpointData $endpoint): array
     {
         $body = [];
-        $contentType = $endpoint['headers']['Content-Type'] ?? null;
+        $contentType = $endpoint->headers['Content-Type'] ?? null;
         switch ($contentType) {
             case 'multipart/form-data':
                 $inputMode = 'formdata';
@@ -134,7 +135,7 @@ class PostmanCollectionWriter
 
         switch ($inputMode) {
             case 'formdata':
-                foreach ($endpoint['cleanBodyParameters'] as $key => $value) {
+                foreach ($endpoint->cleanBodyParameters as $key => $value) {
                     $params = [
                         'key' => $key,
                         'value' => $value,
@@ -142,7 +143,7 @@ class PostmanCollectionWriter
                     ];
                     $body[$inputMode][] = $params;
                 }
-                foreach ($endpoint['fileParameters'] as $key => $value) {
+                foreach ($endpoint->fileParameters as $key => $value) {
                     while (is_array($value)) { // For arrays of files, just send the first one
                         $key .= '[]';
                         $value = $value[0];
@@ -157,16 +158,16 @@ class PostmanCollectionWriter
                 break;
             case 'raw':
             default:
-                $body[$inputMode] = json_encode($endpoint['cleanBodyParameters'], JSON_PRETTY_PRINT);
+                $body[$inputMode] = json_encode($endpoint->cleanBodyParameters, JSON_PRETTY_PRINT);
         }
         return $body;
     }
 
-    protected function resolveHeadersForEndpoint($route)
+    protected function resolveHeadersForEndpoint(EndpointData $endpointData)
     {
         [$where, $authParam] = $this->getAuthParamToExclude();
 
-        $headers = collect($route['headers']);
+        $headers = collect($endpointData->headers);
         if ($where === 'header') {
             unset($headers[$authParam]);
         }
@@ -190,7 +191,7 @@ class PostmanCollectionWriter
         return $headers;
     }
 
-    protected function generateUrlObject($route)
+    protected function generateUrlObject(EndpointData $endpointData)
     {
         $base = [
             'protocol' => Str::startsWith($this->baseUrl, 'https') ? 'https' : 'http',
@@ -198,18 +199,21 @@ class PostmanCollectionWriter
             // Change laravel/symfony URL params ({example}) to Postman style, prefixed with a colon
             'path' => preg_replace_callback('/\{(\w+)\??}/', function ($matches) {
                 return ':' . $matches[1];
-            }, $route['uri']),
+            }, $endpointData->uri),
         ];
 
         $query = [];
         [$where, $authParam] = $this->getAuthParamToExclude();
-        foreach ($route['queryParameters'] ?? [] as $name => $parameterData) {
+        /**
+         * @var string $name
+         * @var QueryParameter $parameterData */
+        foreach ($endpointData->queryParameters as $name => $parameterData) {
             if ($where === 'query' && $authParam === $name) {
                 continue;
             }
 
-            if (Str::endsWith($parameterData['type'], '[]') || $parameterData['type'] === 'object') {
-                $values = empty($parameterData['value']) ? [] : $parameterData['value'];
+            if (Str::endsWith($parameterData->type, '[]') || $parameterData->type === 'object') {
+                $values = empty($parameterData->value) ? [] : $parameterData->value;
                 foreach ($values as $index => $value) {
                     // PHP's parse_str supports array query parameters as filters[0]=name&filters[1]=age OR filters[]=name&filters[]=age
                     // Going with the first to also support object query parameters
@@ -217,18 +221,18 @@ class PostmanCollectionWriter
                     $query[] = [
                         'key' => urlencode("{$name}[$index]"),
                         'value' => urlencode($value),
-                        'description' => strip_tags($parameterData['description']),
+                        'description' => strip_tags($parameterData->description),
                         // Default query params to disabled if they aren't required and have empty values
-                        'disabled' => !($parameterData['required'] ?? false) && empty($parameterData['value']),
+                        'disabled' => !$parameterData->required && empty($parameterData->value),
                     ];
                 }
             } else {
                 $query[] = [
                     'key' => urlencode($name),
-                    'value' => urlencode($parameterData['value']),
-                    'description' => strip_tags($parameterData['description']),
+                    'value' => urlencode($parameterData->value),
+                    'description' => strip_tags($parameterData->description),
                     // Default query params to disabled if they aren't required and have empty values
-                    'disabled' => !($parameterData['required'] ?? false) && empty($parameterData['value']),
+                    'disabled' => !$parameterData->required && empty($parameterData->value),
                 ];
             }
         }
@@ -243,17 +247,17 @@ class PostmanCollectionWriter
             $base['protocol'], $base['host'], $base['path'], $queryString ? "?{$queryString}" : null
         );
 
-        $urlParams = collect($route['urlParameters']);
+        $urlParams = collect($endpointData->urlParameters);
         if ($urlParams->isEmpty()) {
             return $base;
         }
 
-        $base['variable'] = $urlParams->map(function ($parameter, $name) {
+        $base['variable'] = $urlParams->map(function (UrlParameter $parameter, $name) {
             return [
                 'id' => $name,
                 'key' => $name,
-                'value' => urlencode($parameter['value']),
-                'description' => $parameter['description'],
+                'value' => urlencode($parameter->value),
+                'description' => $parameter->description,
             ];
         })->values()->toArray();
 

@@ -3,7 +3,11 @@
 namespace Knuckles\Scribe\Tests\Unit;
 
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
+use Illuminate\Routing\Route;
 use Illuminate\Support\Collection;
+use Knuckles\Camel\Endpoint\EndpointData;
+use Knuckles\Camel\Endpoint\QueryParameter;
+use Knuckles\Camel\Endpoint\UrlParameter;
 use Knuckles\Scribe\Extracting\Generator;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Writing\PostmanCollectionWriter;
@@ -26,12 +30,12 @@ class PostmanCollectionWriterTest extends TestCase
 
     public function testEndpointIsParsed()
     {
-        $route = $this->createMockRouteData('some/path');
+        $endpointData = $this->createMockEndpointData('some/path');
 
         // Ensure method is set correctly for assertion later
-        $route['methods'] = ['GET'];
+        $endpointData->methods = ['GET'];
 
-        $endpoints = $this->createMockRouteGroup([$route], 'Group');
+        $endpoints = $this->createMockEndpointGroup([$endpointData], 'Group');
 
         $config = ['base_url' => 'fake.localhost', 'title' => 'Test API'];
         $writer = new PostmanCollectionWriter(new DocumentationConfig($config));
@@ -55,11 +59,11 @@ class PostmanCollectionWriterTest extends TestCase
 
     public function testHeadersArePulledFromRoute()
     {
-        $route = $this->createMockRouteData('some/path');
+        $endpointData = $this->createMockEndpointData('some/path');
 
-        $route['headers'] = ['X-Fake' => 'Test'];
+        $endpointData->headers = ['X-Fake' => 'Test'];
 
-        $endpoints = $this->createMockRouteGroup([$route], 'Group');
+        $endpoints = $this->createMockEndpointGroup([$endpointData], 'Group');
         $config = ['base_url' => 'fake.localhost', 'title' => 'Test API'];
         $writer = new PostmanCollectionWriter(new DocumentationConfig($config));
         $collection = $writer->generatePostmanCollection($endpoints);
@@ -73,13 +77,14 @@ class PostmanCollectionWriterTest extends TestCase
     /** @test */
     public function url_parameters_are_represented_properly()
     {
-        $fakeRoute = $this->createMockRouteData('fake/{param}');
-        $fakeRoute['urlParameters'] = ['param' => [
+        $endpointData = $this->createMockEndpointData('fake/{param}');
+        $endpointData->urlParameters['param'] = new UrlParameter([
+            'name' => 'param',
             'description' => 'A test description for the test param',
             'required' => true,
             'value' => 'foobar',
-        ]];
-        $endpoints = $this->createMockRouteGroup([$fakeRoute]);
+        ]);
+        $endpoints = $this->createMockEndpointGroup([$endpointData]);
 
         $config = ['base_url' => 'fake.localhost', 'title' => 'Test API'];
         $writer = new PostmanCollectionWriter(new DocumentationConfig($config));
@@ -102,25 +107,27 @@ class PostmanCollectionWriterTest extends TestCase
     /** @test */
     public function query_parameters_are_documented()
     {
-        $fakeRoute = $this->createMockRouteData('fake/path');
+        $endpointData = $this->createMockEndpointData('fake/path');
 
-        $fakeRoute['queryParameters'] = [
-            'limit' => [
+        $endpointData->queryParameters = [
+            'limit' => new QueryParameter([
+                'name' => 'limit',
                 'type' => 'integer',
                 'description' => 'A fake limit for my fake endpoint',
                 'required' => true,
                 'value' => 5,
-            ],
-            'filters' => [
+            ]),
+            'filters' => new QueryParameter([
+                'name' => 'filters',
                 'type' => 'integer[]',
                 'description' => 'Filters',
                 'required' => true,
                 'value' => [34, 12],
-            ],
+            ]),
         ];
-        $fakeRoute['cleanQueryParameters'] = Generator::cleanParams($fakeRoute['queryParameters']);
+        $endpointData->cleanQueryParameters = Generator::cleanParams($endpointData->queryParameters);
 
-        $endpoints = $this->createMockRouteGroup([$fakeRoute]);
+        $endpoints = $this->createMockEndpointGroup([$endpointData]);
         $config = ['base_url' => 'fake.localhost', 'title' => 'Test API'];
         $writer = new PostmanCollectionWriter(new DocumentationConfig($config));
         $collection = $writer->generatePostmanCollection($endpoints);
@@ -150,15 +157,16 @@ class PostmanCollectionWriterTest extends TestCase
 
     public function testUrlParametersAreNotIncludedIfMissingFromPath()
     {
-        $fakeRoute = $this->createMockRouteData('fake/path');
+        $endpointData = $this->createMockEndpointData('fake/path');
 
-        $fakeRoute['urlParameters'] = ['limit' => [
+        $endpointData->urlParameters['limit'] = new UrlParameter([
+            'name' => 'limit',
             'description' => 'A fake limit for my fake endpoint',
             'required' => false,
             'value' => 5,
-        ]];
+        ]);
 
-        $endpoints = $this->createMockRouteGroup([$fakeRoute]);
+        $endpoints = $this->createMockEndpointGroup([$endpointData]);
         $config = ['base_url' => 'fake.localhost', 'title' => 'Test API'];
         $writer = new PostmanCollectionWriter(new DocumentationConfig($config));
         $collection = $writer->generatePostmanCollection($endpoints);
@@ -171,24 +179,26 @@ class PostmanCollectionWriterTest extends TestCase
     /** @test */
     public function query_parameters_are_disabled_with_no_value_when_not_required()
     {
-        $fakeRoute = $this->createMockRouteData('fake/path');
-        $fakeRoute['queryParameters'] = [
-            'required' => [
+        $endpointData = $this->createMockEndpointData('fake/path');
+        $endpointData->queryParameters = [
+            'required' => new QueryParameter([
+                'name' => 'required',
                 'type' => 'string',
                 'description' => 'A required param with a null value',
                 'required' => true,
                 'value' => null,
-            ],
-            'not_required' => [
+            ]),
+            'not_required' => new QueryParameter([
+                'name' => 'not_required',
                 'type' => 'string',
                 'description' => 'A not required param with a null value',
                 'required' => false,
                 'value' => null,
-            ],
+            ]),
         ];
-        $fakeRoute['cleanQueryParameters'] = Generator::cleanParams($fakeRoute['queryParameters']);
+        $endpointData->cleanQueryParameters = Generator::cleanParams($endpointData->queryParameters);
 
-        $endpoints = $this->createMockRouteGroup([$fakeRoute]);
+        $endpoints = $this->createMockEndpointGroup([$endpointData]);
         $config = ['base_url' => 'fake.localhost', 'title' => 'Test API'];
         $writer = new PostmanCollectionWriter(new DocumentationConfig($config));
         $collection = $writer->generatePostmanCollection($endpoints);
@@ -216,10 +226,10 @@ class PostmanCollectionWriterTest extends TestCase
     public function auth_info_is_added_correctly()
     {
 
-        $route1 = $this->createMockRouteData('some/path');
-        $route1['metadata']['authenticated'] = true;
-        $route2 = $this->createMockRouteData('some/other/path');
-        $endpoints = $this->createMockRouteGroup([$route1, $route2], 'Group');
+        $endpointData1 = $this->createMockEndpointData('some/path');
+        $endpointData1->metadata->authenticated = true;
+        $endpointData2 = $this->createMockEndpointData('some/other/path');
+        $endpoints = $this->createMockEndpointGroup([$endpointData1, $endpointData2], 'Group');
 
         $config = [
             'title' => 'Test API',
@@ -261,29 +271,20 @@ class PostmanCollectionWriterTest extends TestCase
         $this->assertEquals(['type' => 'noauth'], $collection['item'][0]['item'][1]['request']['auth']);
     }
 
-    protected function createMockRouteData($path, $title = '')
+    protected function createMockEndpointData(string $path, string $title = ''): EndpointData
     {
-        return [
+        return new EndpointData([
             'uri' => $path,
             'methods' => ['GET'],
-            'headers' => [],
             'metadata' => [
                 'groupDescription' => '',
                 'title' => $title,
             ],
-            'urlParameters' => [],
-            'cleanUrlParameters' => [],
-            'queryParameters' => [],
-            'cleanQueryParameters' => [],
-            'bodyParameters' => [],
-            'cleanBodyParameters' => [],
-            'fileParameters' => [],
-            'responses' => [],
-            'responseFields' => [],
-        ];
+            'route' => new Route(['GET'], $path, []),
+        ]);
     }
 
-    protected function createMockRouteGroup(array $routes, $groupName = 'Group')
+    protected function createMockEndpointGroup(array $routes, $groupName = 'Group'): Collection
     {
         return collect([$groupName => collect($routes)]);
     }

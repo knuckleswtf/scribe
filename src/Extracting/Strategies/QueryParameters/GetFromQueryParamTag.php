@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\QueryParameters;
 
+use Knuckles\Camel\Endpoint\EndpointData;
 use Dingo\Api\Http\FormRequest as DingoFormRequest;
 use Illuminate\Foundation\Http\FormRequest as LaravelFormRequest;
 use Illuminate\Routing\Route;
@@ -17,13 +18,13 @@ use ReflectionUnionType;
 
 class GetFromQueryParamTag extends Strategy
 {
-    public $stage = 'queryParameters';
+    public string $stage = 'queryParameters';
 
     use ParamHelpers;
 
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
+    public function __invoke(EndpointData $endpointData, array $routeRules)
     {
-        return $this->getQueryParametersFromFormRequestOrMethod($route, $method);
+        return $this->getQueryParametersFromFormRequestOrMethod($endpointData->route, $endpointData->method);
     }
 
     public function getQueryParametersFromFormRequestOrMethod(Route $route, ReflectionFunctionAbstract $method): array
@@ -59,7 +60,6 @@ class GetFromQueryParamTag extends Strategy
             }
         }
 
-        /** @var DocBlock $methodDocBlock */
         $methodDocBlock = RouteDocBlocker::getDocBlocksFromRoute($route)['method'];
 
         return $this->getQueryParametersFromDocBlock($methodDocBlock->getTags());
@@ -86,7 +86,6 @@ class GetFromQueryParamTag extends Strategy
             $tagContent = trim($tag->getContent());
             preg_match('/(.+?)\s+([a-zA-Z\[\]]+\s+)?(required\s+)?([\s\S]*)/', $tagContent, $content);
 
-            $type = '';
             if (empty($content)) {
                 // this means only name was supplied
                 $name = $tagContent;

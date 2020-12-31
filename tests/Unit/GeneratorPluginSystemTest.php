@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Tests\Unit;
 
+use Knuckles\Camel\Endpoint\EndpointData;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Illuminate\Routing\Route;
 use Knuckles\Scribe\Extracting\Generator;
@@ -10,17 +11,12 @@ use Knuckles\Scribe\ScribeServiceProvider;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use PHPUnit\Framework\TestCase;
-use ReflectionClass;
-use ReflectionFunctionAbstract;
 
 class GeneratorPluginSystemTest extends TestCase
 {
     use ArraySubsetAsserts;
 
-    /**
-     * @var \Knuckles\Scribe\Extracting\Generator
-     */
-    protected $generator;
+    protected ?Generator $generator;
 
     protected function getPackageProviders($app)
     {
@@ -75,13 +71,14 @@ class GeneratorPluginSystemTest extends TestCase
         $generator = new Generator(new DocumentationConfig($config));
         $parsed = $generator->processRoute($route);
 
-        $this->assertTrue($parsed['showresponse']);
-        $this->assertCount(2, $parsed['responses']);
-        $first = array_shift($parsed['responses']);
+        $this->assertCount(2, $parsed->responses->toArray());
+        $responses = $parsed->responses->toArray();
+        $first = array_shift($responses);
         $this->assertTrue(is_array($first));
         $this->assertEquals(200, $first['status']);
         $this->assertEquals('dummy', $first['content']);
-        $second = array_shift($parsed['responses']);
+
+        $second = array_shift($responses);
         $this->assertTrue(is_array($second));
         $this->assertEquals(400, $second['status']);
         $this->assertEquals('dummy2', $second['content']);
@@ -110,7 +107,7 @@ class GeneratorPluginSystemTest extends TestCase
             'description' => 'dummy',
             'authenticated' => false,
         ];
-        $this->assertArraySubset($expectedMetadata, $parsed['metadata']);
+        $this->assertArraySubset($expectedMetadata, $parsed->metadata->toArray());
     }
 
     /** @test */
@@ -133,7 +130,7 @@ class GeneratorPluginSystemTest extends TestCase
             'description' => 'dummy',
             'authenticated' => false,
         ];
-        $this->assertArraySubset($expectedMetadata, $parsed['metadata']);
+        $this->assertArraySubset($expectedMetadata, $parsed->metadata->toArray());
     }
 
     /** @test */
@@ -156,7 +153,7 @@ class GeneratorPluginSystemTest extends TestCase
             'description' => 'dummy',
             'authenticated' => false,
         ];
-        $this->assertArraySubset($expectedMetadata, $parsed['metadata']);
+        $this->assertArraySubset($expectedMetadata, $parsed->metadata->toArray());
     }
 
     public function createRoute(string $httpMethod, string $path, string $controllerMethod, $register = false, $class = TestController::class)
@@ -171,7 +168,7 @@ class EmptyStrategy1 extends Strategy
 {
     public static $called = false;
 
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
+    public function __invoke(EndpointData $endpointData, array $routeRules)
     {
         static::$called = true;
     }
@@ -181,7 +178,7 @@ class EmptyStrategy2 extends Strategy
 {
     public static $called = false;
 
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
+    public function __invoke(EndpointData $endpointData, array $routeRules)
     {
         static::$called = true;
     }
@@ -191,7 +188,7 @@ class NotDummyMetadataStrategy extends Strategy
 {
     public static $called = false;
 
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
+    public function __invoke(EndpointData $endpointData, array $routeRules)
     {
         static::$called = true;
         return [
@@ -206,7 +203,7 @@ class NotDummyMetadataStrategy extends Strategy
 
 class PartialDummyMetadataStrategy1 extends Strategy
 {
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
+    public function __invoke(EndpointData $endpointData, array $routeRules)
     {
         return [
             'groupName' => 'dummy',
@@ -219,7 +216,7 @@ class PartialDummyMetadataStrategy1 extends Strategy
 
 class PartialDummyMetadataStrategy2 extends Strategy
 {
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
+    public function __invoke(EndpointData $endpointData, array $routeRules)
     {
         return [
             'description' => 'dummy',
@@ -230,7 +227,7 @@ class PartialDummyMetadataStrategy2 extends Strategy
 
 class DummyResponseStrategy200 extends Strategy
 {
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
+    public function __invoke(EndpointData $endpointData, array $routeRules)
     {
         return [['status' => 200, 'content' => 'dummy']];
     }
@@ -238,7 +235,7 @@ class DummyResponseStrategy200 extends Strategy
 
 class DummyResponseStrategy400 extends Strategy
 {
-    public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
+    public function __invoke(EndpointData $endpointData, array $routeRules)
     {
         return [['status' => 400, 'content' => 'dummy2']];
     }

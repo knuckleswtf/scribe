@@ -2,22 +2,20 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies;
 
-use Illuminate\Routing\Route;
+use Knuckles\Camel\Endpoint\EndpointData;
 use Knuckles\Scribe\Tools\DocumentationConfig;
-use ReflectionClass;
-use ReflectionFunctionAbstract;
 
 abstract class Strategy
 {
     /**
-     * @var DocumentationConfig The scribe config
+     * The Scribe config
      */
-    protected $config;
+    protected DocumentationConfig $config;
 
     /**
-     * @var string The current stage of route processing
+     * The current stage of route processing
      */
-    public $stage;
+    public string $stage;
 
     public function __construct(DocumentationConfig $config)
     {
@@ -35,13 +33,10 @@ abstract class Strategy
     }
 
     /**
-     * @param Route $route The route which we are currently extracting information for.
-     * @param ReflectionClass $controller The class handling the current route.
-     * @param ReflectionFunctionAbstract $method The method/closure handling the current route.
+     * @param EndpointData $endpointData
      * @param array $routeRules Array of rules for the ruleset which this route belongs to.
-     * @param array $alreadyExtractedData Data already extracted from previous stages and earlier strategies in this stage
      *
      * @return array|null
      */
-    abstract public function __invoke(Route $route, ReflectionClass $controller, ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = []);
+    abstract public function __invoke(EndpointData $endpointData, array $routeRules);
 }

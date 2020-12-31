@@ -2,11 +2,10 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 
-use Illuminate\Routing\Route;
+use Knuckles\Camel\Endpoint\EndpointData;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\AnnotationParser as a;
-use Mpociot\Reflection\DocBlock;
 use Mpociot\Reflection\DocBlock\Tag;
 
 /**
@@ -14,21 +13,9 @@ use Mpociot\Reflection\DocBlock\Tag;
  */
 class UseResponseTag extends Strategy
 {
-    /**
-     * @param Route $route
-     * @param \ReflectionClass $controller
-     * @param \ReflectionFunctionAbstract $method
-     * @param array $routeRules
-     * @param array $alreadyExtractedData
-     *
-     * @return array|null
-     *@throws \Exception
-     *
-     */
-    public function __invoke(Route $route, \ReflectionClass $controller, \ReflectionFunctionAbstract $method, array $routeRules, array $alreadyExtractedData = [])
+    public function __invoke(EndpointData $endpointData, array $routeRules)
     {
-        $docBlocks = RouteDocBlocker::getDocBlocksFromRoute($route);
-        /** @var DocBlock $methodDocBlock */
+        $docBlocks = RouteDocBlocker::getDocBlocksFromRoute($endpointData->route);
         $methodDocBlock = $docBlocks['method'];
 
         return $this->getDocBlockResponses($methodDocBlock->getTags());
@@ -63,7 +50,7 @@ class UseResponseTag extends Strategy
             ['attributes' => $attributes, 'content' => $content] = a::parseIntoContentAndAttributes($content, ['status', 'scenario']);
 
             $status = $attributes['status'] ?: $status;
-            $description = $attributes['scenario'] ? "$status, {$attributes['scenario']}" : $status;
+            $description = $attributes['scenario'] ? "$status, {$attributes['scenario']}" : "$status";
 
             return ['content' => $content, 'status' => (int) $status, 'description' => $description];
         }, $responseTags);
