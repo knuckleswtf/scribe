@@ -2,9 +2,9 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\ResponseFields;
 
-use Knuckles\Camel\Endpoint\EndpointData;
-use Knuckles\Camel\Endpoint\Response;
-use Knuckles\Camel\Endpoint\ResponseCollection;
+use Knuckles\Camel\Extraction\EndpointData;
+use Knuckles\Camel\Extraction\Response;
+use Knuckles\Camel\Extraction\ResponseCollection;
 use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
@@ -57,26 +57,26 @@ class GetFromResponseFieldTag extends Strategy
                 if (!$this->isSupportedTypeInDocBlocks($type)) {
                     // Then that wasn't a type, but part of the description
                     $description = trim("$type $description");
+                    $type = '';
 
                     // Try to get a type from first 2xx response
                     $validResponse = collect($responses ?: [])->first(function (Response $r) {
                         $status = intval($r->status);
                         return $status >= 200 && $status < 300;
                     });
-                    $validResponseContent = json_decode($validResponse->content, true);
-                    if (!$validResponseContent) {
-                        $type = '';
-                    } else {
-                        $nonexistent = new \stdClass();
-                        $value = $validResponseContent[$name]
-                            ?? $validResponseContent['data'][$name] // Maybe it's a Laravel ApiResource
-                            ?? $validResponseContent[0][$name] // Maybe it's a list
-                            ?? $validResponseContent['data'][0][$name] // Maybe an Api Resource Collection?
-                            ?? $nonexistent;
-                        if ($value !== $nonexistent) {
-                            $type =  $this->normalizeTypeName(gettype($value));
-                        } else {
-                            $type = '';
+                    if ($validResponse) {
+                        $validResponseContent = json_decode($validResponse->content, true);
+                        if ($validResponseContent) {
+                            $nonexistent = new \stdClass();
+                            $value = $validResponseContent[$name]
+                                ?? $validResponseContent['data'][$name] // Maybe it's a Laravel ApiResource
+                                ?? $validResponseContent[0][$name] // Maybe it's a list
+                                ?? $validResponseContent['data'][0][$name] // Maybe an Api Resource Collection?
+                                ?? $nonexistent;
+
+                            if ($value !== $nonexistent) {
+                                $type = $this->normalizeTypeName(gettype($value));
+                            }
                         }
                     }
                 }

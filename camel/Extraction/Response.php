@@ -1,8 +1,10 @@
 <?php
 
-namespace Knuckles\Camel\Endpoint;
+namespace Knuckles\Camel\Extraction;
 
 
+
+use Knuckles\Camel\BaseDTO;
 
 class Response extends BaseDTO
 {

@@ -6,7 +6,8 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Knuckles\Camel\Endpoint\EndpointData;
+use Knuckles\Camel\Output\EndpointData;
+use Knuckles\Camel\Output\Group;
 use Knuckles\Pastel\Pastel;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils;
 use Knuckles\Scribe\Tools\DocumentationConfig;
@@ -93,7 +94,10 @@ class Writer
         $this->lastTimesWeModifiedTheseFiles = [];
     }
 
-    public function writeDocs(Collection $routes = null)
+    /**
+     * @param Group[] $groups
+     */
+    public function writeDocs(array $groups)
     {
         // The source Markdown files always go in resources/docs.
         // The static assets (js/, css/, and images/) always go in public/docs/.
@@ -103,21 +107,21 @@ class Writer
 
         // When running with --no-extraction, $routes will be null.
         // In that case, we only want to write HTMl docs again, hence the conditionals below
-        $routes && $this->writeMarkdownAndSourceFiles($routes);
+        $this->writeMarkdownAndSourceFiles($groups);
 
         $this->writeHtmlDocs();
 
-        $routes && $this->writePostmanCollection($routes);
+        $this->writePostmanCollection($groups);
 
-        $routes && $this->writeOpenAPISpec($routes);
+        $this->writeOpenAPISpec($groups);
     }
 
     /**
-     * @param Collection $parsedRoutes
+     * @param Group[] $groups
      *
      * @return void
      */
-    public function writeMarkdownAndSourceFiles(Collection $parsedRoutes)
+    public function writeMarkdownAndSourceFiles(array $groups): void
     {
         $settings = [
             'languages' => $this->config->get('example_languages'),
@@ -135,7 +139,7 @@ class Writer
 
         $this->fetchLastTimeWeModifiedFilesFromTrackingFile();
 
-        $this->writeEndpointsMarkdownFile($parsedRoutes, $settings);
+        $this->writeEndpointsMarkdownFile($groups, $settings);
         $this->writeIndexMarkdownFile($settings);
         $this->writeAuthMarkdownFile();
 
@@ -144,10 +148,17 @@ class Writer
         ConsoleOutputUtils::info('Wrote source Markdown files to: ' . $this->sourceOutputPath);
     }
 
-    public function generateMarkdownOutputForEachRoute(Collection $parsedRoutes, array $settings): Collection
+    /**
+     * @param Group[] $groups
+     * @param array $settings
+     *
+     * @return array
+     * @throws \Throwable
+     */
+    public function generateMarkdownOutputForEachRoute(array $groups, array $settings): array
     {
-        $routesWithOutput = $parsedRoutes->map(function (Collection $routeGroup) use ($settings) {
-            return $routeGroup->map(function (EndpointData $endpointData) use ($settings) {
+        $routesWithOutput = array_map(function (Group $group) use ($settings) {
+            $group->endpoints = array_map(function (EndpointData $endpointData) use ($settings) {
                 $hasRequestOptions = !empty($endpointData->headers)
                     || !empty($endpointData->cleanQueryParameters)
                     || !empty($endpointData->cleanBodyParameters);
@@ -171,18 +182,19 @@ class Writer
                     ->render();
 
                 return $endpointData;
-            });
-        });
+            }, $group->endpoints);
+            return $group;
+        }, $groups);
 
         return $routesWithOutput;
     }
 
-    protected function writePostmanCollection(Collection $parsedRoutes): void
+    protected function writePostmanCollection(array $groups): void
     {
         if ($this->shouldGeneratePostmanCollection) {
             ConsoleOutputUtils::info('Generating Postman collection');
 
-            $collection = $this->generatePostmanCollection($parsedRoutes);
+            $collection = $this->generatePostmanCollection($groups);
             if ($this->isStatic) {
                 $collectionPath = "{$this->staticTypeOutputPath}/collection.json";
                 file_put_contents($collectionPath, $collection);
@@ -195,7 +207,7 @@ class Writer
         }
     }
 
-    protected function writeOpenAPISpec(Collection $parsedRoutes): void
+    protected function writeOpenAPISpec(array $parsedRoutes): void
     {
         if ($this->shouldGenerateOpenAPISpec) {
             ConsoleOutputUtils::info('Generating OpenAPI specification');
@@ -216,11 +228,11 @@ class Writer
     /**
      * Generate Postman collection JSON file.
      *
-     * @param Collection $groupedEndpoints
+     * @param Group[] $groupedEndpoints
      *
      * @return string
      */
-    public function generatePostmanCollection(Collection $groupedEndpoints)
+    public function generatePostmanCollection(array $groupedEndpoints): string
     {
         /** @var PostmanCollectionWriter $writer */
         $writer = app()->makeWith(
@@ -238,7 +250,12 @@ class Writer
         return json_encode($collection, JSON_PRETTY_PRINT);
     }
 
-    public function generateOpenAPISpec(Collection $groupedEndpoints)
+    /**
+     * @param Group[] $groupedEndpoints
+     *
+     * @return string
+     */
+    public function generateOpenAPISpec(array $groupedEndpoints): string
     {
         /** @var OpenAPISpecWriter $writer */
         $writer = app()->makeWith(
@@ -253,7 +270,7 @@ class Writer
                 data_set($spec, $key, $value);
             }
         }
-        return Yaml::dump($spec, 10, 4, Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP);
+        return Yaml::dump($spec, 10, 2, Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP);
     }
 
     protected function performFinalTasksForLaravelType(): void
@@ -386,16 +403,20 @@ class Writer
         $this->writeFile($authMarkdownFile, $authMarkdown);
     }
 
-    protected function writeEndpointsMarkdownFile(Collection $parsedRoutes, array $settings): void
+    /**
+     * @param Group[] $groups
+     * @param array $settings
+     */
+    protected function writeEndpointsMarkdownFile(array $groups, array $settings): void
     {
         if (!is_dir($this->sourceOutputPath . '/groups')) {
             mkdir($this->sourceOutputPath . '/groups', 0777, true);
         }
 
         // Generate Markdown for each route. Not using a Blade component bc of some complex logic
-        $parsedRoutesWithOutput = $this->generateMarkdownOutputForEachRoute($parsedRoutes, $settings);
-        $groupFileNames = $parsedRoutesWithOutput->map(function ($routesInGroup, $groupName) {
-            $groupId = Str::slug($groupName);
+        $groupsWithOutput = $this->generateMarkdownOutputForEachRoute($groups, $settings);
+        $groupFileNames = array_map(function (Group $group) {
+            $groupId = Str::slug($group->name);
             $routeGroupMarkdownFile = $this->sourceOutputPath . "/groups/$groupId.md";
 
             if ($this->hasFileBeenModified($routeGroupMarkdownFile)) {
@@ -407,18 +428,14 @@ class Writer
                 }
             }
 
-            $groupDescription = Arr::first($routesInGroup, function (EndpointData $endpointData) {
-                    return $endpointData->metadata->groupDescription !== '';
-                })->metadata->groupDescription ?? '';
-
             $groupMarkdown = view('scribe::partials.group')
-                ->with('groupName', $groupName)
-                ->with('groupDescription', $groupDescription)
-                ->with('routes', $routesInGroup);
+                ->with('groupName', $group->name)
+                ->with('groupDescription', $group->description)
+                ->with('routes', $group->endpoints);
 
             $this->writeFile($routeGroupMarkdownFile, $groupMarkdown);
             return "$groupId.md";
-        })->toArray();
+        }, $groupsWithOutput);
 
         // Now, we need to delete any other Markdown files in the groups/ directory.
         // Why? Because, if we don't, if a user renames a group, the old file will still exist,

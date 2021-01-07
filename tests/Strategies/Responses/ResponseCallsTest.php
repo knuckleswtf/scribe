@@ -5,9 +5,9 @@ namespace Knuckles\Scribe\Tests\Strategies\Responses;
 use Dingo\Api\Routing\Router;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Route as RouteFacade;
-use Knuckles\Camel\Endpoint\EndpointData;
-use Knuckles\Camel\Endpoint\ResponseCollection;
-use Knuckles\Scribe\Extracting\Generator;
+use Knuckles\Camel\Extraction\EndpointData;
+use Knuckles\Camel\Extraction\ResponseCollection;
+use Knuckles\Scribe\Extracting\Extractor;
 use Knuckles\Scribe\Extracting\Strategies\Responses\ResponseCalls;
 use Knuckles\Scribe\ScribeServiceProvider;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
@@ -73,7 +73,7 @@ class ResponseCallsTest extends TestCase
         $route = RouteFacade::post('/withFormDataParams', [TestController::class, 'withFormDataParams']);
 
         config(['scribe.routes.0.apply.response_calls.methods' => ['POST']]);
-        $parsed = (new Generator())->processRoute($route, config('scribe.routes.0.apply'));
+        $parsed = (new Extractor())->processRoute($route, config('scribe.routes.0.apply'));
 
         $this->assertEquals([
             [

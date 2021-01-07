@@ -2,7 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\Headers;
 
-use Knuckles\Camel\Endpoint\EndpointData;
+use Knuckles\Camel\Extraction\EndpointData;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 
 class GetFromRouteRules extends Strategy

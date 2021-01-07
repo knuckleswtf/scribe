@@ -17,10 +17,8 @@ use ReflectionFunctionAbstract;
 
 class Utils
 {
-    public static function getUrlWithBoundParameters(Route $route, array $urlParameters = []): string
+    public static function getUrlWithBoundParameters(string $uri, array $urlParameters = []): string
     {
-        $uri = $route->uri();
-
         return self::replaceUrlParameterPlaceholdersWithValues($uri, $urlParameters);
     }
 
@@ -97,9 +95,9 @@ class Utils
 
     public static function deleteDirectoryAndContents($dir, $base = null)
     {
-        $dir = ltrim($dir, '/');
-        $adapter = new Local($base ?: realpath(__DIR__ . '/../../'));
+        $adapter = new Local(getcwd());
         $fs = new Filesystem($adapter);
+        $dir = ltrim($dir, '/');
         $fs->deleteDir($dir);
     }
 

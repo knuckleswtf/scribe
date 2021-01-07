@@ -2,7 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 
-use Knuckles\Camel\Endpoint\EndpointData;
+use Knuckles\Camel\Extraction\EndpointData;
 use Exception;
 use Illuminate\Database\Eloquent\Model as IlluminateModel;
 use Illuminate\Pagination\LengthAwarePaginator;

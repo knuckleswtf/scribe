@@ -2,7 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies;
 
-use Knuckles\Camel\Endpoint\EndpointData;
+use Knuckles\Camel\Extraction\EndpointData;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 
 abstract class Strategy

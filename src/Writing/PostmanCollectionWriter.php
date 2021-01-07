@@ -2,11 +2,10 @@
 
 namespace Knuckles\Scribe\Writing;
 
-use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
-use Knuckles\Camel\Endpoint\EndpointData;
-use Knuckles\Camel\Endpoint\QueryParameter;
-use Knuckles\Camel\Endpoint\UrlParameter;
+use Knuckles\Camel\Output\EndpointData;
+use Knuckles\Camel\Output\Group;
+use Knuckles\Camel\Output\Parameter;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Ramsey\Uuid\Uuid;
 
@@ -30,7 +29,12 @@ class PostmanCollectionWriter
         $this->baseUrl = ($this->config->get('postman.base_url') ?: $this->config->get('base_url')) ?: config('app.url');
     }
 
-    public function generatePostmanCollection(Collection $groupedEndpoints)
+    /**
+     * @param Group[] $groupedEndpoints
+     *
+     * @return array
+     */
+    public function generatePostmanCollection(array $groupedEndpoints)
     {
         $collection = [
             'variable' => [
@@ -48,13 +52,13 @@ class PostmanCollectionWriter
                 'description' => $this->config->get('description', ''),
                 'schema' => "https://schema.getpostman.com/json/collection/v" . self::VERSION . "/collection.json",
             ],
-            'item' => $groupedEndpoints->map(function (Collection $routes, $groupName) {
+            'item' => array_map(function (Group $group) {
                 return [
-                    'name' => $groupName,
-                    'description' => $routes->first()->metadata->groupDescription,
-                    'item' => $routes->map(\Closure::fromCallable([$this, 'generateEndpointItem']))->toArray(),
+                    'name' => $group->name,
+                    'description' => $group->description,
+                    'item' => array_map(\Closure::fromCallable([$this, 'generateEndpointItem']), $group->endpoints),
                 ];
-            })->values()->toArray(),
+            }, $groupedEndpoints),
             'auth' => $this->generateAuthObject(),
         ];
         return $collection;
@@ -206,7 +210,7 @@ class PostmanCollectionWriter
         [$where, $authParam] = $this->getAuthParamToExclude();
         /**
          * @var string $name
-         * @var QueryParameter $parameterData */
+         * @var Parameter $parameterData */
         foreach ($endpointData->queryParameters as $name => $parameterData) {
             if ($where === 'query' && $authParam === $name) {
                 continue;
@@ -252,7 +256,7 @@ class PostmanCollectionWriter
             return $base;
         }
 
-        $base['variable'] = $urlParams->map(function (UrlParameter $parameter, $name) {
+        $base['variable'] = $urlParams->map(function (Parameter $parameter, $name) {
             return [
                 'id' => $name,
                 'key' => $name,

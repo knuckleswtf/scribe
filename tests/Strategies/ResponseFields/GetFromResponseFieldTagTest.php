@@ -2,7 +2,7 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\ResponseFields;
 
-use Knuckles\Camel\Endpoint\ResponseCollection;
+use Knuckles\Camel\Extraction\ResponseCollection;
 use Knuckles\Scribe\Extracting\Strategies\ResponseFields\GetFromResponseFieldTag;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Mpociot\Reflection\DocBlock\Tag;

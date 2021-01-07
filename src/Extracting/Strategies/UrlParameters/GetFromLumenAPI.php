@@ -2,7 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\UrlParameters;
 
-use Knuckles\Camel\Endpoint\EndpointData;
+use Knuckles\Camel\Extraction\EndpointData;
 use FastRoute\RouteParser\Std;
 use Illuminate\Support\Arr;
 use Knuckles\Scribe\Extracting\ParamHelpers;

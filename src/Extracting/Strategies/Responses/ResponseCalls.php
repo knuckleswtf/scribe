@@ -2,7 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 
-use Knuckles\Camel\Endpoint\EndpointData;
+use Knuckles\Camel\Extraction\EndpointData;
 use Dingo\Api\Dispatcher;
 use Dingo\Api\Routing\Route as DingoRoute;
 use Exception;
@@ -126,7 +126,7 @@ class ResponseCalls extends Strategy
      */
     protected function prepareRequest(Route $route, array $rulesToApply, array $urlParams, array $bodyParams, array $queryParams, array $fileParameters, array $headers)
     {
-        $uri = Utils::getUrlWithBoundParameters($route, $urlParams);
+        $uri = Utils::getUrlWithBoundParameters($route->uri(), $urlParams);
         $routeMethods = $this->getMethods($route);
         $method = array_shift($routeMethods);
         $cookies = isset($rulesToApply['cookies']) ? $rulesToApply['cookies'] : [];

@@ -4,18 +4,18 @@ namespace Knuckles\Scribe\Tests\Unit;
 
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Illuminate\Routing\Route;
-use Knuckles\Camel\Endpoint\BodyParameter;
-use Knuckles\Scribe\Extracting\Generator;
+use Knuckles\Camel\Extraction\Parameter;
+use Knuckles\Scribe\Extracting\Extractor;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use PHPUnit\Framework\TestCase;
 
-class GeneratorTest extends TestCase
+class ExtractorTest extends TestCase
 {
     use ArraySubsetAsserts;
 
     /**
-     * @var \Knuckles\Scribe\Extracting\Generator
+     * @var \Knuckles\Scribe\Extracting\Extractor
      */
     protected $generator;
 
@@ -59,13 +59,13 @@ class GeneratorTest extends TestCase
     {
         parent::setUp();
 
-        $this->generator = new Generator(new DocumentationConfig($this->config));
+        $this->generator = new Extractor(new DocumentationConfig($this->config));
     }
 
     /** @test */
     public function clean_can_properly_parse_array_keys()
     {
-        $parameters = BodyParameter::arrayOf([
+        $parameters = Parameter::arrayOf([
             'object' => [
                 'name' => 'object',
                 'type' => 'object',
@@ -115,7 +115,7 @@ class GeneratorTest extends TestCase
             ],
         ]);
 
-        $cleanBodyParameters = Generator::cleanParams($parameters);
+        $cleanBodyParameters = Extractor::cleanParams($parameters);
 
         $this->assertEquals([
             'object' => [
@@ -199,7 +199,7 @@ class GeneratorTest extends TestCase
     public function adds_appropriate_field_based_on_configured_auth_type($config, $expected)
     {
         $route = $this->createRoute('POST', '/withAuthenticatedTag', 'withAuthenticatedTag', true);
-        $generator = new Generator(new DocumentationConfig(array_merge($this->config, $config)));
+        $generator = new Extractor(new DocumentationConfig(array_merge($this->config, $config)));
         $parsed = $generator->processRoute($route, [])->toArray();
         $this->assertNotNull($parsed[$expected['where']][$expected['name']]);
         $this->assertEquals($expected['where'], $parsed['auth'][0]);
@@ -221,7 +221,7 @@ class GeneratorTest extends TestCase
         // Examples should have different values
         $this->assertNotEquals(count($results), 1);
 
-        $generator = new Generator(new DocumentationConfig($this->config + ['faker_seed' => 12345]));
+        $generator = new Extractor(new DocumentationConfig($this->config + ['faker_seed' => 12345]));
         $results = [];
         $results[$generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
         $results[$generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;

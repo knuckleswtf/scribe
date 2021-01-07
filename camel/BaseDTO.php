@@ -1,6 +1,6 @@
 <?php
 
-namespace Knuckles\Camel\Endpoint;
+namespace Knuckles\Camel;
 
 use Spatie\DataTransferObject\DataTransferObject;
 

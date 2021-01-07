@@ -2,7 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 
-use Knuckles\Camel\Endpoint\EndpointData;
+use Knuckles\Camel\Extraction\EndpointData;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\AnnotationParser as a;

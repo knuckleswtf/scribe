@@ -5,7 +5,7 @@ namespace Knuckles\Scribe\Tests\Fixtures;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Validation\ValidationException;
-use Knuckles\Scribe\Tests\Unit\GeneratorTest;
+use Knuckles\Scribe\Tests\Unit\ExtractorTest;
 use Knuckles\Scribe\Tools\Utils;
 
 /**
@@ -84,8 +84,8 @@ class TestController extends Controller
      * @bodyParam book.pages_count integer
      * @bodyParam ids int[]
      * @bodyParam users object[]
-     * @bodyParam users[].first_name string The first name of the user. Example: John
-     * @bodyParam users[].last_name string The last name of the user. Example: Doe
+     * @bodyParam users[].first_name string required The first name of the user. Example: John
+     * @bodyParam users[].last_name string required The last name of the user. Example: Doe
      */
     public function withBodyParameters()
     {
@@ -302,7 +302,7 @@ class TestController extends Controller
      */
     public function withResponseTag()
     {
-        GeneratorTest::$globalValue = rand();
+        ExtractorTest::$globalValue = rand();
 
         return '';
     }

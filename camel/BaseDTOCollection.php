@@ -1,7 +1,8 @@
 <?php
 
-namespace Knuckles\Camel\Endpoint;
+namespace Knuckles\Camel;
 
+use Knuckles\Camel\Extraction\T;
 use Spatie\DataTransferObject\DataTransferObjectCollection;
 
 /**

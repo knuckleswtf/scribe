@@ -2,7 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\UrlParameters;
 
-use Knuckles\Camel\Endpoint\EndpointData;
+use Knuckles\Camel\Extraction\EndpointData;
 use Dingo\Api\Http\FormRequest as DingoFormRequest;
 use Illuminate\Foundation\Http\FormRequest as LaravelFormRequest;
 use Illuminate\Support\Str;

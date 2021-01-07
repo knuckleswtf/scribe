@@ -1,8 +1,9 @@
 <?php
 
-namespace Knuckles\Camel\Endpoint;
+namespace Knuckles\Camel\Extraction;
 
 use Illuminate\Routing\Route;
+use Knuckles\Camel\BaseDTO;
 use Knuckles\Scribe\Tools\Utils as u;
 use ReflectionClass;
 use ReflectionFunctionAbstract;
@@ -25,7 +26,7 @@ class EndpointData extends BaseDTO
     public array $headers = [];
 
     /**
-     * @var array<string,\Knuckles\Camel\Endpoint\UrlParameter>
+     * @var array<string,\Knuckles\Camel\Extraction\Parameter>
      */
     public array $urlParameters = [];
 
@@ -35,7 +36,7 @@ class EndpointData extends BaseDTO
     public array $cleanUrlParameters = [];
 
     /**
-     * @var array<string,\Knuckles\Camel\Endpoint\QueryParameter>
+     * @var array<string,\Knuckles\Camel\Extraction\Parameter>
      */
     public array $queryParameters = [];
 
@@ -45,7 +46,7 @@ class EndpointData extends BaseDTO
     public array $cleanQueryParameters = [];
 
     /**
-     * @var array<string, \Knuckles\Camel\Endpoint\BodyParameter>
+     * @var array<string, \Knuckles\Camel\Extraction\Parameter>
      */
     public array $bodyParameters = [];
 
@@ -55,14 +56,17 @@ class EndpointData extends BaseDTO
     public array $cleanBodyParameters = [];
 
     /**
-     * T@var array<string,\Illuminate\Http\UploadedFile|array>
+     * @var array<string,\Illuminate\Http\UploadedFile|array>
      */
     public array $fileParameters = [];
 
-    public ResponseCollection $responses;
+    /**
+     * @var ResponseCollection|array
+     */
+    public $responses;
 
     /**
-     * @var array<string,\Knuckles\Camel\Endpoint\ResponseField>
+     * @var array<string,\Knuckles\Camel\Extraction\ResponseField>
      */
     public array $responseFields = [];
 
@@ -78,19 +82,11 @@ class EndpointData extends BaseDTO
 
     public Route $route;
 
-    /**
-     * @var array<string, array>
-     */
-    public array $nestedBodyParameters = [];
-
-    public bool $showresponse = false;
-    public ?string $boundUri;
-    public ?string $output;
-
     public function __construct(array $parameters = [])
     {
         $parameters['metadata'] = $parameters['metadata'] ?? new Metadata([]);
         $parameters['responses'] = $parameters['responses'] ?? new ResponseCollection([]);
+
         parent::__construct($parameters);
     }
 
@@ -135,6 +131,21 @@ class EndpointData extends BaseDTO
 
     public function endpointId()
     {
-        return $this->methods[0].str_replace(['/', '?', '{', '}', ':'], '-', $this->uri);
+        return $this->methods[0] . str_replace(['/', '?', '{', '}', ':'], '-', $this->uri);
+    }
+
+    /**
+     * Prepare the endpoint data for serialising.
+     * @return array
+     */
+    public function forOutput(): array
+    {
+        $this->metadata = $this->metadata->except('groupName', 'groupDescription');
+        return $this->except(
+        // Get rid of all duplicate data
+            'cleanQueryParameters', 'cleanUrlParameters', 'fileParameters', 'cleanBodyParameters',
+            // and objects only needed for extraction
+            'route', 'controller', 'method',
+        )->toArray();
     }
 }

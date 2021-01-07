@@ -1,6 +1,8 @@
 <?php
 
-namespace Knuckles\Camel\Endpoint;
+namespace Knuckles\Camel\Extraction;
+
+use Knuckles\Camel\BaseDTOCollection;
 
 /**
  * @extends BaseCollection<Response>

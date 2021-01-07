@@ -2,29 +2,28 @@
 
 namespace Knuckles\Scribe\Extracting;
 
-use Knuckles\Camel\Endpoint\BodyParameter;
-use Knuckles\Camel\Endpoint\EndpointData;
-use Knuckles\Camel\Endpoint\Metadata;
-use Knuckles\Camel\Endpoint\Parameter;
+use Knuckles\Camel\Extraction\EndpointData;
+use Knuckles\Camel\Extraction\Metadata;
+use Knuckles\Camel\Extraction\Parameter;
 use Faker\Factory;
 use Illuminate\Http\Testing\File;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Knuckles\Camel\Endpoint\QueryParameter;
-use Knuckles\Camel\Endpoint\ResponseField;
-use Knuckles\Camel\Endpoint\UrlParameter;
+use Knuckles\Camel\Extraction\ResponseField;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\Utils as u;
 
-class Generator
+class Extractor
 {
     /**
      * @var DocumentationConfig
      */
     private $config;
+
+    use ParamHelpers;
 
     /**
      * @var Route|null
@@ -109,10 +108,12 @@ class Generator
             // Set content type if the user forgot to set it
             $endpointData->headers['Content-Type'] = 'application/json';
         }
-        [$files, $regularParameters] = collect($endpointData->cleanBodyParameters)->partition(function ($example) {
-            return $example instanceof UploadedFile
-                || (is_array($example) && !empty($example[0]) && $example[0] instanceof UploadedFile);
-        });
+        // We need to do all this so response calls can work correctly
+        [$files, $regularParameters] = collect($endpointData->cleanBodyParameters)
+            ->partition(
+                fn($example) => $example instanceof UploadedFile
+                    || (is_array($example) && ($example[0] ?? null) instanceof UploadedFile)
+            );
         if (count($files)) {
             $endpointData->headers['Content-Type'] = 'multipart/form-data';
         }
@@ -122,11 +123,6 @@ class Generator
         $this->fetchResponses($endpointData, $routeRules);
 
         $this->fetchResponseFields($endpointData, $routeRules);
-
-        // Todo split these to writing section
-        $endpointData->nestedBodyParameters = self::nestArrayAndObjectFields($endpointData->bodyParameters);
-        $endpointData->boundUri = u::getUrlWithBoundParameters($endpointData->route, $endpointData->cleanUrlParameters);
-        $endpointData->showresponse = count($endpointData->responses) > 0;
 
         self::$routeBeingProcessed = null;
 
@@ -150,7 +146,7 @@ class Generator
     {
         $this->iterateThroughStrategies('urlParameters', $endpointData, $rulesToApply, function ($results) use ($endpointData) {
             foreach ($results as $key => $item) {
-                $endpointData->urlParameters[$key] = UrlParameter::create($item);
+                $endpointData->urlParameters[$key] = Parameter::create($item);
             }
         });
     }
@@ -159,7 +155,7 @@ class Generator
     {
         $this->iterateThroughStrategies('queryParameters', $endpointData, $rulesToApply, function ($results) use ($endpointData) {
             foreach ($results as $key => $item) {
-                $endpointData->queryParameters[$key] = QueryParameter::create($item);
+                $endpointData->queryParameters[$key] = Parameter::create($item);
             }
         });
     }
@@ -168,7 +164,7 @@ class Generator
     {
         $this->iterateThroughStrategies('bodyParameters', $endpointData, $rulesToApply, function ($results) use ($endpointData) {
             foreach ($results as $key => $item) {
-                $endpointData->bodyParameters[$key] = BodyParameter::create($item);
+                $endpointData->bodyParameters[$key] = Parameter::create($item);
             }
         });
     }
@@ -257,8 +253,12 @@ class Generator
                 continue;
             }
 
-            if (($details->type ?? '') === 'file' && is_string($details->example)) {
-                $details->example = self::convertStringValueToUploadedFileInstance($details->example);
+            if ($details->type === 'file') {
+                if (is_string($details->example)) {
+                    $details->example = self::convertStringValueToUploadedFileInstance($details->example);
+                } else if (is_null($details->example)) {
+                    $details->example = (new self)->generateDummyValue($details->type);
+                }
             }
 
             if (Str::contains($paramName, '.')) { // Object field (or array of objects)
@@ -333,7 +333,7 @@ class Generator
             case 'query':
             case 'query_or_body':
                 $endpointData->auth = ["queryParameters", $parameterName, $valueToUse ?: $token];
-                $endpointData->queryParameters[$parameterName] = new QueryParameter([
+                $endpointData->queryParameters[$parameterName] = new Parameter([
                     'name' => $parameterName,
                     'type' => 'string',
                     'example' => $valueToDisplay ?: $token,
@@ -343,7 +343,7 @@ class Generator
                 return;
             case 'body':
                 $endpointData->auth = ["bodyParameters", $parameterName, $valueToUse ?: $token];
-                $endpointData->bodyParameters[$parameterName] = new BodyParameter([
+                $endpointData->bodyParameters[$parameterName] = new Parameter([
                     'name' => $parameterName,
                     'type' => 'string',
                     'example' => $valueToDisplay ?: $token,

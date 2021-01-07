@@ -2,21 +2,21 @@
 
 namespace Knuckles\Scribe\Tests\Unit;
 
-use Knuckles\Camel\Endpoint\EndpointData;
+use Knuckles\Camel\Extraction\EndpointData;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Illuminate\Routing\Route;
-use Knuckles\Scribe\Extracting\Generator;
+use Knuckles\Scribe\Extracting\Extractor;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\ScribeServiceProvider;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use PHPUnit\Framework\TestCase;
 
-class GeneratorPluginSystemTest extends TestCase
+class ExtractorPluginSystemTest extends TestCase
 {
     use ArraySubsetAsserts;
 
-    protected ?Generator $generator;
+    protected ?Extractor $generator;
 
     protected function getPackageProviders($app)
     {
@@ -51,7 +51,7 @@ class GeneratorPluginSystemTest extends TestCase
             ],
         ];
         $route = $this->createRoute('GET', '/api/test', 'dummy', true, TestController::class);
-        $generator = new Generator(new DocumentationConfig($config));
+        $generator = new Extractor(new DocumentationConfig($config));
         $generator->processRoute($route);
 
         $this->assertTrue(EmptyStrategy1::$called);
@@ -68,7 +68,7 @@ class GeneratorPluginSystemTest extends TestCase
             ],
         ];
         $route = $this->createRoute('GET', '/api/test', 'dummy', true, TestController::class);
-        $generator = new Generator(new DocumentationConfig($config));
+        $generator = new Extractor(new DocumentationConfig($config));
         $parsed = $generator->processRoute($route);
 
         $this->assertCount(2, $parsed->responses->toArray());
@@ -97,7 +97,7 @@ class GeneratorPluginSystemTest extends TestCase
             ],
         ];
         $route = $this->createRoute('GET', '/api/test', 'dummy', true, TestController::class);
-        $generator = new Generator(new DocumentationConfig($config));
+        $generator = new Extractor(new DocumentationConfig($config));
         $parsed = $generator->processRoute($route);
 
         $expectedMetadata = [
@@ -120,7 +120,7 @@ class GeneratorPluginSystemTest extends TestCase
             ],
         ];
         $route = $this->createRoute('GET', '/api/test', 'dummy', true, TestController::class);
-        $generator = new Generator(new DocumentationConfig($config));
+        $generator = new Extractor(new DocumentationConfig($config));
         $parsed = $generator->processRoute($route);
 
         $expectedMetadata = [
@@ -143,7 +143,7 @@ class GeneratorPluginSystemTest extends TestCase
             ],
         ];
         $route = $this->createRoute('GET', '/api/test', 'dummy', true, TestController::class);
-        $generator = new Generator(new DocumentationConfig($config));
+        $generator = new Extractor(new DocumentationConfig($config));
         $parsed = $generator->processRoute($route);
 
         $expectedMetadata = [

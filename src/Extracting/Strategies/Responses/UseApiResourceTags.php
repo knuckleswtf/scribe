@@ -2,7 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 
-use Knuckles\Camel\Endpoint\EndpointData;
+use Knuckles\Camel\Extraction\EndpointData;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -104,7 +104,7 @@ class UseApiResourceTags extends Strategy
                 : $apiResourceClass::collection($list);
         }
 
-        $uri = Utils::getUrlWithBoundParameters($endpointData->route, $endpointData->cleanUrlParameters);
+        $uri = Utils::getUrlWithBoundParameters($endpointData->route->uri(), $endpointData->cleanUrlParameters);
         $method = $endpointData->route->methods()[0];
         $request = Request::create($uri, $method);
         $request->headers->add(['Accept' => 'application/json']);

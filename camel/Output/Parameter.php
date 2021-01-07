@@ -1,7 +1,9 @@
 <?php
 
-namespace Knuckles\Camel\Endpoint;
+namespace Knuckles\Camel\Output;
 
+
+use Knuckles\Camel\BaseDTO;
 
 class Parameter extends BaseDTO
 {

@@ -3,12 +3,11 @@
 namespace Knuckles\Scribe\Tests\Unit;
 
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
-use Illuminate\Routing\Route;
-use Illuminate\Support\Collection;
-use Knuckles\Camel\Endpoint\EndpointData;
-use Knuckles\Camel\Endpoint\QueryParameter;
-use Knuckles\Camel\Endpoint\UrlParameter;
-use Knuckles\Scribe\Extracting\Generator;
+use Faker\Factory;
+use Knuckles\Camel\Output\EndpointData;
+use Knuckles\Camel\Output\Group;
+use Knuckles\Camel\Output\Parameter;
+use Knuckles\Scribe\Extracting\Extractor;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Writing\PostmanCollectionWriter;
 use PHPUnit\Framework\TestCase;
@@ -22,7 +21,7 @@ class PostmanCollectionWriterTest extends TestCase
         $config = ['title' => 'Test API', 'description' => 'A fake description', 'base_url' => 'http://localhost'];
 
         $writer = new PostmanCollectionWriter(new DocumentationConfig($config));
-        $collection = $writer->generatePostmanCollection(new Collection());
+        $collection = $writer->generatePostmanCollection([]);
 
         $this->assertSame('Test API', $collection['info']['name']);
         $this->assertSame('A fake description', $collection['info']['description']);
@@ -39,7 +38,7 @@ class PostmanCollectionWriterTest extends TestCase
 
         $config = ['base_url' => 'fake.localhost', 'title' => 'Test API'];
         $writer = new PostmanCollectionWriter(new DocumentationConfig($config));
-        $collection = $writer->generatePostmanCollection($endpoints);
+        $collection = $writer->generatePostmanCollection([$endpoints]);
 
         $this->assertSame('Group', data_get($collection, 'item.0.name'), 'Group name exists');
 
@@ -66,7 +65,7 @@ class PostmanCollectionWriterTest extends TestCase
         $endpoints = $this->createMockEndpointGroup([$endpointData], 'Group');
         $config = ['base_url' => 'fake.localhost', 'title' => 'Test API'];
         $writer = new PostmanCollectionWriter(new DocumentationConfig($config));
-        $collection = $writer->generatePostmanCollection($endpoints);
+        $collection = $writer->generatePostmanCollection([$endpoints]);
 
         $this->assertContains([
             'key' => 'X-Fake',
@@ -78,7 +77,7 @@ class PostmanCollectionWriterTest extends TestCase
     public function url_parameters_are_represented_properly()
     {
         $endpointData = $this->createMockEndpointData('fake/{param}');
-        $endpointData->urlParameters['param'] = new UrlParameter([
+        $endpointData->urlParameters['param'] = new Parameter([
             'name' => 'param',
             'description' => 'A test description for the test param',
             'required' => true,
@@ -88,7 +87,7 @@ class PostmanCollectionWriterTest extends TestCase
 
         $config = ['base_url' => 'fake.localhost', 'title' => 'Test API'];
         $writer = new PostmanCollectionWriter(new DocumentationConfig($config));
-        $collection = $writer->generatePostmanCollection($endpoints);
+        $collection = $writer->generatePostmanCollection([$endpoints]);
 
         $item = data_get($collection, 'item.0.item.0');
         $this->assertSame('fake/{param}', $item['name'], 'Name defaults to URL path');
@@ -110,14 +109,14 @@ class PostmanCollectionWriterTest extends TestCase
         $endpointData = $this->createMockEndpointData('fake/path');
 
         $endpointData->queryParameters = [
-            'limit' => new QueryParameter([
+            'limit' => new Parameter([
                 'name' => 'limit',
                 'type' => 'integer',
                 'description' => 'A fake limit for my fake endpoint',
                 'required' => true,
                 'example' => 5,
             ]),
-            'filters' => new QueryParameter([
+            'filters' => new Parameter([
                 'name' => 'filters',
                 'type' => 'integer[]',
                 'description' => 'Filters',
@@ -125,12 +124,12 @@ class PostmanCollectionWriterTest extends TestCase
                 'example' => [34, 12],
             ]),
         ];
-        $endpointData->cleanQueryParameters = Generator::cleanParams($endpointData->queryParameters);
+        $endpointData->cleanQueryParameters = Extractor::cleanParams($endpointData->queryParameters);
 
         $endpoints = $this->createMockEndpointGroup([$endpointData]);
         $config = ['base_url' => 'fake.localhost', 'title' => 'Test API'];
         $writer = new PostmanCollectionWriter(new DocumentationConfig($config));
-        $collection = $writer->generatePostmanCollection($endpoints);
+        $collection = $writer->generatePostmanCollection([$endpoints]);
 
         $variableData = data_get($collection, 'item.0.item.0.request.url.query');
 
@@ -159,7 +158,7 @@ class PostmanCollectionWriterTest extends TestCase
     {
         $endpointData = $this->createMockEndpointData('fake/path');
 
-        $endpointData->urlParameters['limit'] = new UrlParameter([
+        $endpointData->urlParameters['limit'] = new Parameter([
             'name' => 'limit',
             'description' => 'A fake limit for my fake endpoint',
             'required' => false,
@@ -169,7 +168,7 @@ class PostmanCollectionWriterTest extends TestCase
         $endpoints = $this->createMockEndpointGroup([$endpointData]);
         $config = ['base_url' => 'fake.localhost', 'title' => 'Test API'];
         $writer = new PostmanCollectionWriter(new DocumentationConfig($config));
-        $collection = $writer->generatePostmanCollection($endpoints);
+        $collection = $writer->generatePostmanCollection([$endpoints]);
 
         $variableData = data_get($collection, 'item.0.item.0.request.url.query');
 
@@ -181,14 +180,14 @@ class PostmanCollectionWriterTest extends TestCase
     {
         $endpointData = $this->createMockEndpointData('fake/path');
         $endpointData->queryParameters = [
-            'required' => new QueryParameter([
+            'required' => new Parameter([
                 'name' => 'required',
                 'type' => 'string',
                 'description' => 'A required param with a null value',
                 'required' => true,
                 'example' => null,
             ]),
-            'not_required' => new QueryParameter([
+            'not_required' => new Parameter([
                 'name' => 'not_required',
                 'type' => 'string',
                 'description' => 'A not required param with a null value',
@@ -196,12 +195,12 @@ class PostmanCollectionWriterTest extends TestCase
                 'example' => null,
             ]),
         ];
-        $endpointData->cleanQueryParameters = Generator::cleanParams($endpointData->queryParameters);
+        $endpointData->cleanQueryParameters = Extractor::cleanParams($endpointData->queryParameters);
 
         $endpoints = $this->createMockEndpointGroup([$endpointData]);
         $config = ['base_url' => 'fake.localhost', 'title' => 'Test API'];
         $writer = new PostmanCollectionWriter(new DocumentationConfig($config));
-        $collection = $writer->generatePostmanCollection($endpoints);
+        $collection = $writer->generatePostmanCollection([$endpoints]);
 
         $variableData = data_get($collection, 'item.0.item.0.request.url.query');
 
@@ -236,11 +235,11 @@ class PostmanCollectionWriterTest extends TestCase
             'auth' => [
                 'enabled' => true,
                 'default' => false,
-            ]
+            ],
         ];
         $config['auth']['in'] = 'bearer';
         $writer = new PostmanCollectionWriter(new DocumentationConfig($config));
-        $collection = $writer->generatePostmanCollection($endpoints);
+        $collection = $writer->generatePostmanCollection([$endpoints]);
 
         $this->assertEquals(['type' => 'bearer'], $collection['auth']);
         $this->assertArrayNotHasKey('auth', $collection['item'][0]['item'][0]['request']);
@@ -249,7 +248,7 @@ class PostmanCollectionWriterTest extends TestCase
         $config['auth']['in'] = 'query';
         $config['auth']['name'] = 'tokennnn';
         $writer = new PostmanCollectionWriter(new DocumentationConfig($config));
-        $collection = $writer->generatePostmanCollection($endpoints);
+        $collection = $writer->generatePostmanCollection([$endpoints]);
 
         $this->assertEquals([
             'type' => 'apikey',
@@ -264,7 +263,7 @@ class PostmanCollectionWriterTest extends TestCase
                     'value' => 'tokennnn',
                     'type' => 'string',
                 ],
-            ]
+            ],
         ], $collection['auth']);
         $this->assertArrayNotHasKey('auth', $collection['item'][0]['item'][0]['request']);
         $this->assertEquals(['type' => 'noauth'], $collection['item'][0]['item'][1]['request']['auth']);
@@ -276,15 +275,29 @@ class PostmanCollectionWriterTest extends TestCase
             'uri' => $path,
             'methods' => ['GET'],
             'metadata' => [
-                'groupDescription' => '',
                 'title' => $title,
             ],
-            'route' => new Route(['GET'], $path, []),
+            'urlParameters' => [], // Should be set by caller (along with custom path)
+            'queryParameters' => [],
+            'bodyParameters' => [],
+            'responses' => [
+                [
+                    'status' => 200,
+                    'content' => '{"random": "json"}',
+                    'description' => 'Okayy',
+                ],
+            ],
+            'responseFields' => [],
         ]);
     }
 
-    protected function createMockEndpointGroup(array $routes, $groupName = 'Group'): Collection
+    protected function createMockEndpointGroup(array $endpoints, string $groupName = 'Group'): Group
     {
-        return collect([$groupName => collect($routes)]);
+        $faker = Factory::create();
+        return Group::createFromSpec([
+            'description' => '',
+            'name' => $groupName,
+            'endpoints' => array_map(fn($e) => $e->toArray(), $endpoints),
+        ]);
     }
 }

@@ -7,19 +7,23 @@ use Illuminate\Routing\Route;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
-use Knuckles\Scribe\Extracting\Generator;
+use Knuckles\Camel\Tools\Loader;
+use Knuckles\Camel\Tools\Serialiser;
+use Knuckles\Scribe\Extracting\Extractor;
 use Knuckles\Scribe\Matching\MatchedRoute;
 use Knuckles\Scribe\Matching\RouteMatcherInterface;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\ErrorHandlingUtils as e;
 use Knuckles\Scribe\Tools\Globals;
+use Knuckles\Scribe\Tools\Utils;
 use Knuckles\Scribe\Tools\Utils as u;
 use Knuckles\Scribe\Writing\Writer;
 use Mpociot\Reflection\DocBlock;
 use Mpociot\Reflection\DocBlock\Tag;
 use ReflectionClass;
 use ReflectionException;
+use Symfony\Component\Yaml\Yaml;
 
 class GenerateDocumentation extends Command
 {
@@ -62,25 +66,38 @@ class GenerateDocumentation extends Command
         $this->bootstrap();
 
         $noExtraction = $this->option('no-extraction');
-        if ($noExtraction) {
-            $writer = new Writer($this->docConfig);
-            $writer->writeDocs();
-            return;
+        $camelDir = ".endpoints";
+
+        if (!$noExtraction) {
+            $routes = $routeMatcher->getRoutes($this->docConfig->get('routes'), $this->docConfig->get('router'));
+            $endpoints = $this->extractEndpointsInfo($routes);
+            $serialised = Serialiser::serialiseEndpointsForOutput($endpoints);
+
+            // Utils::deleteDirectoryAndContents($comparisonDir);
+
+            if (!is_dir($camelDir)) {
+                mkdir($camelDir);
+            }
+
+            $i = 0;
+            foreach ($serialised as $groupName => $endpointsInGroup) {
+                file_put_contents(
+                    "$camelDir/$i.yaml",
+                    Yaml::dump(
+                        $endpointsInGroup,
+                        10,
+                        2,
+                        Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP | Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK
+                    )
+                );
+                $i++;
+            }
         }
 
-        $routes = $routeMatcher->getRoutes($this->docConfig->get('routes'), $this->docConfig->get('router'));
-
-        $parsedRoutes = $this->processRoutes($routes);
-
-        $groupedRoutes = collect($parsedRoutes)
-            ->groupBy('metadata.groupName')
-            ->sortBy(static function ($group) {
-                /* @var $group Collection */
-                return $group->first()->metadata->groupName;
-            }, SORT_NATURAL);
+        $endpoints = Loader::loadEndpoints($camelDir);
 
         $writer = new Writer($this->docConfig, $this->option('force'));
-        $writer->writeDocs($groupedRoutes);
+        $writer->writeDocs($endpoints);
     }
 
     /**
@@ -89,35 +106,35 @@ class GenerateDocumentation extends Command
      * @return array
      *
      */
-    private function processRoutes(array $matches): array
+    private function extractEndpointsInfo(array $matches): array
     {
-        $generator = new Generator($this->docConfig);
+        $generator = new Extractor($this->docConfig);
         $parsedRoutes = [];
         foreach ($matches as $routeItem) {
             $route = $routeItem->getRoute();
 
             $routeControllerAndMethod = u::getRouteClassAndMethodNames($route);
-            if (! $this->isValidRoute($routeControllerAndMethod)) {
-                c::warn('Skipping invalid route: '. c::getRouteRepresentation($route));
+            if (!$this->isValidRoute($routeControllerAndMethod)) {
+                c::warn('Skipping invalid route: ' . c::getRouteRepresentation($route));
                 continue;
             }
 
-            if (! $this->doesControllerMethodExist($routeControllerAndMethod)) {
-                c::warn('Skipping route: '. c::getRouteRepresentation($route).' - Controller method does not exist.');
+            if (!$this->doesControllerMethodExist($routeControllerAndMethod)) {
+                c::warn('Skipping route: ' . c::getRouteRepresentation($route) . ' - Controller method does not exist.');
                 continue;
             }
 
             if ($this->isRouteHiddenFromDocumentation($routeControllerAndMethod)) {
-                c::warn('Skipping route: '. c::getRouteRepresentation($route). ': @hideFromAPIDocumentation was specified.');
+                c::warn('Skipping route: ' . c::getRouteRepresentation($route) . ': @hideFromAPIDocumentation was specified.');
                 continue;
             }
 
             try {
-                c::info('Processing route: '. c::getRouteRepresentation($route));
+                c::info('Processing route: ' . c::getRouteRepresentation($route));
                 $parsedRoutes[] = $generator->processRoute($route, $routeItem->getRules());
-                c::success('Processed route: '. c::getRouteRepresentation($route));
+                c::success('Processed route: ' . c::getRouteRepresentation($route));
             } catch (\Exception $exception) {
-                c::error('Failed processing route: '. c::getRouteRepresentation($route) . ' - Exception encountered.');
+                c::error('Failed processing route: ' . c::getRouteRepresentation($route) . ' - Exception encountered.');
                 e::dumpExceptionIfVerbose($exception);
             }
         }
@@ -135,7 +152,7 @@ class GenerateDocumentation extends Command
             $routeControllerAndMethod = $classOrObject . '@' . $method;
         }
 
-        return ! is_callable($routeControllerAndMethod) && ! is_null($routeControllerAndMethod);
+        return !is_callable($routeControllerAndMethod) && !is_null($routeControllerAndMethod);
     }
 
     private function doesControllerMethodExist(array $routeControllerAndMethod): bool
@@ -152,7 +169,7 @@ class GenerateDocumentation extends Command
 
     private function isRouteHiddenFromDocumentation(array $routeControllerAndMethod): bool
     {
-        if (! ($class = $routeControllerAndMethod[0]) instanceof \Closure) {
+        if (!($class = $routeControllerAndMethod[0]) instanceof \Closure) {
             $classDocBlock = new DocBlock((new ReflectionClass($class))->getDocComment() ?: '');
             $shouldIgnoreClass = collect($classDocBlock->getTags())
                 ->filter(function (Tag $tag) {

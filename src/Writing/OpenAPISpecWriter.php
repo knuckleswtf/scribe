@@ -2,13 +2,12 @@
 
 namespace Knuckles\Scribe\Writing;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
-use Knuckles\Camel\Endpoint\BodyParameter;
-use Knuckles\Camel\Endpoint\EndpointData;
-use Knuckles\Camel\Endpoint\Parameter;
-use Knuckles\Camel\Endpoint\QueryParameter;
-use Knuckles\Camel\Endpoint\UrlParameter;
+use Knuckles\Camel\Output\EndpointData;
+use Knuckles\Camel\Output\Group;
+use Knuckles\Camel\Output\Parameter;
 use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\Utils;
@@ -41,11 +40,11 @@ class OpenAPISpecWriter
     /**
      * See https://swagger.io/specification/
      *
-     * @param Collection $groupedEndpoints
+     * @param Group[] $groupedEndpoints
      *
      * @return array
      */
-    public function generateSpecContent(Collection $groupedEndpoints)
+    public function generateSpecContent(array $groupedEndpoints)
     {
         return array_merge([
             'openapi' => self::VERSION,
@@ -63,22 +62,27 @@ class OpenAPISpecWriter
         ], $this->generateSecurityPartialSpec());
     }
 
-    protected function generatePathsSpec(Collection $groupedEndpoints)
+    /**
+     * @param Group[] $groupedEndpoints
+     *
+     * @return mixed
+     */
+    protected function generatePathsSpec(array $groupedEndpoints)
     {
-        $allEndpoints = $groupedEndpoints->flatten(1);
+        $allEndpoints = collect($groupedEndpoints)->map->endpoints->flatten(1);
         // OpenAPI groups endpoints by path, then method
         $groupedByPath = $allEndpoints->groupBy(function ($endpoint) {
             $path = str_replace("?}", "}", $endpoint->uri); // Remove optional parameters indicator in path
             return '/' . ltrim($path, '/');
         });
-        return $groupedByPath->mapWithKeys(function (Collection $endpoints, $path) {
-            $operations = $endpoints->mapWithKeys(function (EndpointData $endpoint) {
+        return $groupedByPath->mapWithKeys(function (Collection $endpoints, $path) use ($groupedEndpoints) {
+            $operations = $endpoints->mapWithKeys(function (EndpointData $endpoint) use ($groupedEndpoints) {
                 $spec = [
                     'summary' => $endpoint->metadata->title,
                     'description' => $endpoint->metadata->description,
                     'parameters' => $this->generateEndpointParametersSpec($endpoint),
                     'responses' => $this->generateEndpointResponsesSpec($endpoint),
-                    'tags' => [$endpoint->metadata->groupName],
+                    'tags' => [Arr::first($groupedEndpoints, fn(Group $group) => $group->has($endpoint))->name],
                 ];
 
                 if (count($endpoint->bodyParameters)) {
@@ -100,7 +104,7 @@ class OpenAPISpecWriter
                 $parameters = [];
                 /**
                  * @var string $name
-                 * @var UrlParameter $details
+                 * @var Parameter $details
                  */
                 foreach ($endpoints[0]->urlParameters as $name => $details) {
                     $parameterData = [
@@ -157,7 +161,7 @@ class OpenAPISpecWriter
         if (count($endpoint->queryParameters)) {
             /**
              * @var string $name
-             * @var QueryParameter $details
+             * @var Parameter $details
              */
             foreach ($endpoint->queryParameters as $name => $details) {
                 $parameterData = [

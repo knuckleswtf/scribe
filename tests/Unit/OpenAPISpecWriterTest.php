@@ -4,14 +4,9 @@ namespace Knuckles\Scribe\Tests\Unit;
 
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Faker\Factory;
-use Illuminate\Routing\Route;
-use Knuckles\Camel\Endpoint\BodyParameter;
-use Knuckles\Camel\Endpoint\EndpointData;
-use Knuckles\Camel\Endpoint\QueryParameter;
-use Knuckles\Camel\Endpoint\ResponseCollection;
-use Knuckles\Camel\Endpoint\ResponseField;
-use Knuckles\Camel\Endpoint\UrlParameter;
-use Knuckles\Scribe\Extracting\Generator;
+use Illuminate\Support\Arr;
+use Knuckles\Camel\Output\EndpointData;
+use Knuckles\Camel\Output\Group;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Writing\OpenAPISpecWriter;
 use PHPUnit\Framework\TestCase;
@@ -34,10 +29,10 @@ class OpenAPISpecWriterTest extends TestCase
     {
         $endpointData1 = $this->createMockEndpointData();
         $endpointData2 = $this->createMockEndpointData();
-        $groupedEndpoints = collect([$endpointData1, $endpointData2])->groupBy('metadata.groupName');
+        $groups = [$this->createGroup([$endpointData1, $endpointData2])];
 
         $writer = new OpenAPISpecWriter(new DocumentationConfig($this->config));
-        $results = $writer->generateSpecContent($groupedEndpoints);
+        $results = $writer->generateSpecContent($groups);
 
         $this->assertEquals(OpenAPISpecWriter::VERSION, $results['openapi']);
         $this->assertEquals($this->config['title'], $results['info']['title']);
@@ -54,10 +49,10 @@ class OpenAPISpecWriterTest extends TestCase
         $endpointData1 = $this->createMockEndpointData(['uri' => 'path1', 'methods' => ['GET']]);
         $endpointData2 = $this->createMockEndpointData(['uri' => 'path1', 'methods' => ['POST']]);
         $endpointData3 = $this->createMockEndpointData(['uri' => 'path1/path2']);
-        $groupedEndpoints = collect([$endpointData1, $endpointData2, $endpointData3])->groupBy('metadata.groupName');
+        $groups = [$this->createGroup([$endpointData1, $endpointData2, $endpointData3])];
 
         $writer = new OpenAPISpecWriter(new DocumentationConfig($this->config));
-        $results = $writer->generateSpecContent($groupedEndpoints);
+        $results = $writer->generateSpecContent($groups);
 
         $this->assertIsArray($results['paths']);
         $this->assertCount(2, $results['paths']);
@@ -67,11 +62,15 @@ class OpenAPISpecWriterTest extends TestCase
         $this->assertArrayHasKey('post', $results['paths']['/path1']);
         $this->assertArrayHasKey(strtolower($endpointData3->methods[0]), $results['paths']['/path1/path2']);
 
-        collect([$endpointData1, $endpointData2, $endpointData3])->each(function (EndpointData $endpoint) use ($results) {
-            $method = strtolower($endpoint->methods[0]);
-            $this->assertEquals([$endpoint->metadata->groupName], $results['paths']['/' . $endpoint->uri][$method]['tags']);
-            $this->assertEquals($endpoint->metadata->title, $results['paths']['/' . $endpoint->uri][$method]['summary']);
-            $this->assertEquals($endpoint->metadata->description, $results['paths']['/' . $endpoint->uri][$method]['description']);
+        collect([$endpointData1, $endpointData2, $endpointData3])->each(function (EndpointData $endpoint) use ($groups, $results) {
+            $endpointSpec = $results['paths']['/' . $endpoint->uri][strtolower($endpoint->methods[0])];
+
+            $tags = $endpointSpec['tags'];
+            $containingGroup = Arr::first($groups, fn(Group $group) => $group->has($endpoint));
+            $this->assertEquals([$containingGroup->name], $tags);
+
+            $this->assertEquals($endpoint->metadata->title, $endpointSpec['summary']);
+            $this->assertEquals($endpoint->metadata->description, $endpointSpec['description']);
         });
     }
 
@@ -80,11 +79,11 @@ class OpenAPISpecWriterTest extends TestCase
     {
         $endpointData1 = $this->createMockEndpointData(['uri' => 'path1', 'methods' => ['GET'], 'metadata.authenticated' => true]);
         $endpointData2 = $this->createMockEndpointData(['uri' => 'path1', 'methods' => ['POST'], 'metadata.authenticated' => false]);
-        $groupedEndpoints = collect([$endpointData1,$endpointData2])->groupBy('metadata.groupName');
+        $groups = [$this->createGroup([$endpointData1, $endpointData2])];
 
         $config = array_merge($this->config, ['auth' => ['enabled' => true, 'in' => 'bearer']]);
         $writer = new OpenAPISpecWriter(new DocumentationConfig($config));
-        $results = $writer->generateSpecContent($groupedEndpoints);
+        $results = $writer->generateSpecContent($groups);
 
         $this->assertCount(1, $results['components']['securitySchemes']);
         $this->assertArrayHasKey('default', $results['components']['securitySchemes']);
@@ -100,7 +99,7 @@ class OpenAPISpecWriterTest extends TestCase
         // Next try: auth with a query parameter
         $config = array_merge($this->config, ['auth' => ['enabled' => true, 'in' => 'query', 'name' => 'token']]);
         $writer = new OpenAPISpecWriter(new DocumentationConfig($config));
-        $results = $writer->generateSpecContent($groupedEndpoints);
+        $results = $writer->generateSpecContent($groups);
 
         $this->assertCount(1, $results['components']['securitySchemes']);
         $this->assertArrayHasKey('default', $results['components']['securitySchemes']);
@@ -121,26 +120,26 @@ class OpenAPISpecWriterTest extends TestCase
         $endpointData1 = $this->createMockEndpointData([
             'methods' => ['POST'],
             'uri' => 'path1/{param}/{optionalParam?}',
-            'urlParameters.param' => new UrlParameter([
+            'urlParameters.param' => [
                 'description' => 'Something',
                 'required' => true,
                 'example' => 56,
                 'type' => 'integer',
                 'name' => 'param',
-            ]),
-            'urlParameters.optionalParam' => new UrlParameter([
+            ],
+            'urlParameters.optionalParam' => [
                 'description' => 'Another',
                 'required' => false,
                 'example' => '69',
                 'type' => 'string',
                 'name' => 'optionalParam',
-            ]),
+            ],
         ]);
         $endpointData2 = $this->createMockEndpointData(['uri' => 'path1', 'methods' => ['POST']]);
-        $groupedEndpoints = collect([$endpointData1, $endpointData2])->groupBy('metadata.groupName');
+        $groups = [$this->createGroup([$endpointData1, $endpointData2])];
 
         $writer = new OpenAPISpecWriter(new DocumentationConfig($this->config));
-        $results = $writer->generateSpecContent($groupedEndpoints);
+        $results = $writer->generateSpecContent($groups);
 
         $this->assertArrayNotHasKey('parameters', $results['paths']['/path1']);
         $this->assertCount(2, $results['paths']['/path1/{param}/{optionalParam}']['parameters']);
@@ -171,10 +170,10 @@ class OpenAPISpecWriterTest extends TestCase
     {
         $endpointData1 = $this->createMockEndpointData(['methods' => ['POST'], 'uri' => 'path1', 'headers.Extra-Header' => 'Some-example']);
         $endpointData2 = $this->createMockEndpointData(['uri' => 'path1', 'methods' => ['GET'], 'headers' => []]);
-        $groupedEndpoints = collect([$endpointData1, $endpointData2])->groupBy('metadata.groupName');
+        $groups = [$this->createGroup([$endpointData1, $endpointData2])];
 
         $writer = new OpenAPISpecWriter(new DocumentationConfig($this->config));
-        $results = $writer->generateSpecContent($groupedEndpoints);
+        $results = $writer->generateSpecContent($groups);
 
         $this->assertEquals([], $results['paths']['/path1']['get']['parameters']);
         $this->assertCount(2, $results['paths']['/path1']['post']['parameters']);
@@ -202,20 +201,20 @@ class OpenAPISpecWriterTest extends TestCase
             'uri' => '/path1',
             'headers' => [], // Emptying headers so it doesn't interfere with parameters object
             'queryParameters' => [
-                'param' => new QueryParameter([
+                'param' => [
                     'description' => 'A query param',
                     'required' => false,
                     'example' => 'hahoho',
                     'type' => 'string',
                     'name' => 'param',
-                ]),
+                ],
             ],
         ]);
         $endpointData2 = $this->createMockEndpointData(['headers' => [], 'methods' => ['POST'], 'uri' => '/path1',]);
-        $groupedEndpoints = collect([$endpointData1, $endpointData2])->groupBy('metadata.groupName');
+        $groups = [$this->createGroup([$endpointData1, $endpointData2])];
 
         $writer = new OpenAPISpecWriter(new DocumentationConfig($this->config));
-        $results = $writer->generateSpecContent($groupedEndpoints);
+        $results = $writer->generateSpecContent($groups);
 
         $this->assertEquals([], $results['paths']['/path1']['post']['parameters']);
         $this->assertArrayHasKey('parameters', $results['paths']['/path1']['get']);
@@ -240,7 +239,7 @@ class OpenAPISpecWriterTest extends TestCase
         $endpointData1 = $this->createMockEndpointData([
             'methods' => ['POST'],
             'uri' => '/path1',
-            'bodyParameters' => BodyParameter::arrayOf([
+            'bodyParameters' => [
                 'stringParam' => [
                     'name' => 'stringParam',
                     'description' => 'String param',
@@ -276,14 +275,13 @@ class OpenAPISpecWriterTest extends TestCase
                     'example' => 119.0,
                     'type' => 'number',
                 ],
-            ]),
+            ],
         ]);
-        $endpointData1->nestedBodyParameters = Generator::nestArrayAndObjectFields($endpointData1->bodyParameters);
         $endpointData2 = $this->createMockEndpointData(['methods' => ['GET'], 'uri' => '/path1']);
         $endpointData3 = $this->createMockEndpointData([
             'methods' => ['PUT'],
             'uri' => '/path2',
-            'bodyParameters' => BodyParameter::arrayOf([
+            'bodyParameters' => [
                 'fileParam' => [
                     'name' => 'fileParam',
                     'description' => 'File param',
@@ -319,13 +317,12 @@ class OpenAPISpecWriterTest extends TestCase
                     'example' => "hi",
                     'type' => 'string',
                 ],
-            ]),
+            ],
         ]);
-        $endpointData3->nestedBodyParameters = Generator::nestArrayAndObjectFields($endpointData3->bodyParameters);
-        $groupedEndpoints = collect([$endpointData1, $endpointData2, $endpointData3])->groupBy('metadata.groupName');
+        $groups = [$this->createGroup([$endpointData1, $endpointData2, $endpointData3])];
 
         $writer = new OpenAPISpecWriter(new DocumentationConfig($this->config));
-        $results = $writer->generateSpecContent($groupedEndpoints);
+        $results = $writer->generateSpecContent($groups);
 
         $this->assertArrayNotHasKey('requestBody', $results['paths']['/path1']['get']);
         $this->assertArrayHasKey('requestBody', $results['paths']['/path1']['post']);
@@ -403,7 +400,7 @@ class OpenAPISpecWriterTest extends TestCase
                                         'field1' => [
                                             'type' => 'array',
                                             'items' => [
-                                                'type' => 'string'
+                                                'type' => 'string',
                                             ],
                                             'description' => 'Object array param first field',
                                             'example' => ["hello"],
@@ -429,7 +426,7 @@ class OpenAPISpecWriterTest extends TestCase
         $endpointData1 = $this->createMockEndpointData([
             'methods' => ['POST'],
             'uri' => '/path1',
-            'responses' => new ResponseCollection([
+            'responses' => [
                 [
                     'status' => 204,
                     'description' => 'Successfully updated.',
@@ -440,30 +437,30 @@ class OpenAPISpecWriterTest extends TestCase
                     'description' => '',
                     'content' => '{"this": "shouldn\'t be ignored", "and this": "too"}',
                 ],
-            ]),
-            'responseFields' => ResponseField::arrayOf([
+            ],
+            'responseFields' => [
                 'and this' => [
                     'name' => 'and this',
                     'type' => 'string',
                     'description' => 'Parameter description, ha!',
                 ],
-            ]),
+            ],
         ]);
         $endpointData2 = $this->createMockEndpointData([
             'methods' => ['PUT'],
             'uri' => '/path2',
-            'responses' => new ResponseCollection([
+            'responses' => [
                 [
                     'status' => 200,
                     'description' => '',
                     'content' => '<<binary>> The cropped image',
                 ],
-            ]),
+            ],
         ]);
-        $groupedEndpoints = collect([$endpointData1, $endpointData2])->groupBy('metadata.groupName');
+        $groups = [$this->createGroup([$endpointData1, $endpointData2])];
 
         $writer = new OpenAPISpecWriter(new DocumentationConfig($this->config));
-        $results = $writer->generateSpecContent($groupedEndpoints);
+        $results = $writer->generateSpecContent($groups);
 
         $this->assertCount(2, $results['paths']['/path1']['post']['responses']);
         $this->assertArraySubset([
@@ -518,8 +515,6 @@ class OpenAPISpecWriterTest extends TestCase
                 'Content-Type' => 'application/json',
             ],
             'metadata' => [
-                'groupDescription' => '',
-                'groupName' => $faker->randomElement(['Endpoints', 'Group A', 'Group B']),
                 'title' => $faker->sentence,
                 'description' => $faker->randomElement([$faker->sentence, '']),
                 'authenticated' => $faker->boolean,
@@ -527,15 +522,14 @@ class OpenAPISpecWriterTest extends TestCase
             'urlParameters' => [], // Should be set by caller (along with custom path)
             'queryParameters' => [],
             'bodyParameters' => [],
-            'responses' => new ResponseCollection([
+            'responses' => [
                 [
                     'status' => 200,
                     'content' => '{"random": "json"}',
                     'description' => 'Okayy',
                 ],
-            ]),
+            ],
             'responseFields' => [],
-            'route' => new Route(['GET'], $path, []),
         ];
 
         foreach ($custom as $key => $value) {
@@ -543,5 +537,15 @@ class OpenAPISpecWriterTest extends TestCase
         }
 
         return new EndpointData($data);
+    }
+
+    protected function createGroup(array $endpoints)
+    {
+        $faker = Factory::create();
+        return Group::createFromSpec([
+            'description' => '',
+            'name' => $faker->randomElement(['Endpoints', 'Group A', 'Group B']),
+            'endpoints' => array_map(fn ($e) => $e->toArray(), $endpoints),
+        ]);
     }
 }

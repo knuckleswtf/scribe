@@ -3,7 +3,7 @@
 namespace Knuckles\Scribe\Tests\Strategies\Responses;
 
 use Illuminate\Routing\Route;
-use Knuckles\Camel\Endpoint\EndpointData;
+use Knuckles\Camel\Extraction\EndpointData;
 use Knuckles\Scribe\Extracting\Strategies\Responses\UseApiResourceTags;
 use Knuckles\Scribe\ScribeServiceProvider;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
