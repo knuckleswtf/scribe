@@ -5,7 +5,10 @@ $client = new \GuzzleHttp\Client();
 $response = $client->{{ strtolower($route['methods'][0]) }}(
     '{{ rtrim($baseUrl, '/') . '/' . ltrim($route['boundUri'], '/') }}',
     [
-@if(!empty($route['headers']))
+@if(!empty($route['headers']))@php
+// We don't need the Content-Type header because Guzzle sets it automatically when you use json or multipart.
+unset($route['headers']['Content-Type']);
+@endphp
         'headers' => {!! \Knuckles\Scribe\Tools\WritingUtils::printPhpValue($route['headers'], 8) !!},
 @endif
 @if(!empty($route['cleanQueryParameters']))
