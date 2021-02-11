@@ -29,6 +29,13 @@ class WritingUtils
      */
     public static function printPhpValue($value, int $indentationLevel = 0): string
     {
+        if (is_array($value)) {
+            // Convert any objects to arrays so Symfony serialises them properly
+            $value = Utils::arrayMapRecursive($value, function ($item) {
+                return is_object($item) ? json_decode(json_encode($item), true) : $item;
+            });
+        }
+
         $output = VarExporter::export($value);
         // Padding with x spaces so they align
         $split = explode("\n", $output);
@@ -129,12 +136,12 @@ class WritingUtils
                 $params = [];
                 $expanded = self::getParameterNamesAndValuesForFormData('', $value[0]);
                 foreach ($expanded as $fieldName => $itemValue) {
-                    $paramName = $parameter.'[]'.$fieldName;
+                    $paramName = $parameter . '[]' . $fieldName;
                     $params[$paramName] = $itemValue;
                 }
                 return $params;
             }
-            return [$parameter.'[]' => $value[0]];
+            return [$parameter . '[]' => $value[0]];
         }
 
         // Transform hashes
@@ -143,7 +150,7 @@ class WritingUtils
             if (is_array($itemValue)) {
                 $expanded = self::getParameterNamesAndValuesForFormData('', $itemValue);
                 foreach ($expanded as $fieldName => $subItemValue) {
-                    $paramName = $parameter . "[$item]".$fieldName;
+                    $paramName = $parameter . "[$item]" . $fieldName;
                     $params[$paramName] = $subItemValue;
                 }
             } else {

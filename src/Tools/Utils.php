@@ -176,4 +176,11 @@ class Utils
         return false;
     }
 
+    public static function arrayMapRecursive($arr, $fn)
+    {
+        return array_map(function ($item) use ($fn) {
+            return is_array($item) ? self::arrayMapRecursive($item, $fn) : $fn($item);
+        }, $arr);
+    }
+
 }
