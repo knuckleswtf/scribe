@@ -12,14 +12,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
-## 2.5.2 (Thursday, 11 February 2021)
+## 2.5.3 (Thursday, 11 February 2021)
 ### Fixes
 - Properly serialize objects in PHP example request (https://github.com/knuckleswtf/scribe/commit/8059566ef39ec09ebd7eb36ecd2e65d20f0dd2bc)
 - Don't include Content-Type header in Guzzle examples (https://github.com/knuckleswtf/scribe/commit/6a1e7504ec4c5a17e4e97996536bd16398823703)
-- 
+
+## 2.5.2 (Monday, 25 January, 2021)
+### Fixes
+- Change check for legacy-style factories to check for new style instead. (https://github.com/knuckleswtf/scribe/pull/181)
 
 ## 2.5.1 (Wednesday, 16 December 2020)
 - PHP 8 support (https://github.com/knuckleswtf/scribe/pull/162)
+
+## 2.5.0
+There wasn't a 2.5.0.😕 No reason why; it just skipped my mind.
 
 ## 2.4.2 (Tuesday, 1 December 2020)
 ### Fixes
