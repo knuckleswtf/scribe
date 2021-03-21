@@ -5,6 +5,7 @@ namespace Knuckles\Scribe\Writing;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Knuckles\Camel\Camel;
 use Knuckles\Camel\Output\EndpointData;
 use Knuckles\Camel\Output\Group;
 use Knuckles\Camel\Output\Parameter;
@@ -40,7 +41,7 @@ class OpenAPISpecWriter
     /**
      * See https://swagger.io/specification/
      *
-     * @param Group[] $groupedEndpoints
+     * @param array[] $groupedEndpoints
      *
      * @return array
      */
@@ -63,7 +64,7 @@ class OpenAPISpecWriter
     }
 
     /**
-     * @param Group[] $groupedEndpoints
+     * @param array[] $groupedEndpoints
      *
      * @return mixed
      */
@@ -82,7 +83,7 @@ class OpenAPISpecWriter
                     'description' => $endpoint->metadata->description,
                     'parameters' => $this->generateEndpointParametersSpec($endpoint),
                     'responses' => $this->generateEndpointResponsesSpec($endpoint),
-                    'tags' => [Arr::first($groupedEndpoints, fn(Group $group) => $group->has($endpoint))->name],
+                    'tags' => [Arr::first($groupedEndpoints, fn($group) => Camel::doesGroupContainEndpoint($group, $endpoint))['name']],
                 ];
 
                 if (count($endpoint->bodyParameters)) {

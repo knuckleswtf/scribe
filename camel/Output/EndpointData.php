@@ -9,6 +9,7 @@ use Knuckles\Camel\Extraction\ResponseCollection;
 use Knuckles\Camel\Extraction\ResponseField;
 use Knuckles\Scribe\Extracting\Extractor;
 use Knuckles\Scribe\Tools\Utils as u;
+use Knuckles\Camel\Extraction\Metadata;
 
 
 class EndpointData extends BaseDTO
@@ -58,6 +59,7 @@ class EndpointData extends BaseDTO
     public array $cleanBodyParameters = [];
 
     /**
+     * @var array
      * @var array<string,\Illuminate\Http\UploadedFile>
      */
     public array $fileParameters = [];

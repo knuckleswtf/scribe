@@ -3,12 +3,14 @@
 namespace Knuckles\Scribe\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Routing\Route;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
-use Knuckles\Camel\Tools\Loader;
-use Knuckles\Camel\Tools\Serialiser;
+use Knuckles\Camel\Extraction\EndpointData as ExtractedEndpointData;
+use Knuckles\Camel\Output\EndpointData;
+use Knuckles\Camel\Output\EndpointData as OutputEndpointData;
+use Knuckles\Camel\Output\Group;
+use Knuckles\Camel\Camel;
 use Knuckles\Scribe\Extracting\Extractor;
 use Knuckles\Scribe\Matching\MatchedRoute;
 use Knuckles\Scribe\Matching\RouteMatcherInterface;
@@ -22,26 +24,15 @@ use Knuckles\Scribe\Writing\Writer;
 use Mpociot\Reflection\DocBlock;
 use Mpociot\Reflection\DocBlock\Tag;
 use ReflectionClass;
-use ReflectionException;
 use Symfony\Component\Yaml\Yaml;
 
 class GenerateDocumentation extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = "scribe:generate
                             {--force : Discard any changes you've made to the Markdown files}
                             {--no-extraction : Skip extraction of route info and just transform the Markdown files}
     ";
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
+    
     protected $description = 'Generate API documentation from your Laravel/Dingo routes.';
 
     /**
@@ -49,64 +40,60 @@ class GenerateDocumentation extends Command
      */
     private $docConfig;
 
-    /**
-     * @var string
-     */
-    private $baseUrl;
+    public static $camelDir = ".scribe/endpoints";
+    public static $cacheDir = ".scribe/endpoints.cache";
 
     /**
-     * Execute the console command.
-     *
-     * @param RouteMatcherInterface $routeMatcher
-     *
-     * @return void
+     * @var bool
      */
-    public function handle(RouteMatcherInterface $routeMatcher)
+    private $shouldExtract;
+
+    /**
+     * @var bool
+     */
+    private $forcing;
+
+    public function handle(RouteMatcherInterface $routeMatcher): void
     {
         $this->bootstrap();
 
-        $noExtraction = $this->option('no-extraction');
-        $camelDir = ".endpoints";
-
-        if (!$noExtraction) {
+        if ($this->forcing) {
             $routes = $routeMatcher->getRoutes($this->docConfig->get('routes'), $this->docConfig->get('router'));
             $endpoints = $this->extractEndpointsInfo($routes);
-            $serialised = Serialiser::serialiseEndpointsForOutput($endpoints);
+            $groupedEndpoints = Camel::groupEndpoints($endpoints);
+            $this->writeEndpointsToDisk($groupedEndpoints);
+        } else if ($this->shouldExtract) {
+            $latestEndpointsData = [];
+            $cachedEndpoints = [];
 
-            // Utils::deleteDirectoryAndContents($comparisonDir);
-
-            if (!is_dir($camelDir)) {
-                mkdir($camelDir);
+            if (is_dir(static::$camelDir) && is_dir(static::$cacheDir)) {
+                $latestEndpointsData = Camel::loadEndpointsToFlatPrimitivesArray(static::$camelDir);
+                $cachedEndpoints = Camel::loadEndpointsToFlatPrimitivesArray(static::$cacheDir);
             }
 
-            $i = 0;
-            foreach ($serialised as $groupName => $endpointsInGroup) {
-                file_put_contents(
-                    "$camelDir/$i.yaml",
-                    Yaml::dump(
-                        $endpointsInGroup,
-                        10,
-                        2,
-                        Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP | Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK
-                    )
-                );
-                $i++;
+            $routes = $routeMatcher->getRoutes($this->docConfig->get('routes'), $this->docConfig->get('router'));
+            $endpoints = $this->extractEndpointsInfo($routes, $cachedEndpoints, $latestEndpointsData);
+            $groupedEndpoints = Camel::groupEndpoints($endpoints);
+            $this->writeEndpointsToDisk($groupedEndpoints);
+        } else {
+            if (!is_dir(static::$camelDir)) {
+                throw new \Exception("Can't use --no-extraction because there are no endpoints in the {static::$camelDir} directory.");
             }
+            $groupedEndpoints = Camel::loadEndpointsIntoGroups(static::$camelDir);
         }
 
-        $endpoints = Loader::loadEndpoints($camelDir);
-
-        $writer = new Writer($this->docConfig, $this->option('force'));
-        $writer->writeDocs($endpoints);
+        $writer = new Writer($this->docConfig, $this->forcing);
+        $writer->writeDocs($groupedEndpoints);
     }
 
     /**
      * @param MatchedRoute[] $matches
+     * @param array $cachedEndpoints
+     * @param array $latestEndpointsData
      *
      * @return array
-     *
      */
-    private function extractEndpointsInfo(array $matches): array
+    private function extractEndpointsInfo(array $matches, array $cachedEndpoints = [], array $latestEndpointsData = []): array
     {
         $generator = new Extractor($this->docConfig);
         $parsedRoutes = [];
@@ -131,7 +118,10 @@ class GenerateDocumentation extends Command
 
             try {
                 c::info('Processing route: ' . c::getRouteRepresentation($route));
-                $parsedRoutes[] = $generator->processRoute($route, $routeItem->getRules());
+                $currentEndpointData = $generator->processRoute($route, $routeItem->getRules());
+                // If latest data is different from cached data, merge latest into current
+                $currentEndpointData = $this->mergeAnyEndpointDataUpdates($currentEndpointData, $cachedEndpoints, $latestEndpointsData);
+                $parsedRoutes[] = $currentEndpointData;
                 c::success('Processed route: ' . c::getRouteRepresentation($route));
             } catch (\Exception $exception) {
                 c::error('Failed processing route: ' . c::getRouteRepresentation($route) . ' - Exception encountered.');
@@ -140,6 +130,51 @@ class GenerateDocumentation extends Command
         }
 
         return $parsedRoutes;
+    }
+
+    private function mergeAnyEndpointDataUpdates(ExtractedEndpointData $endpointData, array $cachedEndpoints, array $latestEndpointsData): ExtractedEndpointData
+    {
+        // First, find the corresponding endpoint in cached and latest
+        $thisEndpointCached = Arr::first($cachedEndpoints, function ($endpoint) use ($endpointData) {
+            return $endpoint['uri'] === $endpointData->uri && $endpoint['methods'] === $endpointData->methods;
+        });
+        if (!$thisEndpointCached) {
+            return $endpointData;
+        }
+
+        $thisEndpointLatest = Arr::first($latestEndpointsData, function ($endpoint) use ($endpointData) {
+            return $endpoint['uri'] === $endpointData->uri && $endpoint['methods'] == $endpointData->methods;
+        });
+        if (!$thisEndpointLatest) {
+            return $endpointData;
+        }
+
+        // Then compare cached and latest to see what sections changed.
+        $properties = [
+            'metadata',
+            'headers',
+            'urlParameters',
+            'queryParameters',
+            'bodyParameters',
+            'responses',
+            'responseFields',
+            'auth',
+        ];
+
+        $changed = [];
+        foreach ($properties as $property) {
+            if ($thisEndpointCached[$property] != $thisEndpointLatest[$property]) {
+                $changed[] = $property;
+            }
+        }
+
+        // Finally, merge any changed sections.
+        foreach ($changed as $property) {
+            $thisEndpointLatest = OutputEndpointData::create($thisEndpointLatest);
+            $endpointData->$property = $thisEndpointLatest->$property;
+        }
+
+        return $endpointData;
     }
 
     private function isValidRoute(array $routeControllerAndMethod = null): bool
@@ -192,16 +227,50 @@ class GenerateDocumentation extends Command
 
     public function bootstrap(): void
     {
-        // Using a global static variable here, so 🙄 if you don't like it.
-        // Also, the --verbose option is included with all Artisan commands.
+        // The --verbose option is included with all Artisan commands.
         Globals::$shouldBeVerbose = $this->option('verbose');
 
         c::bootstrapOutput($this->output);
 
         $this->docConfig = new DocumentationConfig(config('scribe'));
-        $this->baseUrl = $this->docConfig->get('base_url') ?? config('app.url');
 
         // Force root URL so it works in Postman collection
-        URL::forceRootUrl($this->baseUrl);
+        $baseUrl = $this->docConfig->get('base_url') ?? config('app.url');
+        URL::forceRootUrl($baseUrl);
+
+        $this->forcing = $this->option('force');
+        $this->shouldExtract = !$this->option('no-extraction');
+
+        if ($this->forcing && !$this->shouldExtract) {
+            throw new \Exception("Can't use --force and --no-extraction together.");
+        }
+    }
+
+    protected function writeEndpointsToDisk(array $grouped): void
+    {
+        Utils::deleteDirectoryAndContents(static::$camelDir);
+        Utils::deleteDirectoryAndContents(static::$cacheDir);
+
+        if (!is_dir(static::$camelDir)) {
+            mkdir(static::$camelDir, 0777, true);
+        }
+
+        if (!is_dir(static::$cacheDir)) {
+            mkdir(static::$cacheDir, 0777, true);
+        }
+
+        $i = 0;
+        foreach ($grouped as $group) {
+            $group['endpoints'] = array_map(function (EndpointData $endpoint) {
+                return $endpoint->toArray();
+            }, $group['endpoints']);
+            $yaml = Yaml::dump(
+                $group, 10, 2,
+                Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP | Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK
+            );
+            file_put_contents(static::$camelDir."/$i.yaml", $yaml);
+            file_put_contents(static::$cacheDir."/$i.yaml", "## Autogenerated by Scribe. DO NOT MODIFY.\n\n" . $yaml);
+            $i++;
+        }
     }
 }

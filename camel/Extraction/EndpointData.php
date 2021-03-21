@@ -45,9 +45,6 @@ class EndpointData extends BaseDTO
      */
     public array $cleanQueryParameters = [];
 
-    /**
-     * @var array<string, \Knuckles\Camel\Extraction\Parameter>
-     */
     public array $bodyParameters = [];
 
     /**
@@ -136,16 +133,15 @@ class EndpointData extends BaseDTO
 
     /**
      * Prepare the endpoint data for serialising.
-     * @return array
      */
-    public function forOutput(): array
+    public function forOutput(): \Knuckles\Camel\Output\EndpointData
     {
         $this->metadata = $this->metadata->except('groupName', 'groupDescription');
-        return $this->except(
-        // Get rid of all duplicate data
+        return new \Knuckles\Camel\Output\EndpointData($this->except(
+            // Get rid of all duplicate data
             'cleanQueryParameters', 'cleanUrlParameters', 'fileParameters', 'cleanBodyParameters',
             // and objects only needed for extraction
             'route', 'controller', 'method',
-        )->toArray();
+        )->toArray());
     }
 }

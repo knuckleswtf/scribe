@@ -5,7 +5,7 @@ namespace Knuckles\Camel\Output;
 
 use Knuckles\Camel\BaseDTO;
 
-class Parameter extends BaseDTO
+class Parameter extends \Knuckles\Camel\Extraction\Parameter
 {
     public string $name;
     public ?string $description = null;

@@ -3,11 +3,9 @@
 namespace Knuckles\Scribe\Writing;
 
 use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Knuckles\Camel\Output\EndpointData;
-use Knuckles\Camel\Output\Group;
 use Knuckles\Pastel\Pastel;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils;
 use Knuckles\Scribe\Tools\DocumentationConfig;
@@ -95,7 +93,7 @@ class Writer
     }
 
     /**
-     * @param Group[] $groups
+     * @param array[] $groups
      */
     public function writeDocs(array $groups)
     {
@@ -117,7 +115,7 @@ class Writer
     }
 
     /**
-     * @param Group[] $groups
+     * @param array[] $groups
      *
      * @return void
      */
@@ -149,7 +147,7 @@ class Writer
     }
 
     /**
-     * @param Group[] $groups
+     * @param array[] $groups
      * @param array $settings
      *
      * @return array
@@ -157,8 +155,8 @@ class Writer
      */
     public function generateMarkdownOutputForEachRoute(array $groups, array $settings): array
     {
-        $routesWithOutput = array_map(function (Group $group) use ($settings) {
-            $group->endpoints = array_map(function (EndpointData $endpointData) use ($settings) {
+        $routesWithOutput = array_map(function ($group) use ($settings) {
+            $group['endpoints'] = array_map(function (EndpointData $endpointData) use ($settings) {
                 $hasRequestOptions = !empty($endpointData->headers)
                     || !empty($endpointData->cleanQueryParameters)
                     || !empty($endpointData->cleanBodyParameters);
@@ -182,7 +180,7 @@ class Writer
                     ->render();
 
                 return $endpointData;
-            }, $group->endpoints);
+            }, $group['endpoints']);
             return $group;
         }, $groups);
 
@@ -228,7 +226,7 @@ class Writer
     /**
      * Generate Postman collection JSON file.
      *
-     * @param Group[] $groupedEndpoints
+     * @param array[] $groupedEndpoints
      *
      * @return string
      */
@@ -251,7 +249,7 @@ class Writer
     }
 
     /**
-     * @param Group[] $groupedEndpoints
+     * @param array[] $groupedEndpoints
      *
      * @return string
      */
@@ -404,7 +402,7 @@ class Writer
     }
 
     /**
-     * @param Group[] $groups
+     * @param array[] $groups
      * @param array $settings
      */
     protected function writeEndpointsMarkdownFile(array $groups, array $settings): void
@@ -415,8 +413,8 @@ class Writer
 
         // Generate Markdown for each route. Not using a Blade component bc of some complex logic
         $groupsWithOutput = $this->generateMarkdownOutputForEachRoute($groups, $settings);
-        $groupFileNames = array_map(function (Group $group) {
-            $groupId = Str::slug($group->name);
+        $groupFileNames = array_map(function ($group) {
+            $groupId = Str::slug($group['name']);
             $routeGroupMarkdownFile = $this->sourceOutputPath . "/groups/$groupId.md";
 
             if ($this->hasFileBeenModified($routeGroupMarkdownFile)) {
@@ -429,9 +427,9 @@ class Writer
             }
 
             $groupMarkdown = view('scribe::partials.group')
-                ->with('groupName', $group->name)
-                ->with('groupDescription', $group->description)
-                ->with('routes', $group->endpoints);
+                ->with('groupName', $group['name'])
+                ->with('groupDescription', $group['description'])
+                ->with('routes', $group['endpoints']);
 
             $this->writeFile($routeGroupMarkdownFile, $groupMarkdown);
             return "$groupId.md";

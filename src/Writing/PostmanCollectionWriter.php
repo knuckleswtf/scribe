@@ -4,7 +4,6 @@ namespace Knuckles\Scribe\Writing;
 
 use Illuminate\Support\Str;
 use Knuckles\Camel\Output\EndpointData;
-use Knuckles\Camel\Output\Group;
 use Knuckles\Camel\Output\Parameter;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Ramsey\Uuid\Uuid;
@@ -30,7 +29,7 @@ class PostmanCollectionWriter
     }
 
     /**
-     * @param Group[] $groupedEndpoints
+     * @param array[] $groupedEndpoints
      *
      * @return array
      */
@@ -52,11 +51,11 @@ class PostmanCollectionWriter
                 'description' => $this->config->get('description', ''),
                 'schema' => "https://schema.getpostman.com/json/collection/v" . self::VERSION . "/collection.json",
             ],
-            'item' => array_map(function (Group $group) {
+            'item' => array_map(function (array $group) {
                 return [
-                    'name' => $group->name,
-                    'description' => $group->description,
-                    'item' => array_map(\Closure::fromCallable([$this, 'generateEndpointItem']), $group->endpoints),
+                    'name' => $group['name'],
+                    'description' => $group['description'],
+                    'item' => array_map(\Closure::fromCallable([$this, 'generateEndpointItem']), $group['endpoints']),
                 ];
             }, $groupedEndpoints),
             'auth' => $this->generateAuthObject(),
