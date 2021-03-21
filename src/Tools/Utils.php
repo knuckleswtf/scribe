@@ -93,12 +93,26 @@ class Utils
         throw new Exception("Couldn't get class and method names for route " . c::getRouteRepresentation($route) . '.');
     }
 
-    public static function deleteDirectoryAndContents($dir, $base = null)
+    public static function deleteDirectoryAndContents(string $dir): void
     {
         $adapter = new Local(getcwd());
         $fs = new Filesystem($adapter);
         $dir = ltrim($dir, '/');
         $fs->deleteDir($dir);
+    }
+
+
+    public static function deleteFilesMatching(string $dir, callable $condition): void
+    {
+        $adapter = new Local(getcwd());
+        $fs = new Filesystem($adapter);
+        $dir = ltrim($dir, '/');
+        $contents = $fs->listContents($dir);
+        foreach ($contents as $file) {
+            if ($file['type'] == 'file' && $condition($file) === true) {
+                $fs->delete($file['path']);
+            }
+        }
     }
 
     /**

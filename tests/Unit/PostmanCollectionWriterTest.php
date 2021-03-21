@@ -4,8 +4,7 @@ namespace Knuckles\Scribe\Tests\Unit;
 
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Faker\Factory;
-use Knuckles\Camel\Output\EndpointData;
-use Knuckles\Camel\Output\Group;
+use Knuckles\Camel\Output\OutputEndpointData;
 use Knuckles\Camel\Output\Parameter;
 use Knuckles\Scribe\Extracting\Extractor;
 use Knuckles\Scribe\Tools\DocumentationConfig;
@@ -269,9 +268,9 @@ class PostmanCollectionWriterTest extends TestCase
         $this->assertEquals(['type' => 'noauth'], $collection['item'][0]['item'][1]['request']['auth']);
     }
 
-    protected function createMockEndpointData(string $path, string $title = ''): EndpointData
+    protected function createMockEndpointData(string $path, string $title = ''): OutputEndpointData
     {
-        return new EndpointData([
+        return new OutputEndpointData([
             'uri' => $path,
             'methods' => ['GET'],
             'metadata' => [
@@ -291,13 +290,13 @@ class PostmanCollectionWriterTest extends TestCase
         ]);
     }
 
-    protected function createMockEndpointGroup(array $endpoints, string $groupName = 'Group'): Group
+    protected function createMockEndpointGroup(array $endpoints, string $groupName = 'Group')
     {
         $faker = Factory::create();
-        return Group::createFromSpec([
+        return [
             'description' => '',
             'name' => $groupName,
             'endpoints' => array_map(fn($e) => $e->toArray(), $endpoints),
-        ]);
+        ];
     }
 }

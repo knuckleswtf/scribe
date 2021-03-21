@@ -2,7 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\Headers;
 
-use Knuckles\Camel\Extraction\EndpointData;
+use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Dingo\Api\Http\FormRequest as DingoFormRequest;
 use Illuminate\Foundation\Http\FormRequest as LaravelFormRequest;
 use Knuckles\Scribe\Extracting\ParamHelpers;
@@ -20,7 +20,7 @@ class GetFromHeaderTag extends Strategy
 
     public string $stage = 'headers';
 
-    public function __invoke(EndpointData $endpointData, array $routeRules)
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)
     {
         foreach ($endpointData->method->getParameters() as $param) {
             $paramType = $param->getType();

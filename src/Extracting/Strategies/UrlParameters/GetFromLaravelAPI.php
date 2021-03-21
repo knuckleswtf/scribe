@@ -2,7 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\UrlParameters;
 
-use Knuckles\Camel\Extraction\EndpointData;
+use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Illuminate\Support\Str;
 use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
@@ -14,7 +14,7 @@ class GetFromLaravelAPI extends Strategy
 
     public string $stage = 'urlParameters';
 
-    public function __invoke(EndpointData $endpointData, array $routeRules)
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)
     {
         if (Utils::isLumen()) {
             return null;

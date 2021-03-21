@@ -2,7 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 
-use Knuckles\Camel\Extraction\EndpointData;
+use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Dingo\Api\Dispatcher;
 use Dingo\Api\Routing\Route as DingoRoute;
 use Exception;
@@ -28,12 +28,12 @@ class ResponseCalls extends Strategy
 {
     use ParamHelpers, DatabaseTransactionHelpers;
 
-    public function __invoke(EndpointData $endpointData, array $routeRules)
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)
     {
         return $this->makeResponseCallIfEnabledAndNoSuccessResponses($endpointData, $routeRules);
     }
 
-    public function makeResponseCallIfEnabledAndNoSuccessResponses(EndpointData $endpointData, array $routeRules)
+    public function makeResponseCallIfEnabledAndNoSuccessResponses(ExtractedEndpointData $endpointData, array $routeRules)
     {
         $rulesToApply = $routeRules['response_calls'] ?? [];
         if (!$this->shouldMakeApiCall($endpointData, $rulesToApply)) {
@@ -43,7 +43,7 @@ class ResponseCalls extends Strategy
         return $this->makeResponseCall($endpointData, $rulesToApply);
     }
 
-    public function makeResponseCall(EndpointData $endpointData, array $rulesToApply)
+    public function makeResponseCall(ExtractedEndpointData $endpointData, array $rulesToApply)
     {
         $this->configureEnvironment($rulesToApply);
 
@@ -327,7 +327,7 @@ class ResponseCalls extends Strategy
         return $response;
     }
 
-    protected function shouldMakeApiCall(EndpointData $endpointData, array $rulesToApply): bool
+    protected function shouldMakeApiCall(ExtractedEndpointData $endpointData, array $rulesToApply): bool
     {
         $allowedMethods = $rulesToApply['methods'] ?? [];
         if (empty($allowedMethods)) {

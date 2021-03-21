@@ -2,7 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\BodyParameters;
 
-use Knuckles\Camel\Extraction\EndpointData;
+use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Dingo\Api\Http\FormRequest as DingoFormRequest;
 use Illuminate\Foundation\Http\FormRequest as LaravelFormRequest;
 use Illuminate\Support\Arr;
@@ -28,7 +28,7 @@ class GetFromFormRequest extends Strategy
 
     use ParamHelpers;
 
-    public function __invoke(EndpointData $endpointData, array $routeRules): array
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): array
     {
         return $this->getBodyParametersFromFormRequest($endpointData->method, $endpointData->route);
     }

@@ -2,7 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\ResponseFields;
 
-use Knuckles\Camel\Extraction\EndpointData;
+use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Camel\Extraction\Response;
 use Knuckles\Camel\Extraction\ResponseCollection;
 use Knuckles\Scribe\Extracting\ParamHelpers;
@@ -16,7 +16,7 @@ class GetFromResponseFieldTag extends Strategy
 
     use ParamHelpers;
 
-    public function __invoke(EndpointData $endpointData, array $routeRules)
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)
     {
         $methodDocBlock = RouteDocBlocker::getDocBlocksFromRoute($endpointData->route)['method'];
 

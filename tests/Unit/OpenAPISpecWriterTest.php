@@ -5,8 +5,8 @@ namespace Knuckles\Scribe\Tests\Unit;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Faker\Factory;
 use Illuminate\Support\Arr;
-use Knuckles\Camel\Output\EndpointData;
-use Knuckles\Camel\Output\Group;
+use Knuckles\Camel\Camel;
+use Knuckles\Camel\Output\OutputEndpointData;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Writing\OpenAPISpecWriter;
 use PHPUnit\Framework\TestCase;
@@ -62,12 +62,12 @@ class OpenAPISpecWriterTest extends TestCase
         $this->assertArrayHasKey('post', $results['paths']['/path1']);
         $this->assertArrayHasKey(strtolower($endpointData3->methods[0]), $results['paths']['/path1/path2']);
 
-        collect([$endpointData1, $endpointData2, $endpointData3])->each(function (EndpointData $endpoint) use ($groups, $results) {
+        collect([$endpointData1, $endpointData2, $endpointData3])->each(function (OutputEndpointData $endpoint) use ($groups, $results) {
             $endpointSpec = $results['paths']['/' . $endpoint->uri][strtolower($endpoint->methods[0])];
 
             $tags = $endpointSpec['tags'];
-            $containingGroup = Arr::first($groups, fn(Group $group) => $group->has($endpoint));
-            $this->assertEquals([$containingGroup->name], $tags);
+            $containingGroup = Arr::first($groups, fn($group) => Camel::doesGroupContainEndpoint($group, $endpoint));
+            $this->assertEquals([$containingGroup['name']], $tags);
 
             $this->assertEquals($endpoint->metadata->title, $endpointSpec['summary']);
             $this->assertEquals($endpoint->metadata->description, $endpointSpec['description']);
@@ -504,7 +504,7 @@ class OpenAPISpecWriterTest extends TestCase
         ], $results['paths']['/path2']['put']['responses']);
     }
 
-    protected function createMockEndpointData(array $custom = []): EndpointData
+    protected function createMockEndpointData(array $custom = []): OutputEndpointData
     {
         $faker = Factory::create();
         $path = '/' . $faker->word;
@@ -536,16 +536,16 @@ class OpenAPISpecWriterTest extends TestCase
             data_set($data, $key, $value);
         }
 
-        return new EndpointData($data);
+        return new OutputEndpointData($data);
     }
 
     protected function createGroup(array $endpoints)
     {
         $faker = Factory::create();
-        return Group::createFromSpec([
+        return [
             'description' => '',
             'name' => $faker->randomElement(['Endpoints', 'Group A', 'Group B']),
             'endpoints' => array_map(fn ($e) => $e->toArray(), $endpoints),
-        ]);
+        ];
     }
 }

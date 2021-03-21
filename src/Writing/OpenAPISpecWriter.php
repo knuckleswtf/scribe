@@ -6,7 +6,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Knuckles\Camel\Camel;
-use Knuckles\Camel\Output\EndpointData;
+use Knuckles\Camel\Output\OutputEndpointData;
 use Knuckles\Camel\Output\Group;
 use Knuckles\Camel\Output\Parameter;
 use Knuckles\Scribe\Extracting\ParamHelpers;
@@ -77,7 +77,7 @@ class OpenAPISpecWriter
             return '/' . ltrim($path, '/');
         });
         return $groupedByPath->mapWithKeys(function (Collection $endpoints, $path) use ($groupedEndpoints) {
-            $operations = $endpoints->mapWithKeys(function (EndpointData $endpoint) use ($groupedEndpoints) {
+            $operations = $endpoints->mapWithKeys(function (OutputEndpointData $endpoint) use ($groupedEndpoints) {
                 $spec = [
                     'summary' => $endpoint->metadata->title,
                     'description' => $endpoint->metadata->description,
@@ -151,11 +151,11 @@ class OpenAPISpecWriter
     /**
      * Add query parameters and headers.
      *
-     * @param EndpointData $endpoint
+     * @param OutputEndpointData $endpoint
      *
      * @return array
      */
-    protected function generateEndpointParametersSpec(EndpointData $endpoint): array
+    protected function generateEndpointParametersSpec(OutputEndpointData $endpoint): array
     {
         $parameters = [];
 
@@ -194,7 +194,7 @@ class OpenAPISpecWriter
         return $parameters;
     }
 
-    protected function generateEndpointRequestBodySpec(EndpointData $endpoint)
+    protected function generateEndpointRequestBodySpec(OutputEndpointData $endpoint)
     {
         $body = [];
 
@@ -244,7 +244,7 @@ class OpenAPISpecWriter
         return count($body) > 0 ? $body : $this->EMPTY;
     }
 
-    protected function generateEndpointResponsesSpec(EndpointData $endpoint)
+    protected function generateEndpointResponsesSpec(OutputEndpointData $endpoint)
     {
         // See https://swagger.io/docs/specification/describing-responses/
         $responses = [];
@@ -278,7 +278,7 @@ class OpenAPISpecWriter
         return strval($response->description);
     }
 
-    protected function generateResponseContentSpec(?string $responseContent, EndpointData $endpoint)
+    protected function generateResponseContentSpec(?string $responseContent, OutputEndpointData $endpoint)
     {
         if (Str::startsWith($responseContent, '<<binary>>')) {
             return [

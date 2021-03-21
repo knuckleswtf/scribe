@@ -2,7 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 
-use Knuckles\Camel\Extraction\EndpointData;
+use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -29,7 +29,7 @@ class UseApiResourceTags extends Strategy
 {
     use DatabaseTransactionHelpers;
 
-    public function __invoke(EndpointData $endpointData, array $routeRules)
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)
     {
         $docBlocks = RouteDocBlocker::getDocBlocksFromRoute($endpointData->route);
         $methodDocBlock = $docBlocks['method'];
@@ -52,12 +52,12 @@ class UseApiResourceTags extends Strategy
      * Get a response from the @apiResource/@apiResourceCollection and @apiResourceModel tags.
      *
      * @param array $tags
-     * @param EndpointData $endpointData
+     * @param ExtractedEndpointData $endpointData
      *
      * @return array[]|null
      * @throws Exception
      */
-    public function getApiResourceResponse(array $tags, EndpointData $endpointData)
+    public function getApiResourceResponse(array $tags, ExtractedEndpointData $endpointData)
     {
         if (empty($apiResourceTag = $this->getApiResourceTag($tags))) {
             return null;

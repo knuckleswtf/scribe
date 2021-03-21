@@ -3,7 +3,7 @@
 namespace Knuckles\Scribe\Writing;
 
 use Illuminate\Support\Str;
-use Knuckles\Camel\Output\EndpointData;
+use Knuckles\Camel\Output\OutputEndpointData;
 use Knuckles\Camel\Output\Parameter;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Ramsey\Uuid\Uuid;
@@ -99,7 +99,7 @@ class PostmanCollectionWriter
         }
     }
 
-    protected function generateEndpointItem(EndpointData $endpoint): array
+    protected function generateEndpointItem(OutputEndpointData $endpoint): array
     {
         $endpointItem = [
             'name' => $endpoint->metadata->title !== '' ? $endpoint->metadata->title : $endpoint->uri,
@@ -121,7 +121,7 @@ class PostmanCollectionWriter
         return $endpointItem;
     }
 
-    protected function getBodyData(EndpointData $endpoint): array
+    protected function getBodyData(OutputEndpointData $endpoint): array
     {
         $body = [];
         $contentType = $endpoint->headers['Content-Type'] ?? null;
@@ -166,7 +166,7 @@ class PostmanCollectionWriter
         return $body;
     }
 
-    protected function resolveHeadersForEndpoint(EndpointData $endpointData)
+    protected function resolveHeadersForEndpoint(OutputEndpointData $endpointData)
     {
         [$where, $authParam] = $this->getAuthParamToExclude();
 
@@ -194,7 +194,7 @@ class PostmanCollectionWriter
         return $headers;
     }
 
-    protected function generateUrlObject(EndpointData $endpointData)
+    protected function generateUrlObject(OutputEndpointData $endpointData)
     {
         $base = [
             'protocol' => Str::startsWith($this->baseUrl, 'https') ? 'https' : 'http',

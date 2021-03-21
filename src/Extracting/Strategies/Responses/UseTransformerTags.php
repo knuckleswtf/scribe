@@ -2,7 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 
-use Knuckles\Camel\Extraction\EndpointData;
+use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Exception;
 use Illuminate\Database\Eloquent\Model as IlluminateModel;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -28,7 +28,7 @@ class UseTransformerTags extends Strategy
 {
     use DatabaseTransactionHelpers;
 
-    public function __invoke(EndpointData $endpointData, array $routeRules)
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)
     {
         $docBlocks = RouteDocBlocker::getDocBlocksFromRoute($endpointData->route);
         $methodDocBlock = $docBlocks['method'];

@@ -2,7 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies;
 
-use Knuckles\Camel\Extraction\EndpointData;
+use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 
 abstract class Strategy
@@ -33,10 +33,10 @@ abstract class Strategy
     }
 
     /**
-     * @param EndpointData $endpointData
+     * @param ExtractedEndpointData $endpointData
      * @param array $routeRules Array of rules for the ruleset which this route belongs to.
      *
      * @return array|null
      */
-    abstract public function __invoke(EndpointData $endpointData, array $routeRules);
+    abstract public function __invoke(ExtractedEndpointData $endpointData, array $routeRules);
 }

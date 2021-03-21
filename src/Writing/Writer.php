@@ -5,7 +5,7 @@ namespace Knuckles\Scribe\Writing;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Knuckles\Camel\Output\EndpointData;
+use Knuckles\Camel\Output\OutputEndpointData;
 use Knuckles\Pastel\Pastel;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils;
 use Knuckles\Scribe\Tools\DocumentationConfig;
@@ -156,7 +156,7 @@ class Writer
     public function generateMarkdownOutputForEachRoute(array $groups, array $settings): array
     {
         $routesWithOutput = array_map(function ($group) use ($settings) {
-            $group['endpoints'] = array_map(function (EndpointData $endpointData) use ($settings) {
+            $group['endpoints'] = array_map(function (OutputEndpointData $endpointData) use ($settings) {
                 $hasRequestOptions = !empty($endpointData->headers)
                     || !empty($endpointData->cleanQueryParameters)
                     || !empty($endpointData->cleanBodyParameters);

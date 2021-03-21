@@ -5,7 +5,7 @@ namespace Knuckles\Scribe\Tests\Strategies\Responses;
 use Dingo\Api\Routing\Router;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Route as RouteFacade;
-use Knuckles\Camel\Extraction\EndpointData;
+use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Camel\Extraction\ResponseCollection;
 use Knuckles\Scribe\Extracting\Extractor;
 use Knuckles\Scribe\Extracting\Strategies\Responses\ResponseCalls;
@@ -54,7 +54,7 @@ class ResponseCallsTest extends TestCase
 
         $strategy = new ResponseCalls(new DocumentationConfig([]));
         $results = $strategy->makeResponseCallIfEnabledAndNoSuccessResponses(
-            EndpointData::fromRoute($route), $rules
+            ExtractedEndpointData::fromRoute($route), $rules
         );
 
         $this->assertEquals(200, $results[0]['status']);
@@ -101,7 +101,7 @@ class ResponseCallsTest extends TestCase
             ],
         ];
 
-        $endpointData = EndpointData::fromRoute($route, [
+        $endpointData = ExtractedEndpointData::fromRoute($route, [
             'auth' => ['headers', 'Authorization', 'Bearer bearerToken'],
             'headers' => [
                 'Content-Type' => 'application/json',
@@ -135,7 +135,7 @@ class ResponseCallsTest extends TestCase
 
         $strategy = new ResponseCalls(new DocumentationConfig([]));
         $results = $strategy->makeResponseCallIfEnabledAndNoSuccessResponses(
-            EndpointData::fromRoute($route), $rules
+            ExtractedEndpointData::fromRoute($route), $rules
         );
         $originalValue = json_decode($results[0]['content'], true)['app.env'];
 
@@ -150,7 +150,7 @@ class ResponseCallsTest extends TestCase
         ];
 
         $results = $strategy->makeResponseCallIfEnabledAndNoSuccessResponses(
-            EndpointData::fromRoute($route), $rules
+            ExtractedEndpointData::fromRoute($route), $rules
         );
         $newValue = json_decode($results[0]['content'], true)['app.env'];
         $this->assertEquals($now, $newValue);
@@ -177,7 +177,7 @@ class ResponseCallsTest extends TestCase
 
         $strategy = new ResponseCalls(new DocumentationConfig(['router' => 'dingo']));
         $results = $strategy->makeResponseCallIfEnabledAndNoSuccessResponses(
-            EndpointData::fromRoute($route), $rules
+            ExtractedEndpointData::fromRoute($route), $rules
         );
 
         $this->assertEquals(200, $results[0]['status']);
@@ -210,7 +210,7 @@ class ResponseCallsTest extends TestCase
             ],
         ];
 
-        $endpointData = EndpointData::fromRoute($route, [
+        $endpointData = ExtractedEndpointData::fromRoute($route, [
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
@@ -244,7 +244,7 @@ class ResponseCallsTest extends TestCase
 
         $strategy = new ResponseCalls(new DocumentationConfig(['router' => 'dingo']));
         $results = $strategy->makeResponseCallIfEnabledAndNoSuccessResponses(
-            EndpointData::fromRoute($route), $rules
+            ExtractedEndpointData::fromRoute($route), $rules
         );
         $originalValue = json_decode($results[0]['content'], true)['app.env'];
 
@@ -259,7 +259,7 @@ class ResponseCallsTest extends TestCase
         ];
 
         $results = $strategy->makeResponseCallIfEnabledAndNoSuccessResponses(
-            EndpointData::fromRoute($route), $rules
+            ExtractedEndpointData::fromRoute($route), $rules
         );
         $newValue = json_decode($results[0]['content'], true)['app.env'];
         $this->assertEquals($now, $newValue);
@@ -281,7 +281,7 @@ class ResponseCallsTest extends TestCase
             ],
         ];
 
-        $endpointData = EndpointData::fromRoute($route, [
+        $endpointData = ExtractedEndpointData::fromRoute($route, [
             'responses' => new ResponseCollection([
                 [
                     'status' => 200,
@@ -307,7 +307,7 @@ class ResponseCallsTest extends TestCase
         ];
         $strategy = new ResponseCalls(new DocumentationConfig([]));
         $results = $strategy->makeResponseCallIfEnabledAndNoSuccessResponses(
-            EndpointData::fromRoute($route), $rules
+            ExtractedEndpointData::fromRoute($route), $rules
         );
 
         $this->assertNull($results);

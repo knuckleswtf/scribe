@@ -2,7 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\QueryParameters;
 
-use Knuckles\Camel\Extraction\EndpointData;
+use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Dingo\Api\Http\FormRequest as DingoFormRequest;
 use Illuminate\Foundation\Http\FormRequest as LaravelFormRequest;
 use Illuminate\Routing\Route;
@@ -22,7 +22,7 @@ class GetFromQueryParamTag extends Strategy
 
     use ParamHelpers;
 
-    public function __invoke(EndpointData $endpointData, array $routeRules)
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)
     {
         return $this->getQueryParametersFromFormRequestOrMethod($endpointData->route, $endpointData->method);
     }

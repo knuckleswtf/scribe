@@ -12,7 +12,7 @@ use Knuckles\Scribe\Tools\Utils as u;
 use Knuckles\Camel\Extraction\Metadata;
 
 
-class EndpointData extends BaseDTO
+class OutputEndpointData extends BaseDTO
 {
     /**
      * @var array<string>
@@ -134,6 +134,11 @@ class EndpointData extends BaseDTO
         }
 
         return array_diff($methods, ['HEAD']);
+    }
+
+    public static function fromExtractedEndpointArray(array $endpoint): OutputEndpointData
+    {
+        return new self($endpoint);
     }
 
     public function name()

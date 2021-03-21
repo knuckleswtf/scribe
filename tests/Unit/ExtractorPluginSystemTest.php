@@ -2,7 +2,7 @@
 
 namespace Knuckles\Scribe\Tests\Unit;
 
-use Knuckles\Camel\Extraction\EndpointData;
+use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Illuminate\Routing\Route;
 use Knuckles\Scribe\Extracting\Extractor;
@@ -168,7 +168,7 @@ class EmptyStrategy1 extends Strategy
 {
     public static $called = false;
 
-    public function __invoke(EndpointData $endpointData, array $routeRules)
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)
     {
         static::$called = true;
     }
@@ -178,7 +178,7 @@ class EmptyStrategy2 extends Strategy
 {
     public static $called = false;
 
-    public function __invoke(EndpointData $endpointData, array $routeRules)
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)
     {
         static::$called = true;
     }
@@ -188,7 +188,7 @@ class NotDummyMetadataStrategy extends Strategy
 {
     public static $called = false;
 
-    public function __invoke(EndpointData $endpointData, array $routeRules)
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)
     {
         static::$called = true;
         return [
@@ -203,7 +203,7 @@ class NotDummyMetadataStrategy extends Strategy
 
 class PartialDummyMetadataStrategy1 extends Strategy
 {
-    public function __invoke(EndpointData $endpointData, array $routeRules)
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)
     {
         return [
             'groupName' => 'dummy',
@@ -216,7 +216,7 @@ class PartialDummyMetadataStrategy1 extends Strategy
 
 class PartialDummyMetadataStrategy2 extends Strategy
 {
-    public function __invoke(EndpointData $endpointData, array $routeRules)
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)
     {
         return [
             'description' => 'dummy',
@@ -227,7 +227,7 @@ class PartialDummyMetadataStrategy2 extends Strategy
 
 class DummyResponseStrategy200 extends Strategy
 {
-    public function __invoke(EndpointData $endpointData, array $routeRules)
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)
     {
         return [['status' => 200, 'content' => 'dummy']];
     }
@@ -235,7 +235,7 @@ class DummyResponseStrategy200 extends Strategy
 
 class DummyResponseStrategy400 extends Strategy
 {
-    public function __invoke(EndpointData $endpointData, array $routeRules)
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)
     {
         return [['status' => 400, 'content' => 'dummy2']];
     }

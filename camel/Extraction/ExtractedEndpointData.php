@@ -9,7 +9,7 @@ use ReflectionClass;
 use ReflectionFunctionAbstract;
 
 
-class EndpointData extends BaseDTO
+class ExtractedEndpointData extends BaseDTO
 {
     /**
      * @var array<string>
@@ -26,6 +26,7 @@ class EndpointData extends BaseDTO
     public array $headers = [];
 
     /**
+     * @var array
      * @var array<string,\Knuckles\Camel\Extraction\Parameter>
      */
     public array $urlParameters = [];
@@ -36,6 +37,7 @@ class EndpointData extends BaseDTO
     public array $cleanUrlParameters = [];
 
     /**
+     * @var array
      * @var array<string,\Knuckles\Camel\Extraction\Parameter>
      */
     public array $queryParameters = [];
@@ -63,6 +65,7 @@ class EndpointData extends BaseDTO
     public $responses;
 
     /**
+     * @var array
      * @var array<string,\Knuckles\Camel\Extraction\ResponseField>
      */
     public array $responseFields = [];
@@ -77,7 +80,7 @@ class EndpointData extends BaseDTO
 
     public ?ReflectionFunctionAbstract $method;
 
-    public Route $route;
+    public ?Route $route;
 
     public function __construct(array $parameters = [])
     {
@@ -100,7 +103,7 @@ class EndpointData extends BaseDTO
         $data = compact('methods', 'uri', 'controller', 'method', 'route');
         $data = array_merge($data, $extras);
 
-        return new EndpointData($data);
+        return new ExtractedEndpointData($data);
     }
 
     /**
@@ -134,14 +137,14 @@ class EndpointData extends BaseDTO
     /**
      * Prepare the endpoint data for serialising.
      */
-    public function forOutput(): \Knuckles\Camel\Output\EndpointData
+    public function forSerialisation()
     {
         $this->metadata = $this->metadata->except('groupName', 'groupDescription');
-        return new \Knuckles\Camel\Output\EndpointData($this->except(
+        return $this->except(
             // Get rid of all duplicate data
             'cleanQueryParameters', 'cleanUrlParameters', 'fileParameters', 'cleanBodyParameters',
             // and objects only needed for extraction
             'route', 'controller', 'method',
-        )->toArray());
+        );
     }
 }

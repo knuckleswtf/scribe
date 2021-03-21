@@ -2,7 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting;
 
-use Knuckles\Camel\Extraction\EndpointData;
+use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Camel\Extraction\Metadata;
 use Knuckles\Camel\Extraction\Parameter;
 use Faker\Factory;
@@ -80,15 +80,15 @@ class Extractor
      * @param Route $route
      * @param array $routeRules Rules to apply when generating documentation for this route
      *
-     * @return EndpointData
+     * @return ExtractedEndpointData
      * @throws \ReflectionException
      *
      */
-    public function processRoute(Route $route, array $routeRules = []): EndpointData
+    public function processRoute(Route $route, array $routeRules = []): ExtractedEndpointData
     {
         self::$routeBeingProcessed = $route;
 
-        $endpointData = EndpointData::fromRoute($route);
+        $endpointData = ExtractedEndpointData::fromRoute($route);
         $this->fetchMetadata($endpointData, $routeRules);
 
         $this->fetchUrlParameters($endpointData, $routeRules);
@@ -129,7 +129,7 @@ class Extractor
         return $endpointData;
     }
 
-    protected function fetchMetadata(EndpointData $endpointData, array $rulesToApply): void
+    protected function fetchMetadata(ExtractedEndpointData $endpointData, array $rulesToApply): void
     {
         $endpointData->metadata = new Metadata([
             'groupName' => $this->config->get('default_group', ''),
@@ -142,7 +142,7 @@ class Extractor
         });
     }
 
-    protected function fetchUrlParameters(EndpointData $endpointData, array $rulesToApply): void
+    protected function fetchUrlParameters(ExtractedEndpointData $endpointData, array $rulesToApply): void
     {
         $this->iterateThroughStrategies('urlParameters', $endpointData, $rulesToApply, function ($results) use ($endpointData) {
             foreach ($results as $key => $item) {
@@ -151,7 +151,7 @@ class Extractor
         });
     }
 
-    protected function fetchQueryParameters(EndpointData $endpointData, array $rulesToApply): void
+    protected function fetchQueryParameters(ExtractedEndpointData $endpointData, array $rulesToApply): void
     {
         $this->iterateThroughStrategies('queryParameters', $endpointData, $rulesToApply, function ($results) use ($endpointData) {
             foreach ($results as $key => $item) {
@@ -160,7 +160,7 @@ class Extractor
         });
     }
 
-    protected function fetchBodyParameters(EndpointData $endpointData, array $rulesToApply): void
+    protected function fetchBodyParameters(ExtractedEndpointData $endpointData, array $rulesToApply): void
     {
         $this->iterateThroughStrategies('bodyParameters', $endpointData, $rulesToApply, function ($results) use ($endpointData) {
             foreach ($results as $key => $item) {
@@ -169,7 +169,7 @@ class Extractor
         });
     }
 
-    protected function fetchResponses(EndpointData $endpointData, array $rulesToApply): void
+    protected function fetchResponses(ExtractedEndpointData $endpointData, array $rulesToApply): void
     {
         $this->iterateThroughStrategies('responses', $endpointData, $rulesToApply, function ($results) use ($endpointData) {
             // Responses from different strategies are all added, not overwritten
@@ -178,7 +178,7 @@ class Extractor
 
     }
 
-    protected function fetchResponseFields(EndpointData $endpointData, array $rulesToApply): void
+    protected function fetchResponseFields(ExtractedEndpointData $endpointData, array $rulesToApply): void
     {
         $this->iterateThroughStrategies('responseFields', $endpointData, $rulesToApply, function ($results) use ($endpointData) {
             foreach ($results as $key => $item) {
@@ -187,7 +187,7 @@ class Extractor
         });
     }
 
-    protected function fetchRequestHeaders(EndpointData $endpointData, array $rulesToApply): void
+    protected function fetchRequestHeaders(ExtractedEndpointData $endpointData, array $rulesToApply): void
     {
         $this->iterateThroughStrategies('headers', $endpointData, $rulesToApply, function ($results) use ($endpointData) {
             foreach ($results as $key => $item) {
@@ -204,12 +204,12 @@ class Extractor
      * to be added to that stage data, or it may modify the stage data directly.
      *
      * @param string $stage
-     * @param EndpointData $endpointData
+     * @param ExtractedEndpointData $endpointData
      * @param array $rulesToApply
      * @param callable $handler Function to run after each strategy returns its results (an array).
      *
      */
-    protected function iterateThroughStrategies(string $stage, EndpointData $endpointData, array $rulesToApply, callable $handler): void
+    protected function iterateThroughStrategies(string $stage, ExtractedEndpointData $endpointData, array $rulesToApply, callable $handler): void
     {
         $strategies = $this->config->get("strategies.$stage", self::$defaultStrategies[$stage]);
 
@@ -311,7 +311,7 @@ class Extractor
         }
     }
 
-    public function addAuthField(EndpointData $endpointData): void
+    public function addAuthField(ExtractedEndpointData $endpointData): void
     {
         $isApiAuthed = $this->config->get('auth.enabled', false);
         if (!$isApiAuthed || !$endpointData->metadata->authenticated) {
