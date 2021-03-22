@@ -20,3 +20,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - moved body-parameters to components
 - index renamed to intro.blade.php
 - views moved to markdown/
+- Removed continue_without_database_transactions

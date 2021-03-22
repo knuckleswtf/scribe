@@ -3,8 +3,6 @@
 namespace Knuckles\Scribe\Extracting;
 
 use Knuckles\Scribe\Exceptions\DatabaseTransactionsNotSupported;
-use Knuckles\Scribe\Exceptions\ScribeException;
-use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\Globals;
 use PDOException;
@@ -20,15 +18,11 @@ trait DatabaseTransactionHelpers
     {
         $database = app('db');
 
-        $excludedDrivers = $this->excludedDrivers();
         foreach ($this->connectionsToTransact() as $connection) {
             $driver = $database->connection($connection);
 
             if (self::driverSupportsTransactions($driver)) {
                 try {
-                    if (in_array(get_class($driver), $excludedDrivers)) {
-                        continue;
-                    }
                     $driver->beginTransaction();
                 } catch (PDOException $e) {
                     throw new \Exception(
@@ -73,20 +67,6 @@ trait DatabaseTransactionHelpers
         }
 
         return true;
-    }
-
-    private function excludedDrivers(): array
-    {
-        if (!is_null(Globals::$excludedDbDrivers)) {
-            return Globals::$excludedDbDrivers;
-        }
-
-        $excludedDrivers = $this->getConfig()->get('continue_without_database_transactions', []);
-        if (count($excludedDrivers)) {
-            c::deprecated('`continue_without_database_transactions`', '2.4.0', 'use `database_connections_to_transact`');
-        }
-
-        return Globals::$excludedDbDrivers = $excludedDrivers;
     }
 
     /**
