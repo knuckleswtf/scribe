@@ -4,6 +4,9 @@ namespace Knuckles\Scribe\Writing;
 
 use Illuminate\Support\Facades\View;
 use Knuckles\Scribe\Tools\DocumentationConfig;
+use Knuckles\Scribe\Tools\Globals;
+use Knuckles\Scribe\Tools\Utils;
+use Knuckles\Scribe\Tools\WritingUtils;
 use Parsedown;
 
 /**
@@ -45,6 +48,7 @@ class HtmlWriter
         $output = View::make("scribe::themes.$theme.index", [
             'metadata' => $this->getMetadata(),
             'baseUrl' => $this->baseUrl,
+            'isInteractive' => $this->config->get('interactive', true),
             'prepend' => $prepend,
             'index' => $index,
             'authentication' => $authentication,
@@ -57,13 +61,17 @@ class HtmlWriter
         }
 
         file_put_contents($destinationFolder . '/index.html', $output);
-        /*
-                // Copy assets
-                $assetsFolder = __DIR__ . '/../resources';
-                rcopy($assetsFolder . '/images/', $destinationFolder . '/images');
-                rcopy($assetsFolder . '/css/', $destinationFolder . '/css');
-                rcopy($assetsFolder . '/js/', $destinationFolder . '/js');
-                rcopy($assetsFolder . '/fonts/', $destinationFolder . '/fonts');*/
+
+        // Copy assets
+        $assetsFolder = __DIR__ . '/../../resources';
+        if (!is_dir($destinationFolder . "/js")) {
+            mkdir($destinationFolder."/js", 0777, true);
+        }
+        Utils::copyDirectory($assetsFolder . '/images/', $destinationFolder . '/images');
+        Utils::copyDirectory($assetsFolder . '/css/', $destinationFolder . '/css');
+        copy($assetsFolder . "/js/theme-$theme.js", $destinationFolder . WritingUtils::getVersionedAsset("/js/theme-$theme.js"));
+        copy($assetsFolder . "/js/highlight.pack.js", $destinationFolder . "/js/highlight.pack.js");
+        copy($assetsFolder . '/js/tryitout.js', $destinationFolder . WritingUtils::getVersionedAsset('/js/tryitout.js'));
     }
 
     protected function transformMarkdownFileToHTML(string $markdownFilePath): string

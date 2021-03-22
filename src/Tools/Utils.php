@@ -3,6 +3,7 @@
 namespace Knuckles\Scribe\Tools;
 
 use Closure;
+use DirectoryIterator;
 use Exception;
 use FastRoute\RouteParser\Std;
 use Illuminate\Routing\Route;
@@ -101,6 +102,28 @@ class Utils
         $fs->deleteDir($dir);
     }
 
+    public static function copyDirectory(string $src, string $dest): void
+    {
+        if (!is_dir($src)) return;
+
+        // If the destination directory does not exist create it
+        if (!is_dir($dest)) {
+            if (!mkdir($dest, 0777, true)) {
+                // If the destination directory could not be created stop processing
+                throw new Exception("Failed to create target directory: $dest");
+            }
+        }
+
+        // Open the source directory to read in files
+        $i = new DirectoryIterator($src);
+        foreach ($i as $f) {
+            if ($f->isFile()) {
+                copy($f->getRealPath(), "$dest/" . $f->getFilename());
+            } else if (!$f->isDot() && $f->isDir()) {
+                rcopy($f->getRealPath(), "$dest/$f");
+            }
+        }
+    }
 
     public static function deleteFilesMatching(string $dir, callable $condition): void
     {

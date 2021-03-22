@@ -86,8 +86,7 @@ class ApiDetails
         $introMarkdown = view('scribe::markdown.intro')
             ->with('description', $this->config->get('description', ''))
             ->with('introText', $this->config->get('intro_text', ''))
-            ->with('baseUrl', $this->baseUrl)
-            ->with('isInteractive', $this->config->get('interactive', true));
+            ->with('baseUrl', $this->baseUrl);
         $this->writeMarkdownFileAndRecordTime($indexMarkdownFile, $introMarkdown);
     }
 

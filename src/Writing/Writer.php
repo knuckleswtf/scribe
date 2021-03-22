@@ -5,7 +5,6 @@ namespace Knuckles\Scribe\Writing;
 use Illuminate\Support\Facades\Storage;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils;
 use Knuckles\Scribe\Tools\DocumentationConfig;
-use Knuckles\Scribe\Tools\Globals;
 use Knuckles\Scribe\Tools\Utils;
 use Symfony\Component\Yaml\Yaml;
 
@@ -188,9 +187,6 @@ class Writer
         /** @var HtmlWriter $writer */
         $writer = app()->makeWith(HtmlWriter::class, ['config' => $this->config]);
         $writer->generate($groupedEndpoints, $this->markdownOutputPath, $this->staticTypeOutputPath);
-
-        // Add our custom JS
-        copy(__DIR__.'/../../resources/js/tryitout.js', $this->staticTypeOutputPath . '/js/tryitout-'.Globals::SCRIBE_VERSION.'.js');
 
         if (!$this->isStatic) {
             $this->performFinalTasksForLaravelType();

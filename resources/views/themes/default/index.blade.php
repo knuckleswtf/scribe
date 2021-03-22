@@ -1,3 +1,6 @@
+@php
+    use Knuckles\Scribe\Tools\WritingUtils as u;
+@endphp
 <!doctype html>
 <html lang="en">
 <head>
@@ -8,21 +11,29 @@
 
     <link href="https://fonts.googleapis.com/css?family=PT+Sans&display=swap" rel="stylesheet">
 
-    {!! get_css_link_tag('style', 'screen') !!}
-    {!! get_css_link_tag('print', 'print') !!}
-    {!! get_js_script_tag('all') !!}
+    <link rel="stylesheet" href="css/theme-default.style.css" media="screen">
+    <link rel="stylesheet" href="css/theme-default.print.css" media="print">
+    <script src="{{ u::getVersionedAsset('js/theme-default.js') }}"></script>
 
-    {!! get_css_link_tag('highlight-darcula') !!}
-    {!! get_js_script_tag('highlight.pack') !!}
+    <link rel="stylesheet" href="css/highlight-darcula.css">
+    <script src="js/highlight.pack.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
+
+@if($isInteractive)
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
+    <script>
+        var baseUrl = "{{ $baseUrl }}";
+    </script>
+    <script src="{{ u::getVersionedAsset('js/tryitout.js') }}"></script>
+@endif
 
 </head>
 
 <body class="" data-languages="{{ json_encode($metadata['example_languages'] ?? []) }}">
 <a href="#" id="nav-button">
       <span>
-        NAV
-        {!! get_image_tag('images/navbar.png') !!}
+        MENU
+        <img src="images/navbar.png" alt="navbar-image" />
       </span>
 </a>
 <div class="tocify-wrapper">

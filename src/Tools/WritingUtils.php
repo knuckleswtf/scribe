@@ -180,4 +180,10 @@ class WritingUtils
                     . "</code>, or <code>" . end($list) . "</code>";
         }
     }
+
+    public static function getVersionedAsset(string $assetPath)
+    {
+        $index = strrpos($assetPath, ".");
+        return substr_replace($assetPath, '-'.Globals::SCRIBE_VERSION, $index, 0);
+    }
 }
