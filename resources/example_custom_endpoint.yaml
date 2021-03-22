@@ -1,0 +1,50 @@
+# To include an endpoint that isn't a part of your Laravel app (or belongs to a vendor package),
+# you can define it in a custom.* YAML file, like this one. Here's an example:
+
+#- methods:
+#    - POST
+#  uri: api/doSomething/{param}
+#  metadata:
+#    groupName: The group the endpoint belongs to. Can be a new group or an existing group.
+#    groupDescription: A description for the group. You don't need to set this for every endpoint; once is enough.
+#    title: 'Do something.'
+#    description: 'This endpoint allows you to do something.'
+#    authenticated: false
+#  headers:
+#    Content-Type: application/json
+#    Accept: application/json
+#  urlParameters:
+#    param:
+#      name: param
+#      description: A URL param for no reason.
+#      required: false
+#      example: 2
+#      type: integer
+#  queryParameters:
+#    speed:
+#      name: speed
+#      description: How fast the thing should be done. Can be `slow` or `fast`.
+#      required: false
+#      example: fast
+#      type: string
+#  bodyParameters:
+#    something:
+#      name: something
+#      description: The things we should do.
+#      required: true
+#      example:
+#        - string 1
+#        - string 2
+#      type: 'string[]'
+#  responses:
+#    - status: 200
+#      content:
+#         {
+#           "hey": "ho ho ho"
+#         }
+#      description: 'When the thing was done smoothly.'
+#  responseFields:
+#    hey:
+#      name: hey
+#      description: Who knows?
+#      type: string # This is optional

@@ -72,7 +72,7 @@ class ExtractedEndpointData extends BaseDTO
 
     /**
      * Authentication info for this endpoint. In the form [{where}, {name}, {sample}]
-     * Example: ["query", "api_key", "njiuyiw97865rfyvgfvb1"]
+     * Example: ["queryParameters", "api_key", "njiuyiw97865rfyvgfvb1"]
      */
     public array $auth = [];
 
@@ -143,8 +143,8 @@ class ExtractedEndpointData extends BaseDTO
         return $this->except(
             // Get rid of all duplicate data
             'cleanQueryParameters', 'cleanUrlParameters', 'fileParameters', 'cleanBodyParameters',
-            // and objects only needed for extraction
-            'route', 'controller', 'method',
+            // and objects used only in extraction
+            'route', 'controller', 'method', 'auth',
         );
     }
 }

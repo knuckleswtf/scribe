@@ -24,9 +24,7 @@
         </blockquote>
         <pre>
             <code class="language-json">
-@if(is_object($response->content) || is_array($response->content))
-{!! htmlentities(json_encode($response->content), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}
-@elseif(is_string($response->content) && Str::startsWith($response->content, "<<binary>>"))
+@if(is_string($response->content) && Str::startsWith($response->content, "<<binary>>"))
 [Binary data] - {{ htmlentities(str_replace("<<binary>>", "", $response->content)) }}
 @elseif($response->status == 204)
 [Empty response]

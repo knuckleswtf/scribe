@@ -75,12 +75,6 @@ class OutputEndpointData extends BaseDTO
     public array $responseFields = [];
 
     /**
-     * Authentication info for this endpoint. In the form [{where}, {name}, {sample}]
-     * Example: ["query", "api_key", "njiuyiw97865rfyvgfvb1"]
-     */
-    public array $auth = [];
-
-    /**
      * @var array<string, array>
      */
     public array $nestedBodyParameters = [];
