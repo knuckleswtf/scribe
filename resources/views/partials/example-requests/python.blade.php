@@ -1,12 +1,16 @@
-```python
+@php
+  use Knuckles\Scribe\Tools\WritingUtils as u;
+  /** @var  Knuckles\Camel\Output\OutputEndpointData $endpoint */
+@endphp
+<pre><code class="language-python">
 import requests
 import json
 
-url = '{{ rtrim($baseUrl, '/') }}/{{ $route['boundUri'] }}'
-@if(count($route['fileParameters']))
+url = '{{ rtrim($baseUrl, '/') }}/{{ $endpoint->boundUri }}'
+@if($endpoint->hasFiles())
 files = {
-@foreach($route['fileParameters'] as $parameter => $value)
-@foreach(\Knuckles\Scribe\Tools\WritingUtils::getParameterNamesAndValuesForFormData($parameter, $value) as $key => $file)
+@foreach($endpoint->fileParameters as $parameter => $value)
+@foreach(u::getParameterNamesAndValuesForFormData($parameter, $value) as $key => $file)
   '{!! $key !!}': open('{!! $file->path() !!}', 'rb')@if(!($loop->last)),
 @endif
 @endforeach
@@ -14,15 +18,15 @@ files = {
 
 }
 @endif
-@if(count($route['cleanBodyParameters']))
-payload = {!! json_encode($route['cleanBodyParameters'], JSON_PRETTY_PRINT) !!}
+@if(count($endpoint->cleanBodyParameters))
+payload = {!! json_encode($endpoint->cleanBodyParameters, JSON_PRETTY_PRINT) !!}
 @endif
-@if(count($route['cleanQueryParameters']))
-params = {!! \Knuckles\Scribe\Tools\WritingUtils::printQueryParamsAsKeyValue($route['cleanQueryParameters'], "'", ":", 2, "{}") !!}
+@if(count($endpoint->cleanQueryParameters))
+params = {!! u::printQueryParamsAsKeyValue($endpoint->cleanQueryParameters, "'", ":", 2, "{}") !!}
 @endif
-@if(!empty($route['headers']))
+@if(!empty($endpoint->headers))
 headers = {
-@foreach($route['headers'] as $header => $value)
+@foreach($endpoint->headers as $header => $value)
   '{{$header}}': '{{$value}}'@if(!($loop->last)),
 @endif
 @endforeach
@@ -32,12 +36,12 @@ headers = {
 @endif
 @php
 $optionalArguments = [];
-if (count($route['headers'])) $optionalArguments[] = "headers=headers";
-if (count($route['fileParameters'])) $optionalArguments[] = "files=files";
-if (count($route['cleanBodyParameters'])) $optionalArguments[] = (count($route['fileParameters']) ? "data=payload" : "json=payload");
-if (count($route['cleanQueryParameters'])) $optionalArguments[] = "params=params";
+if (count($endpoint->headers)) $optionalArguments[] = "headers=headers";
+if (count($endpoint->fileParameters)) $optionalArguments[] = "files=files";
+if (count($endpoint->cleanBodyParameters)) $optionalArguments[] = (count($endpoint->fileParameters) ? "data=payload" : "json=payload");
+if (count($endpoint->cleanQueryParameters)) $optionalArguments[] = "params=params";
 $optionalArguments = implode(', ',$optionalArguments);
 @endphp
-response = requests.request('{{$route['methods'][0]}}', url, {{ $optionalArguments }})
+response = requests.request('{{$endpoint->methods[0]}}', url, {{ $optionalArguments }})
 response.json()
-```
+</code></pre>

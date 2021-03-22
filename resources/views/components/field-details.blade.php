@@ -33,4 +33,4 @@
 @endif
 @endif
 <br>
-{!! $description !!}
+{!! Parsedown::instance()->text($description) !!}

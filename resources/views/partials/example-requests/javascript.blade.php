@@ -1,50 +1,54 @@
-```javascript
+@php
+    use Knuckles\Scribe\Tools\WritingUtils as u;
+    /** @var  Knuckles\Camel\Output\OutputEndpointData $endpoint */
+@endphp
+<pre><code class="language-javascript">
 const url = new URL(
-    "{{ rtrim($baseUrl, '/') }}/{{ ltrim($route['boundUri'], '/') }}"
+    "{{ rtrim($baseUrl, '/') }}/{{ ltrim($endpoint->boundUri, '/') }}"
 );
-@if(count($route['cleanQueryParameters']))
+@if(count($endpoint->cleanQueryParameters))
 
-let params = {!! \Knuckles\Scribe\Tools\WritingUtils::printQueryParamsAsKeyValue($route['cleanQueryParameters'], "\"", ":", 4, "{}") !!};
+let params = {!! u::printQueryParamsAsKeyValue($endpoint->cleanQueryParameters, "\"", ":", 4, "{}") !!};
 Object.keys(params)
     .forEach(key => url.searchParams.append(key, params[key]));
 @endif
 
-@if(!empty($route['headers']))
+@if(!empty($endpoint->headers))
 let headers = {
-@foreach($route['headers'] as $header => $value)
+@foreach($endpoint->headers as $header => $value)
     "{{$header}}": "{{$value}}",
 @endforeach
-@if(!array_key_exists('Accept', $route['headers']))
+@empty($endpoint->headers['Accept'])
     "Accept": "application/json",
-@endif
+@endempty
 };
 @endif
 
-@if(count($route['fileParameters']))
+@if($endpoint->hasFiles())
 const body = new FormData();
-@foreach($route['cleanBodyParameters'] as $parameter => $value)
-@foreach( \Knuckles\Scribe\Tools\WritingUtils::getParameterNamesAndValuesForFormData($parameter, $value) as $key => $actualValue)
+@foreach($endpoint->cleanBodyParameters as $parameter => $value)
+@foreach( u::getParameterNamesAndValuesForFormData($parameter, $value) as $key => $actualValue)
 body.append('{!! $key !!}', '{!! $actualValue !!}');
 @endforeach
 @endforeach
-@foreach($route['fileParameters'] as $parameter => $value)
-@foreach( \Knuckles\Scribe\Tools\WritingUtils::getParameterNamesAndValuesForFormData($parameter, $value) as $key => $file)
+@foreach($endpoint->fileParameters as $parameter => $value)
+@foreach( u::getParameterNamesAndValuesForFormData($parameter, $value) as $key => $file)
 body.append('{!! $key !!}', document.querySelector('input[name="{!! $key !!}"]').files[0]);
 @endforeach
 @endforeach
-@elseif(count($route['cleanBodyParameters']))
-let body = {!! json_encode($route['cleanBodyParameters'], JSON_PRETTY_PRINT) !!}
+@elseif(count($endpoint->cleanBodyParameters))
+let body = {!! json_encode($endpoint->cleanBodyParameters, JSON_PRETTY_PRINT) !!}
 @endif
 
 fetch(url, {
-    method: "{{$route['methods'][0]}}",
-@if(count($route['headers']))
+    method: "{{$endpoint->methods[0]}}",
+@if(count($endpoint->headers))
     headers,
 @endif
-@if(count($route['fileParameters']))
+@if($endpoint->hasFiles())
     body,
-@elseif(count($route['cleanBodyParameters']))
+@elseif(count($endpoint->cleanBodyParameters))
     body: JSON.stringify(body),
 @endif
 }).then(response => response.json());
-```
+</code></pre>

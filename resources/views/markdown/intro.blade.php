@@ -1,7 +1,3 @@
----
-{!! $frontmatter !!}
----
-
 # Introduction
 
 {!! $description !!}

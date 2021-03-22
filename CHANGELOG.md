@@ -15,3 +15,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## 
 - Change Strategy class method signature
 - Rename 'value' in parameters to 'example'
+- `include` not supported in frontmatter; use prepend or append
+- Endpoints in views are now objects
+- moved body-parameters to components
+- index renamed to intro.blade.php
+- views moved to markdown/

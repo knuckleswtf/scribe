@@ -2,6 +2,8 @@
 
 return [
 
+    'theme' => 'default',
+
     /*
      * The HTML <title> for the generated documentation. If this is empty, Scribe will infer it from config('app.name').
      */

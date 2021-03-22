@@ -65,7 +65,7 @@ class OutputEndpointData extends BaseDTO
     public array $fileParameters = [];
 
     /**
-     * @var \Knuckles\Camel\Extraction\ResponseCollection|array
+     * @var \Knuckles\Camel\Extraction\ResponseCollection
      */
     public $responses;
 
@@ -86,7 +86,6 @@ class OutputEndpointData extends BaseDTO
     public array $nestedBodyParameters = [];
 
     public ?string $boundUri;
-    public ?string $output;
 
     public function __construct(array $parameters = [])
     {
@@ -151,8 +150,25 @@ class OutputEndpointData extends BaseDTO
         return $this->methods[0].str_replace(['/', '?', '{', '}', ':'], '-', $this->uri);
     }
 
-    public function hasResponses()
+    public function hasResponses(): bool
     {
         return count($this->responses) > 0;
+    }
+
+    public function hasFiles(): bool
+    {
+        return count($this->fileParameters) > 0;
+    }
+
+    public function isGet(): bool
+    {
+        return in_array('GET', $this->methods);
+    }
+
+    public function hasRequestOptions(): bool
+    {
+        return !empty($this->headers)
+            || !empty($this->cleanQueryParameters)
+            || !empty($this->cleanBodyParameters);
     }
 }

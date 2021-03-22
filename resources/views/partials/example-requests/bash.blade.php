@@ -1,24 +1,27 @@
-```bash
-curl -X {{$route['methods'][0]}} \
-    {{$route['methods'][0] == 'GET' ? '-G ' : ''}}"{{ rtrim($baseUrl, '/')}}/{{ ltrim($route['boundUri'], '/') }}@if(count($route['cleanQueryParameters']))?{!! \Knuckles\Scribe\Tools\WritingUtils::printQueryParamsAsString($route['cleanQueryParameters']) !!}@endif" @if(count($route['headers']))\
-@foreach($route['headers'] as $header => $value)
-    -H "{{$header}}: {{ addslashes($value) }}"@if(! ($loop->last) || ($loop->last && count($route['bodyParameters']))) \
+@php
+    use Knuckles\Scribe\Tools\WritingUtils as u;
+    /** @var  Knuckles\Camel\Output\OutputEndpointData $endpoint */
+@endphp
+<pre><code class="language-bash">
+curl --request {{$endpoint->methods[0]}} \
+    {{$endpoint->methods[0] == 'GET' ? '--get ' : ''}}"{{ rtrim($baseUrl, '/')}}/{{ ltrim($endpoint->boundUri, '/') }}@if(count($endpoint->cleanQueryParameters))?{!! u::printQueryParamsAsString($endpoint->cleanQueryParameters) !!}@endif"@if(count($endpoint->headers)) \
+@foreach($endpoint->headers as $header => $value)
+    --header "{{$header}}: {{ addslashes($value) }}"@if(! ($loop->last) || ($loop->last && count($endpoint->bodyParameters))) \
 @endif
 @endforeach
 @endif
-@if(count($route['fileParameters']))
-@foreach($route['cleanBodyParameters'] as $parameter => $value)
-@foreach( \Knuckles\Scribe\Tools\WritingUtils::getParameterNamesAndValuesForFormData($parameter, $value) as $key => $actualValue)
-    -F "{!! "$key=".$actualValue !!}" \
+@if($endpoint->hasFiles())
+@foreach($endpoint->cleanBodyParameters as $parameter => $value)
+@foreach(u::getParameterNamesAndValuesForFormData($parameter, $value) as $key => $actualValue)
+    --form "{!! "$key=".$actualValue !!}" \
 @endforeach
 @endforeach
-@foreach($route['fileParameters'] as $parameter => $value)
-@foreach( \Knuckles\Scribe\Tools\WritingUtils::getParameterNamesAndValuesForFormData($parameter, $value) as $key => $file)
-    -F "{!! "$key=@".$file->path() !!}" @if(! ($loop->last))\@endif
+@foreach($endpoint->fileParameters as $parameter => $value)
+@foreach(u::getParameterNamesAndValuesForFormData($parameter, $value) as $key => $file)
+    --form "{!! "$key=@".$file->path() !!}" @if(! ($loop->last))\@endif
 @endforeach
 @endforeach
-@elseif(count($route['cleanBodyParameters']))
-    -d '{!! json_encode($route['cleanBodyParameters']) !!}'
+@elseif(count($endpoint->cleanBodyParameters))
+    --data "{!! addslashes(json_encode($endpoint->cleanBodyParameters)) !!}"
 @endif
-
-```
+</code></pre>

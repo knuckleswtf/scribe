@@ -10,6 +10,7 @@ use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Camel\Output\OutputEndpointData as OutputEndpointData;
 use Knuckles\Camel\Camel;
 use Knuckles\Scribe\Extracting\Extractor;
+use Knuckles\Scribe\Extracting\ApiDetails;
 use Knuckles\Scribe\Matching\MatchedRoute;
 use Knuckles\Scribe\Matching\RouteMatcherInterface;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
@@ -56,25 +57,11 @@ class GenerateDocumentation extends Command
         $this->bootstrap();
 
         if ($this->forcing) {
-            $routes = $routeMatcher->getRoutes($this->docConfig->get('routes'), $this->docConfig->get('router'));
-            $endpoints = $this->extractEndpointsInfo($routes);
-            $groupedEndpoints = Camel::groupEndpoints($endpoints);
-            $this->writeEndpointsToDisk($groupedEndpoints);
-            $groupedEndpoints = Camel::prepareGroupedEndpointsForOutput($groupedEndpoints);
+            $groupedEndpoints = $this->extractEndpointsInfoAndWriteToDisk($routeMatcher, false);
+            $this->extractAndWriteApiDetailsToDisk();
         } else if ($this->shouldExtract) {
-            $latestEndpointsData = [];
-            $cachedEndpoints = [];
-
-            if (is_dir(static::$camelDir) && is_dir(static::$cacheDir)) {
-                $latestEndpointsData = Camel::loadEndpointsToFlatPrimitivesArray(static::$camelDir);
-                $cachedEndpoints = Camel::loadEndpointsToFlatPrimitivesArray(static::$cacheDir);
-            }
-
-            $routes = $routeMatcher->getRoutes($this->docConfig->get('routes'), $this->docConfig->get('router'));
-            $endpoints = $this->extractEndpointsInfo($routes, $cachedEndpoints, $latestEndpointsData);
-            $groupedEndpoints = Camel::groupEndpoints($endpoints);
-            $this->writeEndpointsToDisk($groupedEndpoints);
-            $groupedEndpoints = Camel::prepareGroupedEndpointsForOutput($groupedEndpoints);
+            $groupedEndpoints = $this->extractEndpointsInfoAndWriteToDisk($routeMatcher, true);
+            $this->extractAndWriteApiDetailsToDisk();
         } else {
             if (!is_dir(static::$camelDir)) {
                 throw new \Exception("Can't use --no-extraction because there are no endpoints in the {static::$camelDir} directory.");
@@ -95,7 +82,7 @@ class GenerateDocumentation extends Command
      *
      * @return array
      */
-    private function extractEndpointsInfo(array $matches, array $cachedEndpoints = [], array $latestEndpointsData = []): array
+    private function extractEndpointsInfoFromLaravelApp(array $matches, array $cachedEndpoints = [], array $latestEndpointsData = []): array
     {
         $generator = new Extractor($this->docConfig);
         $parsedRoutes = [];
@@ -295,5 +282,29 @@ class GenerateDocumentation extends Command
         }
 
         return $groupedEndpoints;
+    }
+
+    protected function extractEndpointsInfoAndWriteToDisk(RouteMatcherInterface $routeMatcher, bool $preserveUserChanges): array
+    {
+        $latestEndpointsData = [];
+        $cachedEndpoints = [];
+
+        if ($preserveUserChanges && is_dir(static::$camelDir) && is_dir(static::$cacheDir)) {
+            $latestEndpointsData = Camel::loadEndpointsToFlatPrimitivesArray(static::$camelDir);
+            $cachedEndpoints = Camel::loadEndpointsToFlatPrimitivesArray(static::$cacheDir);
+        }
+
+        $routes = $routeMatcher->getRoutes($this->docConfig->get('routes'), $this->docConfig->get('router'));
+        $endpoints = $this->extractEndpointsInfoFromLaravelApp($routes, $cachedEndpoints, $latestEndpointsData);
+        $groupedEndpoints = Camel::groupEndpoints($endpoints);
+        $this->writeEndpointsToDisk($groupedEndpoints);
+        $groupedEndpoints = Camel::prepareGroupedEndpointsForOutput($groupedEndpoints);
+        return $groupedEndpoints;
+}
+
+    protected function extractAndWriteApiDetailsToDisk(): void
+    {
+        $apiDetails = new ApiDetails($this->docConfig, !$this->option('force'));
+        $apiDetails->writeMarkdownFiles();
     }
 }
