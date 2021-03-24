@@ -536,7 +536,7 @@ class OpenAPISpecWriterTest extends TestCase
             data_set($data, $key, $value);
         }
 
-        return new OutputEndpointData($data);
+        return OutputEndpointData::create($data);
     }
 
     protected function createGroup(array $endpoints)
@@ -545,7 +545,7 @@ class OpenAPISpecWriterTest extends TestCase
         return [
             'description' => '',
             'name' => $faker->randomElement(['Endpoints', 'Group A', 'Group B']),
-            'endpoints' => array_map(fn ($e) => $e->toArray(), $endpoints),
+            'endpoints' => $endpoints,
         ];
     }
 }

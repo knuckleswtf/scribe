@@ -6,15 +6,15 @@ use Illuminate\Routing\Route;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Extracting\Strategies\Responses\UseApiResourceTags;
 use Knuckles\Scribe\ScribeServiceProvider;
+use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tests\Fixtures\TestUser;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\Utils;
 use Mpociot\Reflection\DocBlock\Tag;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
-use Orchestra\Testbench\TestCase;
 
-class UseApiResourceTagsTest extends TestCase
+class UseApiResourceTagsTest extends BaseLaravelTest
 {
     use ArraySubsetAsserts;
 

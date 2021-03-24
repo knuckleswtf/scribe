@@ -28,8 +28,8 @@ use Symfony\Component\Yaml\Yaml;
 class GenerateDocumentation extends Command
 {
     protected $signature = "scribe:generate
-                            {--force : Discard any changes you've made to the Markdown files}
-                            {--no-extraction : Skip extraction of route info and just transform the Markdown files}
+                            {--force : Discard any changes you've made to the YAML or Markdown files}
+                            {--no-extraction : Skip extraction of route and API info and just transform the YAML and Markdown files into HTML}
     ";
 
     protected $description = 'Generate API documentation from your Laravel/Dingo routes.';
@@ -64,7 +64,7 @@ class GenerateDocumentation extends Command
             $this->extractAndWriteApiDetailsToDisk();
         } else {
             if (!is_dir(static::$camelDir)) {
-                throw new \Exception("Can't use --no-extraction because there are no endpoints in the {static::$camelDir} directory.");
+                throw new \InvalidArgumentException("Can't use --no-extraction because there are no endpoints in the {static::$camelDir} directory.");
             }
             $groupedEndpoints = Camel::loadEndpointsIntoGroups(static::$camelDir);
         }
@@ -147,7 +147,6 @@ class GenerateDocumentation extends Command
             'bodyParameters',
             'responses',
             'responseFields',
-            'auth',
         ];
 
         $changed = [];
@@ -305,6 +304,7 @@ class GenerateDocumentation extends Command
 
     protected function writeExampleCustomEndpoint(): void
     {
+        // We add an example to guide users in case they need to add a custom endpoint.
         if (!file_exists(static::$camelDir.'/custom.0.yaml')) {
             copy(__DIR__ . '/../../resources/example_custom_endpoint.yaml', static::$camelDir . '/custom.0.yaml');
         }

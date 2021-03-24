@@ -25,7 +25,7 @@ class Camel
     public static function loadEndpointsIntoGroups(string $folder): array
     {
         $groups = [];
-        self::loadEndpointsFromCamelFiles($folder, function ($group) use ($groups) {
+        self::loadEndpointsFromCamelFiles($folder, function ($group) use (&$groups) {
             $group['endpoints'] = array_map(function (array $endpoint) {
                 return OutputEndpointData::fromExtractedEndpointArray($endpoint);
             }, $group['endpoints']);
@@ -44,7 +44,7 @@ class Camel
     public static function loadEndpointsToFlatPrimitivesArray(string $folder): array
     {
         $endpoints = [];
-        self::loadEndpointsFromCamelFiles($folder, function ($group) use ($endpoints) {
+        self::loadEndpointsFromCamelFiles($folder, function ($group) use (&$endpoints) {
             foreach ($group['endpoints'] as $endpoint) {
                 $endpoints[] = $endpoint;
             }
@@ -114,7 +114,7 @@ class Camel
                     return $endpointData->metadata->groupDescription !== '';
                 })->metadata->groupDescription ?? '',
             'endpoints' => $group->map(fn(ExtractedEndpointData $endpointData) => $endpointData->forSerialisation()->toArray())->all(),
-        ])->all();
+        ])->values()->all();
     }
 
     public static function prepareGroupedEndpointsForOutput(array $groupedEndpoints): array

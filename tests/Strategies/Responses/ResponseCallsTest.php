@@ -10,26 +10,15 @@ use Knuckles\Camel\Extraction\ResponseCollection;
 use Knuckles\Scribe\Extracting\Extractor;
 use Knuckles\Scribe\Extracting\Strategies\Responses\ResponseCalls;
 use Knuckles\Scribe\ScribeServiceProvider;
+use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
-use Orchestra\Testbench\TestCase;
 use Illuminate\Support\Facades\Route as LaravelRouteFacade;
 
-class ResponseCallsTest extends TestCase
+class ResponseCallsTest extends BaseLaravelTest
 {
     use ArraySubsetAsserts;
-
-    protected function getPackageProviders($app)
-    {
-        $providers = [
-            ScribeServiceProvider::class,
-        ];
-        if (class_exists(\Dingo\Api\Provider\LaravelServiceProvider::class)) {
-            $providers[] = \Dingo\Api\Provider\LaravelServiceProvider::class;
-        }
-        return $providers;
-    }
 
     protected function setUp(): void
     {

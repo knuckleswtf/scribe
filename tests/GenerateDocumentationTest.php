@@ -11,10 +11,9 @@ use Knuckles\Scribe\Tests\Fixtures\TestPartialResourceController;
 use Knuckles\Scribe\Tests\Fixtures\TestResourceController;
 use Knuckles\Scribe\Tests\Fixtures\TestUser;
 use Knuckles\Scribe\Tools\Utils;
-use Orchestra\Testbench\TestCase;
 use Symfony\Component\Yaml\Yaml;
 
-class GenerateDocumentationTest extends TestCase
+class GenerateDocumentationTest extends BaseLaravelTest
 {
     use TestHelpers;
 
@@ -38,9 +37,7 @@ class GenerateDocumentationTest extends TestCase
     public function tearDown(): void
     {
         Utils::deleteDirectoryAndContents('public/docs');
-        Utils::deleteDirectoryAndContents('resources/docs');
-        Utils::deleteDirectoryAndContents('static/docs');
-        Utils::deleteDirectoryAndContents('.endpoints');
+        Utils::deleteDirectoryAndContents('.scribe');
     }
 
     /**
@@ -305,8 +302,9 @@ class GenerateDocumentationTest extends TestCase
         ]);
         $this->artisan('scribe:generate');
 
-        $generatedMarkdown = $this->getFileContents(__DIR__ . '/../resources/docs/groups/group-a.md');
-        $this->assertContainsIgnoringWhitespace('"Authorization": "customAuthToken","Custom-Header":"NotSoCustom"', $generatedMarkdown);
+        $endpointDetails = Yaml::parseFile(__DIR__ . '/../.scribe/endpoints/0.yaml')['endpoints'][0];
+        $this->assertEquals("customAuthToken", $endpointDetails['headers']["Authorization"]);
+        $this->assertEquals("NotSoCustom", $endpointDetails['headers']["Custom-Header"]);
     }
 
     /** @test */
@@ -317,8 +315,8 @@ class GenerateDocumentationTest extends TestCase
         config(['scribe.routes.0.prefixes' => ['api/*']]);
         $this->artisan('scribe:generate');
 
-        $generatedMarkdown = file_get_contents(__DIR__ . '/../resources/docs/groups/group-a.md');
-        $this->assertStringContainsString('Лорем ипсум долор сит амет', $generatedMarkdown);
+        $generatedHtml = file_get_contents('public/docs/index.html');
+        $this->assertStringContainsString('Лорем ипсум долор сит амет', $generatedHtml);
     }
 
     /** @test */
@@ -332,9 +330,12 @@ class GenerateDocumentationTest extends TestCase
         config(['scribe.routes.0.prefixes' => ['api/*']]);
         $this->artisan('scribe:generate');
 
-        $this->assertFileExists(__DIR__ . '/../resources/docs/groups/1-group-1.md');
-        $this->assertFileExists(__DIR__ . '/../resources/docs/groups/2-group-2.md');
-        $this->assertFileExists(__DIR__ . '/../resources/docs/groups/10-group-10.md');
+        $this->assertFileExists(__DIR__ . '/../.scribe/endpoints/0.yaml');
+        $this->assertFileExists(__DIR__ . '/../.scribe/endpoints/1.yaml');
+        $this->assertFileExists(__DIR__ . '/../.scribe/endpoints/2.yaml');
+        $this->assertEquals('1. Group 1', Yaml::parseFile(__DIR__ . '/../.scribe/endpoints/0.yaml')['name']);
+        $this->assertEquals('2. Group 2', Yaml::parseFile(__DIR__ . '/../.scribe/endpoints/1.yaml')['name']);
+        $this->assertEquals('10. Group 10', Yaml::parseFile(__DIR__ . '/../.scribe/endpoints/2.yaml')['name']);
     }
 
     /** @test */
@@ -351,40 +352,47 @@ class GenerateDocumentationTest extends TestCase
     }
 
     /** @test */
-    public function will_not_overwrite_manually_modified_markdown_files_unless_force_flag_is_set()
+    public function will_not_overwrite_manually_modified_content_unless_force_flag_is_set()
     {
-        RouteFacade::get('/api/action1', TestGroupController::class . '@action1');
-        RouteFacade::get('/api/action1b', TestGroupController::class . '@action1b');
-        RouteFacade::get('/api/action2', TestGroupController::class . '@action2');
-
+        RouteFacade::get('/api/action1', [TestGroupController::class, 'action1']);
+        RouteFacade::get('/api/action1b', [TestGroupController::class, 'action1b']);
         config(['scribe.routes.0.prefixes' => ['api/*']]);
 
         $this->artisan('scribe:generate');
 
-        $group1FilePath = realpath(__DIR__ . '/../resources/docs/groups/1-group-1.md');
-        $group2FilePath = realpath(__DIR__ . '/../resources/docs/groups/2-group-2.md');
-        $authFilePath = realpath(__DIR__ . '/../resources/docs/authentication.md');
+        $authFilePath = '.scribe/authentication.md';
+        $group1FilePath = '.scribe/endpoints/0.yaml';
 
-        $file1MtimeAfterFirstGeneration = filemtime($group1FilePath);
-        $file2MtimeAfterFirstGeneration = filemtime($group2FilePath);
-        $authFileMtimeAfterFirstGeneration = filemtime($authFilePath);
-
+        $group = Yaml::parseFile($group1FilePath);
+        $this->assertEquals('api/action1', $group['endpoints'][0]['uri']);
+        $this->assertEquals([], $group['endpoints'][0]['urlParameters']);
+        $extraParam = [
+            'name' => 'a_param',
+            'description' => 'A URL param.',
+            'required' => true,
+            'example' => 6,
+            'type' => 'integer',
+        ];
+        $group['endpoints'][0]['urlParameters']['a_param'] = $extraParam;
+        file_put_contents($group1FilePath, Yaml::dump(
+            $group, 10, 2,
+            Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP
+        ));
         sleep(1);
-        touch($group1FilePath);
-        touch($authFilePath);
-        $file1MtimeAfterManualModification = filemtime($group1FilePath);
-        $authFileMtimeAfterManualModification = filemtime($authFilePath);
-        $this->assertGreaterThan($file1MtimeAfterFirstGeneration, $file1MtimeAfterManualModification);
-        $this->assertGreaterThan($authFileMtimeAfterFirstGeneration, $authFileMtimeAfterManualModification);
+        file_put_contents($authFilePath, 'Some other useful stuff.', FILE_APPEND);
 
         $this->artisan('scribe:generate');
 
-        $file1MtimeAfterSecondGeneration = filemtime($group1FilePath);
-        $file2MtimeAfterSecondGeneration = filemtime($group2FilePath);
-        $authFileMtimeAfterSecondGeneration = filemtime($authFilePath);
+        $group = Yaml::parseFile($group1FilePath);
+        $this->assertEquals('api/action1', $group['endpoints'][0]['uri']);
+        $this->assertEquals(['a_param' => $extraParam], $group['endpoints'][0]['urlParameters']);
+        $this->assertStringContainsString('Some other useful stuff.', file_get_contents($authFilePath));
 
-        $this->assertEquals($file1MtimeAfterManualModification, $file1MtimeAfterSecondGeneration);
-        $this->assertNotEquals($file2MtimeAfterFirstGeneration, $file2MtimeAfterSecondGeneration);
-        $this->assertNotEquals($authFileMtimeAfterFirstGeneration, $authFileMtimeAfterSecondGeneration);
+        $this->artisan('scribe:generate', ['--force' => true]);
+
+        $group = Yaml::parseFile($group1FilePath);
+        $this->assertEquals('api/action1', $group['endpoints'][0]['uri']);
+        $this->assertEquals([], $group['endpoints'][0]['urlParameters']);
+        $this->assertStringNotContainsString('Some other useful stuff.', file_get_contents($authFilePath));
     }
 }

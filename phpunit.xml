@@ -17,7 +17,7 @@
         </include>
         <exclude>
             <file>src/ScribeServiceProvider.php</file>
-            <file>resources/views/pastel.blade.php</file>
+            <directory>resources/views/</directory>
         </exclude>
     </coverage>
     <testsuites>
@@ -33,10 +33,13 @@
         </testsuite>
         <testsuite name="Unit Tests 1">
             <file>tests/Unit/ExtractorTest.php</file>
-            <file>tests/Unit/AnnotationParserTest.php</file>
             <file>tests/Unit/ExtractorPluginSystemTest.php</file>
         </testsuite>
         <testsuite name="Unit Tests 2">
+            <file>tests/Unit/AnnotationParserTest.php</file>
+            <file>tests/Unit/CamelTest.php</file>
+        </testsuite>
+        <testsuite name="Unit Tests 3">
             <file>tests/Unit/OpenAPISpecWriterTest.php</file>
             <file>tests/Unit/PostmanCollectionWriterTest.php</file>
         </testsuite>

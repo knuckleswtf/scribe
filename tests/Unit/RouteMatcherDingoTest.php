@@ -5,12 +5,12 @@ namespace Knuckles\Scribe\Tests\Unit;
 use Dingo\Api\Routing\Router;
 use Illuminate\Support\Str;
 use Knuckles\Scribe\Matching\RouteMatcher;
-use Orchestra\Testbench\TestCase;
+use Knuckles\Scribe\Tests\BaseLaravelTest;
 
 /**
  * @group dingo
  */
-class RouteMatcherDingoTest extends TestCase
+class RouteMatcherDingoTest extends BaseLaravelTest
 {
     protected function getPackageProviders($app)
     {

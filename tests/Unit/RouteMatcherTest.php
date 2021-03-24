@@ -5,9 +5,9 @@ namespace Knuckles\Scribe\Tests\Unit;
 use Illuminate\Support\Facades\Route as RouteFacade;
 use Illuminate\Support\Str;
 use Knuckles\Scribe\Matching\RouteMatcher;
-use Orchestra\Testbench\TestCase;
+use Knuckles\Scribe\Tests\BaseLaravelTest;
 
-class RouteMatcherTest extends TestCase
+class RouteMatcherTest extends BaseLaravelTest
 {
     public function testRespectsDomainsRuleForLaravelRouter()
     {

@@ -4,26 +4,15 @@ namespace Knuckles\Scribe\Tests\Strategies\Responses;
 
 use Knuckles\Scribe\Extracting\Strategies\Responses\UseTransformerTags;
 use Knuckles\Scribe\ScribeServiceProvider;
+use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestUser;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Mpociot\Reflection\DocBlock\Tag;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
-use Orchestra\Testbench\TestCase;
 
-class UseTransformerTagsTest extends TestCase
+class UseTransformerTagsTest extends BaseLaravelTest
 {
     use ArraySubsetAsserts;
-
-    protected function getPackageProviders($app)
-    {
-        $providers = [
-            ScribeServiceProvider::class,
-        ];
-        if (class_exists(\Dingo\Api\Provider\LaravelServiceProvider::class)) {
-            $providers[] = \Dingo\Api\Provider\LaravelServiceProvider::class;
-        }
-        return $providers;
-    }
 
     protected function setUp(): void
     {

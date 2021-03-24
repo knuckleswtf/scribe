@@ -17,7 +17,7 @@
 #    param:
 #      name: param
 #      description: A URL param for no reason.
-#      required: false
+#      required: true
 #      example: 2
 #      type: integer
 #  queryParameters:
@@ -38,11 +38,11 @@
 #      type: 'string[]'
 #  responses:
 #    - status: 200
-#      content:
+#      description: 'When the thing was done smoothly.'
+#      content: # Your response content can be an object, an array, a string or empty.
 #         {
 #           "hey": "ho ho ho"
 #         }
-#      description: 'When the thing was done smoothly.'
 #  responseFields:
 #    hey:
 #      name: hey

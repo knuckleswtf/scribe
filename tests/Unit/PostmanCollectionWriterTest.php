@@ -270,7 +270,7 @@ class PostmanCollectionWriterTest extends TestCase
 
     protected function createMockEndpointData(string $path, string $title = ''): OutputEndpointData
     {
-        return new OutputEndpointData([
+        return OutputEndpointData::create([
             'uri' => $path,
             'methods' => ['GET'],
             'metadata' => [
@@ -292,11 +292,10 @@ class PostmanCollectionWriterTest extends TestCase
 
     protected function createMockEndpointGroup(array $endpoints, string $groupName = 'Group')
     {
-        $faker = Factory::create();
         return [
             'description' => '',
             'name' => $groupName,
-            'endpoints' => array_map(fn($e) => $e->toArray(), $endpoints),
+            'endpoints' => $endpoints,
         ];
     }
 }

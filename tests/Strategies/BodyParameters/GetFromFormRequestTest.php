@@ -6,25 +6,14 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromFormRequest;
 use Knuckles\Scribe\ScribeServiceProvider;
+use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
-use Orchestra\Testbench\TestCase;
 
-class GetFromFormRequestTest extends TestCase
+class GetFromFormRequestTest extends BaseLaravelTest
 {
     use ArraySubsetAsserts;
-
-    protected function getPackageProviders($app)
-    {
-        $providers = [
-            ScribeServiceProvider::class,
-        ];
-        if (class_exists(\Dingo\Api\Provider\LaravelServiceProvider::class)) {
-            $providers[] = \Dingo\Api\Provider\LaravelServiceProvider::class;
-        }
-        return $providers;
-    }
 
     /** @test */
     public function can_fetch_from_form_request()
