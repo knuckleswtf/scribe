@@ -69,6 +69,7 @@ class Camel
             }
         }
     }
+
     public static function loadUserDefinedEndpoints(string $folder): array
     {
         $adapter = new Local(getcwd());

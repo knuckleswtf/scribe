@@ -1,5 +1,6 @@
 # To include an endpoint that isn't a part of your Laravel app (or belongs to a vendor package),
-# you can define it in a custom.* YAML file, like this one. Here's an example:
+# you can define it in a custom.*.yaml file, like this one.
+# Each custom file should contain an array of endpoints. Here's an example:
 
 #- methods:
 #    - POST

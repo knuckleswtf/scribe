@@ -64,7 +64,7 @@ class GenerateDocumentation extends Command
             $this->extractAndWriteApiDetailsToDisk();
         } else {
             if (!is_dir(static::$camelDir)) {
-                throw new \InvalidArgumentException("Can't use --no-extraction because there are no endpoints in the {static::$camelDir} directory.");
+                throw new \InvalidArgumentException("Can't use --no-extraction because there are no endpoints in the ".static::$camelDir." directory.");
             }
             $groupedEndpoints = Camel::loadEndpointsIntoGroups(static::$camelDir);
         }

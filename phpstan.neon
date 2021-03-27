@@ -17,3 +17,4 @@ parameters:
         - '#Right side of && is always false.#'
         - '#Function factory invoked with 1 parameter, 0 required.#'
         - '#Call to an undefined method Illuminate\\Contracts\\Filesystem\\Filesystem::path\(\)#'
+        - '#Access to an undefined property Illuminate\\Support\\HigherOrderCollectionProxy#'

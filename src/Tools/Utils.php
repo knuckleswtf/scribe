@@ -120,7 +120,7 @@ class Utils
             if ($f->isFile()) {
                 copy($f->getRealPath(), "$dest/" . $f->getFilename());
             } else if (!$f->isDot() && $f->isDir()) {
-                rcopy($f->getRealPath(), "$dest/$f");
+                self::copyDirectory($f->getRealPath(), "$dest/$f");
             }
         }
     }

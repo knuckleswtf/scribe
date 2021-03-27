@@ -86,7 +86,7 @@ class ApiDetails
         $introMarkdown = view('scribe::markdown.intro')
             ->with('description', $this->config->get('description', ''))
             ->with('introText', $this->config->get('intro_text', ''))
-            ->with('baseUrl', $this->baseUrl);
+            ->with('baseUrl', $this->baseUrl)->render();
         $this->writeMarkdownFileAndRecordTime($indexMarkdownFile, $introMarkdown);
     }
 
@@ -142,7 +142,7 @@ class ApiDetails
             'isAuthed' => $isAuthed,
             'authDescription' => $authDescription,
             'extraAuthInfo' => $extraInfo,
-        ]);
+        ])->render();
         $this->writeMarkdownFileAndRecordTime($authMarkdownFile, $authMarkdown);
     }
 
