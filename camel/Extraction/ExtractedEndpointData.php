@@ -3,6 +3,7 @@
 namespace Knuckles\Camel\Extraction;
 
 use Illuminate\Routing\Route;
+use Illuminate\Support\Str;
 use Knuckles\Camel\BaseDTO;
 use Knuckles\Scribe\Tools\Utils as u;
 use ReflectionClass;
@@ -84,6 +85,7 @@ class ExtractedEndpointData extends BaseDTO
 
     public function __construct(array $parameters = [])
     {
+        $parameters['uri'] = $this->normalizeResourceParamName($parameters['uri'], $parameters['route']);
         $parameters['metadata'] = $parameters['metadata'] ?? new Metadata([]);
         $parameters['responses'] = $parameters['responses'] ?? new ResponseCollection([]);
 
@@ -92,7 +94,6 @@ class ExtractedEndpointData extends BaseDTO
 
     public static function fromRoute(Route $route, array $extras = []): self
     {
-        // $this->id = md5($this->getUri($route) . ':' . implode($this->getMethods($route))),
         $methods = self::getMethods($route);
         $uri = $route->uri();
 
@@ -132,6 +133,33 @@ class ExtractedEndpointData extends BaseDTO
     public function endpointId()
     {
         return $this->methods[0] . str_replace(['/', '?', '{', '}', ':'], '-', $this->uri);
+    }
+
+    public function normalizeResourceParamName(string $uri, Route $route): string
+    {
+        $params = [];
+        preg_match_all('#\{(\w+?)}#', $uri, $params);
+
+        $foundResourceParam = false;
+        foreach ($params[1] as $param) {
+            $pluralParam = Str::plural($param);
+            $resourceRouteNames = ["$pluralParam.show", "$pluralParam.update", "$pluralParam.destroy"];
+
+            if (Str::contains($route->action['as'], $resourceRouteNames)) {
+                $search = sprintf("%s/{%s}", $pluralParam, $param);
+                if (!$foundResourceParam) {
+                    // Only the first resource param should be {id}
+                    $replace = "$pluralParam/{id}";
+                    $foundResourceParam = true;
+                } else {
+                    // Subsequent ones should be {<param>_id}
+                    $replace = sprintf("%s/{%s}", $pluralParam, $param.'_id');
+                }
+                $uri = str_replace($search, $replace, $uri);
+            }
+        }
+
+        return $uri;
     }
 
     /**

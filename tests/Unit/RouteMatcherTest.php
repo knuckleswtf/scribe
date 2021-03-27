@@ -12,8 +12,8 @@ class RouteMatcherTest extends BaseLaravelTest
     public function testRespectsDomainsRuleForLaravelRouter()
     {
         $this->registerLaravelRoutes();
-        $routeRules[0]['match']['prefixes'] = ['*'];
 
+        $routeRules[0]['match']['prefixes'] = ['*'];
         $routeRules[0]['match']['domains'] = ['*'];
         $matcher = new RouteMatcher();
         $routes = $matcher->getRoutes($routeRules);
