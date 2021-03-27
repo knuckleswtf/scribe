@@ -92,12 +92,12 @@ class OutputEndpointData extends BaseDTO
 
         parent::__construct($parameters);
 
-        $this->boundUri = u::getUrlWithBoundParameters($this->uri, $this->cleanUrlParameters);
         $this->nestedBodyParameters = Extractor::nestArrayAndObjectFields($this->bodyParameters);
 
         $this->cleanBodyParameters = Extractor::cleanParams($this->bodyParameters);
         $this->cleanQueryParameters = Extractor::cleanParams($this->queryParameters);
         $this->cleanUrlParameters = Extractor::cleanParams($this->urlParameters);
+        $this->boundUri = u::getUrlWithBoundParameters($this->uri, $this->cleanUrlParameters);
 
         [$files, $regularParameters] = collect($this->cleanBodyParameters)
             ->partition(

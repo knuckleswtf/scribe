@@ -30,9 +30,9 @@ class Utils
      * @param string $uri
      * @param array $urlParameters Dictionary of url params and example values
      *
-     * @return mixed
+     * @return string
      */
-    public static function replaceUrlParameterPlaceholdersWithValues(string $uri, array $urlParameters)
+    public static function replaceUrlParameterPlaceholdersWithValues(string $uri, array $urlParameters): string
     {
         if (empty($urlParameters)) {
             return $uri;

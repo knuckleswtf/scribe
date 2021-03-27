@@ -926,6 +926,32 @@ html {
     .content ul {
         margin-right: 0
     }
+    .content>aside,
+    .content>details,
+    .content>dl,
+    .content>h1,
+    .content>h2,
+    .content>h3,
+    .content>h4,
+    .content>h5,
+    .content>h6,
+    .content>ol,
+    .content>p,
+    .content>table,
+    .content>ul,
+    .content>form>aside,
+    .content>form>details,
+    .content>form>h1,
+    .content>form>h2,
+    .content>form>h3,
+    .content>form>h4,
+    .content>form>h5,
+    .content>form>h6,
+    .content>form>p,
+    .content>form>table,
+    .content>form>ul {
+        margin-right: 0;
+    }
     .content blockquote,
     .content pre {
         float: none;
