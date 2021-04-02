@@ -22,8 +22,19 @@
         <blockquote>
             <p>Example response ({{$response->description ?: $response->status}}):</p>
         </blockquote>
+        @if(count($response->headers))
+        <details class="annotation">
+            <summary onclick="textContent = parentElement.open ? 'Show headers ▼' : 'Hide headers ▲'">
+                Show headers ▼
+            </summary>
+            <pre>
+            <code class="language-http">@foreach($response->headers as $header => $values)
+{{ $header }}: {{ implode('; ', $values) }}
+@endforeach </code>
+            </pre>
+        </details> @endif
         <pre>
-            <code class="language-json">
+                <code class="language-json">
 @if(is_string($response->content) && Str::startsWith($response->content, "<<binary>>"))
 [Binary data] - {{ htmlentities(str_replace("<<binary>>", "", $response->content)) }}
 @elseif($response->status == 204)
@@ -33,8 +44,7 @@
 {!! htmlentities($response->content) !!}
 @else
 {!! htmlentities(json_encode(json_decode($response->content), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) !!}
-@endif
-            </code>
+@endif </code>
         </pre>
     @endforeach
 @endif

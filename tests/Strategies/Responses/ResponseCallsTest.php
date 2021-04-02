@@ -64,13 +64,13 @@ class ResponseCallsTest extends BaseLaravelTest
         config(['scribe.routes.0.apply.response_calls.methods' => ['POST']]);
         $parsed = (new Extractor())->processRoute($route, config('scribe.routes.0.apply'));
 
-        $this->assertEquals([
-            [
+        $responses = $parsed->responses->toArray();
+        $this->assertCount(1, $responses);
+        $this->assertArraySubset([
                 "status" => 200,
                 "description" => null,
                 "content" => '{"filename":"scribe.php","filepath":"config","name":"cat.jpg"}',
-            ],
-        ], $parsed->responses->toArray());
+            ], $responses[0]);
     }
 
     /** @test */

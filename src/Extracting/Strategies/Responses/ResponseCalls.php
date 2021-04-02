@@ -87,6 +87,7 @@ class ResponseCalls extends Strategy
                 [
                     'status' => $response->getStatusCode(),
                     'content' => $response->getContent(),
+                    'headers' => $response->headers->all(),
                 ],
             ];
         } catch (Exception $e) {

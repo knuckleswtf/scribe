@@ -14,12 +14,25 @@ class Response extends BaseDTO
      * @var string|null
      */
     public $content;
-    public ?string $description;
+
+    /**
+     * @var array
+     */
+    public $headers = [];
+
+    /**
+     * @var string|null
+     */
+    public $description;
 
     public function __construct(array $parameters = [])
     {
         if (is_array($parameters['content'])) {
             $parameters['content'] = json_encode($parameters['content']);
+        }
+        if (!empty($parameters['headers'])) {
+            unset($parameters['headers']['date']);
+            unset($parameters['headers']['Date']);
         }
 
         return parent::__construct($parameters);

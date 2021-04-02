@@ -145,7 +145,7 @@ class ExtractedEndpointData extends BaseDTO
             $pluralParam = Str::plural($param);
             $resourceRouteNames = ["$pluralParam.show", "$pluralParam.update", "$pluralParam.destroy"];
 
-            if (Str::contains($route->action['as'], $resourceRouteNames)) {
+            if (Str::contains($route->action['as'] ?? '', $resourceRouteNames)) {
                 $search = sprintf("%s/{%s}", $pluralParam, $param);
                 if (!$foundResourceParam) {
                     // Only the first resource param should be {id}

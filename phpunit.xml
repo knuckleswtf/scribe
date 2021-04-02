@@ -37,7 +37,6 @@
         </testsuite>
         <testsuite name="Unit Tests 2">
             <file>tests/Unit/AnnotationParserTest.php</file>
-            <file>tests/Unit/CamelTest.php</file>
         </testsuite>
         <testsuite name="Unit Tests 3">
             <file>tests/Unit/OpenAPISpecWriterTest.php</file>
