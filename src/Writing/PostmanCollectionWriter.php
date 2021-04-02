@@ -3,6 +3,7 @@
 namespace Knuckles\Scribe\Writing;
 
 use Illuminate\Support\Str;
+use Knuckles\Camel\Extraction\Response;
 use Knuckles\Camel\Output\OutputEndpointData;
 use Knuckles\Camel\Output\Parameter;
 use Knuckles\Scribe\Tools\DocumentationConfig;
@@ -12,6 +13,7 @@ class PostmanCollectionWriter
 {
     /**
      * Postman collection schema version
+     * https://schema.getpostman.com/json/collection/v2.1.0/collection.json
      */
     const VERSION = '2.1.0';
 
@@ -110,7 +112,7 @@ class PostmanCollectionWriter
                 'body' => empty($endpoint->bodyParameters) ? null : $this->getBodyData($endpoint),
                 'description' => $endpoint->metadata->description,
             ],
-            'response' => [],
+            'response' => $this->getResponses($endpoint),
         ];
 
 
@@ -209,7 +211,8 @@ class PostmanCollectionWriter
         [$where, $authParam] = $this->getAuthParamToExclude();
         /**
          * @var string $name
-         * @var Parameter $parameterData */
+         * @var Parameter $parameterData
+         */
         foreach ($endpointData->queryParameters as $name => $parameterData) {
             if ($where === 'query' && $authParam === $name) {
                 continue;
@@ -278,5 +281,22 @@ class PostmanCollectionWriter
         } else {
             return [$this->config->get('auth.in'), $this->config->get('auth.name')];
         }
+    }
+
+    private function getResponses(OutputEndpointData $endpoint): array
+    {
+        return collect($endpoint->responses)->map(function (Response $response) {
+            $headers = [];
+            foreach ($response->headers as $header => $values) {
+                $headers[] = ['key' => $header, 'value' => implode('; ', $values)];
+            }
+
+            return [
+                'header' => $headers,
+                'code' => $response->status,
+                'body' => $response->content,
+                'name' => $response->description,
+            ];
+        })->toArray();
     }
 }

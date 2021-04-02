@@ -1,266 +1,314 @@
 {
-    "variable": [
+  "variable": [
+    {
+      "id": "baseUrl",
+      "key": "baseUrl",
+      "type": "string",
+      "name": "string",
+      "value": "localhost"
+    }
+  ],
+  "info": {
+    "name": "GREAT API!",
+    "_postman_id": "",
+    "description": "",
+    "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json",
+    "version": "3.9.9"
+  },
+  "item": [
+    {
+      "name": "Group A",
+      "description": "",
+      "item": [
         {
-            "id": "baseUrl",
-            "key": "baseUrl",
-            "type": "string",
-            "name": "string",
-            "value": "localhost"
-        }
-    ],
-    "info": {
-        "name": "GREAT API!",
-        "_postman_id": "",
-        "description": "",
-        "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json",
-        "version": "3.9.9"
-    },
-    "item": [
-        {
-            "name": "Group A",
-            "description": "",
-            "item": [
+          "name": "Endpoint with body form data parameters.",
+          "request": {
+            "url": {
+              "protocol": "http",
+              "host": "{{baseUrl}}",
+              "path": "api\/withFormDataParams",
+              "query": [],
+              "raw": "http:\/\/{{baseUrl}}\/api\/withFormDataParams"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Custom-Header",
+                "value": "NotSoCustom"
+              },
+              {
+                "key": "Content-Type",
+                "value": "multipart\/form-data"
+              },
+              {
+                "key": "Accept",
+                "value": "application\/json"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
                 {
-                    "name": "Endpoint with body form data parameters.",
-                    "request": {
-                        "url": {
-                            "protocol": "http",
-                            "host": "{{baseUrl}}",
-                            "path": "api\/withFormDataParams",
-                            "query": [],
-                            "raw": "http:\/\/{{baseUrl}}\/api\/withFormDataParams"
-                        },
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Custom-Header",
-                                "value": "NotSoCustom"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "multipart\/form-data"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "formdata",
-                            "formdata": [
-                                {
-                                    "key": "name",
-                                    "value": "cat.jpg",
-                                    "type": "text"
-                                },
-                                {
-                                    "key": "image",
-                                    "src": [],
-                                    "type": "file"
-                                }
-                            ]
-                        },
-                        "description": "",
-                        "auth": {
-                            "type": "noauth"
-                        }
-                    },
-                    "response": []
+                  "key": "name",
+                  "value": "cat.jpg",
+                  "type": "text"
                 },
                 {
-                    "name": "Endpoint with body parameters.",
-                    "request": {
-                        "url": {
-                            "protocol": "http",
-                            "host": "{{baseUrl}}",
-                            "path": "api\/withBodyParameters",
-                            "query": [],
-                            "raw": "http:\/\/{{baseUrl}}\/api\/withBodyParameters"
-                        },
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Custom-Header",
-                                "value": "NotSoCustom"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"user_id\": 9,\n    \"room_id\": \"consequatur\",\n    \"forever\": false,\n    \"another_one\": 11613.31890586,\n    \"yet_another_param\": {\n        \"name\": \"consequatur\"\n    },\n    \"even_more_param\": [\n        11613.31890586,\n        11613.31890586\n    ],\n    \"book\": {\n        \"name\": \"consequatur\",\n        \"author_id\": 17,\n        \"pages_count\": 17\n    },\n    \"ids\": [\n        17,\n        17\n    ],\n    \"users\": [\n        {\n            \"first_name\": \"John\",\n            \"last_name\": \"Doe\"\n        },\n        {\n            \"first_name\": \"John\",\n            \"last_name\": \"Doe\"\n        }\n    ]\n}"
-                        },
-                        "description": "",
-                        "auth": {
-                            "type": "noauth"
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "api\/withQueryParameters",
-                    "request": {
-                        "url": {
-                            "protocol": "http",
-                            "host": "{{baseUrl}}",
-                            "path": "api\/withQueryParameters",
-                            "query": [
-                                {
-                                    "key": "location_id",
-                                    "value": "consequatur",
-                                    "description": "The id of the location.",
-                                    "disabled": false
-                                },
-                                {
-                                    "key": "user_id",
-                                    "value": "me",
-                                    "description": "The id of the user.",
-                                    "disabled": false
-                                },
-                                {
-                                    "key": "page",
-                                    "value": "4",
-                                    "description": "The page number.",
-                                    "disabled": false
-                                },
-                                {
-                                    "key": "filters",
-                                    "value": "consequatur",
-                                    "description": "The filters.",
-                                    "disabled": false
-                                },
-                                {
-                                    "key": "url_encoded",
-                                    "value": "%2B+%5B%5D%26%3D",
-                                    "description": "Used for testing that URL parameters will be URL-encoded where needed.",
-                                    "disabled": false
-                                }
-                            ],
-                            "raw": "http:\/\/{{baseUrl}}\/api\/withQueryParameters?location_id=consequatur&user_id=me&page=4&filters=consequatur&url_encoded=%2B+%5B%5D%26%3D"
-                        },
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Custom-Header",
-                                "value": "NotSoCustom"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
-                        "description": "",
-                        "auth": {
-                            "type": "noauth"
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "api\/withAuthTag",
-                    "request": {
-                        "url": {
-                            "protocol": "http",
-                            "host": "{{baseUrl}}",
-                            "path": "api\/withAuthTag",
-                            "query": [],
-                            "raw": "http:\/\/{{baseUrl}}\/api\/withAuthTag"
-                        },
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Custom-Header",
-                                "value": "NotSoCustom"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
-                        "description": ""
-                    },
-                    "response": []
+                  "key": "image",
+                  "src": [],
+                  "type": "file"
                 }
-            ]
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
         },
         {
-            "name": "Other\ud83d\ude0e",
+          "name": "Endpoint with body parameters.",
+          "request": {
+            "url": {
+              "protocol": "http",
+              "host": "{{baseUrl}}",
+              "path": "api\/withBodyParameters",
+              "query": [],
+              "raw": "http:\/\/{{baseUrl}}\/api\/withBodyParameters"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Custom-Header",
+                "value": "NotSoCustom"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application\/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application\/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"user_id\": 9,\n    \"room_id\": \"consequatur\",\n    \"forever\": false,\n    \"another_one\": 11613.31890586,\n    \"yet_another_param\": {\n        \"name\": \"consequatur\"\n    },\n    \"even_more_param\": [\n        11613.31890586,\n        11613.31890586\n    ],\n    \"book\": {\n        \"name\": \"consequatur\",\n        \"author_id\": 17,\n        \"pages_count\": 17\n    },\n    \"ids\": [\n        17,\n        17\n    ],\n    \"users\": [\n        {\n            \"first_name\": \"John\",\n            \"last_name\": \"Doe\"\n        },\n        {\n            \"first_name\": \"John\",\n            \"last_name\": \"Doe\"\n        }\n    ]\n}"
+            },
             "description": "",
-            "item": [
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "api\/withQueryParameters",
+          "request": {
+            "url": {
+              "protocol": "http",
+              "host": "{{baseUrl}}",
+              "path": "api\/withQueryParameters",
+              "query": [
                 {
-                    "name": "api\/echoesUrlParameters\/{param}\/{param2}\/{param3?}\/{param4?}",
-                    "request": {
-                        "url": {
-                            "protocol": "http",
-                            "host": "{{baseUrl}}",
-                            "path": "api\/echoesUrlParameters\/:param\/:param2\/:param3\/:param4",
-                            "query": [
-                                {
-                                    "key": "something",
-                                    "value": "consequatur",
-                                    "description": "",
-                                    "disabled": false
-                                }
-                            ],
-                            "raw": "http:\/\/{{baseUrl}}\/api\/echoesUrlParameters\/:param\/:param2\/:param3\/:param4?something=consequatur",
-                            "variable": [
-                                {
-                                    "id": "param",
-                                    "key": "param",
-                                    "value": "4",
-                                    "description": ""
-                                },
-                                {
-                                    "id": "param2",
-                                    "key": "param2",
-                                    "value": "consequatur",
-                                    "description": ""
-                                },
-                                {
-                                    "id": "param3",
-                                    "key": "param3",
-                                    "value": "consequatur",
-                                    "description": ""
-                                },
-                                {
-                                    "id": "param4",
-                                    "key": "param4",
-                                    "value": null,
-                                    "description": ""
-                                }
-                            ]
-                        },
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Custom-Header",
-                                "value": "NotSoCustom"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
-                        "description": "",
-                        "auth": {
-                            "type": "noauth"
-                        }
-                    },
-                    "response": []
+                  "key": "location_id",
+                  "value": "consequatur",
+                  "description": "The id of the location.",
+                  "disabled": false
+                },
+                {
+                  "key": "user_id",
+                  "value": "me",
+                  "description": "The id of the user.",
+                  "disabled": false
+                },
+                {
+                  "key": "page",
+                  "value": "4",
+                  "description": "The page number.",
+                  "disabled": false
+                },
+                {
+                  "key": "filters",
+                  "value": "consequatur",
+                  "description": "The filters.",
+                  "disabled": false
+                },
+                {
+                  "key": "url_encoded",
+                  "value": "%2B+%5B%5D%26%3D",
+                  "description": "Used for testing that URL parameters will be URL-encoded where needed.",
+                  "disabled": false
                 }
-            ]
+              ],
+              "raw": "http:\/\/{{baseUrl}}\/api\/withQueryParameters?location_id=consequatur&user_id=me&page=4&filters=consequatur&url_encoded=%2B+%5B%5D%26%3D"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Custom-Header",
+                "value": "NotSoCustom"
+              },
+              {
+                "key": "Accept",
+                "value": "application\/json"
+              }
+            ],
+            "body": null,
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": [
+            {
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "text/html; charset=UTF-8"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "no-cache, private"
+                }
+              ],
+              "code": 200,
+              "body": "",
+              "name": null
+            }
+          ]
+        },
+        {
+          "name": "api\/withAuthTag",
+          "request": {
+            "url": {
+              "protocol": "http",
+              "host": "{{baseUrl}}",
+              "path": "api\/withAuthTag",
+              "query": [],
+              "raw": "http:\/\/{{baseUrl}}\/api\/withAuthTag"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Custom-Header",
+                "value": "NotSoCustom"
+              },
+              {
+                "key": "Accept",
+                "value": "application\/json"
+              }
+            ],
+            "body": null,
+            "description": ""
+          },
+          "response": [
+            {
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "text/html; charset=UTF-8"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "no-cache, private"
+                }
+              ],
+              "code": 200,
+              "body": "",
+              "name": null
+            }
+          ]
         }
-    ],
-    "auth": {
-        "type": "bearer"
+      ]
+    },
+    {
+      "name": "Other\ud83d\ude0e",
+      "description": "",
+      "item": [
+        {
+          "name": "api\/echoesUrlParameters\/{param}\/{param2}\/{param3?}\/{param4?}",
+          "request": {
+            "url": {
+              "protocol": "http",
+              "host": "{{baseUrl}}",
+              "path": "api\/echoesUrlParameters\/:param\/:param2\/:param3\/:param4",
+              "query": [
+                {
+                  "key": "something",
+                  "value": "consequatur",
+                  "description": "",
+                  "disabled": false
+                }
+              ],
+              "raw": "http:\/\/{{baseUrl}}\/api\/echoesUrlParameters\/:param\/:param2\/:param3\/:param4?something=consequatur",
+              "variable": [
+                {
+                  "id": "param",
+                  "key": "param",
+                  "value": "4",
+                  "description": ""
+                },
+                {
+                  "id": "param2",
+                  "key": "param2",
+                  "value": "consequatur",
+                  "description": ""
+                },
+                {
+                  "id": "param3",
+                  "key": "param3",
+                  "value": "consequatur",
+                  "description": ""
+                },
+                {
+                  "id": "param4",
+                  "key": "param4",
+                  "value": null,
+                  "description": ""
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Custom-Header",
+                "value": "NotSoCustom"
+              },
+              {
+                "key": "Accept",
+                "value": "application\/json"
+              }
+            ],
+            "body": null,
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": [
+            {
+              "header": [
+                {
+                  "key": "cache-control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "code": 200,
+              "body": "{\"param\":\"4\",\"param2\":\"consequatur\",\"param3\":\"consequatur\",\"param4\":null}",
+              "name": null
+            }
+          ]
+        }
+      ]
     }
+  ],
+  "auth": {
+    "type": "bearer"
+  }
 }
