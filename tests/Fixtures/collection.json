@@ -21,6 +21,42 @@
       "description": "",
       "item": [
         {
+          "name": "Endpoint with body parameters as array.",
+          "request": {
+            "url": {
+              "protocol": "http",
+              "host": "{{baseUrl}}",
+              "path": "api/withBodyParametersAsArray",
+              "query": [],
+              "raw": "http://{{baseUrl}}/api/withBodyParametersAsArray"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Custom-Header",
+                "value": "NotSoCustom"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[{\"first_name\":\"John\",\"last_name\":\"Doe\",\"contacts\":[{\"first_name\":\"Janelle\",\"last_name\":\"Monáe\"},[]],\"roles\":[\"Admin\"]},{\"first_name\":\"John\",\"last_name\":\"Doe\",\"contacts\":[{\"first_name\":\"Janelle\",\"last_name\":\"Monáe\"},[]],\"roles\":[\"Admin\"]}]"
+            },
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Endpoint with body form data parameters.",
           "request": {
             "url": {
@@ -94,7 +130,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"user_id\": 9,\n    \"room_id\": \"consequatur\",\n    \"forever\": false,\n    \"another_one\": 11613.31890586,\n    \"yet_another_param\": {\n        \"name\": \"consequatur\"\n    },\n    \"even_more_param\": [\n        11613.31890586,\n        11613.31890586\n    ],\n    \"book\": {\n        \"name\": \"consequatur\",\n        \"author_id\": 17,\n        \"pages_count\": 17\n    },\n    \"ids\": [\n        17,\n        17\n    ],\n    \"users\": [\n        {\n            \"first_name\": \"John\",\n            \"last_name\": \"Doe\"\n        },\n        {\n            \"first_name\": \"John\",\n            \"last_name\": \"Doe\"\n        }\n    ]\n}"
+              "raw": "{\"user_id\":9,\"room_id\":\"consequatur\",\"forever\":false,\"another_one\":11613.31890586,\"yet_another_param\":{\"name\":\"consequatur\"},\"even_more_param\":[11613.31890586,11613.31890586],\"book\":{\"name\":\"consequatur\",\"author_id\":17,\"pages_count\":17},\"ids\":[17,17],\"users\":[{\"first_name\":\"John\",\"last_name\":\"Doe\"},{\"first_name\":\"John\",\"last_name\":\"Doe\"}]}"
             },
             "description": "",
             "auth": {

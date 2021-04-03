@@ -37,7 +37,7 @@ body.append('{!! $key !!}', document.querySelector('input[name="{!! $key !!}"]')
 @endforeach
 @endforeach
 @elseif(count($endpoint->cleanBodyParameters))
-let body = {!! json_encode($endpoint->cleanBodyParameters, JSON_PRETTY_PRINT) !!}
+let body = {!! json_encode($endpoint->cleanBodyParameters, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}
 @endif
 
 fetch(url, {

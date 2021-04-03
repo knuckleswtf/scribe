@@ -21,3 +21,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - index renamed to intro.blade.php
 - views moved to markdown/
 - Removed continue_without_database_transactions
+- Support headers in response
+- Include responses in Postman collection
+- Body parameters array

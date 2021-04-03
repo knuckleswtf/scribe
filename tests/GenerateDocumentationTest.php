@@ -226,7 +226,7 @@ class GenerateDocumentationTest extends BaseLaravelTest
     /** @test */
     public function generated_postman_collection_file_is_correct()
     {
-        // RouteFacade::get('/api/withBodyParametersAsArray', [TestController::class, 'withBodyParametersAsArray']);
+        RouteFacade::post('/api/withBodyParametersAsArray', [TestController::class, 'withBodyParametersAsArray']);
         RouteFacade::post('/api/withFormDataParams', [TestController::class, 'withFormDataParams']);
         RouteFacade::post('/api/withBodyParameters', [TestController::class, 'withBodyParameters']);
         RouteFacade::get('/api/withQueryParameters', [TestController::class, 'withQueryParameters']);
@@ -261,6 +261,7 @@ class GenerateDocumentationTest extends BaseLaravelTest
     /** @test */
     public function generated_openapi_spec_file_is_correct()
     {
+        RouteFacade::post('/api/withBodyParametersAsArray', [TestController::class, 'withBodyParametersAsArray']);
         RouteFacade::post('/api/withFormDataParams', [TestController::class, 'withFormDataParams']);
         RouteFacade::get('/api/withResponseTag', [TestController::class, 'withResponseTag']);
         RouteFacade::get('/api/withQueryParameters', [TestController::class, 'withQueryParameters']);

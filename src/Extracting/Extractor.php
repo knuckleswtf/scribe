@@ -226,11 +226,11 @@ class Extractor
     /**
      * This method prepares and simplifies request parameters for use in example requests and response calls.
      * It takes in an array with rich details about a parameter eg
-     *   ['age' => [
+     *   ['age' => new Parameter([
      *     'description' => 'The age',
-     *     'value' => 12,
+     *     'example' => 12,
      *     'required' => false,
-     *   ]]
+     *   ])]
      * And transforms them into key-example pairs : ['age' => 12]
      * It also filters out parameters which have null values and have 'required' as false.
      * It converts all file params that have string examples to actual files (instances of UploadedFile).
@@ -261,11 +261,29 @@ class Extractor
                 }
             }
 
+            if (Str::startsWith($paramName, '[].')) { // Entire body is an array
+                if (empty($parameters["[]"])) { // Make sure there's a parent
+                    $cleanParameters["[]"] = [[], []];
+                    $parameters["[]"] = new Parameter([
+                        "name" => "[]",
+                        "type" => "object[]",
+                        "description" => "",
+                        "required" => true,
+                        "example" => [$paramName => $details->example],
+                    ]);
+                }
+            }
+
             if (Str::contains($paramName, '.')) { // Object field (or array of objects)
                 self::setObject($cleanParameters, $paramName, $details->example, $parameters, $details->required);
             } else {
                 $cleanParameters[$paramName] = $details->example;
             }
+        }
+
+        // Finally, if the body is an array, flatten it.
+        if (isset($cleanParameters['[]'])) {
+            $cleanParameters = $cleanParameters['[]'];
         }
 
         return $cleanParameters;
@@ -286,6 +304,10 @@ class Extractor
         while (Str::endsWith($baseNameInOriginalParams, '[]')) {
             $baseNameInOriginalParams = substr($baseNameInOriginalParams, 0, -2);
         }
+        // When the body is an array, param names will be  "[].paramname", so $baseNameInOriginalParams here will be empty
+        if (Str::startsWith($path, '[].')) {
+            $baseNameInOriginalParams = '[]';
+        }
 
         if (Arr::has($source, $baseNameInOriginalParams)) {
             /** @var Parameter $parentData */
@@ -297,14 +319,29 @@ class Extractor
                     Arr::set($results, $dotPath, $value);
                 }
             } else if ($parentData->type === 'object[]') {
-                if (!Arr::has($results, $dotPath)) {
-                    Arr::set($results, $dotPath, $value);
-                }
-                // If there's a second item in the array, set for that too.
-                if ($value !== null && Arr::has($results, Str::replaceLast('[]', '.1', $baseName))) {
-                    // If value is optional, flip a coin on whether to set or not
-                    if ($isRequired || array_rand([true, false], 1)) {
-                        Arr::set($results, Str::replaceLast('.0', '.1', $dotPath), $value);
+                // When the body is an array, param names will be  "[].paramname", so dot paths won't work correctly with "[]"
+                if (Str::startsWith($path, '[].')) {
+                    $valueDotPath = substr($dotPath, 3); // Remove initial '.0.'
+                    if (isset($results['[]'][0]) && !Arr::has($results['[]'][0], $valueDotPath)) {
+                        Arr::set($results['[]'][0], $valueDotPath, $value);
+                    }
+                    // If there's a second item in the array, set for that too.
+                    if ($value !== null && isset($results['[]'][1])) {
+                        // If value is optional, flip a coin on whether to set or not
+                        if ($isRequired || array_rand([true, false], 1)) {
+                            Arr::set($results['[]'][1], $valueDotPath, $value);
+                        }
+                    }
+                } else {
+                    if (!Arr::has($results, $dotPath)) {
+                        Arr::set($results, $dotPath, $value);
+                    }
+                    // If there's a second item in the array, set for that too.
+                    if ($value !== null && Arr::has($results, Str::replaceLast('[]', '.1', $baseName))) {
+                        // If value is optional, flip a coin on whether to set or not
+                        if ($isRequired || array_rand([true, false], 1)) {
+                            Arr::set($results, Str::replaceLast('.0', '.1', $dotPath), $value);
+                        }
                     }
                 }
             }
@@ -392,15 +429,19 @@ class Extractor
                 $parts = explode('.', $name);
                 $fieldName = array_pop($parts);
 
-                // If the user didn't add a parent field, we'll conveniently add it for them
+                // If the user didn't add a parent field, we'll helpfully add it for them
                 $parentName = rtrim(join('.', $parts), '[]');
+                // When the body is an array, param names will be  "[].paramname", so $parentName is empty
+                if (empty($parentName)) {
+                    $parentName = '[]';
+                }
                 if (empty($parameters[$parentName])) {
                     $normalisedParameters[$parentName] = new Parameter([
                         "name" => $parentName,
-                        "type" => "object",
+                        "type" => $parentName === '[]' ? "object[]" : "object",
                         "description" => "",
-                        "required" => false,
-                        "value" => [$fieldName => $parameter->value],
+                        "required" => $parentName === '[]' ? true : false,
+                        "example" => [$fieldName => $parameter->example],
                     ]);
                 }
             }
@@ -421,6 +462,10 @@ class Extractor
                 // The difference would be in the parent field's `type` property (object[] vs object)
                 // So we can get rid of all [] to get the parent name
                 $dotPathToParent = str_replace('[]', '', $baseName);
+                // When the body is an array, param names will be  "[].paramname", so $parts is ['[]']
+                if ($parts[0] == '[]') {
+                    $dotPathToParent = '[]'.$dotPathToParent;
+                }
 
                 $dotPath = $dotPathToParent . '.__fields.' . $fieldName;
                 Arr::set($finalParameters, $dotPath, $parameter);
@@ -432,6 +477,11 @@ class Extractor
                 $finalParameters[$name] = $parameter;
             }
 
+        }
+
+        // Finally, if the body is an array, remove any other items.
+        if (isset($finalParameters['[]'])) {
+            $finalParameters = ["[]" => $finalParameters['[]']];
         }
 
         return $finalParameters;

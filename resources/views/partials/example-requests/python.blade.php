@@ -19,7 +19,7 @@ files = {
 }
 @endif
 @if(count($endpoint->cleanBodyParameters))
-payload = {!! json_encode($endpoint->cleanBodyParameters, JSON_PRETTY_PRINT) !!}
+payload = {!! json_encode($endpoint->cleanBodyParameters, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}
 @endif
 @if(count($endpoint->cleanQueryParameters))
 params = {!! u::printQueryParamsAsKeyValue($endpoint->cleanQueryParameters, "'", ":", 2, "{}") !!}

@@ -208,10 +208,16 @@ class OpenAPISpecWriter
             $hasFileParameter = false;
 
             foreach ($endpoint->nestedBodyParameters as $name => $details) {
+                if ($name === "[]") { // Request body is an array
+                    $hasRequiredParameter = true;
+                    $schema = $this->generateFieldData($details);
+                    break;
+                }
+
                 if ($details['required']) {
                     $hasRequiredParameter = true;
                     // Don't declare this earlier.
-                    // Can't have an empty `required` array. Must have something there.
+                    // The spec doesn't allow for an empty `required` array. Must have something there.
                     $schema['required'][] = $name;
                 }
 

@@ -111,13 +111,13 @@ class TestController extends Controller
     /**
      * Endpoint with body parameters as array.
      *
-     * @bodyParam _ object[] Details.
-     * @bodyParam _[].first_name string The first name of the user. Example: John
-     * @bodyParam _[].last_name string The last name of the user. Example: Doe
-     * @bodyParam _[].contacts object[] Contact info
-     * @bodyParam _[].contacts[].first_name string The first name of the contact. Example: John
-     * @bodyParam _[].contacts[].last_name string The last name of the contact. Example: Doe
-     * @bodyParam _[].roles string[] The name of the role. Example: Admin
+     * @bodyParam [] object[] Details.
+     * @bodyParam [].first_name string required The first name of the user. Example: John
+     * @bodyParam [].last_name string required The last name of the user. Example: Doe
+     * @bodyParam [].contacts object[] required Contact info
+     * @bodyParam [].contacts[].first_name string required The first name of the contact. Example: Janelle
+     * @bodyParam [].contacts[].last_name string required The last name of the contact. Example: Monáe
+     * @bodyParam [].roles string[] required The name of the role. Example: ["Admin"]
      */
     public function withBodyParametersAsArray()
     {
