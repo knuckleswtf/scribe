@@ -28,13 +28,12 @@ class DocumentationConfig
             return $router;
         }
 
-        try {
-            $dingoVersion = \PackageVersions\Versions::getVersion('dingo/api');
-        } catch (\OutOfBoundsException $e) {
-            return 'laravel';
+        if (class_exists(\Dingo\Api\Routing\Router::class)) {
+            c::info('Detected Dingo API router');
+            return 'dingo';
         }
 
-        c::info('Detected Dingo API router');
-        return 'dingo';
+        return 'laravel';
+
     }
 }

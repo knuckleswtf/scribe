@@ -10,14 +10,14 @@ env:
 matrix:
   fast_finish: true
   include:
-    - php: 7.4.7
+    - php: 7.4
       env: COMPOSER=composer.dingo.json
       name: "With Dingo router"
-    - php: 7.4.7
+    - php: 7.4
       env: SETUP=lint
       name: "Lint code"
     - php: 7.4.7
-    - php: 7.4.7
+    - php: 7.4
       env: SETUP=lowest
     - php: 8.0
 
