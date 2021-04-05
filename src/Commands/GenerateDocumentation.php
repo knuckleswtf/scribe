@@ -64,7 +64,7 @@ class GenerateDocumentation extends Command
             $this->extractAndWriteApiDetailsToDisk();
         } else {
             if (!is_dir(static::$camelDir)) {
-                throw new \InvalidArgumentException("Can't use --no-extraction because there are no endpoints in the ".static::$camelDir." directory.");
+                throw new \InvalidArgumentException("Can't use --no-extraction because there are no endpoints in the " . static::$camelDir . " directory.");
             }
             $groupedEndpoints = Camel::loadEndpointsIntoGroups(static::$camelDir);
         }
@@ -293,7 +293,7 @@ class GenerateDocumentation extends Command
             $cachedEndpoints = Camel::loadEndpointsToFlatPrimitivesArray(static::$cacheDir);
         }
 
-        $routes = $routeMatcher->getRoutes($this->docConfig->get('routes'), $this->docConfig->get('router'));
+        $routes = $routeMatcher->getRoutes($this->docConfig->get('routes'), $this->getRouter());
         $endpoints = $this->extractEndpointsInfoFromLaravelApp($routes, $cachedEndpoints, $latestEndpointsData);
         $groupedEndpoints = Camel::groupEndpoints($endpoints);
         $this->writeEndpointsToDisk($groupedEndpoints);
@@ -305,7 +305,7 @@ class GenerateDocumentation extends Command
     protected function writeExampleCustomEndpoint(): void
     {
         // We add an example to guide users in case they need to add a custom endpoint.
-        if (!file_exists(static::$camelDir.'/custom.0.yaml')) {
+        if (!file_exists(static::$camelDir . '/custom.0.yaml')) {
             copy(__DIR__ . '/../../resources/example_custom_endpoint.yaml', static::$camelDir . '/custom.0.yaml');
         }
     }
@@ -314,5 +314,24 @@ class GenerateDocumentation extends Command
     {
         $apiDetails = new ApiDetails($this->docConfig, !$this->option('force'));
         $apiDetails->writeMarkdownFiles();
+    }
+
+    protected function getRouter(): string
+    {
+        if ($router = $this->docConfig->get('router', null)) {
+            if (!in_array($router, ['dingo', 'laravel'])) {
+                throw new \InvalidArgumentException("Unknown `router` value: $router");
+            }
+            return $router;
+        }
+
+        try {
+            $dingoVersion = \PackageVersions\Versions::getVersion('dingo/api');
+        } catch (\OutOfBoundsException $e) {
+            return 'laravel';
+        }
+
+        c::info('Detected Dingo API router');
+        return 'dingo';
     }
 }

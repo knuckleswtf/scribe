@@ -108,7 +108,6 @@ class GenerateDocumentationTest extends BaseLaravelTest
             $api->get('/test', [TestController::class, 'withEndpointDescription']);
         });
 
-        config(['scribe.router' => 'dingo']);
         config(['scribe.routes.0.match.prefixes' => ['*']]);
         config(['scribe.routes.0.match.versions' => ['v1']]);
         $output = $this->artisan('scribe:generate');

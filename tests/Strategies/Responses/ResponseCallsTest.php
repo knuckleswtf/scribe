@@ -164,7 +164,7 @@ class ResponseCallsTest extends BaseLaravelTest
             ],
         ];
 
-        $strategy = new ResponseCalls(new DocumentationConfig(['router' => 'dingo']));
+        $strategy = new ResponseCalls(new DocumentationConfig());
         $results = $strategy->makeResponseCallIfConditionsPass(
             ExtractedEndpointData::fromRoute($route), $rules
         );
@@ -206,7 +206,7 @@ class ResponseCallsTest extends BaseLaravelTest
                 'header' => 'value',
             ],
         ]);
-        $strategy = new ResponseCalls(new DocumentationConfig(['router' => 'dingo']));
+        $strategy = new ResponseCalls(new DocumentationConfig());
         $results = $strategy->makeResponseCallIfConditionsPass($endpointData, $rules);
 
         $this->assertEquals(200, $results[0]['status']);
@@ -231,7 +231,7 @@ class ResponseCallsTest extends BaseLaravelTest
             ],
         ];
 
-        $strategy = new ResponseCalls(new DocumentationConfig(['router' => 'dingo']));
+        $strategy = new ResponseCalls(new DocumentationConfig());
         $results = $strategy->makeResponseCallIfConditionsPass(
             ExtractedEndpointData::fromRoute($route), $rules
         );

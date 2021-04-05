@@ -298,11 +298,6 @@ INTRO
     'logo' => false,
 
     /*
-     * The router your API is using (Laravel or Dingo).
-     */
-    'router' => 'laravel',
-
-    /*
      * If you would like the package to generate the same example values for parameters on each run,
      * set this to any number (eg. 1234)
      */
