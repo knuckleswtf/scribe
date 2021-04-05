@@ -111,17 +111,13 @@ class Camel
             ->groupBy('metadata.groupName')
             ->sortKeys(SORT_NATURAL);
 
-        return $groupedEndpoints->map(function (Collection $group) {
-            return [
-                'name' => $group[0]->metadata->groupName,
-                'description' => Arr::first($group, function (ExtractedEndpointData $endpointData) {
-                        return $endpointData->metadata->groupDescription !== '';
-                    })->metadata->groupDescription ?? '',
-                'endpoints' => $group->map(function (ExtractedEndpointData $endpointData) {
-                    return $endpointData->forSerialisation()->toArray();
-                })->all(),
-            ];
-        })->values()->all();
+        return $groupedEndpoints->map(fn(Collection $group) => [
+            'name' => $group[0]->metadata->groupName,
+            'description' => Arr::first($group, function (ExtractedEndpointData $endpointData) {
+                    return $endpointData->metadata->groupDescription !== '';
+                })->metadata->groupDescription ?? '',
+            'endpoints' => $group->map(fn(ExtractedEndpointData $endpointData) => $endpointData->forSerialisation()->toArray())->all(),
+        ])->values()->all();
     }
 
     public static function prepareGroupedEndpointsForOutput(array $groupedEndpoints): array

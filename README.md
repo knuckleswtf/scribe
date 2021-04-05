@@ -30,7 +30,7 @@ Generate API documentation for humans from your Laravel codebase. [Here's what t
 Check out the documentation at [ReadTheDocs](http://scribe.rtfd.io/).
 
 ## Installation
-PHP 7.3 and Laravel/Lumen 6.0 or higher are required.
+PHP 7.4 and Laravel/Lumen 6.0 or higher are required.
 
 ```sh
 composer require --dev knuckleswtf/scribe
