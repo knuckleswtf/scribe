@@ -9,7 +9,6 @@ use Knuckles\Camel\Extraction\ResponseCollection;
 use Knuckles\Camel\Extraction\ResponseField;
 use Knuckles\Scribe\Extracting\Extractor;
 use Knuckles\Scribe\Tools\Utils as u;
-use Knuckles\Camel\Extraction\Metadata;
 
 
 class OutputEndpointData extends BaseDTO
@@ -17,52 +16,54 @@ class OutputEndpointData extends BaseDTO
     /**
      * @var array<string>
      */
-    public array $methods;
+    public $methods;
 
-    public string $uri;
+    /** @var string */
+    public $uri;
 
-    public Metadata $metadata;
+    /** @var \Knuckles\Camel\Extraction\Metadata */
+    public $metadata;
 
     /**
      * @var array<string,string>
      */
-    public array $headers = [];
+    public $headers = [];
 
     /**
      * @var array<string,\Knuckles\Camel\Output\Parameter>
      */
-    public array $urlParameters = [];
+    public $urlParameters = [];
 
     /**
      * @var array<string,mixed>
      */
-    public array $cleanUrlParameters = [];
+    public $cleanUrlParameters = [];
 
     /**
      * @var array<string,\Knuckles\Camel\Output\Parameter>
      */
-    public array $queryParameters = [];
+    public $queryParameters = [];
 
     /**
      * @var array<string,mixed>
      */
-    public array $cleanQueryParameters = [];
+    public $cleanQueryParameters = [];
 
     /**
      * @var array<string, \Knuckles\Camel\Output\Parameter>
      */
-    public array $bodyParameters = [];
+    public $bodyParameters = [];
 
     /**
      * @var array<string,mixed>
      */
-    public array $cleanBodyParameters = [];
+    public $cleanBodyParameters = [];
 
     /**
      * @var array
      * @var array<string,\Illuminate\Http\UploadedFile>
      */
-    public array $fileParameters = [];
+    public $fileParameters = [];
 
     /**
      * @var \Knuckles\Camel\Extraction\ResponseCollection
@@ -72,23 +73,32 @@ class OutputEndpointData extends BaseDTO
     /**
      * @var array<string,\Knuckles\Camel\Extraction\ResponseField>
      */
-    public array $responseFields = [];
+    public $responseFields = [];
 
     /**
      * @var array<string, array>
      */
-    public array $nestedBodyParameters = [];
+    public $nestedBodyParameters = [];
 
-    public ?string $boundUri;
+    /** @var string|null */
+    public $boundUri;
 
     public function __construct(array $parameters = [])
     {
         // spatie/dto currently doesn't auto-cast nested DTOs like that
         $parameters['responses'] = new ResponseCollection($parameters['responses']);
-        $parameters['bodyParameters'] = array_map(fn($param) => new Parameter($param), $parameters['bodyParameters']);
-        $parameters['queryParameters'] = array_map(fn($param) => new Parameter($param), $parameters['queryParameters']);
-        $parameters['urlParameters'] = array_map(fn($param) => new Parameter($param), $parameters['urlParameters']);
-        $parameters['responseFields'] = array_map(fn($param) => new ResponseField($param), $parameters['responseFields']);
+        $parameters['bodyParameters'] = array_map(function ($param) {
+            return new Parameter($param);
+        }, $parameters['bodyParameters']);
+        $parameters['queryParameters'] = array_map(function ($param) {
+            return new Parameter($param);
+        }, $parameters['queryParameters']);
+        $parameters['urlParameters'] = array_map(function ($param) {
+            return new Parameter($param);
+        }, $parameters['urlParameters']);
+        $parameters['responseFields'] = array_map(function ($param) {
+            return new ResponseField($param);
+        }, $parameters['responseFields']);
 
         parent::__construct($parameters);
 
@@ -101,8 +111,10 @@ class OutputEndpointData extends BaseDTO
 
         [$files, $regularParameters] = collect($this->cleanBodyParameters)
             ->partition(
-                fn($example) => $example instanceof UploadedFile
-                    || (is_array($example) && ($example[0] ?? null) instanceof UploadedFile)
+                function ($example) {
+                    return $example instanceof UploadedFile
+                        || (is_array($example) && ($example[0] ?? null) instanceof UploadedFile);
+                }
             );
         if (count($files)) {
             $this->headers['Content-Type'] = 'multipart/form-data';
@@ -134,12 +146,7 @@ class OutputEndpointData extends BaseDTO
         return new self($endpoint);
     }
 
-    public function name()
-    {
-        return sprintf("[%s] {$this->route->uri}.", implode(',', $this->route->methods));
-    }
-
-    public function endpointId()
+    public function endpointId(): string
     {
         return $this->methods[0].str_replace(['/', '?', '{', '}', ':'], '-', $this->uri);
     }

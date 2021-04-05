@@ -9,13 +9,15 @@ abstract class Strategy
 {
     /**
      * The Scribe config
+     * @var \Knuckles\Scribe\Tools\DocumentationConfig
      */
-    protected DocumentationConfig $config;
+    protected $config;
 
     /**
      * The current stage of route processing
      */
-    public string $stage;
+    /** @var string */
+    public $stage ;
 
     public function __construct(DocumentationConfig $config)
     {

@@ -83,7 +83,9 @@ class OpenAPISpecWriter
                     'description' => $endpoint->metadata->description,
                     'parameters' => $this->generateEndpointParametersSpec($endpoint),
                     'responses' => $this->generateEndpointResponsesSpec($endpoint),
-                    'tags' => [Arr::first($groupedEndpoints, fn($group) => Camel::doesGroupContainEndpoint($group, $endpoint))['name']],
+                    'tags' => [Arr::first($groupedEndpoints, function ($group) use ($endpoint) {
+                        return Camel::doesGroupContainEndpoint($group, $endpoint);
+                    })['name']],
                 ];
 
                 if (count($endpoint->bodyParameters)) {

@@ -7,7 +7,6 @@ use Illuminate\Support\Str;
 use Knuckles\Camel\BaseDTO;
 use Knuckles\Scribe\Tools\Utils as u;
 use ReflectionClass;
-use ReflectionFunctionAbstract;
 
 
 class ExtractedEndpointData extends BaseDTO
@@ -15,50 +14,56 @@ class ExtractedEndpointData extends BaseDTO
     /**
      * @var array<string>
      */
-    public array $methods;
+    public $methods;
 
-    public string $uri;
+    /** @var string */
+    public $uri;
 
-    public Metadata $metadata;
+    /** @var \Knuckles\Camel\Extraction\Metadata */
+    public $metadata;
 
     /**
      * @var array<string,string>
      */
-    public array $headers = [];
+    public $headers = [];
 
     /**
      * @var array
      * @var array<string,\Knuckles\Camel\Extraction\Parameter>
      */
-    public array $urlParameters = [];
+    public $urlParameters = [];
 
     /**
      * @var array<string,mixed>
      */
-    public array $cleanUrlParameters = [];
+    public $cleanUrlParameters = [];
 
     /**
      * @var array
      * @var array<string,\Knuckles\Camel\Extraction\Parameter>
      */
-    public array $queryParameters = [];
+    public $queryParameters = [];
 
     /**
      * @var array<string,mixed>
      */
-    public array $cleanQueryParameters = [];
+    public $cleanQueryParameters = [];
 
-    public array $bodyParameters = [];
+    /**
+     * @var array
+     * @var array<string,\Knuckles\Camel\Extraction\Parameter>
+     */
+    public $bodyParameters = [];
 
     /**
      * @var array<string,mixed>
      */
-    public array $cleanBodyParameters = [];
+    public $cleanBodyParameters = [];
 
     /**
      * @var array<string,\Illuminate\Http\UploadedFile|array>
      */
-    public array $fileParameters = [];
+    public $fileParameters = [];
 
     /**
      * @var ResponseCollection|array
@@ -69,19 +74,23 @@ class ExtractedEndpointData extends BaseDTO
      * @var array
      * @var array<string,\Knuckles\Camel\Extraction\ResponseField>
      */
-    public array $responseFields = [];
+    public $responseFields = [];
 
     /**
      * Authentication info for this endpoint. In the form [{where}, {name}, {sample}]
      * Example: ["queryParameters", "api_key", "njiuyiw97865rfyvgfvb1"]
+     * @var array
      */
-    public array $auth = [];
+    public $auth = [];
 
-    public ?ReflectionClass $controller;
+    /** @var \ReflectionClass|null */
+    public $controller;
 
-    public ?ReflectionFunctionAbstract $method;
+    /** @var \ReflectionFunctionAbstract|null */
+    public $method;
 
-    public ?Route $route;
+    /** @var \Illuminate\Routing\Route|null */
+    public $route;
 
     public function __construct(array $parameters = [])
     {

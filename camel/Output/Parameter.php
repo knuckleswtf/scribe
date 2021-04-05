@@ -5,12 +5,22 @@ namespace Knuckles\Camel\Output;
 
 class Parameter extends \Knuckles\Camel\Extraction\Parameter
 {
-    public string $name;
-    public ?string $description = null;
-    public bool $required = false;
+    /** @var string */
+    public $name;
+
+    /** @var string|null */
+    public $description = null;
+
+    /** @var bool */
+    public $required = false;
+
     public $example = null;
-    public string $type = 'string';
-    public array $__fields = [];
+
+    /** @var string */
+    public $type = 'string';
+
+    /** @var array */
+    public $__fields = [];
 
     public function toArray(): array
     {

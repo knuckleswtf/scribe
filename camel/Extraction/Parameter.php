@@ -7,9 +7,13 @@ use Knuckles\Camel\BaseDTO;
 
 class Parameter extends BaseDTO
 {
-    public string $name;
-    public ?string $description = null;
-    public bool $required = false;
+    /** @var string */
+    public $name;
+    /** @var string|null */
+    public $description = null;
+    /** @var bool */
+    public $required = false;
     public $example = null;
-    public string $type = 'string';
+    /** @var string */
+    public $type = 'string';
 }

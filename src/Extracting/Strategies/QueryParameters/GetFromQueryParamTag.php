@@ -18,7 +18,8 @@ use ReflectionUnionType;
 
 class GetFromQueryParamTag extends Strategy
 {
-    public string $stage = 'queryParameters';
+    /** @var string */
+    public $stage = 'queryParameters';
 
     use ParamHelpers;
 

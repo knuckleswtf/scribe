@@ -9,7 +9,8 @@ use Mpociot\Reflection\DocBlock;
 
 class GetFromDocBlocks extends Strategy
 {
-    public string $stage = 'metadata';
+    /** @var string */
+    public $stage = 'metadata';
 
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)
     {

@@ -42,7 +42,7 @@ class ResponseCallsTest extends BaseLaravelTest
         ];
 
         $strategy = new ResponseCalls(new DocumentationConfig([]));
-        $results = $strategy->makeResponseCallIfEnabledAndNoSuccessResponses(
+        $results = $strategy->makeResponseCallIfConditionsPass(
             ExtractedEndpointData::fromRoute($route), $rules
         );
 
@@ -100,7 +100,7 @@ class ResponseCallsTest extends BaseLaravelTest
         ]);
 
         $strategy = new ResponseCalls(new DocumentationConfig([]));
-        $results = $strategy->makeResponseCallIfEnabledAndNoSuccessResponses($endpointData, $rules);
+        $results = $strategy->makeResponseCallIfConditionsPass($endpointData, $rules);
 
         $this->assertEquals(200, $results[0]['status']);
 
@@ -123,7 +123,7 @@ class ResponseCallsTest extends BaseLaravelTest
         ];
 
         $strategy = new ResponseCalls(new DocumentationConfig([]));
-        $results = $strategy->makeResponseCallIfEnabledAndNoSuccessResponses(
+        $results = $strategy->makeResponseCallIfConditionsPass(
             ExtractedEndpointData::fromRoute($route), $rules
         );
         $originalValue = json_decode($results[0]['content'], true)['app.env'];
@@ -138,7 +138,7 @@ class ResponseCallsTest extends BaseLaravelTest
             ],
         ];
 
-        $results = $strategy->makeResponseCallIfEnabledAndNoSuccessResponses(
+        $results = $strategy->makeResponseCallIfConditionsPass(
             ExtractedEndpointData::fromRoute($route), $rules
         );
         $newValue = json_decode($results[0]['content'], true)['app.env'];
@@ -165,7 +165,7 @@ class ResponseCallsTest extends BaseLaravelTest
         ];
 
         $strategy = new ResponseCalls(new DocumentationConfig(['router' => 'dingo']));
-        $results = $strategy->makeResponseCallIfEnabledAndNoSuccessResponses(
+        $results = $strategy->makeResponseCallIfConditionsPass(
             ExtractedEndpointData::fromRoute($route), $rules
         );
 
@@ -207,7 +207,7 @@ class ResponseCallsTest extends BaseLaravelTest
             ],
         ]);
         $strategy = new ResponseCalls(new DocumentationConfig(['router' => 'dingo']));
-        $results = $strategy->makeResponseCallIfEnabledAndNoSuccessResponses($endpointData, $rules);
+        $results = $strategy->makeResponseCallIfConditionsPass($endpointData, $rules);
 
         $this->assertEquals(200, $results[0]['status']);
 
@@ -232,7 +232,7 @@ class ResponseCallsTest extends BaseLaravelTest
         ];
 
         $strategy = new ResponseCalls(new DocumentationConfig(['router' => 'dingo']));
-        $results = $strategy->makeResponseCallIfEnabledAndNoSuccessResponses(
+        $results = $strategy->makeResponseCallIfConditionsPass(
             ExtractedEndpointData::fromRoute($route), $rules
         );
         $originalValue = json_decode($results[0]['content'], true)['app.env'];
@@ -247,7 +247,7 @@ class ResponseCallsTest extends BaseLaravelTest
             ],
         ];
 
-        $results = $strategy->makeResponseCallIfEnabledAndNoSuccessResponses(
+        $results = $strategy->makeResponseCallIfConditionsPass(
             ExtractedEndpointData::fromRoute($route), $rules
         );
         $newValue = json_decode($results[0]['content'], true)['app.env'];
@@ -279,7 +279,7 @@ class ResponseCallsTest extends BaseLaravelTest
             ]),
         ]);
         $strategy = new ResponseCalls(new DocumentationConfig([]));
-        $results = $strategy->makeResponseCallIfEnabledAndNoSuccessResponses($endpointData, $rules);
+        $results = $strategy->makeResponseCallIfConditionsPass($endpointData, $rules);
 
         $this->assertNull($results);
     }
@@ -295,7 +295,7 @@ class ResponseCallsTest extends BaseLaravelTest
             ],
         ];
         $strategy = new ResponseCalls(new DocumentationConfig([]));
-        $results = $strategy->makeResponseCallIfEnabledAndNoSuccessResponses(
+        $results = $strategy->makeResponseCallIfConditionsPass(
             ExtractedEndpointData::fromRoute($route), $rules
         );
 

@@ -12,7 +12,8 @@ class GetFromLaravelAPI extends Strategy
 {
     use ParamHelpers;
 
-    public string $stage = 'urlParameters';
+    /** @var string */
+    public $stage = 'urlParameters';
 
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)
     {

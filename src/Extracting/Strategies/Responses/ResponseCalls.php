@@ -30,10 +30,10 @@ class ResponseCalls extends Strategy
 
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)
     {
-        return $this->makeResponseCallIfEnabledAndNoSuccessResponses($endpointData, $routeRules);
+        return $this->makeResponseCallIfConditionsPass($endpointData, $routeRules);
     }
 
-    public function makeResponseCallIfEnabledAndNoSuccessResponses(ExtractedEndpointData $endpointData, array $routeRules)
+    public function makeResponseCallIfConditionsPass(ExtractedEndpointData $endpointData, array $routeRules): ?array
     {
         $rulesToApply = $routeRules['response_calls'] ?? [];
         if (!$this->shouldMakeApiCall($endpointData, $rulesToApply)) {

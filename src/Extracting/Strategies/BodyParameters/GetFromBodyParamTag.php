@@ -17,7 +17,8 @@ use ReflectionUnionType;
 
 class GetFromBodyParamTag extends Strategy
 {
-    public string $stage = 'bodyParameters';
+    /** @var string */
+    public $stage = 'bodyParameters';
 
     use ParamHelpers;
 

@@ -8,7 +8,8 @@ use Knuckles\Camel\BaseDTO;
 
 class Response extends BaseDTO
 {
-    public int $status;
+    /** @var int */
+    public $status;
 
     /**
      * @var string|null

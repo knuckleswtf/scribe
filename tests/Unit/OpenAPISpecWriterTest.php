@@ -66,7 +66,9 @@ class OpenAPISpecWriterTest extends TestCase
             $endpointSpec = $results['paths']['/' . $endpoint->uri][strtolower($endpoint->methods[0])];
 
             $tags = $endpointSpec['tags'];
-            $containingGroup = Arr::first($groups, fn($group) => Camel::doesGroupContainEndpoint($group, $endpoint));
+            $containingGroup = Arr::first($groups, function ($group) use ($endpoint) {
+                return Camel::doesGroupContainEndpoint($group, $endpoint);
+            });
             $this->assertEquals([$containingGroup['name']], $tags);
 
             $this->assertEquals($endpoint->metadata->title, $endpointSpec['summary']);

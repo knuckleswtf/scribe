@@ -111,8 +111,10 @@ class Extractor
         // We need to do all this so response calls can work correctly
         [$files, $regularParameters] = collect($endpointData->cleanBodyParameters)
             ->partition(
-                fn($example) => $example instanceof UploadedFile
-                    || (is_array($example) && ($example[0] ?? null) instanceof UploadedFile)
+                function ($example) {
+                    return $example instanceof UploadedFile
+                        || (is_array($example) && ($example[0] ?? null) instanceof UploadedFile);
+                }
             );
         if (count($files)) {
             $endpointData->headers['Content-Type'] = 'multipart/form-data';

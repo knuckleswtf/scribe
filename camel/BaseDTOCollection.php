@@ -11,15 +11,17 @@ use Spatie\DataTransferObject\DataTransferObjectCollection;
 class BaseDTOCollection extends DataTransferObjectCollection
 {
     /**
-     * @var class-string<T> The name of the base DTO class.
+     * @var string The name of the base DTO class.
      */
-    public static string $base = '';
+    public static $base = '';
 
     public function __construct(array $collection = [])
     {
         // Manually cast nested arrays
         $collection = array_map(
-            fn($item) => is_array($item) ? new static::$base($item) : $item,
+            function ($item) {
+                return is_array($item) ? new static::$base($item) : $item;
+            },
             $collection
         );
 

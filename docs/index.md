@@ -45,7 +45,7 @@ Generate API documentation for humans from your Laravel/Lumen/[Dingo](https://gi
 ```
 
 ## Installation
-PHP 7.2.5 and Laravel/Lumen 6 or higher are required.
+PHP 7.3 and Laravel/Lumen 6 or higher are required.
 
 ```sh
 composer require --dev knuckleswtf/scribe

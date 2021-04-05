@@ -16,7 +16,8 @@ class ExtractorPluginSystemTest extends TestCase
 {
     use ArraySubsetAsserts;
 
-    protected ?Extractor $generator;
+    /** @var \Knuckles\Scribe\Extracting\Extractor|null */
+    protected $generator;
 
     protected function getPackageProviders($app)
     {

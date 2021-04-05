@@ -9,7 +9,8 @@ use Knuckles\Camel\BaseDTOCollection;
  */
 class ResponseCollection extends BaseDTOCollection
 {
-    public static string $base = Response::class;
+    /** @var string */
+    public static $base = Response::class;
 
     public function current(): Response
     {
@@ -19,6 +20,8 @@ class ResponseCollection extends BaseDTOCollection
     public function hasSuccessResponse()
     {
         return collect($this->toArray())
-                ->first(fn($response) => ((string)$response['status'])[0] == '2') !== null;
+                ->first(function ($response) {
+                    return ((string)$response['status'])[0] == '2';
+                }) !== null;
     }
 }

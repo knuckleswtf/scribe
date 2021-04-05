@@ -7,7 +7,12 @@ use Knuckles\Camel\BaseDTO;
 
 class ResponseField extends BaseDTO
 {
-    public string $name;
-    public string $description;
-    public string $type;
+    /** @var string */
+    public $name;
+
+    /** @var string */
+    public $description;
+
+    /** @var string */
+    public $type;
 }

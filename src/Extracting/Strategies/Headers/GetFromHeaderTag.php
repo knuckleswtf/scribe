@@ -18,7 +18,8 @@ class GetFromHeaderTag extends Strategy
 {
     use ParamHelpers;
 
-    public string $stage = 'headers';
+    /** @var string */
+    public $stage = 'headers';
 
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)
     {

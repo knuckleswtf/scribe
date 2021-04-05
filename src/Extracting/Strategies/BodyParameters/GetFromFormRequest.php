@@ -22,7 +22,8 @@ use ReflectionUnionType;
 
 class GetFromFormRequest extends Strategy
 {
-    public string $stage = 'bodyParameters';
+    /** @var string */
+    public $stage = 'bodyParameters';
 
     public static $MISSING_VALUE;
 

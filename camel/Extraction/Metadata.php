@@ -7,13 +7,18 @@ use Knuckles\Camel\BaseDTO;
 
 class Metadata extends BaseDTO
 {
-    public ?string $groupName;
+    /** @var string|null */
+    public $groupName;
 
-    public ?string $groupDescription;
+    /** @var string|null */
+    public $groupDescription;
 
-    public ?string $title;
+    /** @var string|null */
+    public $title;
 
-    public ?string $description;
+    /** @var string|null */
+    public $description;
 
-    public bool $authenticated = false;
+    /** @var bool */
+    public $authenticated = false;
 }
