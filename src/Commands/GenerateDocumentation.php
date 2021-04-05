@@ -293,7 +293,7 @@ class GenerateDocumentation extends Command
             $cachedEndpoints = Camel::loadEndpointsToFlatPrimitivesArray(static::$cacheDir);
         }
 
-        $routes = $routeMatcher->getRoutes($this->docConfig->get('routes'), $this->getRouter());
+        $routes = $routeMatcher->getRoutes($this->docConfig->get('routes'), $this->docConfig->get('router'));
         $endpoints = $this->extractEndpointsInfoFromLaravelApp($routes, $cachedEndpoints, $latestEndpointsData);
         $groupedEndpoints = Camel::groupEndpoints($endpoints);
         $this->writeEndpointsToDisk($groupedEndpoints);
@@ -314,24 +314,5 @@ class GenerateDocumentation extends Command
     {
         $apiDetails = new ApiDetails($this->docConfig, !$this->option('force'));
         $apiDetails->writeMarkdownFiles();
-    }
-
-    protected function getRouter(): string
-    {
-        if ($router = $this->docConfig->get('router', null)) {
-            if (!in_array($router, ['dingo', 'laravel'])) {
-                throw new \InvalidArgumentException("Unknown `router` value: $router");
-            }
-            return $router;
-        }
-
-        try {
-            $dingoVersion = \PackageVersions\Versions::getVersion('dingo/api');
-        } catch (\OutOfBoundsException $e) {
-            return 'laravel';
-        }
-
-        c::info('Detected Dingo API router');
-        return 'dingo';
     }
 }
