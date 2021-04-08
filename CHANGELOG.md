@@ -12,6 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 2.6.0 (Thursday, 8 April 2021)
+### Modified
+- Try It Out: set input field type to "password" if field name contains "password" (https://github.com/knuckleswtf/scribe/pull/195)
+- Include responses in Postman Collection (https://github.com/knuckleswtf/scribe/pull/196)
+
 ## 2.5.3 (Thursday, 11 February 2021)
 ### Fixes
 - Properly serialize objects in PHP example request (https://github.com/knuckleswtf/scribe/commit/8059566ef39ec09ebd7eb36ecd2e65d20f0dd2bc)
