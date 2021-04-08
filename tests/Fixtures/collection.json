@@ -255,7 +255,72 @@
                             "type": "noauth"
                         }
                     },
-                    "response": []
+                    "response": [
+                        {
+                            "name": "api\/echoesUrlParameters\/{param}\/{param2}\/{param3?}\/{param4?} Response #1",
+                            "originalRequest": {
+                                "url": {
+                                    "protocol": "http",
+                                    "host": "{{baseUrl}}",
+                                    "path": "api\/echoesUrlParameters\/:param\/:param2\/:param3\/:param4",
+                                    "query": [
+                                        {
+                                            "key": "something",
+                                            "value": "consequatur",
+                                            "description": "",
+                                            "disabled": false
+                                        }
+                                    ],
+                                    "raw": "http:\/\/{{baseUrl}}\/api\/echoesUrlParameters\/:param\/:param2\/:param3\/:param4?something=consequatur",
+                                    "variable": [
+                                        {
+                                            "id": "param",
+                                            "key": "param",
+                                            "value": "4",
+                                            "description": ""
+                                        },
+                                        {
+                                            "id": "param2",
+                                            "key": "param2",
+                                            "value": "consequatur",
+                                            "description": ""
+                                        },
+                                        {
+                                            "id": "param3",
+                                            "key": "param3",
+                                            "value": "consequatur",
+                                            "description": ""
+                                        },
+                                        {
+                                            "id": "param4",
+                                            "key": "param4",
+                                            "value": "",
+                                            "description": ""
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Custom-Header",
+                                        "value": "NotSoCustom"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application\/json"
+                                    }
+                                ],
+                                "body": null,
+                                "description": "",
+                                "auth": {
+                                    "type": "noauth"
+                                }
+                            },
+                            "header": null,
+                            "cookie": [],
+                            "body": "{\n    \"param\": \"4\",\n    \"param2\": \"consequatur\",\n    \"param3\": \"consequatur\",\n    \"param4\": null\n}"
+                        }
+                    ]
                 }
             ]
         }
