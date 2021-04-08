@@ -113,6 +113,16 @@ class PostmanCollectionWriter
         if (($endpoint['metadata']['authenticated'] ?? false) === false) {
             $endpointItem['request']['auth'] = ['type' => 'noauth'];
         }
+        
+        foreach ($endpoint['responses'] as $index => $response) {
+			$endpointItem['response'][] = [
+				'name'            => $endpointItem['name'] . ' Response #' . ($index + 1),
+				'originalRequest' => $endpointItem['request'],
+				'header'          => null,
+				'cookie'          => [],
+				'body'            => json_encode(json_decode($response['content']), JSON_PRETTY_PRINT),
+			];
+		}
 
         return $endpointItem;
     }
