@@ -27,10 +27,15 @@ class GetFromLaravelAPI extends Strategy
         $path = $alreadyExtractedData['uri'];
         preg_match_all('/\{(.*?)\}/', $path, $matches);
 
+        $type = $this->config->get('default_parameter_type');
+
+        if (!in_array($type, ['string', 'integer', 'number'])) {
+            $type = 'string';
+        }
+
         foreach ($matches[1] as $match) {
             $optional = Str::endsWith($match, '?');
             $name = rtrim($match, '?');
-            $type = 'string';
             $parameters[$name] = [
                 'name' => $name,
                 'description' => '',

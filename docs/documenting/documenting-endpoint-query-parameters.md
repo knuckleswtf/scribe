@@ -94,7 +94,7 @@ Route::get("/post/{id}/{lang?}");
 
 you can use this annotation to describe the `id` and `lang` parameters as shown below. The annotation takes the name of the parameter, an optional type, an optional "required" label, and then its description. Like with `@queryParams`, a random value will be generated, but you can specify the value to be used in examples and response calls using the `Example: ` syntax.
 
-If you don't specify a type, Scribe will assume it's `string`. Valid types are `string`, `integer`, and `number`.
+If you don't specify a type, Scribe will assume it's `string`. You can override this value by changing the `default_parameter_type` within your configuration file. The Valid types are `string`, `integer`, and `number`.
 
 ```php
 /**

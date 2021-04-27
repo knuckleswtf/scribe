@@ -307,6 +307,17 @@ INTRO
     'faker_seed' => null,
 
     /**
+     * If Scribe cannot infer the type required for a parameter, it will default to string.
+     * Change this value if you'd like to adapt this behaviour.
+     *
+     * Available values:
+     *  - 'string'
+     *  - 'integer'
+     *  - 'number'
+     */
+    'default_parameter_type' => 'string',
+
+    /**
      * The strategies Scribe will use to extract information about your routes at each stage.
      * If you write or install a custom strategy, add it here.
      */
