@@ -113,7 +113,7 @@ class PostmanCollectionWriter
         if (($endpoint['metadata']['authenticated'] ?? false) === false) {
             $endpointItem['request']['auth'] = ['type' => 'noauth'];
         }
-        
+		
         foreach ($endpoint['responses'] as $index => $response) {
 			$endpointItem['response'][] = [
 				'name'            => $endpointItem['name'] . ' Response #' . ($index + 1),
@@ -160,7 +160,7 @@ class PostmanCollectionWriter
                 break;
             case 'raw':
             default:
-                $body[$inputMode] = json_encode($endpoint['cleanBodyParameters'], JSON_PRETTY_PRINT);
+                $body[$inputMode] = json_encode($endpoint['cleanBodyParameters'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         }
         return $body;
     }
