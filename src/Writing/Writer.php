@@ -260,17 +260,18 @@ class Writer
         if (!is_dir($this->laravelTypeOutputPath)) {
             mkdir($this->laravelTypeOutputPath, 0777, true);
         }
-        if (!is_dir("public/vendor/scribe")) {
-            mkdir("public/vendor/scribe", 0777, true);
+        $publicDirectory = app()->get('public_path');
+        if (!is_dir("$publicDirectory/vendor/scribe")) {
+            mkdir("$publicDirectory/vendor/scribe", 0777, true);
         }
 
         // Transform output HTML to a Blade view
         rename("{$this->staticTypeOutputPath}/index.html", "$this->laravelTypeOutputPath/index.blade.php");
 
-        // Move assets from public/docs to public/vendor/scribe
+        // Move assets from public/docs to $publicDirectory/vendor/scribe
         // We need to do this delete first, otherwise move won't work if folder exists
-        Utils::deleteDirectoryAndContents("public/vendor/scribe/", getcwd());
-        rename("{$this->staticTypeOutputPath}/", "public/vendor/scribe/");
+        Utils::deleteDirectoryAndContents("$publicDirectory/vendor/scribe/", getcwd());
+        rename("{$this->staticTypeOutputPath}/", "$publicDirectory/vendor/scribe/");
 
         $contents = file_get_contents("$this->laravelTypeOutputPath/index.blade.php");
 
