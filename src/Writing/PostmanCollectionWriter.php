@@ -140,14 +140,7 @@ class PostmanCollectionWriter
 
         switch ($inputMode) {
             case 'formdata':
-                foreach ($endpoint->cleanBodyParameters as $key => $value) {
-                    $params = [
-                        'key' => $key,
-                        'value' => $value,
-                        'type' => 'text',
-                    ];
-                    $body[$inputMode][] = $params;
-                }
+                $body[$inputMode] = $this->getFormDataParams($endpoint->cleanBodyParameters);
                 foreach ($endpoint->fileParameters as $key => $value) {
                     while (is_array($value)) { // For arrays of files, just send the first one
                         $key .= '[]';
@@ -165,6 +158,32 @@ class PostmanCollectionWriter
             default:
                 $body[$inputMode] = json_encode($endpoint->cleanBodyParameters, JSON_UNESCAPED_UNICODE);
         }
+        return $body;
+    }
+
+    /**
+     * Format form-data parameters correctly for arrays eg. data[item][index] = value
+     */
+    protected function getFormDataParams(array $array, ?string $key = null): array
+    {
+        $body = [];
+
+        foreach ($array as $index => $value) {
+            $index = $key ? ($key . '[' . $index . ']') : $index;
+
+            if (!is_array($value)) {
+                $body[] = [
+                    'key' => $index,
+                    'value' => $value,
+                    'type' => 'text',
+                ];
+
+                continue;
+            }
+
+            $body = array_merge($body, $this->getFormDataParams($value, $index));
+        }
+
         return $body;
     }
 
