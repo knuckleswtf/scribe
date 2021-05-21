@@ -260,7 +260,7 @@ class Writer
         if (!is_dir($this->laravelTypeOutputPath)) {
             mkdir($this->laravelTypeOutputPath, 0777, true);
         }
-        $publicDirectory = app()->get('public_path');
+        $publicDirectory = app()->get('path.public');
         if (!is_dir("$publicDirectory/vendor/scribe")) {
             mkdir("$publicDirectory/vendor/scribe", 0777, true);
         }
