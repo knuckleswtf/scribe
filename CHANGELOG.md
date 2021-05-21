@@ -12,6 +12,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 2.7.0 (Friday, 21 May 2021)
+### Modified
+- Use Laravel `public_path` rather than `public/` for assets (https://github.com/knuckleswtf/scribe/pull/214)
+### Fixed
+- Format form-data params properly in Postman collection (https://github.com/knuckleswtf/scribe/pull/198)
+- Unescape Unicode values in Postman collection (https://github.com/knuckleswtf/scribe/pull/207)
+
 ## 2.6.0 (Thursday, 8 April 2021)
 ### Modified
 - Try It Out: set input field type to "password" if field name contains "password" (https://github.com/knuckleswtf/scribe/pull/195)
