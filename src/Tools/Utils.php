@@ -94,9 +94,9 @@ class Utils
         throw new Exception("Couldn't get class and method names for route " . c::getRouteRepresentation($route) . '.');
     }
 
-    public static function deleteDirectoryAndContents(string $dir): void
+    public static function deleteDirectoryAndContents(string $dir, ?string $workingDir = null): void
     {
-        $adapter = new Local(getcwd());
+        $adapter = new Local($workingDir ?: getcwd());
         $fs = new Filesystem($adapter);
         $dir = ltrim($dir, '/');
         $fs->deleteDir($dir);
@@ -180,7 +180,7 @@ class Utils
 
     public static function getModelFactory(string $modelName, array $states = [])
     {
-        if (!function_exists('factory')) { // Laravel 8 type factory
+        if (method_exists($modelName, 'factory')) { // Laravel 8 type factory
             $factory = call_user_func_array([$modelName, 'factory'], []);
             if (count($states)) {
                 foreach ($states as $state) {
