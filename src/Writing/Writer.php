@@ -270,7 +270,7 @@ class Writer
 
         // Move assets from public/docs to $publicDirectory/vendor/scribe
         // We need to do this delete first, otherwise move won't work if folder exists
-        Utils::deleteDirectoryAndContents("$publicDirectory/vendor/scribe/", getcwd());
+        Utils::deleteDirectoryAndContents("$publicDirectory/vendor/scribe/", '/');
         rename("{$this->staticTypeOutputPath}/", "$publicDirectory/vendor/scribe/");
 
         $contents = file_get_contents("$this->laravelTypeOutputPath/index.blade.php");
