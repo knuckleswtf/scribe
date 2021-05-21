@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\BodyParameters;
 
+use ArgumentCountError;
 use Dingo\Api\Http\FormRequest as DingoFormRequest;
 use Illuminate\Foundation\Http\FormRequest as LaravelFormRequest;
 use Illuminate\Http\Request;
