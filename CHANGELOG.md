@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 2.7.2 (Saturday, 22 May 2021)
+### Fixed
+- Fix laravel type generation (https://github.com/knuckleswtf/scribe/pull/218)
+
 ## 2.7.1 (Friday, 21 May 2021)
 ### Fixed
 - Use correct Laravel public path (https://github.com/knuckleswtf/scribe/pull/216)
