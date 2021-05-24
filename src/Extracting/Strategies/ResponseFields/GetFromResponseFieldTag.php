@@ -12,8 +12,7 @@ use Mpociot\Reflection\DocBlock\Tag;
 
 class GetFromResponseFieldTag extends Strategy
 {
-    /** @var string */
-    public $stage = 'responseFields';
+    public string $stage = 'responseFields';
 
     use ParamHelpers;
 

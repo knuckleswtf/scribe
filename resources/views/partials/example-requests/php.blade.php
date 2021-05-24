@@ -10,7 +10,7 @@ $response = $client->{{ strtolower($endpoint->methods[0]) }}(
     [
 @if(!empty($endpoint->headers))@php
 // We don't need the Content-Type header because Guzzle sets it automatically when you use json or multipart.
-unset($route['headers']['Content-Type']);
+unset($endpoint->headers['Content-Type']);
 @endphp
         'headers' => {!! u::printPhpValue($endpoint->headers, 8) !!},
 @endif

@@ -91,6 +91,10 @@ trait ParamHelpers
             return null;
         }
 
+        if ($type === "array") {
+            $type = "string[]";
+        }
+
         if (Str::endsWith($type, '[]')) {
             $baseType = strtolower(substr($type, 0, strlen($type) - 2));
             return is_array($value) ? array_map(function ($v) use ($baseType) {

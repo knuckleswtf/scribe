@@ -11,35 +11,17 @@ use Knuckles\Scribe\Tools\DocumentationConfig;
  */
 class ApiDetails
 {
-    /**
-     * @var DocumentationConfig
-     */
-    private $config;
+    private DocumentationConfig $config;
 
-    /**
-     * @var string
-     */
-    private $baseUrl;
+    private string $baseUrl;
 
-    /**
-     * @var bool
-     */
-    private $preserveUserChanges;
+    private bool $preserveUserChanges;
 
-    /**
-     * @var string
-     */
-    private $markdownOutputPath = '.scribe';
+    private string $markdownOutputPath = '.scribe';
 
-    /**
-     * @var string
-     */
-    private $fileModificationTimesFile;
+    private string $fileModificationTimesFile;
 
-    /**
-     * @var array
-     */
-    private $lastTimesWeModifiedTheseFiles = [];
+    private array $lastTimesWeModifiedTheseFiles = [];
 
     public function __construct(DocumentationConfig $config = null, bool $preserveUserChanges = true)
     {

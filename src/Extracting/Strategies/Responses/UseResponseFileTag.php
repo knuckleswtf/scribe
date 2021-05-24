@@ -14,6 +14,8 @@ use Mpociot\Reflection\DocBlock\Tag;
  */
 class UseResponseFileTag extends Strategy
 {
+    public string $stage = 'responses';
+
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)
     {
         $docBlocks = RouteDocBlocker::getDocBlocksFromRoute($endpointData->route);

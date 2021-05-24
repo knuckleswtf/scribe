@@ -25,3 +25,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Include responses in Postman collection
 - Body parameters array
 - Auto detect Dingo
+- Removed `$stage`

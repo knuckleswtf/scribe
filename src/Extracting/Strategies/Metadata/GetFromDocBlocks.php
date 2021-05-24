@@ -9,10 +9,9 @@ use Mpociot\Reflection\DocBlock;
 
 class GetFromDocBlocks extends Strategy
 {
-    /** @var string */
-    public $stage = 'metadata';
+    public string $stage = 'metadata';
 
-    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): array
     {
         $docBlocks = RouteDocBlocker::getDocBlocksFromRoute($endpointData->route);
         $methodDocBlock = $docBlocks['method'];

@@ -17,9 +17,6 @@ use ReflectionUnionType;
 
 class GetFromBodyParamTag extends Strategy
 {
-    /** @var string */
-    public $stage = 'bodyParameters';
-
     use ParamHelpers;
 
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)

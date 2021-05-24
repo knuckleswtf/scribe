@@ -26,6 +26,8 @@ use ReflectionFunctionAbstract;
  */
 class UseTransformerTags extends Strategy
 {
+    public string $stage = 'responses';
+
     use DatabaseTransactionHelpers;
 
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)

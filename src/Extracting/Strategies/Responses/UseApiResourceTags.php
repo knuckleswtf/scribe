@@ -27,6 +27,8 @@ use Mpociot\Reflection\DocBlock\Tag;
  */
 class UseApiResourceTags extends Strategy
 {
+    public string $stage = 'responses';
+
     use DatabaseTransactionHelpers;
 
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)

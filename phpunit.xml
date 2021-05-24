@@ -42,5 +42,8 @@
             <file>tests/Unit/OpenAPISpecWriterTest.php</file>
             <file>tests/Unit/PostmanCollectionWriterTest.php</file>
         </testsuite>
+        <testsuite name="Unit Tests 4">
+            <file>tests/Unit/ValidationRuleParsingTest.php</file>
+        </testsuite>
     </testsuites>
 </phpunit>
