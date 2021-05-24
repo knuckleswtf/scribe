@@ -196,6 +196,7 @@ class GetFromFormRequest extends Strategy
         $testData = [];
         foreach ($rules as $key => $ruleset) {
             if (!Str::contains($key, '.*')) continue;
+            if (!is_string($ruleset) && !($ruleset instanceof Rule)) continue;
 
             // All we need is for Laravel to see this key exists
             Arr::set($testData, str_replace('.*', '.0', $key), Str::random());
