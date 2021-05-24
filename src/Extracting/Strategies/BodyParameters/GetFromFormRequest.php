@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\BodyParameters;
 
+use ArgumentCountError;
 use Dingo\Api\Http\FormRequest as DingoFormRequest;
 use Illuminate\Foundation\Http\FormRequest as LaravelFormRequest;
 use Illuminate\Http\Request;
@@ -66,8 +67,14 @@ class GetFromFormRequest extends Strategy
             if (
                 (class_exists(LaravelFormRequest::class) && $parameterClass->isSubclassOf(LaravelFormRequest::class))
                 || (class_exists(DingoFormRequest::class) && $parameterClass->isSubclassOf(DingoFormRequest::class))) {
-                /** @var LaravelFormRequest|DingoFormRequest $formRequest */
-                $formRequest = new $parameterClassName;
+                try {
+                    /** @var LaravelFormRequest|DingoFormRequest $formRequest */
+                    $formRequest = new $parameterClassName;
+                } catch (ArgumentCountError $e) {
+                    c::info('Skipping instantiation of ' . $parameterClassName . ' because of dependency injection. Use manual @bodyParam to describe this request.');
+                    continue;
+                }
+                
                 // Set the route properly so it works for users who have code that checks for the route.
                 $formRequest->setRouteResolver(function () use ($formRequest, $route) {
                     // Also need to bind the request to the route in case their code tries to inspect current request
@@ -529,4 +536,3 @@ class GetFromFormRequest extends Strategy
         return $results;
     }
 }
-
