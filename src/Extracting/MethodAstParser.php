@@ -62,6 +62,7 @@ class MethodAstParser
     protected static function findMethodInClassAst(array $ast, string $methodName)
     {
         $nodeFinder = new NodeFinder;
+
         return $nodeFinder->findFirst($ast, function(Node $node) use ($methodName) {
             // Todo handle closures
             return $node instanceof Node\Stmt\ClassMethod

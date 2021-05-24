@@ -71,13 +71,13 @@ class GetFromHeaderTag extends Strategy
                 // @header X-Custom An API header
                 preg_match('/([\S]+)(.*)?/', $tag->getContent(), $content);
 
-                [$_, $name, $value] = $content;
-                $value = trim($value);
-                if (empty($value)) {
-                    $value = $this->generateDummyValue('string');
+                [$_, $name, $example] = $content;
+                $example = trim($example);
+                if (empty($example)) {
+                    $example = $this->generateDummyValue('string');
                 }
 
-                return [$name => $value];
+                return [$name => $example];
             })->toArray();
 
         return $headers;

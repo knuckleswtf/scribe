@@ -18,7 +18,14 @@ trait ParamHelpers
         return $faker;
     }
 
-    protected function generateDummyValue(string $type)
+    protected function generateDummyValue(string $type, int $size = null)
+    {
+        $fakeFactory = $this->getDummyValueGenerator($type, $size);
+
+        return $fakeFactory();
+    }
+
+    protected function getDummyValueGenerator(string $type, int $size = null): \Closure
     {
         $baseType = $type;
         $isListType = false;
@@ -29,36 +36,56 @@ trait ParamHelpers
         }
 
         if ($isListType) {
-            // Return a two-array item for a list
-            return [$this->generateDummyValue($baseType), $this->generateDummyValue($baseType)];
+            // Return a two-array item for a list.
+            return fn() => array_map(
+                fn() => $this->generateDummyValue($baseType),
+                range(0, $size ? $size - 1 : 1)
+            );
         }
 
         $faker = $this->getFaker();
 
         $fakeFactories = [
-            'integer' => function () use ($faker) {
-                return $faker->numberBetween(1, 20);
-            },
-            'number' => function () use ($faker) {
-                return $faker->randomFloat();
-            },
-            'boolean' => function () use ($faker) {
-                return $faker->boolean();
-            },
-            'string' => function () use ($faker) {
-                return $faker->word;
-            },
-            'object' => function () {
-                return [];
-            },
-            'file' => function () {
-                return UploadedFile::fake()->create('test.jpg')->size(10);
-            },
+            'integer' => fn() => $size ?: $faker->numberBetween(1, 20),
+            'number' => fn() => $size ?: $faker->randomFloat(),
+            'boolean' => fn() => $faker->boolean(),
+            'string' => fn() => $size ? $faker->lexify(str_repeat("?", $size)) : $faker->word,
+            'object' => fn() => [],
+            'file' => fn() => UploadedFile::fake()->create('test.jpg')->size($size ?: 10),
         ];
 
-        $fakeFactory = $fakeFactories[$baseType] ?? $fakeFactories['string'];
+        return $fakeFactories[$baseType] ?? $fakeFactories['string'];
+    }
 
-        return $fakeFactory();
+    private function getDummyDataGeneratorBetween(string $type, $min, $max = null)
+    {
+        $baseType = $type;
+        $isListType = false;
+
+        if (Str::endsWith($type, '[]')) {
+            $baseType = strtolower(substr($type, 0, strlen($type) - 2));
+            $isListType = true;
+        }
+
+        $randomSize = $this->getFaker()->numberBetween($min, $max);
+
+        if ($isListType) {
+            return fn() => array_map(
+                fn() => $this->generateDummyValue($baseType),
+                range(0, $randomSize - 1)
+            );
+        }
+
+        $faker = $this->getFaker();
+
+        $fakeFactories = [
+            'integer' => fn() => $faker->numberBetween((int)$min, (int)$max),
+            'number' => fn() => $faker->numberBetween((int)$min, (int)$max),
+            'string' => fn() => $faker->lexify(str_repeat("?", $randomSize)),
+            'file' => fn() => UploadedFile::fake()->create('test.jpg')->size($randomSize),
+        ];
+
+        return $fakeFactories[$baseType] ?? $fakeFactories['string'];
     }
 
     protected function isSupportedTypeInDocBlocks(string $type)

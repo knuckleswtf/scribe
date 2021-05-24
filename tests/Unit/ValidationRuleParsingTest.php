@@ -36,19 +36,22 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         $results = $this->strategy->parse($ruleset, $customInfo);
 
         $parameterName = array_keys($ruleset)[0];
-        ray($parameterName, $results[$parameterName]);
 
-        $this->assertEquals($expected['type'], $results[$parameterName]['type']);
-        $this->assertStringEndsWith($expected['description'], $results[$parameterName]['description']);
+        $this->assertEquals($expected['description'], $results[$parameterName]['description']);
+        if (isset($expected['type'])) {
+            $this->assertEquals($expected['type'], $results[$parameterName]['type']);
+        }
 
         // Validate that the generated values actually pass validation
-        $validator = Validator::make([$parameterName => $results[$parameterName]['example']], $ruleset);
-        try {
-            $validator->validate();
-        } catch (ValidationException $e) {
-            dump('Value: ', $results[$parameterName]['example']);
-            dump($e->errors());
-            throw $e;
+        if (!$results[$parameterName]['example'] instanceof \stdClass) {
+            $validator = Validator::make([$parameterName => $results[$parameterName]['example']], $ruleset);
+            try {
+                $validator->validate();
+            } catch (ValidationException $e) {
+                dump('Value: ', $results[$parameterName]['example']);
+                dump($e->errors());
+                throw $e;
+            }
         }
     }
 
@@ -211,6 +214,13 @@ class ValidationRuleParsingTest extends BaseLaravelTest
                 'type' => 'string',
             ],
         ];
+        yield 'not_in' => [
+            ['not__param' => 'not_in:3,5,6'],
+            [],
+            [
+                'description' => "The value must not be one of <code>3</code>, <code>5</code>, or <code>6</code>.",
+            ],
+        ];
         yield 'digits' => [
             ['digits_param' => 'digits:8'],
             [],
@@ -274,6 +284,86 @@ class ValidationRuleParsingTest extends BaseLaravelTest
                 'description' => "The value must be a valid UUID.",
                 'type' => 'string',
             ],
+        ];
+        yield 'required_if' => [
+            ['required_if_param' => 'required_if:another_field,a_value'],
+            [],
+            ['description' => "This field is required when <code>another_field</code> is <code>a_value</code>."],
+        ];
+        yield 'required_unless' => [
+            ['required_unless_param' => 'required_unless:another_field,a_value'],
+            [],
+            ['description' => "This field is required unless <code>another_field</code> is in <code>a_value</code>."],
+        ];
+        yield 'required_with' => [
+            ['required_with_param' => 'required_with:another_field,some_other_field'],
+            [],
+            ['description' => 'This field is required when <code>another_field</code> or <code>some_other_field</code> is present.'],
+        ];
+        yield 'required_with_all' => [
+            ['required_with_all_param' => 'required_with_all:another_field,some_other_field'],
+            [],
+            ['description' => 'This field is required when <code>another_field</code> and <code>some_other_field</code> are present.'],
+        ];
+        yield 'required_without' => [
+            ['required_without_param' => 'required_without:another_field,some_other_field'],
+            [],
+            ['description' => 'This field is required when <code>another_field</code> or <code>some_other_field</code> is not present.'],
+        ];
+        yield 'required_without_all' => [
+            ['required_without_all_param' => 'required_without_all:another_field,some_other_field'],
+            [],
+            ['description' => 'This field is required when none of <code>another_field</code> and <code>some_other_field</code> are present.'],
+        ];
+        yield 'same' => [
+            ['same_param' => 'same:other_field'],
+            [],
+            ['description' => "The value and <code>other_field</code> must match."],
+        ];
+        yield 'different' => [
+            ['different_param' => 'different:other_field'],
+            [],
+            ['description' => "The value and <code>other_field</code> must be different."],
+        ];
+        yield 'after' => [
+            ['after_param' => 'after:2020-02-12'],
+            [],
+            ['description' => "The value must be a date after <code>2020-02-12</code>."],
+        ];
+        yield 'before_or_equal' => [
+            ['before_or_equal_param' => 'before_or_equal:2020-02-12'],
+            [],
+            ['description' => "The value must be a date before or equal to <code>2020-02-12</code>."],
+        ];
+        yield 'size (number)' => [
+            ['size_param' => 'numeric|size:6'],
+            [],
+            ['description' => "The value must be 6."],
+        ];
+        yield 'size (string)' => [
+            ['size_param' => 'string|size:6'],
+            [],
+            ['description' => "The value must be 6 characters."],
+        ];
+        yield 'size (file)' => [
+            ['size_param' => 'file|size:6'],
+            [],
+            ['description' => "The value must be a file. The value must be 6 kilobytes."],
+        ];
+        yield 'max (number)' => [
+            ['max_param' => 'numeric|max:6'],
+            [],
+            ['description' => "The value must not be greater than 6."],
+        ];
+        yield 'max (string)' => [
+            ['max_param' => 'string|max:6'],
+            [],
+            ['description' => "The value must not be greater than 6 characters."],
+        ];
+        yield 'max (file)' => [
+            ['max_param' => 'file|max:6'],
+            [],
+            ['description' => "The value must be a file. The value must not be greater than 6 kilobytes."],
         ];
     }
 }

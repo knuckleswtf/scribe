@@ -15,6 +15,10 @@ class GetFromInlineValidator extends Strategy
 
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): array
     {
+        if (!$endpointData->method instanceof \ReflectionMethod) {
+            return [];
+        }
+
         $methodAst = MethodAstParser::getMethodAst($endpointData->method);
         [$validationRules, $customParameterData] = $this->lookForInlineValidationRules($methodAst);
 

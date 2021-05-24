@@ -165,19 +165,19 @@ class WritingUtils
      *
      * @return string
      */
-    public static function getListOfValuesAsFriendlyHtmlString(array $list = []): string
+    public static function getListOfValuesAsFriendlyHtmlString(array $list = [], string $conjunction = "or"): string
     {
         switch (count($list)) {
             case 1:
                 return "<code>{$list[0]}</code>";
 
             case 2:
-                return "<code>{$list[0]}</code> or <code>{$list[1]}</code>";
+                return "<code>{$list[0]}</code> $conjunction <code>{$list[1]}</code>";
 
             default:
                 return "<code>"
                     . implode('</code>, <code>', array_slice($list, 0, -1))
-                    . "</code>, or <code>" . end($list) . "</code>";
+                    . "</code>, $conjunction <code>" . end($list) . "</code>";
         }
     }
 

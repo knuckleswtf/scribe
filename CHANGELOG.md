@@ -26,3 +26,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Body parameters array
 - Auto detect Dingo
 - Removed `$stage`
+- More validation rules support
+- Inline validators
