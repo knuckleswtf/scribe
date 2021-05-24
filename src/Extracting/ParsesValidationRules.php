@@ -167,6 +167,24 @@ trait ParsesValidationRules
             /**
              * Special string types
              */
+            case 'alpha':
+                $parameterData['description'] .= "The value must contain only letters. ";
+                $parameterData['setter'] = function () {
+                    return $this->getFaker()->lexify('??????');
+                };
+                break;
+            case 'alpha_dash':
+                $parameterData['description'] .= "The value must contain only letters, numbers, dashes and underscores. ";
+                $parameterData['setter'] = function () {
+                    return $this->getFaker()->lexify('???-???_?');
+                };
+                break;
+            case 'alpha_num':
+                $parameterData['description'] .= "The value must contain only letters and numbers. ";
+                $parameterData['setter'] = function () {
+                    return $this->getFaker()->bothify('#?#???#');
+                };
+                break;
             case 'timezone':
                 // Laravel's message merely says "The value must be a valid zone"
                 $parameterData['description'] .= "The value must be a valid time zone, such as <code>Africa/Accra</code>. ";
@@ -218,10 +236,33 @@ trait ParsesValidationRules
                     return date($arguments[0], time());
                 };
                 break;
+            case 'starts_with':
+                $parameterData['description'] .= 'The value must start with one of ' . w::getListOfValuesAsFriendlyHtmlString($arguments).' ';
+                $parameterData['setter'] = fn() => $this->getFaker()->lexify("{$arguments[0]}????");;
+                break;
+            case 'ends_with':
+                $parameterData['description'] .= 'The value must end with one of ' . w::getListOfValuesAsFriendlyHtmlString($arguments).' ';
+                $parameterData['setter'] = fn() => $this->getFaker()->lexify("????{$arguments[0]}");;
+                break;
+            case 'uuid':
+                $parameterData['description'] .= $this->getDescription($rule).' ';
+                $parameterData['setter'] = fn() => $this->getFaker()->uuid();;
+                break;
 
             /**
              * Special number types. Some rules here may apply to other types, but we treat them as being numeric.
              */
+            case 'digits':
+                $parameterData['description'] .= $this->getDescription($rule, [':digits' => $arguments[0]]) . ' ';
+                $parameterData['setter'] = fn() => $this->getFaker()->randomNumber($arguments[0], true);
+                $parameterData['type'] = 'number';
+                break;
+
+            case 'digits_between':
+                $parameterData['description'] .= $this->getDescription($rule, [':min' => $arguments[0], ':max' => $arguments[1]]) . ' ';
+                $parameterData['setter'] = fn() => $this->getFaker()->randomNumber($this->getFaker()->numberBetween(...$arguments), true);
+                $parameterData['type'] = 'number';
+                break;
             /*
              * min, max and between not supported until we can figure out a proper way
              *  to make them compatible with multiple types (string, number, file)
@@ -258,8 +299,7 @@ trait ParsesValidationRules
              */
             case 'in':
                 // Not using the rule description here because it only says "The attribute is invalid"
-                $description = 'The value must be one of ' . w::getListOfValuesAsFriendlyHtmlString($arguments);
-                $parameterData['description'] .= $description . ' ';
+                $parameterData['description'] .= 'The value must be one of ' . w::getListOfValuesAsFriendlyHtmlString($arguments) . ' ';
                 $parameterData['setter'] = function () use ($arguments) {
                     return Arr::random($arguments);
                 };

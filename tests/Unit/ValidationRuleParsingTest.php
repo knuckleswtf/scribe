@@ -2,6 +2,8 @@
 
 namespace Knuckles\Scribe\Tests\Unit;
 
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 use Knuckles\Scribe\Extracting\ParsesValidationRules;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tools\DocumentationConfig;
@@ -34,9 +36,20 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         $results = $this->strategy->parse($ruleset, $customInfo);
 
         $parameterName = array_keys($ruleset)[0];
+        ray($parameterName, $results[$parameterName]);
 
         $this->assertEquals($expected['type'], $results[$parameterName]['type']);
         $this->assertStringEndsWith($expected['description'], $results[$parameterName]['description']);
+
+        // Validate that the generated values actually pass validation
+        $validator = Validator::make([$parameterName => $results[$parameterName]['example']], $ruleset);
+        try {
+            $validator->validate();
+        } catch (ValidationException $e) {
+            dump('Value: ', $results[$parameterName]['example']);
+            dump($e->errors());
+            throw $e;
+        }
     }
 
 
@@ -195,6 +208,70 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['in_param' => ['description' => $description]],
             [
                 'description' => "$description. The value must be one of <code>3</code>, <code>5</code>, or <code>6</code>.",
+                'type' => 'string',
+            ],
+        ];
+        yield 'digits' => [
+            ['digits_param' => 'digits:8'],
+            [],
+            [
+                'description' => "The value must be 8 digits.",
+                'type' => 'number',
+            ],
+        ];
+        yield 'digits_between' => [
+            ['digits_between_param' => 'digits_between:2,8'],
+            [],
+            [
+                'description' => "The value must be between 2 and 8 digits.",
+                'type' => 'number',
+            ],
+        ];
+        yield 'alpha' => [
+            ['alpha_param' => 'alpha'],
+            [],
+            [
+                'description' => "The value must contain only letters.",
+                'type' => 'string',
+            ],
+        ];
+        yield 'alpha_dash' => [
+            ['alpha_dash_param' => 'alpha_dash'],
+            [],
+            [
+                'description' => "The value must contain only letters, numbers, dashes and underscores.",
+                'type' => 'string',
+            ],
+        ];
+        yield 'alpha_num' => [
+            ['alpha_num_param' => 'alpha_num'],
+            [],
+            [
+                'description' => "The value must contain only letters and numbers.",
+                'type' => 'string',
+            ],
+        ];
+        yield 'ends_with' => [
+            ['ends_with_param' => 'ends_with:go,ha'],
+            [],
+            [
+                'description' => "The value must end with one of <code>go</code> or <code>ha</code>.",
+                'type' => 'string',
+            ],
+        ];
+        yield 'starts_with' => [
+            ['starts_with_param' => 'starts_with:go,ha'],
+            [],
+            [
+                'description' => "The value must start with one of <code>go</code> or <code>ha</code>.",
+                'type' => 'string',
+            ],
+        ];
+        yield 'uuid' => [
+            ['uuid_param' => 'uuid'],
+            [],
+            [
+                'description' => "The value must be a valid UUID.",
                 'type' => 'string',
             ],
         ];
