@@ -13,8 +13,6 @@ class GetFromLumenAPI extends Strategy
 {
     use ParamHelpers;
 
-    public string $stage = 'urlParameters';
-
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)
     {
         if (!Utils::isLumen()) {

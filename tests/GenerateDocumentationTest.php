@@ -156,29 +156,6 @@ class GenerateDocumentationTest extends BaseLaravelTest
     /** @test */
     public function can_parse_resource_routes()
     {
-        RouteFacade::resource('/api/users', TestResourceController::class);
-
-        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
-        config([
-            'scribe.routes.0.apply.headers' => [
-                'Accept' => 'application/json',
-            ],
-        ]);
-
-        $output = $this->artisan('scribe:generate');
-
-        $this->assertStringContainsString('Processed route: [GET] api/users', $output);
-        $this->assertStringContainsString('Processed route: [GET] api/users/create', $output);
-        $this->assertStringContainsString('Processed route: [GET] api/users/{user}', $output);
-        $this->assertStringContainsString('Processed route: [GET] api/users/{user}/edit', $output);
-        $this->assertStringContainsString('Processed route: [POST] api/users', $output);
-        $this->assertStringContainsString('Processed route: [PUT,PATCH] api/users/{user}', $output);
-        $this->assertStringContainsString('Processed route: [DELETE] api/users/{user}', $output);
-    }
-
-    /** @test */
-    public function can_parse_partial_resource_routes()
-    {
         RouteFacade::resource('/api/users', TestResourceController::class)
             ->only(['index', 'store']);
 

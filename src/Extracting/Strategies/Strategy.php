@@ -12,11 +12,6 @@ abstract class Strategy
      */
     protected DocumentationConfig $config;
 
-    /**
-     * The current stage of route processing
-     */
-    public string $stage;
-
     public function __construct(DocumentationConfig $config)
     {
         $this->config = $config;

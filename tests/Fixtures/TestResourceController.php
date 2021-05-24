@@ -24,22 +24,6 @@ class TestResourceController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @response {
-     *   "create_resource": true
-     * }
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        return [
-            'create_resource' => true,
-        ];
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -65,24 +49,6 @@ class TestResourceController extends Controller
     {
         return [
             'show_resource' => true,
-        ];
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @response {
-     *   "edit_resource": true
-     * }
-     *
-     * @param  int  $id
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        return [
-            'edit_resource' => true,
         ];
     }
 
