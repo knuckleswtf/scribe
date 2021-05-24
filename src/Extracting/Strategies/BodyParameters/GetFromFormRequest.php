@@ -71,7 +71,7 @@ class GetFromFormRequest extends Strategy
                     /** @var LaravelFormRequest|DingoFormRequest $formRequest */
                     $formRequest = new $parameterClassName;
                 } catch (ArgumentCountError $e) {
-                    c::info('Skipping instanciation of ' . $parameterClassName . ' because of dependency injection. Use manual @bodyParam to describe this request.');
+                    c::info('Skipping instantiation of ' . $parameterClassName . ' because of dependency injection. Use manual @bodyParam to describe this request.');
                     continue;
                 }
                 
@@ -536,4 +536,3 @@ class GetFromFormRequest extends Strategy
         return $results;
     }
 }
-
