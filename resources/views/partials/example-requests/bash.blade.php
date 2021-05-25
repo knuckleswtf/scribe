@@ -18,7 +18,8 @@ curl --request {{$endpoint->httpMethods[0]}} \
 @endforeach
 @foreach($endpoint->fileParameters as $parameter => $value)
 @foreach(u::getParameterNamesAndValuesForFormData($parameter, $value) as $key => $file)
-    --form "{!! "$key=@".$file->path() !!}" @if(! ($loop->last))\@endif
+    --form "{!! "$key=@".$file->path() !!}" @if(!($loop->parent->last))\
+@endif
 @endforeach
 @endforeach
 @elseif(count($endpoint->cleanBodyParameters))

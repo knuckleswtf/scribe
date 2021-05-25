@@ -6,18 +6,18 @@ namespace Knuckles\Camel\Output;
 class Parameter extends \Knuckles\Camel\Extraction\Parameter
 {
     /** @var string */
-    public $name;
+    public string $name;
 
     /** @var string|null */
-    public $description = null;
+    public ?string $description = null;
 
     /** @var bool */
-    public $required = false;
+    public bool $required = false;
 
     public $example = null;
 
     /** @var string */
-    public $type = 'string';
+    public string $type = 'string';
 
     /** @var array */
     public $__fields = [];

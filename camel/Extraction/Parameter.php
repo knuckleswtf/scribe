@@ -7,13 +7,15 @@ use Knuckles\Camel\BaseDTO;
 
 class Parameter extends BaseDTO
 {
-    /** @var string */
-    public $name;
-    /** @var string|null */
-    public $description = null;
-    /** @var bool */
-    public $required = false;
+    public string $name;
+    public ?string $description = null;
+    public bool $required = false;
     public $example = null;
-    /** @var string */
-    public $type = 'string';
+    public string $type = 'string';
+
+    public function __construct(array $parameters = [])
+    {
+        unset($parameters['setter']);
+        parent::__construct($parameters);
+    }
 }

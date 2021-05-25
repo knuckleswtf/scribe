@@ -14,7 +14,6 @@ use Illuminate\Support\Str;
 use Knuckles\Camel\Extraction\ResponseField;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\DocumentationConfig;
-use Knuckles\Scribe\Tools\Utils as u;
 
 class Extractor
 {
