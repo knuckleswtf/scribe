@@ -5,6 +5,7 @@ namespace Knuckles\Camel\Output;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Routing\Route;
 use Knuckles\Camel\BaseDTO;
+use Knuckles\Camel\Extraction\Metadata;
 use Knuckles\Camel\Extraction\ResponseCollection;
 use Knuckles\Camel\Extraction\ResponseField;
 use Knuckles\Scribe\Extracting\Extractor;
@@ -16,72 +17,65 @@ class OutputEndpointData extends BaseDTO
     /**
      * @var array<string>
      */
-    public $httpMethods;
+    public array $httpMethods;
 
-    /** @var string */
-    public $uri;
+    public string $uri;
 
-    /** @var \Knuckles\Camel\Extraction\Metadata */
-    public $metadata;
+    public Metadata $metadata;
 
     /**
      * @var array<string,string>
      */
-    public $headers = [];
+    public array $headers = [];
 
     /**
      * @var array<string,\Knuckles\Camel\Output\Parameter>
      */
-    public $urlParameters = [];
+    public array $urlParameters = [];
 
     /**
      * @var array<string,mixed>
      */
-    public $cleanUrlParameters = [];
+    public array $cleanUrlParameters = [];
 
     /**
      * @var array<string,\Knuckles\Camel\Output\Parameter>
      */
-    public $queryParameters = [];
+    public array $queryParameters = [];
 
     /**
      * @var array<string,mixed>
      */
-    public $cleanQueryParameters = [];
+    public array $cleanQueryParameters = [];
 
     /**
      * @var array<string, \Knuckles\Camel\Output\Parameter>
      */
-    public $bodyParameters = [];
+    public array $bodyParameters = [];
 
     /**
      * @var array<string,mixed>
      */
-    public $cleanBodyParameters = [];
+    public array $cleanBodyParameters = [];
 
     /**
-     * @var array
      * @var array<string,\Illuminate\Http\UploadedFile>
      */
-    public $fileParameters = [];
+    public array $fileParameters = [];
 
-    /**
-     * @var \Knuckles\Camel\Extraction\ResponseCollection
-     */
-    public $responses;
+    public ResponseCollection $responses;
 
     /**
      * @var array<string,\Knuckles\Camel\Extraction\ResponseField>
      */
-    public $responseFields = [];
+    public array $responseFields = [];
 
     /**
      * @var array<string, array>
      */
-    public $nestedBodyParameters = [];
+    public array $nestedBodyParameters = [];
 
-    /** @var string|null */
-    public $boundUri;
+    public ?string $boundUri;
 
     public function __construct(array $parameters = [])
     {

@@ -14,56 +14,51 @@ class ExtractedEndpointData extends BaseDTO
     /**
      * @var array<string>
      */
-    public $httpMethods;
+    public array $httpMethods;
 
-    /** @var string */
-    public $uri;
+    public string $uri;
 
-    /** @var \Knuckles\Camel\Extraction\Metadata */
-    public $metadata;
+    public Metadata $metadata;
 
     /**
      * @var array<string,string>
      */
-    public $headers = [];
+    public array $headers = [];
 
     /**
-     * @var array
      * @var array<string,\Knuckles\Camel\Extraction\Parameter>
      */
-    public $urlParameters = [];
+    public array $urlParameters = [];
 
     /**
      * @var array<string,mixed>
      */
-    public $cleanUrlParameters = [];
+    public array $cleanUrlParameters = [];
 
     /**
-     * @var array
      * @var array<string,\Knuckles\Camel\Extraction\Parameter>
      */
-    public $queryParameters = [];
+    public array $queryParameters = [];
 
     /**
      * @var array<string,mixed>
      */
-    public $cleanQueryParameters = [];
+    public array $cleanQueryParameters = [];
 
     /**
-     * @var array
      * @var array<string,\Knuckles\Camel\Extraction\Parameter>
      */
-    public $bodyParameters = [];
+    public array $bodyParameters = [];
 
     /**
      * @var array<string,mixed>
      */
-    public $cleanBodyParameters = [];
+    public array $cleanBodyParameters = [];
 
     /**
      * @var array<string,\Illuminate\Http\UploadedFile|array>
      */
-    public $fileParameters = [];
+    public array $fileParameters = [];
 
     /**
      * @var ResponseCollection|array
@@ -71,26 +66,21 @@ class ExtractedEndpointData extends BaseDTO
     public $responses;
 
     /**
-     * @var array
      * @var array<string,\Knuckles\Camel\Extraction\ResponseField>
      */
-    public $responseFields = [];
+    public array $responseFields = [];
 
     /**
      * Authentication info for this endpoint. In the form [{where}, {name}, {sample}]
      * Example: ["queryParameters", "api_key", "njiuyiw97865rfyvgfvb1"]
-     * @var array
      */
-    public $auth = [];
+    public array $auth = [];
 
-    /** @var \ReflectionClass|null */
-    public $controller;
+    public ?ReflectionClass $controller;
 
-    /** @var \ReflectionFunctionAbstract|null */
-    public $method;
+    public ?\ReflectionFunctionAbstract $method;
 
-    /** @var \Illuminate\Routing\Route|null */
-    public $route;
+    public ?Route $route;
 
     public function __construct(array $parameters = [])
     {
