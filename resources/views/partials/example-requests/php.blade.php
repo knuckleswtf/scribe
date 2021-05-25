@@ -5,7 +5,7 @@
 <pre><code class="language-php">
 $client = new \GuzzleHttp\Client();
 @if($endpoint->hasRequestOptions())
-$response = $client->{{ strtolower($endpoint->methods[0]) }}(
+$response = $client->{{ strtolower($endpoint->httpMethods[0]) }}(
     '{{ rtrim($baseUrl, '/') . '/' . ltrim($endpoint->boundUri, '/') }}',
     [
 @if(!empty($endpoint->headers))@php
@@ -42,7 +42,7 @@ unset($endpoint->headers['Content-Type']);
     ]
 );
 @else
-$response = $client->{{ strtolower($endpoint->methods[0]) }}('{{ rtrim($baseUrl, '/') . '/' . ltrim($endpoint->boundUri, '/') }}');
+$response = $client->{{ strtolower($endpoint->httpMethods[0]) }}('{{ rtrim($baseUrl, '/') . '/' . ltrim($endpoint->boundUri, '/') }}');
 @endif
 $body = $response->getBody();
 print_r(json_decode((string) $body));

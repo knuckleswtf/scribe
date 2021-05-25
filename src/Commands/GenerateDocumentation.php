@@ -125,14 +125,14 @@ class GenerateDocumentation extends Command
     {
         // First, find the corresponding endpoint in cached and latest
         $thisEndpointCached = Arr::first($cachedEndpoints, function (array $endpoint) use ($endpointData) {
-            return $endpoint['uri'] === $endpointData->uri && $endpoint['methods'] === $endpointData->methods;
+            return $endpoint['uri'] === $endpointData->uri && $endpoint['httpMethods'] === $endpointData->httpMethods;
         });
         if (!$thisEndpointCached) {
             return $endpointData;
         }
 
         $thisEndpointLatest = Arr::first($latestEndpointsData, function (array $endpoint) use ($endpointData) {
-            return $endpoint['uri'] === $endpointData->uri && $endpoint['methods'] == $endpointData->methods;
+            return $endpoint['uri'] === $endpointData->uri && $endpoint['httpMethods'] == $endpointData->httpMethods;
         });
         if (!$thisEndpointLatest) {
             return $endpointData;

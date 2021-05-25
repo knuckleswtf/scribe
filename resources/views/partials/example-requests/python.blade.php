@@ -42,6 +42,6 @@ if (count($endpoint->cleanBodyParameters)) $optionalArguments[] = (count($endpoi
 if (count($endpoint->cleanQueryParameters)) $optionalArguments[] = "params=params";
 $optionalArguments = implode(', ',$optionalArguments);
 @endphp
-response = requests.request('{{$endpoint->methods[0]}}', url, {{ $optionalArguments }})
+response = requests.request('{{$endpoint->httpMethods[0]}}', url, {{ $optionalArguments }})
 response.json()
 </code></pre>

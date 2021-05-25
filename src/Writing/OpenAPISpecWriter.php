@@ -97,7 +97,7 @@ class OpenAPISpecWriter
                     $spec['security'] = [];
                 }
 
-                return [strtolower($endpoint->methods[0]) => $spec];
+                return [strtolower($endpoint->httpMethods[0]) => $spec];
             });
 
             $pathItem = $operations;

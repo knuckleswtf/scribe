@@ -26,7 +26,7 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
             $endpoint = new ExtractedEndpointData([
                 'route' => $route,
                 'uri' => $route->uri,
-                'methods' => $route->methods,
+                'httpMethods' => $route->methods,
             ]);
             $this->assertEquals('things/{id}', $endpoint->uri);
         }
@@ -42,7 +42,7 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
             $endpoint = new ExtractedEndpointData([
                 'route' => $route,
                 'uri' => $route->uri,
-                'methods' => $route->methods,
+                'httpMethods' => $route->methods,
             ]);
             $this->assertEquals('things/{id}/otherthings/{otherthing_id}', $endpoint->uri);
         }

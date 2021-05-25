@@ -41,7 +41,7 @@ let body = {!! json_encode($endpoint->cleanBodyParameters, JSON_PRETTY_PRINT | J
 @endif
 
 fetch(url, {
-    method: "{{$endpoint->methods[0]}}",
+    method: "{{$endpoint->httpMethods[0]}}",
 @if(count($endpoint->headers))
     headers,
 @endif

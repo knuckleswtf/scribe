@@ -46,8 +46,8 @@ class OpenAPISpecWriterTest extends TestCase
     /** @test */
     public function adds_endpoints_correctly_as_operations_under_paths()
     {
-        $endpointData1 = $this->createMockEndpointData(['uri' => 'path1', 'methods' => ['GET']]);
-        $endpointData2 = $this->createMockEndpointData(['uri' => 'path1', 'methods' => ['POST']]);
+        $endpointData1 = $this->createMockEndpointData(['uri' => 'path1', 'httpMethods' => ['GET']]);
+        $endpointData2 = $this->createMockEndpointData(['uri' => 'path1', 'httpMethods' => ['POST']]);
         $endpointData3 = $this->createMockEndpointData(['uri' => 'path1/path2']);
         $groups = [$this->createGroup([$endpointData1, $endpointData2, $endpointData3])];
 
@@ -60,10 +60,10 @@ class OpenAPISpecWriterTest extends TestCase
         $this->assertCount(1, $results['paths']['/path1/path2']);
         $this->assertArrayHasKey('get', $results['paths']['/path1']);
         $this->assertArrayHasKey('post', $results['paths']['/path1']);
-        $this->assertArrayHasKey(strtolower($endpointData3->methods[0]), $results['paths']['/path1/path2']);
+        $this->assertArrayHasKey(strtolower($endpointData3->httpMethods[0]), $results['paths']['/path1/path2']);
 
         collect([$endpointData1, $endpointData2, $endpointData3])->each(function (OutputEndpointData $endpoint) use ($groups, $results) {
-            $endpointSpec = $results['paths']['/' . $endpoint->uri][strtolower($endpoint->methods[0])];
+            $endpointSpec = $results['paths']['/' . $endpoint->uri][strtolower($endpoint->httpMethods[0])];
 
             $tags = $endpointSpec['tags'];
             $containingGroup = Arr::first($groups, function ($group) use ($endpoint) {
@@ -79,8 +79,8 @@ class OpenAPISpecWriterTest extends TestCase
     /** @test */
     public function adds_authentication_details_correctly_as_security_info()
     {
-        $endpointData1 = $this->createMockEndpointData(['uri' => 'path1', 'methods' => ['GET'], 'metadata.authenticated' => true]);
-        $endpointData2 = $this->createMockEndpointData(['uri' => 'path1', 'methods' => ['POST'], 'metadata.authenticated' => false]);
+        $endpointData1 = $this->createMockEndpointData(['uri' => 'path1', 'httpMethods' => ['GET'], 'metadata.authenticated' => true]);
+        $endpointData2 = $this->createMockEndpointData(['uri' => 'path1', 'httpMethods' => ['POST'], 'metadata.authenticated' => false]);
         $groups = [$this->createGroup([$endpointData1, $endpointData2])];
 
         $config = array_merge($this->config, ['auth' => ['enabled' => true, 'in' => 'bearer']]);
@@ -120,7 +120,7 @@ class OpenAPISpecWriterTest extends TestCase
     public function adds_url_parameters_correctly_as_parameters_on_path_item_object()
     {
         $endpointData1 = $this->createMockEndpointData([
-            'methods' => ['POST'],
+            'httpMethods' => ['POST'],
             'uri' => 'path1/{param}/{optionalParam?}',
             'urlParameters.param' => [
                 'description' => 'Something',
@@ -137,7 +137,7 @@ class OpenAPISpecWriterTest extends TestCase
                 'name' => 'optionalParam',
             ],
         ]);
-        $endpointData2 = $this->createMockEndpointData(['uri' => 'path1', 'methods' => ['POST']]);
+        $endpointData2 = $this->createMockEndpointData(['uri' => 'path1', 'httpMethods' => ['POST']]);
         $groups = [$this->createGroup([$endpointData1, $endpointData2])];
 
         $writer = new OpenAPISpecWriter(new DocumentationConfig($this->config));
@@ -170,8 +170,8 @@ class OpenAPISpecWriterTest extends TestCase
     /** @test */
     public function adds_headers_correctly_as_parameters_on_operation_object()
     {
-        $endpointData1 = $this->createMockEndpointData(['methods' => ['POST'], 'uri' => 'path1', 'headers.Extra-Header' => 'Some-example']);
-        $endpointData2 = $this->createMockEndpointData(['uri' => 'path1', 'methods' => ['GET'], 'headers' => []]);
+        $endpointData1 = $this->createMockEndpointData(['httpMethods' => ['POST'], 'uri' => 'path1', 'headers.Extra-Header' => 'Some-example']);
+        $endpointData2 = $this->createMockEndpointData(['uri' => 'path1', 'httpMethods' => ['GET'], 'headers' => []]);
         $groups = [$this->createGroup([$endpointData1, $endpointData2])];
 
         $writer = new OpenAPISpecWriter(new DocumentationConfig($this->config));
@@ -199,7 +199,7 @@ class OpenAPISpecWriterTest extends TestCase
     public function adds_query_parameters_correctly_as_parameters_on_operation_object()
     {
         $endpointData1 = $this->createMockEndpointData([
-            'methods' => ['GET'],
+            'httpMethods' => ['GET'],
             'uri' => '/path1',
             'headers' => [], // Emptying headers so it doesn't interfere with parameters object
             'queryParameters' => [
@@ -212,7 +212,7 @@ class OpenAPISpecWriterTest extends TestCase
                 ],
             ],
         ]);
-        $endpointData2 = $this->createMockEndpointData(['headers' => [], 'methods' => ['POST'], 'uri' => '/path1',]);
+        $endpointData2 = $this->createMockEndpointData(['headers' => [], 'httpMethods' => ['POST'], 'uri' => '/path1',]);
         $groups = [$this->createGroup([$endpointData1, $endpointData2])];
 
         $writer = new OpenAPISpecWriter(new DocumentationConfig($this->config));
@@ -239,7 +239,7 @@ class OpenAPISpecWriterTest extends TestCase
     public function adds_body_parameters_correctly_as_requestBody_on_operation_object()
     {
         $endpointData1 = $this->createMockEndpointData([
-            'methods' => ['POST'],
+            'httpMethods' => ['POST'],
             'uri' => '/path1',
             'bodyParameters' => [
                 'stringParam' => [
@@ -279,9 +279,9 @@ class OpenAPISpecWriterTest extends TestCase
                 ],
             ],
         ]);
-        $endpointData2 = $this->createMockEndpointData(['methods' => ['GET'], 'uri' => '/path1']);
+        $endpointData2 = $this->createMockEndpointData(['httpMethods' => ['GET'], 'uri' => '/path1']);
         $endpointData3 = $this->createMockEndpointData([
-            'methods' => ['PUT'],
+            'httpMethods' => ['PUT'],
             'uri' => '/path2',
             'bodyParameters' => [
                 'fileParam' => [
@@ -426,7 +426,7 @@ class OpenAPISpecWriterTest extends TestCase
     public function adds_responses_correctly_as_responses_on_operation_object()
     {
         $endpointData1 = $this->createMockEndpointData([
-            'methods' => ['POST'],
+            'httpMethods' => ['POST'],
             'uri' => '/path1',
             'responses' => [
                 [
@@ -449,7 +449,7 @@ class OpenAPISpecWriterTest extends TestCase
             ],
         ]);
         $endpointData2 = $this->createMockEndpointData([
-            'methods' => ['PUT'],
+            'httpMethods' => ['PUT'],
             'uri' => '/path2',
             'responses' => [
                 [
@@ -512,7 +512,7 @@ class OpenAPISpecWriterTest extends TestCase
         $path = '/' . $faker->word;
         $data = [
             'uri' => $path,
-            'methods' => $faker->randomElements(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], 1),
+            'httpMethods' => $faker->randomElements(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], 1),
             'headers' => [
                 'Content-Type' => 'application/json',
             ],

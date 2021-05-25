@@ -142,7 +142,7 @@ class ExtractorTest extends TestCase
     /** @test */
     public function does_not_generate_values_for_excluded_params_and_excludes_them_from_clean_params()
     {
-        $route = $this->createRoute('GET', '/api/test', 'withExcludedExamples');
+        $route = $this->createRoute('POST', '/api/test', 'withExcludedExamples');
         $parsed = $this->generator->processRoute($route)->toArray();
         $cleanBodyParameters = $parsed['cleanBodyParameters'];
         $cleanQueryParameters = $parsed['cleanQueryParameters'];
@@ -177,19 +177,19 @@ class ExtractorTest extends TestCase
     {
         $route = $this->createRoute('GET', '/get', 'withEndpointDescription');
         $parsed = $this->generator->processRoute($route);
-        $this->assertEquals(['GET'], $parsed->methods);
+        $this->assertEquals(['GET'], $parsed->httpMethods);
 
         $route = $this->createRoute('POST', '/post', 'withEndpointDescription');
         $parsed = $this->generator->processRoute($route);
-        $this->assertEquals(['POST'], $parsed->methods);
+        $this->assertEquals(['POST'], $parsed->httpMethods);
 
         $route = $this->createRoute('PUT', '/put', 'withEndpointDescription');
         $parsed = $this->generator->processRoute($route);
-        $this->assertEquals(['PUT'], $parsed->methods);
+        $this->assertEquals(['PUT'], $parsed->httpMethods);
 
         $route = $this->createRoute('DELETE', '/delete', 'withEndpointDescription');
         $parsed = $this->generator->processRoute($route);
-        $this->assertEquals(['DELETE'], $parsed->methods);
+        $this->assertEquals(['DELETE'], $parsed->httpMethods);
     }
 
     /**
@@ -209,7 +209,7 @@ class ExtractorTest extends TestCase
     /** @test */
     public function generates_consistent_examples_when_faker_seed_is_set()
     {
-        $route = $this->createRoute('GET', '/withBodyParameters', 'withBodyParameters');
+        $route = $this->createRoute('POST', '/withBodyParameters', 'withBodyParameters');
 
         $paramName = 'room_id';
         $results = [];
@@ -256,7 +256,7 @@ class ExtractorTest extends TestCase
         $handler = function () {
             return 'hi';
         };
-        $route = $this->createRouteUsesCallable('GET', '/api/closure/test', $handler);
+        $route = $this->createRouteUsesCallable('POST', '/api/closure/test', $handler);
 
         $parsed = $this->generator->processRoute($route);
 

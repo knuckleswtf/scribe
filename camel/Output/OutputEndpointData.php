@@ -16,7 +16,7 @@ class OutputEndpointData extends BaseDTO
     /**
      * @var array<string>
      */
-    public $methods;
+    public $httpMethods;
 
     /** @var string */
     public $uri;
@@ -148,7 +148,7 @@ class OutputEndpointData extends BaseDTO
 
     public function endpointId(): string
     {
-        return $this->methods[0].str_replace(['/', '?', '{', '}', ':'], '-', $this->uri);
+        return $this->httpMethods[0].str_replace(['/', '?', '{', '}', ':'], '-', $this->uri);
     }
 
     public function hasResponses(): bool
@@ -163,7 +163,7 @@ class OutputEndpointData extends BaseDTO
 
     public function isGet(): bool
     {
-        return in_array('GET', $this->methods);
+        return in_array('GET', $this->httpMethods);
     }
 
     public function hasRequestOptions(): bool

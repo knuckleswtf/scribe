@@ -31,7 +31,7 @@ class PostmanCollectionWriterTest extends TestCase
         $endpointData = $this->createMockEndpointData('some/path');
 
         // Ensure method is set correctly for assertion later
-        $endpointData->methods = ['GET'];
+        $endpointData->httpMethods = ['GET'];
 
         $endpoints = $this->createMockEndpointGroup([$endpointData], 'Group');
 
@@ -272,7 +272,7 @@ class PostmanCollectionWriterTest extends TestCase
     {
         return OutputEndpointData::create([
             'uri' => $path,
-            'methods' => ['GET'],
+            'httpMethods' => ['GET'],
             'metadata' => [
                 'title' => $title,
             ],

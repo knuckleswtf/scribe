@@ -107,7 +107,7 @@ class PostmanCollectionWriter
             'name' => $endpoint->metadata->title !== '' ? $endpoint->metadata->title : $endpoint->uri,
             'request' => [
                 'url' => $this->generateUrlObject($endpoint),
-                'method' => $endpoint->methods[0],
+                'method' => $endpoint->httpMethods[0],
                 'header' => $this->resolveHeadersForEndpoint($endpoint),
                 'body' => empty($endpoint->bodyParameters) ? null : $this->getBodyData($endpoint),
                 'description' => $endpoint->metadata->description,

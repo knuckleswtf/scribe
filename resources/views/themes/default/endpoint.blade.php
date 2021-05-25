@@ -58,7 +58,7 @@
     <blockquote>Request failed with error:</blockquote>
     <pre><code id="execution-error-message-{{ $endpoint->endpointId() }}"></code></pre>
 </div>
-<form id="form-{{ $endpoint->endpointId() }}" data-method="{{ $endpoint->methods[0] }}"
+<form id="form-{{ $endpoint->endpointId() }}" data-method="{{ $endpoint->httpMethods[0] }}"
       data-path="{{ $endpoint->uri }}"
       data-authed="{{ $endpoint->metadata->authenticated ? 1 : 0 }}"
       data-hasfiles="{{ $endpoint->hasFiles() }}"
@@ -83,7 +83,7 @@
             </button>
         @endif
     </h3>
-    @foreach($endpoint->methods as $method)
+    @foreach($endpoint->httpMethods as $method)
         <p>
             @component('scribe::components.badges.http-method', ['method' => $method])@endcomponent
             <b><code>{{$endpoint->uri}}</code></b>

@@ -51,7 +51,7 @@ class ExtractorPluginSystemTest extends TestCase
                 'responses' => [], // Making this empty so the Laravel-dependent strategies are not called
             ],
         ];
-        $route = $this->createRoute('GET', '/api/test', 'dummy', true, TestController::class);
+        $route = $this->createRoute('POST', '/api/test', 'dummy', true, TestController::class);
         $generator = new Extractor(new DocumentationConfig($config));
         $generator->processRoute($route);
 

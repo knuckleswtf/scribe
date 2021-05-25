@@ -14,7 +14,7 @@ class ExtractedEndpointData extends BaseDTO
     /**
      * @var array<string>
      */
-    public $methods;
+    public $httpMethods;
 
     /** @var string */
     public $uri;
@@ -103,14 +103,14 @@ class ExtractedEndpointData extends BaseDTO
 
     public static function fromRoute(Route $route, array $extras = []): self
     {
-        $methods = self::getMethods($route);
+        $httpMethods = self::getMethods($route);
         $uri = $route->uri();
 
         [$controllerName, $methodName] = u::getRouteClassAndMethodNames($route);
         $controller = new ReflectionClass($controllerName);
         $method = u::getReflectedRouteMethod([$controllerName, $methodName]);
 
-        $data = compact('methods', 'uri', 'controller', 'method', 'route');
+        $data = compact('httpMethods', 'uri', 'controller', 'method', 'route');
         $data = array_merge($data, $extras);
 
         return new ExtractedEndpointData($data);
@@ -141,7 +141,7 @@ class ExtractedEndpointData extends BaseDTO
 
     public function endpointId()
     {
-        return $this->methods[0] . str_replace(['/', '?', '{', '}', ':'], '-', $this->uri);
+        return $this->httpMethods[0] . str_replace(['/', '?', '{', '}', ':'], '-', $this->uri);
     }
 
     public function normalizeResourceParamName(string $uri, Route $route): string
