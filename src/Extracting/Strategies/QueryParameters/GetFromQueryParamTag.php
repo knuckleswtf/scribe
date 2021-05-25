@@ -18,8 +18,6 @@ use ReflectionUnionType;
 
 class GetFromQueryParamTag extends Strategy
 {
-    public string $stage = 'queryParameters';
-
     use ParamHelpers;
 
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)

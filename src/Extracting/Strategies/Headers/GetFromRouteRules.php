@@ -7,8 +7,6 @@ use Knuckles\Scribe\Extracting\Strategies\Strategy;
 
 class GetFromRouteRules extends Strategy
 {
-    public string $stage = 'headers';
-
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): array
     {
         return $routeRules['headers'] ?? [];

@@ -18,8 +18,6 @@ use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\ErrorHandlingUtils as e;
 use Knuckles\Scribe\Tools\Utils;
-use ReflectionClass;
-use ReflectionFunctionAbstract;
 
 /**
  * Make a call to the route and retrieve its response.

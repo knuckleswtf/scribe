@@ -19,8 +19,6 @@ class GetFromUrlParamTag extends Strategy
 {
     use ParamHelpers;
 
-    public string $stage = 'urlParameters';
-
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)
     {
         foreach ($endpointData->method->getParameters() as $param) {

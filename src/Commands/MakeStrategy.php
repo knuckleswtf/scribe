@@ -30,7 +30,7 @@ class MakeStrategy extends GeneratorCommand
     {
         $stub = parent::replaceClass($stub, $name);
 
-        return str_replace('dummyStage', $this->argument('stage'), $stub);
+        return $stub;
     }
 
 }

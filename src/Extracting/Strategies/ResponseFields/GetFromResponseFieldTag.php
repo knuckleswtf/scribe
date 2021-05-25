@@ -12,8 +12,6 @@ use Mpociot\Reflection\DocBlock\Tag;
 
 class GetFromResponseFieldTag extends Strategy
 {
-    public string $stage = 'responseFields';
-
     use ParamHelpers;
 
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)
