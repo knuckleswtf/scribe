@@ -7,6 +7,7 @@ use Knuckles\Scribe\Commands\GenerateDocumentation;
 use Knuckles\Scribe\Commands\MakeStrategy;
 use Knuckles\Scribe\Matching\RouteMatcher;
 use Knuckles\Scribe\Matching\RouteMatcherInterface;
+use Knuckles\Scribe\Tools\Utils;
 
 class ScribeServiceProvider extends ServiceProvider
 {
@@ -56,9 +57,8 @@ class ScribeServiceProvider extends ServiceProvider
             config('scribe.type', 'static') === 'laravel' &&
             config('scribe.laravel.add_routes', false)
         ) {
-            $this->loadRoutesFrom(
-                __DIR__ . '/../routes/laravel.php'
-            );
+            $routesPath = Utils::isLumen() ? __DIR__ . '/../routes/lumen.php' : __DIR__ . '/../routes/laravel.php';
+            $this->loadRoutesFrom($routesPath);
         }
     }
 }
