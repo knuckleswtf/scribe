@@ -75,14 +75,15 @@ class GetFromBodyParamTag extends Strategy
             // Examples:
             // @bodyParam text string required The text.
             // @bodyParam user_id integer The ID of the user.
-            preg_match('/(.+?)\s+(.+?)\s+(required\s+)?([\s\S]*)/', $tagContent, $content);
-            if (empty($content)) {
-                // this means only name and type were supplied
+            preg_match('/(.+?)\s+(.+?)\s+(required\s+)?([\s\S]*)/', $tagContent, $parsedContent);
+
+            if (empty($parsedContent)) {
+                // This means only name and type were supplied
                 [$name, $type] = preg_split('/\s+/', $tagContent);
                 $required = false;
                 $description = '';
             } else {
-                [$_, $name, $type, $required, $description] = $content;
+                [$_, $name, $type, $required, $description] = $parsedContent;
                 $description = trim(str_replace(['No-example.', 'No-example'], '', $description));
                 if ($description == 'required') {
                     $required = $description;

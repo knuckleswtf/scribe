@@ -210,7 +210,7 @@ trait ParamHelpers
     protected function parseExampleFromParamDescription(string $description, string $type)
     {
         $example = null;
-        if (preg_match('/(.*)\bExample:\s*([\s\S]+)\s*/', $description, $content)) {
+        if (preg_match('/(.*)\bExample:\s*([\s\S]+)\s*/s', $description, $content)) {
             $description = trim($content[1]);
 
             // Examples are parsed as strings by default, we need to cast them properly

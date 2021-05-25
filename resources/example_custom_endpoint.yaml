@@ -2,7 +2,7 @@
 # you can define it in a custom.*.yaml file, like this one.
 # Each custom file should contain an array of endpoints. Here's an example:
 
-#- methods:
+#- httpMethods:
 #    - POST
 #  uri: api/doSomething/{param}
 #  metadata:
