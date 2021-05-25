@@ -149,4 +149,4 @@ We know it seems silly🙂, but it's actually a small optimisation that makes th
 
 <hr>
 
-Thanks for using Scribe! We hope you have fun and write kickass API docs! And if you'd like to get better at API documentation, I;m making a course just for you: [apidocsfordevs.com](https://apidocsfordevs.com).
+Thanks for using Scribe! We hope you have fun and write kickass API docs! And if you'd like to get better at API documentation, I'm making a course just for you: [apidocsfordevs.com](https://apidocsfordevs.com).
