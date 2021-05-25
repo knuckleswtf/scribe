@@ -70,7 +70,7 @@ In the template, you have the `$baseUrl` and `$route` variables available to you
 Finally, add the language to the `example_languages` array in your config and generate your documentation as usual. 
 
 ```eval_rst
-.. Note:: Scribe makes use of CSS from [ighlight.js](https://highlightjs.org) for its syntax highlighting. The bundle we use only includes support for a bunch of the most popular languages. If your language isn't supported (all code appears white), you can [download a new CSS bundle](https://highlightjs.org/download/) yourself, and include your desired language. Then locate the highlight.js CSS file that Scribe outputs for you after generation, and replace that with the one you downloaded. 
+.. Note:: Scribe makes use of CSS from `highlight.js <https://highlightjs.org>`_ for its syntax highlighting. The bundle we use only includes support for a bunch of the most popular languages. If your language isn't supported (all code appears white), you can `download a new CSS bundle <https://highlightjs.org/download/>`_ yourself, and include your desired language. Then locate the highlight.js CSS file that Scribe outputs for you after generation, and replace that with the one you downloaded. 
 ```
 
 ## Customizing the code used in examples
