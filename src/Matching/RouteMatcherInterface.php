@@ -12,5 +12,5 @@ interface RouteMatcherInterface
      *
      * @return MatchedRoute[]
      */
-    public function getRoutes(array $routeRules = [], string $router = 'laravel');
+    public function getRoutes(array $routeRules = [], string $router = 'laravel'): array;
 }

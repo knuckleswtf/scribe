@@ -11,7 +11,7 @@ url = '{{ rtrim($baseUrl, '/') }}/{{ $endpoint->boundUri }}'
 files = {
 @foreach($endpoint->fileParameters as $parameter => $value)
 @foreach(u::getParameterNamesAndValuesForFormData($parameter, $value) as $key => $file)
-  '{!! $key !!}': open('{!! $file->path() !!}', 'rb')@if(!($loop->last)),
+  '{!! $key !!}': open('{!! $file->path() !!}', 'rb')@if(!($loop->parent->last)),
 @endif
 @endforeach
 @endforeach

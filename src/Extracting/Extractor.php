@@ -17,19 +17,13 @@ use Knuckles\Scribe\Tools\DocumentationConfig;
 
 class Extractor
 {
-    /**
-     * @var DocumentationConfig
-     */
-    private $config;
+    private DocumentationConfig $config;
 
     use ParamHelpers;
 
-    /**
-     * @var Route|null
-     */
-    private static $routeBeingProcessed = null;
+    private static ?Route $routeBeingProcessed = null;
 
-    private static $defaultStrategies = [
+    private static array $defaultStrategies = [
         'metadata' => [
             \Knuckles\Scribe\Extracting\Strategies\Metadata\GetFromDocBlocks::class,
         ],

@@ -10,47 +10,23 @@ use Symfony\Component\Yaml\Yaml;
 
 class Writer
 {
-    /**
-     * @var DocumentationConfig
-     */
-    private $config;
+    private DocumentationConfig $config;
 
-    /**
-     * @var string
-     */
-    private $baseUrl;
+    private string $baseUrl;
 
-    /**
-     * @var bool
-     */
-    private $shouldOverwrite;
+    private bool $isStatic;
 
-    /**
-     * @var bool
-     */
-    private $isStatic;
+    private string $markdownOutputPath = '.scribe';
 
-    /**
-     * @var string
-     */
-    private $markdownOutputPath = '.scribe';
+    private string $staticTypeOutputPath;
 
-    /**
-     * @var string
-     */
-    private $staticTypeOutputPath;
-
-    /**
-     * @var string
-     */
-    private $laravelTypeOutputPath = 'resources/views/scribe';
+    private string $laravelTypeOutputPath = 'resources/views/scribe';
 
     public function __construct(DocumentationConfig $config = null, bool $shouldOverwrite = false)
     {
         // If no config is injected, pull from global. Makes testing easier.
         $this->config = $config ?: new DocumentationConfig(config('scribe'));
         $this->baseUrl = $this->config->get('base_url') ?? config('app.url');
-        $this->shouldOverwrite = $shouldOverwrite;
 
         $this->isStatic = $this->config->get('type') === 'static';
         $this->staticTypeOutputPath = rtrim($this->config->get('static.output_path', 'public/docs'), '/');

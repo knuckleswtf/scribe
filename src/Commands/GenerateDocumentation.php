@@ -34,23 +34,14 @@ class GenerateDocumentation extends Command
 
     protected $description = 'Generate API documentation from your Laravel/Dingo routes.';
 
-    /**
-     * @var DocumentationConfig
-     */
-    private $docConfig;
+    private DocumentationConfig $docConfig;
 
-    public static $camelDir = ".scribe/endpoints";
-    public static $cacheDir = ".scribe/endpoints.cache";
+    public static string $camelDir = ".scribe/endpoints";
+    public static string $cacheDir = ".scribe/endpoints.cache";
 
-    /**
-     * @var bool
-     */
-    private $shouldExtract;
+    private bool $shouldExtract;
 
-    /**
-     * @var bool
-     */
-    private $forcing;
+    private bool $forcing;
 
     public function handle(RouteMatcherInterface $routeMatcher): void
     {

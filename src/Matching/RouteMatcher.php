@@ -9,14 +9,14 @@ use Illuminate\Support\Str;
 
 class RouteMatcher implements RouteMatcherInterface
 {
-    public function getRoutes(array $routeRules = [], string $router = 'laravel')
+    public function getRoutes(array $routeRules = [], string $router = 'laravel'): array
     {
         $usingDingoRouter = strtolower($router) == 'dingo';
 
         return $this->getRoutesToBeDocumented($routeRules, $usingDingoRouter);
     }
 
-    private function getRoutesToBeDocumented(array $routeRules, bool $usingDingoRouter = false)
+    private function getRoutesToBeDocumented(array $routeRules, bool $usingDingoRouter = false): array
     {
         $allRoutes = $this->getAllRoutes($usingDingoRouter);
 
@@ -59,20 +59,25 @@ class RouteMatcher implements RouteMatcherInterface
             })->toArray();
     }
 
-    private function shouldIncludeRoute(Route $route, array $routeRule, array $mustIncludes, bool $usingDingoRouter)
+    private function shouldIncludeRoute(Route $route, array $routeRule, array $mustIncludes, bool $usingDingoRouter): bool
     {
-        $matchesVersion = $usingDingoRouter
-            ? ! empty(array_intersect($route->versions(), $routeRule['match']['versions'] ?? []))
-            : true;
+        if (Str::is($mustIncludes, $route->getName()) || Str::is($mustIncludes, $route->uri())) {
+            return true;
+        }
 
-        return Str::is($mustIncludes, $route->getName())
-            || Str::is($mustIncludes, $route->uri())
-            || (Str::is($routeRule['match']['domains'] ?? [], $route->getDomain())
-            && Str::is($routeRule['match']['prefixes'] ?? [], $route->uri())
-            && $matchesVersion);
+        $matchesVersion = true;
+        if ($usingDingoRouter) {
+            $matchesVersion = !empty(array_intersect($route->versions(), $routeRule['match']['versions'] ?? []));
+        }
+
+        $domainsToMatch = $routeRule['match']['domains'] ?? [];
+        $pathsToMatch = $routeRule['match']['prefixes'] ?? [];
+
+        return Str::is($domainsToMatch, $route->getDomain()) && Str::is($pathsToMatch, $route->uri())
+            && $matchesVersion;
     }
 
-    private function shouldExcludeRoute(Route $route, array $routeRule)
+    private function shouldExcludeRoute(Route $route, array $routeRule): bool
     {
         $excludes = $routeRule['exclude'] ?? [];
 

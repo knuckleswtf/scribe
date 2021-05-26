@@ -15,9 +15,9 @@
     <link rel="stylesheet" href="css/theme-default.print.css" media="print">
     <script src="{{ u::getVersionedAsset('js/theme-default.js') }}"></script>
 
-    <link rel="stylesheet" href="css/highlight-darcula.css">
-    <script src="js/highlight.pack.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
+    <link href="https://unpkg.com/prismjs@v1.x/themes/prism-twilight.css" rel="stylesheet" />
+    <script src="https://unpkg.com/prismjs@v1.x/components/prism-core.min.js"></script>
+    <script src="https://unpkg.com/prismjs@v1.x/plugins/autoloader/prism-autoloader.min.js"></script>
 
 @if($isInteractive)
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
