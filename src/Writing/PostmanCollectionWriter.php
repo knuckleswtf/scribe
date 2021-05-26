@@ -17,17 +17,14 @@ class PostmanCollectionWriter
      */
     const VERSION = '2.1.0';
 
-    /**
-     * @var DocumentationConfig
-     */
-    protected $config;
+    protected DocumentationConfig $config;
 
-    protected $baseUrl;
+    protected string $baseUrl;
 
     public function __construct(DocumentationConfig $config = null)
     {
         $this->config = $config ?: new DocumentationConfig(config('scribe', []));
-        $this->baseUrl = ($this->config->get('postman.base_url') ?: $this->config->get('base_url')) ?: config('app.url');
+        $this->baseUrl = $this->config->get('base_url') ?: config('app.url');
     }
 
     /**
@@ -35,7 +32,7 @@ class PostmanCollectionWriter
      *
      * @return array
      */
-    public function generatePostmanCollection(array $groupedEndpoints)
+    public function generatePostmanCollection(array $groupedEndpoints): array
     {
         $collection = [
             'variable' => [
@@ -65,7 +62,7 @@ class PostmanCollectionWriter
         return $collection;
     }
 
-    protected function generateAuthObject()
+    protected function generateAuthObject(): array
     {
         if (!$this->config->get('auth.enabled')) {
             return [
@@ -187,7 +184,7 @@ class PostmanCollectionWriter
         return $body;
     }
 
-    protected function resolveHeadersForEndpoint(OutputEndpointData $endpointData)
+    protected function resolveHeadersForEndpoint(OutputEndpointData $endpointData): array
     {
         [$where, $authParam] = $this->getAuthParamToExclude();
 
@@ -215,7 +212,7 @@ class PostmanCollectionWriter
         return $headers;
     }
 
-    protected function generateUrlObject(OutputEndpointData $endpointData)
+    protected function generateUrlObject(OutputEndpointData $endpointData): array
     {
         $base = [
             'protocol' => Str::startsWith($this->baseUrl, 'https') ? 'https' : 'http',

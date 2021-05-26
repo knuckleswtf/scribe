@@ -128,7 +128,7 @@ class ResponseCalls extends Strategy
         $uri = Utils::getUrlWithBoundParameters($route->uri(), $urlParams);
         $routeMethods = $this->getMethods($route);
         $method = array_shift($routeMethods);
-        $cookies = isset($rulesToApply['cookies']) ? $rulesToApply['cookies'] : [];
+        $cookies = $rulesToApply['cookies'] ?? [];
 
         // Note that we initialise the request with the bodyParams here
         // and later still add them to the ParameterBag (`addBodyParameters`)
@@ -138,7 +138,9 @@ class ResponseCalls extends Strategy
         // (where Symfony usually reads from and Laravel sometimes does)
         // Adding to both ensures consistency
 
-        $request = Request::create($uri, $method, [], $cookies, $fileParameters, $this->transformHeadersToServerVars($headers), json_encode($bodyParams));
+        // Always use the current app domain for response calls
+        $rootUrl = config('app.url');
+        $request = Request::create("$rootUrl/$uri", $method, [], $cookies, $fileParameters, $this->transformHeadersToServerVars($headers), json_encode($bodyParams));
         // Doing it again to catch any ones we didn't transform properly.
         $request = $this->addHeaders($request, $route, $headers);
 

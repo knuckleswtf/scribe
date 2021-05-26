@@ -19,10 +19,10 @@
     <script src="https://unpkg.com/prismjs@v1.x/components/prism-core.min.js"></script>
     <script src="https://unpkg.com/prismjs@v1.x/plugins/autoloader/prism-autoloader.min.js"></script>
 
-@if($isInteractive)
+@if($tryItOut['enabled'] ?? false)
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
     <script>
-        var baseUrl = "{{ $baseUrl }}";
+        var baseUrl = "{{ $tryItOut['base_url'] ?? config('app.url') }}";
     </script>
     <script src="{{ u::getVersionedAsset('js/tryitout.js') }}"></script>
 @endif

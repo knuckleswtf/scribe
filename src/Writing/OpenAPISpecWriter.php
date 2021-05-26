@@ -6,6 +6,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Knuckles\Camel\Camel;
+use Knuckles\Camel\Extraction\Response;
 use Knuckles\Camel\Output\OutputEndpointData;
 use Knuckles\Camel\Output\Group;
 use Knuckles\Camel\Output\Parameter;
@@ -19,18 +20,14 @@ class OpenAPISpecWriter
 
     const VERSION = '3.0.3';
 
-    /**
-     * @var DocumentationConfig
-     */
-    private $config;
+    private DocumentationConfig $config;
 
     /**
      * Object to represent empty values, since empty arrays get serialised as objects.
      * Can't use a constant because of initialisation expression.
      *
-     * @var \stdClass
      */
-    public $EMPTY;
+    public \stdClass $EMPTY;
 
     public function __construct(DocumentationConfig $config = null)
     {
@@ -277,7 +274,7 @@ class OpenAPISpecWriter
         return count($responses) > 0 ? $responses : $this->EMPTY;
     }
 
-    protected function getResponseDescription($response)
+    protected function getResponseDescription(Response $response): string
     {
         if (Str::startsWith($response->content, "<<binary>>")) {
             return trim(str_replace("<<binary>>", "", $response->content));

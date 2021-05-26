@@ -28,4 +28,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Removed `$stage`
 - More validation rules support
 - Inline validators
-- Infer URL parameter type
+- Infer URL parameter type and name
+- Renamed `interactive` to `try_it_out`
+- 3 base URLs

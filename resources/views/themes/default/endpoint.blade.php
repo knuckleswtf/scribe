@@ -66,7 +66,7 @@
       onsubmit="event.preventDefault(); executeTryOut('{{ $endpoint->endpointId() }}', this);">
     <h3>
         Request&nbsp;&nbsp;&nbsp;
-        @if($metadata['interactive'])
+        @if($metadata['try_it_out']['enabled'] ?? false)
             <button type="button"
                     style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
                     id="btn-tryout-{{ $endpoint->endpointId() }}"

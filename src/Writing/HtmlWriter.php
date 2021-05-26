@@ -14,18 +14,9 @@ use Parsedown;
  */
 class HtmlWriter
 {
-    /**
-     * @var DocumentationConfig
-     */
-    protected $config;
-
-    /** @var string */
-    protected $baseUrl;
-
-    /**
-     * @var Parsedown
-     */
-    protected $markdownParser;
+    protected DocumentationConfig $config;
+    protected string $baseUrl;
+    protected Parsedown $markdownParser;
 
     public function __construct(DocumentationConfig $config = null)
     {
@@ -48,7 +39,7 @@ class HtmlWriter
         $output = View::make("scribe::themes.$theme.index", [
             'metadata' => $this->getMetadata(),
             'baseUrl' => $this->baseUrl,
-            'isInteractive' => $this->config->get('interactive', true),
+            'tryItOut' => $this->config->get('try_it_out'),
             'prepend' => $prepend,
             'index' => $index,
             'authentication' => $authentication,
@@ -106,7 +97,7 @@ class HtmlWriter
             'logo' => $this->config->get('logo') ?? false,
             'last_updated' => date("F j Y"),
             'auth' => $auth,
-            'interactive' => $this->config->get('interactive', true),
+            'try_it_out' => $this->config->get('try_it_out'),
             'links' => $links + ['<a href="http://github.com/knuckleswtf/scribe">Documentation powered by Scribe ✍</a>'],
         ];
     }
