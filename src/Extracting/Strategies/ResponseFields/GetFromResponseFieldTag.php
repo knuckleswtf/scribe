@@ -73,7 +73,7 @@ class GetFromResponseFieldTag extends Strategy
                                 ?? $nonexistent;
 
                             if ($value !== $nonexistent) {
-                                $type = $this->normalizeTypeName(gettype($value));
+                                $type = $this->normalizeTypeName(gettype($value), $value);
                             }
                         }
                     }

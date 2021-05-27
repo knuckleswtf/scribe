@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 trait ParamHelpers
 {
 
-    protected function getFaker()
+    protected function getFaker(): \Faker\Generator
     {
         $faker = Factory::create();
         if ($this->config->get('faker_seed')) {
@@ -57,7 +57,7 @@ trait ParamHelpers
         return $fakeFactories[$baseType] ?? $fakeFactories['string'];
     }
 
-    private function getDummyDataGeneratorBetween(string $type, $min, $max = null)
+    private function getDummyDataGeneratorBetween(string $type, $min, $max = null): \Closure
     {
         $baseType = $type;
         $isListType = false;
@@ -88,7 +88,7 @@ trait ParamHelpers
         return $fakeFactories[$baseType] ?? $fakeFactories['string'];
     }
 
-    protected function isSupportedTypeInDocBlocks(string $type)
+    protected function isSupportedTypeInDocBlocks(string $type): bool
     {
         $types = [
             'integer',
@@ -158,14 +158,16 @@ trait ParamHelpers
     }
 
     /**
-     * Normalizes the stated "type" of a parameter (eg "int", "integer", "double")
-     * to a number of standard types (integer, boolean, number). Will return the input if no match.
+     * Normalizes the stated "type" of a parameter (eg "int", "integer", "double", "array"...)
+     * to a number of standard JSON types (integer, boolean, number, object...).
+     * Will return the input if no match.
      *
-     * @param string $typeName
+     * @param string|null $typeName
+     * @param mixed $value
      *
      * @return string
      */
-    protected function normalizeTypeName(?string $typeName): string
+    protected function normalizeTypeName(?string $typeName, $value = null): string
     {
         if (!$typeName) {
             return 'string';
@@ -180,6 +182,8 @@ trait ParamHelpers
                 return str_replace($base, 'number', $typeName);
             case 'bool':
                 return str_replace($base, 'boolean', $typeName);
+            case 'array':
+                return array_keys($value)[0] === 0 ? 'array' : 'object';
             default:
                 return $typeName;
         }
@@ -193,7 +197,7 @@ trait ParamHelpers
      *
      * @return bool If true, don't generate an example for this.
      */
-    protected function shouldExcludeExample(string $description)
+    protected function shouldExcludeExample(string $description): bool
     {
         return strpos($description, ' No-example') !== false;
     }
@@ -207,7 +211,7 @@ trait ParamHelpers
      *
      * @return array The description and included example.
      */
-    protected function parseExampleFromParamDescription(string $description, string $type)
+    protected function parseExampleFromParamDescription(string $description, string $type): array
     {
         $example = null;
         if (preg_match('/(.*)\bExample:\s*([\s\S]+)\s*/s', $description, $content)) {
