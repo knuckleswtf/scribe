@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 2.7.5 (Thursday, 27 May 2021)
+### Fixed
+- Fix Laravel-type generation (https://github.com/knuckleswtf/scribe/commit/29bb385e97280a0070c4295a558ec2be692108b8)
+    
 ## 2.7.4 (Thursday, 27 May 2021)
 ### Fixed
 - Fix Laravel-type generation (https://github.com/knuckleswtf/scribe/commit/7afdd06e70bf7c9bd6e5df02c221b780a07e488b)
