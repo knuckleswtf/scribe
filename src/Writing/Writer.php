@@ -140,12 +140,12 @@ class Writer
 
         // Move assets from public/docs to public/vendor/scribe
         // We need to do this delete first, otherwise move won't work if folder exists
-        Utils::deleteDirectoryAndContents("$publicDirectory/vendor/scribe/", "/");
+        Utils::deleteDirectoryAndContents("$publicDirectory/vendor/scribe/");
         rename("{$this->staticTypeOutputPath}/", "$publicDirectory/vendor/scribe/");
 
         $contents = file_get_contents("$this->laravelTypeOutputPath/index.blade.php");
 
-        // Rewrite links to go through Laravel
+        // Rewrite asset links to go through Laravel
         $contents = preg_replace('#href="css/(.+?)"#', 'href="{{ asset("vendor/scribe/css/$1") }}"', $contents);
         $contents = preg_replace('#src="(js|images)/(.+?)"#', 'src="{{ asset("vendor/scribe/$1/$2") }}"', $contents);
         $contents = str_replace('href="./collection.json"', 'href="{{ route("scribe.postman") }}"', $contents);
