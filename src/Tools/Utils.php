@@ -102,7 +102,7 @@ class Utils
         $dir = ltrim($dir, '/');
         dump($dir);
         $dir = ltrim($dir, $adapter->getPathPrefix());
-        dump($adapter->getPathPrefix(), $dir);
+        dd($adapter->getPathPrefix(), $dir);
         $fs->deleteDir($dir);
     }
 
