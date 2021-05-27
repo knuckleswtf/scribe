@@ -42,6 +42,7 @@ class GenerateDocumentation extends Command
     private bool $shouldExtract;
 
     private bool $forcing;
+    private bool $encounteredErrors = false;
 
     public function handle(RouteMatcherInterface $routeMatcher): void
     {
@@ -64,6 +65,11 @@ class GenerateDocumentation extends Command
         $groupedEndpoints = $this->mergeUserDefinedEndpoints($groupedEndpoints, $userDefinedEndpoints);
         $writer = new Writer($this->docConfig, $this->forcing);
         $writer->writeDocs($groupedEndpoints);
+
+        if ($this->encounteredErrors) {
+            c::warn('Generated docs, but encountered some errors while processing routes.');
+            c::warn('Check the output above for details.');
+        }
     }
 
     /**
@@ -104,6 +110,7 @@ class GenerateDocumentation extends Command
                 $parsedRoutes[] = $currentEndpointData;
                 c::success('Processed route: ' . c::getRouteRepresentation($route));
             } catch (\Exception $exception) {
+                $this->encounteredErrors = true;
                 c::error('Failed processing route: ' . c::getRouteRepresentation($route) . ' - Exception encountered.');
                 e::dumpExceptionIfVerbose($exception);
             }
