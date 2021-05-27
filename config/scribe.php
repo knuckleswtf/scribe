@@ -14,6 +14,10 @@ return [
      */
     'description' => '',
 
+    /*
+     * The base URL displayed in the docs. If this is empty, Scribe will use the value of config('app.url').
+     */
+    'base_url' => null,
 
     /*
      * Tell Scribe what routes to generate documentation for.
@@ -248,11 +252,6 @@ INTRO
         'bash',
         'javascript',
     ],
-
-    /*
-     * The base URL to be used in examples. If this is empty, Scribe will use the value of config('app.url').
-     */
-    'base_url' => null,
 
     /*
      * Generate a Postman collection (v2.1.0) in addition to HTML docs.

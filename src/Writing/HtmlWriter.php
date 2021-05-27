@@ -30,9 +30,7 @@ class HtmlWriter
         $index = $this->transformMarkdownFileToHTML($sourceFolder . '/index.md');
         $authentication = $this->transformMarkdownFileToHTML($sourceFolder . '/authentication.md');
 
-        $prependFile = rtrim($sourceFolder, '/') . '/' . 'prepend.md';
         $appendFile = rtrim($sourceFolder, '/') . '/' . 'append.md';
-        $prepend = file_exists($prependFile) ? $this->transformMarkdownFileToHTML($prependFile) : '';
         $append = file_exists($appendFile) ? $this->transformMarkdownFileToHTML($appendFile) : '';
 
         $theme = $this->config->get('theme') ?? 'default';
@@ -40,7 +38,6 @@ class HtmlWriter
             'metadata' => $this->getMetadata(),
             'baseUrl' => $this->baseUrl,
             'tryItOut' => $this->config->get('try_it_out'),
-            'prepend' => $prepend,
             'index' => $index,
             'authentication' => $authentication,
             'groupedEndpoints' => $groupedEndpoints,

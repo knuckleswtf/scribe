@@ -69,8 +69,6 @@
 <div class="page-wrapper">
     <div class="dark-box"></div>
     <div class="content">
-        {!! $prepend !!}
-
         {!! $index !!}
 
         {!! $authentication !!}
