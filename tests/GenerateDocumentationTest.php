@@ -37,7 +37,8 @@ class GenerateDocumentationTest extends TestCase
 
     public function tearDown(): void
     {
-      Utils::deleteDirectoryAndContents('public/docs', realpath(__DIR__."/../"));
+      Utils::deleteDirectoryAndContents('public/docs');
+      Utils::deleteDirectoryAndContents('resources/docs');
     }
 
     /**
@@ -343,6 +344,7 @@ class GenerateDocumentationTest extends TestCase
         $this->artisan('scribe:generate');
 
         $this->assertFileExists(realpath(__DIR__ . '/../static/docs/index.html'));
+        Utils::deleteDirectoryAndContents('static/docs')
     }
 
     /** @test */
