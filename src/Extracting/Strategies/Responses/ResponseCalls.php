@@ -41,7 +41,7 @@ class ResponseCalls extends Strategy
         return $this->makeResponseCall($endpointData, $rulesToApply);
     }
 
-    public function makeResponseCall(ExtractedEndpointData $endpointData, array $rulesToApply)
+    public function makeResponseCall(ExtractedEndpointData $endpointData, array $rulesToApply): ?array
     {
         $this->configureEnvironment($rulesToApply);
 

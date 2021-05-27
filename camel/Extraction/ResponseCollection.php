@@ -9,15 +9,14 @@ use Knuckles\Camel\BaseDTOCollection;
  */
 class ResponseCollection extends BaseDTOCollection
 {
-    /** @var string */
-    public static $base = Response::class;
+    public static string $base = Response::class;
 
     public function current(): Response
     {
         return parent::current();
     }
 
-    public function hasSuccessResponse()
+    public function hasSuccessResponse(): bool
     {
         return collect($this->toArray())
                 ->first(function ($response) {

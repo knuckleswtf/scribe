@@ -174,7 +174,8 @@ class Extractor
             // Responses from different strategies are all added, not overwritten
             $endpointData->responses->concat($results);
         });
-
+        // Ensure 200 responses come first
+        $endpointData->responses = $endpointData->responses->sortBy('status');
     }
 
     protected function fetchResponseFields(ExtractedEndpointData $endpointData, array $rulesToApply): void

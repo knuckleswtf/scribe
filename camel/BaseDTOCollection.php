@@ -2,6 +2,7 @@
 
 namespace Knuckles\Camel;
 
+use Illuminate\Support\Arr;
 use Knuckles\Camel\Extraction\T;
 use Spatie\DataTransferObject\DataTransferObjectCollection;
 
@@ -13,7 +14,7 @@ class BaseDTOCollection extends DataTransferObjectCollection
     /**
      * @var string The name of the base DTO class.
      */
-    public static $base = '';
+    public static string $base = '';
 
     public function __construct(array $collection = [])
     {
@@ -31,10 +32,20 @@ class BaseDTOCollection extends DataTransferObjectCollection
     /**
      * @param T[] $items
      */
-    public function concat($items)
+    public function concat(array $items)
     {
         foreach ($items as $item) {
             $this[] = is_array($item) ? new static::$base($item) : $item;
         }
+    }
+
+    /**
+     * @param string $key
+     */
+    public function sortBy(string $key): self
+    {
+        $items = $this->items();
+        $items = Arr::sort($items, $key);
+        return new static(array_values($items));
     }
 }
