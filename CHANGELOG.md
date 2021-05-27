@@ -12,10 +12,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 2.7.4 (Thursday, 27 May 2021)
+### Fixed
+- Fix Laravel-type generation (https://github.com/knuckleswtf/scribe/commit/7afdd06e70bf7c9bd6e5df02c221b780a07e488b)
+    
 ## 2.7.3 (Tuesday, 25 May 2021)
 ### Fixed
 - Don't crash if FormRequest instantiation fails (https://github.com/knuckleswtf/scribe/pull/217)
--  Support multiline parameter description (https://github.com/knuckleswtf/scribe/commit/56025ff5eee9295e853958f87f7b8e4aa6ea23e4)
+- Support multiline parameter description (https://github.com/knuckleswtf/scribe/commit/56025ff5eee9295e853958f87f7b8e4aa6ea23e4)
 
 ## 2.7.2 (Saturday, 22 May 2021)
 ### Fixed
