@@ -38,7 +38,6 @@ class GenerateDocumentationTest extends TestCase
     public function tearDown(): void
     {
       Utils::deleteDirectoryAndContents('public/docs', realpath(__DIR__."/../"));
-      Utils::deleteDirectoryAndContents('resources/docs', realpath(__DIR__."/../"));
     }
 
     /**
@@ -304,6 +303,7 @@ class GenerateDocumentationTest extends TestCase
 
         $generatedMarkdown = $this->getFileContents(__DIR__ . '/../resources/docs/groups/group-a.md');
         $this->assertContainsIgnoringWhitespace('"Authorization": "customAuthToken","Custom-Header":"NotSoCustom"', $generatedMarkdown);
+        Utils::deleteDirectoryAndContents('resources/docs'));
     }
 
     /** @test */
@@ -316,6 +316,7 @@ class GenerateDocumentationTest extends TestCase
 
         $generatedMarkdown = file_get_contents(__DIR__ . '/../resources/docs/groups/group-a.md');
         $this->assertStringContainsString('Лорем ипсум долор сит амет', $generatedMarkdown);
+        Utils::deleteDirectoryAndContents('resources/docs'));
     }
 
     /** @test */
