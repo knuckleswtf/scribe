@@ -343,7 +343,6 @@ class GenerateDocumentationTest extends TestCase
         $this->artisan('scribe:generate');
 
         $this->assertFileExists(realpath(__DIR__ . '/../static/docs/index.html'));
-        Utils::deleteDirectoryAndContents('static/docs');
     }
 
     /** @test */
