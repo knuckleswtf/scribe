@@ -22,7 +22,7 @@ abstract class Strategy
      *
      * @return DocumentationConfig
      */
-    public function getConfig()
+    public function getConfig(): DocumentationConfig
     {
         return $this->config;
     }
@@ -33,5 +33,5 @@ abstract class Strategy
      *
      * @return array|null
      */
-    abstract public function __invoke(ExtractedEndpointData $endpointData, array $routeRules);
+    abstract public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): ?array;
 }

@@ -1,5 +1,7 @@
 <?php
 
+use Knuckles\Scribe\Extracting\Strategies;
+
 return [
 
     'theme' => 'default',
@@ -32,14 +34,14 @@ return [
              */
             'match' => [
                 /*
-                 * Match only routes whose domains match this pattern (use * as a wildcard to match any characters). Example: 'api.*'.
-                 */
-                'domains' => ['*'],
-
-                /*
                  * Match only routes whose paths match this pattern (use * as a wildcard to match any characters). Example: 'users/*'.
                  */
                 'prefixes' => ['api/*'],
+
+                /*
+                 * Match only routes whose domains match this pattern (use * as a wildcard to match any characters). Example: 'api.*'.
+                 */
+                'domains' => ['*'],
 
                 /*
                  * [Dingo router only] Match only routes registered under this version. Wildcards are not supported.
@@ -316,34 +318,34 @@ INTRO
      */
     'strategies' => [
         'metadata' => [
-            \Knuckles\Scribe\Extracting\Strategies\Metadata\GetFromDocBlocks::class,
+            Strategies\Metadata\GetFromDocBlocks::class,
         ],
         'urlParameters' => [
-            \Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromLaravelAPI::class,
-            \Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromLumenAPI::class,
-            \Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromUrlParamTag::class,
+            Strategies\UrlParameters\GetFromLaravelAPI::class,
+            Strategies\UrlParameters\GetFromLumenAPI::class,
+            Strategies\UrlParameters\GetFromUrlParamTag::class,
         ],
         'queryParameters' => [
-            \Knuckles\Scribe\Extracting\Strategies\QueryParameters\GetFromQueryParamTag::class,
+            Strategies\QueryParameters\GetFromQueryParamTag::class,
         ],
         'headers' => [
-            \Knuckles\Scribe\Extracting\Strategies\Headers\GetFromRouteRules::class,
-            \Knuckles\Scribe\Extracting\Strategies\Headers\GetFromHeaderTag::class,
+            Strategies\Headers\GetFromRouteRules::class,
+            Strategies\Headers\GetFromHeaderTag::class,
         ],
         'bodyParameters' => [
-            \Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromFormRequest::class,
-            \Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromInlineValidator::class,
-            \Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromBodyParamTag::class,
+            Strategies\BodyParameters\GetFromFormRequest::class,
+            Strategies\BodyParameters\GetFromInlineValidator::class,
+            Strategies\BodyParameters\GetFromBodyParamTag::class,
         ],
         'responses' => [
-            \Knuckles\Scribe\Extracting\Strategies\Responses\UseTransformerTags::class,
-            \Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseTag::class,
-            \Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseFileTag::class,
-            \Knuckles\Scribe\Extracting\Strategies\Responses\UseApiResourceTags::class,
-            \Knuckles\Scribe\Extracting\Strategies\Responses\ResponseCalls::class,
+            Strategies\Responses\UseTransformerTags::class,
+            Strategies\Responses\UseResponseTag::class,
+            Strategies\Responses\UseResponseFileTag::class,
+            Strategies\Responses\UseApiResourceTags::class,
+            Strategies\Responses\ResponseCalls::class,
         ],
         'responseFields' => [
-            \Knuckles\Scribe\Extracting\Strategies\ResponseFields\GetFromResponseFieldTag::class,
+            Strategies\ResponseFields\GetFromResponseFieldTag::class,
         ],
     ],
 

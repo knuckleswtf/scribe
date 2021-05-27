@@ -19,7 +19,7 @@ class GetFromBodyParamTag extends Strategy
 {
     use ParamHelpers;
 
-    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): ?array
     {
         return $this->getBodyParametersFromDocBlockInFormRequestOrMethod($endpointData->route, $endpointData->method);
     }

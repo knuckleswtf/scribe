@@ -14,7 +14,7 @@ class GetFromResponseFieldTag extends Strategy
 {
     use ParamHelpers;
 
-    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): ?array
     {
         $methodDocBlock = RouteDocBlocker::getDocBlocksFromRoute($endpointData->route)['method'];
 

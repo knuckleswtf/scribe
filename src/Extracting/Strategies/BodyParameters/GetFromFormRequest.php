@@ -18,7 +18,7 @@ class GetFromFormRequest extends Strategy
 {
     use ParsesValidationRules;
 
-    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): array
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): ?array
     {
         return $this->getBodyParametersFromFormRequest($endpointData->method, $endpointData->route);
     }

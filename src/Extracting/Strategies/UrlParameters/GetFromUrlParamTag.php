@@ -19,7 +19,7 @@ class GetFromUrlParamTag extends Strategy
 {
     use ParamHelpers;
 
-    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): ?array
     {
         foreach ($endpointData->method->getParameters() as $param) {
             $paramType = $param->getType();

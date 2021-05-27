@@ -20,7 +20,7 @@ class GetFromQueryParamTag extends Strategy
 {
     use ParamHelpers;
 
-    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): ?array
     {
         return $this->getQueryParametersFromFormRequestOrMethod($endpointData->route, $endpointData->method);
     }

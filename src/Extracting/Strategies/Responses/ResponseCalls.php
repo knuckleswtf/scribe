@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 
+use Illuminate\Support\Facades\Config;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Dingo\Api\Dispatcher;
 use Dingo\Api\Routing\Route as DingoRoute;
@@ -26,7 +27,9 @@ class ResponseCalls extends Strategy
 {
     use ParamHelpers, DatabaseTransactionHelpers;
 
-    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)
+    protected array $previousConfigs = [];
+
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): ?array
     {
         return $this->makeResponseCallIfConditionsPass($endpointData, $routeRules);
     }
@@ -123,7 +126,7 @@ class ResponseCalls extends Strategy
      *
      * @return Request
      */
-    protected function prepareRequest(Route $route, array $rulesToApply, array $urlParams, array $bodyParams, array $queryParams, array $fileParameters, array $headers)
+    protected function prepareRequest(Route $route, array $rulesToApply, array $urlParams, array $bodyParams, array $queryParams, array $fileParameters, array $headers): Request
     {
         $uri = Utils::getUrlWithBoundParameters($route->uri(), $urlParams);
         $routeMethods = $this->getMethods($route);
@@ -150,11 +153,6 @@ class ResponseCalls extends Strategy
         return $request;
     }
 
-    /**
-     * @param array $config
-     *
-     * @return void
-     */
     private function setLaravelConfigs(array $config)
     {
         if (empty($config)) {
@@ -162,16 +160,22 @@ class ResponseCalls extends Strategy
         }
 
         foreach ($config as $name => $value) {
-            config([$name => $value]);
+            $this->previousConfigs[$name] = Config::get($name);
+            Config::set([$name => $value]);
         }
     }
 
-    /**
-     * @return void
-     */
+    private function rollbackLaravelConfigChanges()
+    {
+        foreach ($this->previousConfigs as $name => $value) {
+            Config::set([$name => $value]);
+        }
+    }
+
     private function finish()
     {
         $this->endDbTransaction();
+        $this->rollbackLaravelConfigChanges();
     }
 
     /**
@@ -181,7 +185,7 @@ class ResponseCalls extends Strategy
      */
     public function callDingoRoute(Request $request, Route $route)
     {
-        /** @var Dispatcher $dispatcher */
+        /** @var \Dingo\Api\Dispatcher $dispatcher */
         $dispatcher = app(\Dingo\Api\Dispatcher::class);
 
         /** @var DingoRoute $route */
@@ -215,24 +219,12 @@ class ResponseCalls extends Strategy
         return $response;
     }
 
-    /**
-     * @param Route $route
-     *
-     * @return array
-     */
-    public function getMethods(Route $route)
+    public function getMethods(Route $route): array
     {
         return array_diff($route->methods(), ['HEAD']);
     }
 
-    /**
-     * @param Request $request
-     * @param Route $route
-     * @param array|null $headers
-     *
-     * @return Request
-     */
-    private function addHeaders(Request $request, Route $route, $headers)
+    private function addHeaders(Request $request, Route $route, ?array $headers): Request
     {
         // set the proper domain
         if ($route->getDomain()) {
@@ -254,30 +246,16 @@ class ResponseCalls extends Strategy
         return $request;
     }
 
-    /**
-     * @param Request $request
-     * @param array $query
-     *
-     * @return Request
-     */
-    private function addQueryParameters(Request $request, array $query)
+    private function addQueryParameters(Request $request, array $query): Request
     {
         $request->query->add($query);
         $request->server->add(['QUERY_STRING' => http_build_query($query)]);
-
         return $request;
     }
 
-    /**
-     * @param Request $request
-     * @param array $body
-     *
-     * @return Request
-     */
-    private function addBodyParameters(Request $request, array $body)
+    private function addBodyParameters(Request $request, array $body): Request
     {
         $request->request->add($body);
-
         return $request;
     }
 
@@ -300,13 +278,6 @@ class ResponseCalls extends Strategy
         return $response;
     }
 
-    /**
-     * @param Request $request
-     *
-     * @return \Symfony\Component\HttpFoundation\Response
-     * @throws Exception
-     *
-     */
     protected function callLaravelOrLumenRoute(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         // Confirm we're running in Laravel, not Lumen
@@ -358,12 +329,8 @@ class ResponseCalls extends Strategy
 
     /**
      * Transform headers array to array of $_SERVER vars with HTTP_* format.
-     *
-     * @param array $headers
-     *
-     * @return array
      */
-    protected function transformHeadersToServerVars(array $headers)
+    protected function transformHeadersToServerVars(array $headers): array
     {
         $server = [];
         $prefix = 'HTTP_';

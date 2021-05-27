@@ -29,7 +29,7 @@ class UseApiResourceTags extends Strategy
 {
     use DatabaseTransactionHelpers;
 
-    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules)
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): ?array
     {
         $docBlocks = RouteDocBlocker::getDocBlocksFromRoute($endpointData->route);
         $methodDocBlock = $docBlocks['method'];

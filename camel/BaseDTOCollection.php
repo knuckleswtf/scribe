@@ -2,6 +2,7 @@
 
 namespace Knuckles\Camel;
 
+use ArrayIterator;
 use Illuminate\Support\Arr;
 use Knuckles\Camel\Extraction\T;
 use Spatie\DataTransferObject\DataTransferObjectCollection;
@@ -42,10 +43,10 @@ class BaseDTOCollection extends DataTransferObjectCollection
     /**
      * @param string $key
      */
-    public function sortBy(string $key): self
+    public function sortBy(string $key): void
     {
         $items = $this->items();
         $items = Arr::sort($items, $key);
-        return new static(array_values($items));
+        $this->iterator = new ArrayIterator(array_values($items));
     }
 }

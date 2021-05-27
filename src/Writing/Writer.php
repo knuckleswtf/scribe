@@ -20,7 +20,7 @@ class Writer
 
     private string $laravelTypeOutputPath = 'resources/views/scribe';
 
-    public function __construct(DocumentationConfig $config = null, bool $shouldOverwrite = false)
+    public function __construct(DocumentationConfig $config = null)
     {
         // If no config is injected, pull from global. Makes testing easier.
         $this->config = $config ?: new DocumentationConfig(config('scribe'));

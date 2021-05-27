@@ -63,7 +63,7 @@ class GenerateDocumentation extends Command
 
         $userDefinedEndpoints = Camel::loadUserDefinedEndpoints(static::$camelDir);
         $groupedEndpoints = $this->mergeUserDefinedEndpoints($groupedEndpoints, $userDefinedEndpoints);
-        $writer = new Writer($this->docConfig, $this->forcing);
+        $writer = new Writer($this->docConfig);
         $writer->writeDocs($groupedEndpoints);
 
         if ($this->encounteredErrors) {

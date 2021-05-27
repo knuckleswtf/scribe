@@ -74,5 +74,5 @@ trait DatabaseTransactionHelpers
      *
      * @return DocumentationConfig
      */
-    abstract public function getConfig();
+    abstract public function getConfig(): DocumentationConfig;
 }
