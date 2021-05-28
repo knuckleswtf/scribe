@@ -142,6 +142,9 @@ class Extractor
     {
         $this->iterateThroughStrategies('urlParameters', $endpointData, $rulesToApply, function ($results) use ($endpointData) {
             foreach ($results as $key => $item) {
+                if (empty($item['name'])) {
+                    $item['name'] = $key;
+                }
                 $endpointData->urlParameters[$key] = Parameter::create($item);
             }
         });
@@ -151,6 +154,9 @@ class Extractor
     {
         $this->iterateThroughStrategies('queryParameters', $endpointData, $rulesToApply, function ($results) use ($endpointData) {
             foreach ($results as $key => $item) {
+                if (empty($item['name'])) {
+                    $item['name'] = $key;
+                }
                 $endpointData->queryParameters[$key] = Parameter::create($item);
             }
         });
@@ -163,6 +169,9 @@ class Extractor
         }
         $this->iterateThroughStrategies('bodyParameters', $endpointData, $rulesToApply, function ($results) use ($endpointData) {
             foreach ($results as $key => $item) {
+                if (empty($item['name'])) {
+                    $item['name'] = $key;
+                }
                 $endpointData->bodyParameters[$key] = Parameter::create($item);
             }
         });

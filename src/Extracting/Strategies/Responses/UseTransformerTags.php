@@ -54,7 +54,7 @@ class UseTransformerTags extends Strategy
      *
      * @return array|null
      */
-    public function getTransformerResponse(array $tags)
+    public function getTransformerResponse(array $tags): ?array
     {
         if (empty($transformerTag = $this->getTransformerTag($tags))) {
             return null;
@@ -189,11 +189,11 @@ class UseTransformerTags extends Strategy
     }
 
     /**
-     * @param array $tags
+     * @param Tag[] $tags
      *
      * @return Tag|null
      */
-    private function getTransformerTag(array $tags)
+    private function getTransformerTag(array $tags): ?Tag
     {
         $transformerTags = array_values(
             array_filter($tags, function ($tag) {
@@ -208,11 +208,11 @@ class UseTransformerTags extends Strategy
      * Gets pagination data from the `@transformerPaginator` tag, like this:
      * `@transformerPaginator League\Fractal\Pagination\IlluminatePaginatorAdapter 15`
      *
-     * @param array $tags
+     * @param Tag[] $tags
      *
      * @return array
      */
-    private function getTransformerPaginatorData(array $tags)
+    private function getTransformerPaginatorData(array $tags): array
     {
         $transformerTags = array_values(
             array_filter($tags, function ($tag) {

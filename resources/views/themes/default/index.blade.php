@@ -15,9 +15,10 @@
     <link rel="stylesheet" href="css/theme-default.print.css" media="print">
     <script src="{{ u::getVersionedAsset('js/theme-default.js') }}"></script>
 
-    <link href="https://unpkg.com/prismjs@v1.x/themes/prism-twilight.css" rel="stylesheet" />
-    <script src="https://unpkg.com/prismjs@v1.x/components/prism-core.min.js"></script>
-    <script src="https://unpkg.com/prismjs@v1.x/plugins/autoloader/prism-autoloader.min.js"></script>
+    <link rel="stylesheet"
+          href="//unpkg.com/@highlightjs/cdn-assets@10.7.2/styles/obsidian.min.css">
+    <script src="//unpkg.com/@highlightjs/cdn-assets@10.7.2/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
 
 @if($tryItOut['enabled'] ?? false)
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>

@@ -221,16 +221,19 @@ th {
     padding: 0
 }
 
+body,
+html {
+    font-family: 'PT Sans', Helvetica Neue, Helvetica, Arial, Microsoft Yahei, 微软雅黑, STXihei, 华文细黑, sans-serif;
+    font-size: 16px;
+}
+
 .content h1,
 .content h2,
 .content h3,
 .content h4,
 .content h5,
-.content h6,
-body,
-html {
+.content h6 {
     font-family: 'PT Sans', Helvetica Neue, Helvetica, Arial, Microsoft Yahei, 微软雅黑, STXihei, 华文细黑, sans-serif;
-    font-size: 15px;
 }
 
 .content h1,
@@ -807,7 +810,6 @@ html {
 }
 
 .content code {
-    background-color: rgba(0, 0, 0, .05);
     padding: 3px;
     border-radius: 3px
 }

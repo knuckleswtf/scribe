@@ -325,7 +325,8 @@ class GenerateDocumentationTest extends BaseLaravelTest
         $this->artisan('scribe:generate');
 
         $this->assertFileExists('static/docs/index.html');
-        Utils::deleteDirectoryAndContents('static/docs');
+
+        Utils::deleteDirectoryAndContents('static/');
     }
 
     /** @test */

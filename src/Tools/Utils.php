@@ -98,8 +98,7 @@ class Utils
     {
         $adapter = new Local($workingDir ?: getcwd());
         $fs = new Filesystem($adapter);
-        $dir = ltrim($dir, '/');
-        $dir = ltrim($dir, $adapter->getPathPrefix());
+        $dir = str_replace($adapter->getPathPrefix(), '', $dir);
         $fs->deleteDir($dir);
     }
 

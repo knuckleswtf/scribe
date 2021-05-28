@@ -24,11 +24,11 @@ class UseResponseTag extends Strategy
     /**
      * Get the response from the docblock if available.
      *
-     * @param array $tags
+     * @param Tag[] $tags
      *
      * @return array|null
      */
-    public function getDocBlockResponses(array $tags)
+    public function getDocBlockResponses(array $tags): ?array
     {
         $responseTags = array_values(
             array_filter($tags, function ($tag) {

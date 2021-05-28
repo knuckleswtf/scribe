@@ -15,7 +15,7 @@ use ReflectionClass;
  */
 class RouteDocBlocker
 {
-    protected static $docBlocks = [];
+    protected static array $docBlocks = [];
 
     /**
      * @param Route $route
@@ -23,7 +23,7 @@ class RouteDocBlocker
      * @throws \ReflectionException
      * @throws \Exception
      *
-     * @return array<string, DocBlock> Method and class docblocks
+     * @return array<"method"|"class", DocBlock> Method and class docblocks
      */
     public static function getDocBlocksFromRoute(Route $route): array
     {

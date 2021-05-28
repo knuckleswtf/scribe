@@ -25,11 +25,11 @@ class UseResponseFileTag extends Strategy
     /**
      * Get the response from the file if available.
      *
-     * @param array $tags
+     * @param Tag[] $tags
      *
      * @return array|null
      */
-    public function getFileResponses(array $tags)
+    public function getFileResponses(array $tags): ?array
     {
         // Avoid "holes" in the keys of the filtered array, by using array_values on the filtered array
         $responseFileTags = array_values(

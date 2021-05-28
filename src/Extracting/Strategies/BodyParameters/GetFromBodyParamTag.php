@@ -10,6 +10,7 @@ use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Mpociot\Reflection\DocBlock;
+use Mpociot\Reflection\DocBlock\Tag;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionFunctionAbstract;
@@ -62,7 +63,12 @@ class GetFromBodyParamTag extends Strategy
         return $this->getBodyParametersFromDocBlock($methodDocBlock->getTags());
     }
 
-    public function getBodyParametersFromDocBlock($tags)
+    /**
+     * @param Tag[] $tags
+     *
+     * @return array
+     */
+    public function getBodyParametersFromDocBlock(array $tags): array
     {
         $parameters = [];
 

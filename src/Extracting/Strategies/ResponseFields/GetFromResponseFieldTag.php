@@ -41,7 +41,7 @@ class GetFromResponseFieldTag extends Strategy
                 // @responseField user_id integer The ID of the user.
                 preg_match('/(.+?)\s+(.+?)\s+([\s\S]*)/', $tag->getContent(), $content);
                 if (empty($content)) {
-                    // this means only name and type were supplied
+                    // This means only name and type were supplied
                     [$name, $type] = preg_split('/\s+/', $tag->getContent());
                     $description = '';
                 } else {

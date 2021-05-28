@@ -34,10 +34,15 @@ class UseApiResourceTags extends Strategy
         $docBlocks = RouteDocBlocker::getDocBlocksFromRoute($endpointData->route);
         $methodDocBlock = $docBlocks['method'];
 
+        $tags = $methodDocBlock->getTags();
+        if (empty($apiResourceTag = $this->getApiResourceTag($tags))) {
+            return null;
+        }
+
         $this->startDbTransaction();
 
         try {
-            return $this->getApiResourceResponse($methodDocBlock->getTags(), $endpointData);
+            return $this->getApiResourceResponse($apiResourceTag, $tags, $endpointData);
         } catch (Exception $e) {
             c::warn('Exception thrown when fetching Eloquent API resource response for ' . $endpointData->name());
             e::dumpExceptionIfVerbose($e);
@@ -51,20 +56,17 @@ class UseApiResourceTags extends Strategy
     /**
      * Get a response from the @apiResource/@apiResourceCollection and @apiResourceModel tags.
      *
-     * @param array $tags
+     * @param Tag $apiResourceTag
+     * @param Tag[] $allTags
      * @param ExtractedEndpointData $endpointData
      *
      * @return array[]|null
      * @throws Exception
      */
-    public function getApiResourceResponse(array $tags, ExtractedEndpointData $endpointData)
+    public function getApiResourceResponse(Tag $apiResourceTag, array $allTags, ExtractedEndpointData $endpointData): ?array
     {
-        if (empty($apiResourceTag = $this->getApiResourceTag($tags))) {
-            return null;
-        }
-
         [$statusCode, $apiResourceClass] = $this->getStatusCodeAndApiResourceClass($apiResourceTag);
-        [$model, $factoryStates, $relations, $pagination] = $this->getClassToBeTransformedAndAttributes($tags);
+        [$model, $factoryStates, $relations, $pagination] = $this->getClassToBeTransformedAndAttributes($allTags);
         $modelInstance = $this->instantiateApiResourceModel($model, $factoryStates, $relations);
 
         try {
@@ -219,11 +221,11 @@ class UseApiResourceTags extends Strategy
     }
 
     /**
-     * @param array $tags
+     * @param Tag[] $tags
      *
      * @return Tag|null
      */
-    private function getApiResourceTag(array $tags)
+    public function getApiResourceTag(array $tags): ?Tag
     {
         $apiResourceTags = array_values(
             array_filter($tags, function ($tag) {

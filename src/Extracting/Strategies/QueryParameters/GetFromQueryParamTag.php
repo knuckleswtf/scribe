@@ -68,7 +68,7 @@ class GetFromQueryParamTag extends Strategy
      *
      * @return array[]
      */
-    public function getQueryParametersFromDocBlock(array $tags)
+    public function getQueryParametersFromDocBlock(array $tags): array
     {
         $parameters = [];
 
@@ -85,7 +85,7 @@ class GetFromQueryParamTag extends Strategy
             preg_match('/(.+?)\s+([a-zA-Z\[\]]+\s+)?(required\s+)?([\s\S]*)/', $tagContent, $content);
 
             if (empty($content)) {
-                // this means only name was supplied
+                // This means only name was supplied
                 $name = $tagContent;
                 $required = false;
                 $description = '';

@@ -14,7 +14,16 @@ class DocumentationConfig
         $this->data = $config;
     }
 
-    public function get($key, $default = null)
+    /**
+     * Get a config item with dot notation.
+     * If the key does not exist, $default (or null) will be returned.
+     *
+     * @param string $key
+     * @param mixed $default
+     *
+     * @return array|mixed
+     */
+    public function get(string $key, $default = null)
     {
         return data_get($this->data, $key, $default);
     }

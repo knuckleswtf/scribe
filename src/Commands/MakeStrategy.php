@@ -8,7 +8,6 @@ class MakeStrategy extends GeneratorCommand
 {
     protected $signature = 'scribe:strategy
                             {name : Name of the class.}
-                            {stage : The stage the strategy belongs to. One of "metadata", "urlParameters", "queryParameters", "bodyParameters", "headers", "responses", "responseFields".}
                             {--force : Overwrite file if it exists}
     ';
 
