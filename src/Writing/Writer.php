@@ -289,8 +289,11 @@ class Writer
         ConsoleOutputUtils::info('Transforming Markdown docs to HTML...');
 
         $this->pastel->generate($this->sourceOutputPath . '/index.md', $this->staticTypeOutputPath);
+
         // Add our custom JS
-        copy(__DIR__.'/../../resources/js/tryitout.js', $this->staticTypeOutputPath . '/js/tryitout-'.Globals::SCRIBE_VERSION.'.js');
+        if (config('scribe.interactive')) {
+            copy(__DIR__.'/../../resources/js/tryitout.js', $this->staticTypeOutputPath . '/js/tryitout-'.Globals::SCRIBE_VERSION.'.js');
+        }
 
         if (!$this->isStatic) {
             $this->performFinalTasksForLaravelType();
