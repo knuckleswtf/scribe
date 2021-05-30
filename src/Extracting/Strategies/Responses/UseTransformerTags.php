@@ -154,15 +154,13 @@ class UseTransformerTags extends Strategy
         try {
             // try Eloquent model factory
 
-            // Factories are usually defined without the leading \ in the class name,
-            // but the user might write it that way in a comment. Let's be safe.
-            $type = ltrim($type, '\\');
+            /** @var \Illuminate\Database\Eloquent\Factories\Factory $factory */
+            $factory = Utils::getModelFactory($type, $factoryStates, $relations);
 
-            $factory = Utils::getModelFactory($type, $factoryStates);
             try {
                 return $factory->create();
             } catch (Exception $e) {
-                // If there was no working database, it would fail.
+                // If there was no working database, ->create() would fail. Try ->make() instead
                 return $factory->make();
             }
         } catch (Exception $e) {

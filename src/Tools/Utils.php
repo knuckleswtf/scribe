@@ -178,14 +178,23 @@ class Utils
         return substr($typeName, 0, -2);
     }
 
-    public static function getModelFactory(string $modelName, array $states = [])
+    public static function getModelFactory(string $modelName, array $states = [], array $relations = [])
     {
+        // Factories are usually defined without the leading \ in the class name,
+        // but the user might write it that way in a comment. Let's be safe.
+        $modelName = ltrim($modelName, '\\');
+
         if (method_exists($modelName, 'factory')) { // Laravel 8 type factory
+            /** @var \Illuminate\Database\Eloquent\Factories\Factory $factory */
             $factory = call_user_func_array([$modelName, 'factory'], []);
-            if (count($states)) {
-                foreach ($states as $state) {
-                    $factory = $factory->$state();
-                }
+            foreach ($states as $state) {
+                $factory = $factory->$state();
+            }
+
+            foreach ($relations as $relation) {
+                // Eg "posts" relation becomes hasPosts() method
+                $methodName = "has$relation";
+                $factory = $factory->$methodName();
             }
         } else {
             $factory = factory($modelName);

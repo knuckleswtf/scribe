@@ -247,7 +247,7 @@ INTRO
     /*
      * Example requests for each endpoint will be shown in each of these languages.
      * Supported options are: bash, javascript, php, python
-     * To add a language of your own, see https://scribe.readthedocs.io/en/latest/customization.html
+     * To add a language of your own, see https://scribe.knuckles.wtf/laravel/advanced/adding-example-languages
      *
      */
     'example_languages' => [
@@ -290,14 +290,13 @@ INTRO
     ],
 
     /*
-     * Name for the group of endpoints which do not have a @group set.
+     * Endpoints which don't have a @group will be placed in this default group.
      */
     'default_group' => 'Endpoints',
 
     /*
      * Custom logo path. This will be used as the value of the src attribute for the <img> tag,
-     * so make sure it points to a public URL or path accessible from your web server. For best results, the image width should be 230px.
-     * Set this to false to not use a logo.
+     * so make sure it points to an accessible URL or path. Set to false to not use a logo.
      *
      * For example, if your logo is in public/img:
      * - 'logo' => '../img/logo.png' // for `static` type (output folder is public/docs)
@@ -314,7 +313,7 @@ INTRO
 
     /**
      * The strategies Scribe will use to extract information about your routes at each stage.
-     * If you write or install a custom strategy, add it here.
+     * If you create or install a custom strategy, add it here.
      */
     'strategies' => [
         'metadata' => [
@@ -349,9 +348,6 @@ INTRO
         ],
     ],
 
-    /*
-     * Configure how responses are transformed using @transformer and @transformerCollection (requires league/fractal package)
-     */
     'fractal' => [
         /* If you are using a custom serializer with league/fractal, you can specify it here.
          * Leave as null to use no serializer or return simple JSON.
@@ -360,15 +356,16 @@ INTRO
     ],
 
     /*
-     * [Advanced] If you would like to customize how routes are matched beyond the route configuration you may
-     * declare your own implementation of RouteMatcherInterface
+     * [Advanced] Custom implementation of RouteMatcherInterface to customise how routes are matched
      *
      */
     'routeMatcher' => \Knuckles\Scribe\Matching\RouteMatcher::class,
 
     /**
-     * For response calls, api resource responses and transformer responses, Scribe will try to start database transactions, so no changes are persisted to your database.
-     * Tell Scribe which connections should be transacted here. If you only use the default db connection, you can leave this as is.
+     * For response calls, API resource responses and transformer responses,
+     * Scribe will try to start database transactions, so no changes are persisted to your database.
+     * Tell Scribe which connections should be transacted here.
+     * If you only use one db connection, you can leave this as is.
      */
     'database_connections_to_transact' => [config('database.default')]
 ];

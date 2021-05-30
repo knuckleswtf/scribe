@@ -13,22 +13,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Removals
 
 ## 
-- Change Strategy class method signature
-- Rename 'value' in parameters to 'example'
+- Infer URL parameter type and name
+- Support headers in response
+- Include responses in Postman collection
+- Body parameters array
+- More validation rules support
+- Inline validators
+- 3 base URLs
+- static docs fix
+  
 - `include` not supported in frontmatter; use prepend or append
 - Endpoints in views are now objects
 - moved body-parameters to components
 - index renamed to intro.blade.php
 - views moved to markdown/
-- Removed continue_without_database_transactions
-- Support headers in response
-- Include responses in Postman collection
-- Body parameters array
-- Auto detect Dingo
-- Removed `$stage`
-- More validation rules support
-- Inline validators
-- Infer URL parameter type and name
-- Renamed `interactive` to `try_it_out`
-- 3 base URLs
 - Remove `prepend.md`
+- Remove md files for YAML
+
+- Removed `$stage`
+- Auto detect Dingo
+- Renamed `interactive` to `try_it_out`
+- Removed continue_without_database_transactions

@@ -181,7 +181,10 @@ class WritingUtils
         }
     }
 
-    public static function getVersionedAsset(string $assetPath)
+    /**
+     * Convert a path like 'js/tryitout.js' to include the current Scribe version ('js/tryitout-3.0.1.js')
+     */
+    public static function getVersionedAsset(string $assetPath): string
     {
         $index = strrpos($assetPath, ".");
         return substr_replace($assetPath, '-'.Globals::SCRIBE_VERSION, $index, 0);

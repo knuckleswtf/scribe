@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 
+use Illuminate\Support\Str;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
@@ -182,19 +183,12 @@ class UseApiResourceTags extends Strategy
     {
         try {
             // Try Eloquent model factory
+            $factory = Utils::getModelFactory($type, $factoryStates, $relations);
 
-            // Factories are usually defined without the leading \ in the class name,
-            // but the user might write it that way in a comment. Let's be safe.
-            $type = ltrim($type, '\\');
-
-            $factory = Utils::getModelFactory($type, $factoryStates);
             try {
-                $model = $factory->create();
-                $model->load($relations);
-
-                return $model;
+                return $factory->create();
             } catch (Exception $e) {
-                // If there was no working database, it would fail.
+                // If there was no working database, ->create() would fail. Try ->make() instead
                 return $factory->make();
             }
         } catch (Exception $e) {

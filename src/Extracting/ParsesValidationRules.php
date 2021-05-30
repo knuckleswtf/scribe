@@ -282,7 +282,7 @@ trait ParsesValidationRules
                 $parameterData['description'] .= ' ' . $this->getDescription($rule, [':date' => "<code>{$arguments[0]}</code>"]);
                 // TODO introduce the concept of "modifiers", like date_format
                 $startDate = isset($allParameters[$arguments[0]]) ? null : $arguments[0];
-                $parameterData['setter'] = fn() => $this->getFaker()->dateTimeBetween($startDate)->format('Y-m-d');
+                $parameterData['setter'] = fn() => $this->getFaker()->dateTimeBetween($startDate, '+100 years')->format('Y-m-d');
                 break;
             case 'before':
             case 'before_or_equal':
@@ -290,7 +290,7 @@ trait ParsesValidationRules
                 // The argument can be either another field or a date
                 $endDate = isset($allParameters[$arguments[0]]) ? null : $arguments[0];
                 $parameterData['description'] .= ' ' . $this->getDescription($rule, [':date' => "<code>{$arguments[0]}</code>"]);
-                $parameterData['setter'] = fn() => $this->getFaker()->dateTimeBetween(null, $endDate)->format('Y-m-d');
+                $parameterData['setter'] = fn() => $this->getFaker()->dateTimeBetween('-30 years', $endDate)->format('Y-m-d');
                 break;
             case 'starts_with':
                 $parameterData['description'] .= ' The value must start with one of ' . w::getListOfValuesAsFriendlyHtmlString($arguments);
