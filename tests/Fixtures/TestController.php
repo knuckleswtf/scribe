@@ -465,7 +465,7 @@ class TestController extends Controller
         }
     }
 
-    public function withInjectedModel(TestUser $testUser)
+    public function withInjectedModel(TestUser $user)
     {
         return null;
     }
