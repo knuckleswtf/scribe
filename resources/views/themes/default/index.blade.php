@@ -21,7 +21,7 @@
     <script>hljs.highlightAll();</script>
 
 @if($tryItOut['enabled'] ?? true)
-    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
     <script>
         var baseUrl = "{{ $tryItOut['base_url'] ?? config('app.url') }}";
     </script>
@@ -34,7 +34,7 @@
 <a href="#" id="nav-button">
       <span>
         MENU
-        <img src="/docs/images/navbar.png" alt="navbar-image" />
+        <img src="../docs/images/navbar.png" alt="navbar-image" />
       </span>
 </a>
 <div class="tocify-wrapper">

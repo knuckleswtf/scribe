@@ -97,7 +97,7 @@ class GetFromLaravelAPI extends Strategy
         if ($paramName == "id") {
             // If $url is sth like /users/{id}, return "The ID of the user."
             // Make sure to replace underscores, so "side_projects" becomes "side project"
-            $thing = str_replace("_", " ",$this->getNameOfUrlThing($url, $paramName));
+            $thing = str_replace(["_", "-"], " ",$this->getNameOfUrlThing($url, $paramName));
             return "The ID of the $thing.";
         } else if (Str::is("*_id", $paramName)) {
             // If $url is sth like /something/{user_id}, return "The ID of the user."
