@@ -59,7 +59,10 @@ class HtmlWriter
         Utils::copyDirectory($assetsFolder . '/css/', $destinationFolder . '/css');
         copy($assetsFolder . "/js/theme-$theme.js", $destinationFolder . WritingUtils::getVersionedAsset("/js/theme-$theme.js"));
         copy($assetsFolder . "/js/highlight.pack.js", $destinationFolder . "/js/highlight.pack.js");
-        copy($assetsFolder . '/js/tryitout.js', $destinationFolder . WritingUtils::getVersionedAsset('/js/tryitout.js'));
+
+        if ($this->config->get('try_it_out.enabled', true)) {
+            copy($assetsFolder . '/js/tryitout.js', $destinationFolder . WritingUtils::getVersionedAsset('/js/tryitout.js'));
+        }
     }
 
     protected function transformMarkdownFileToHTML(string $markdownFilePath): string
@@ -72,10 +75,10 @@ class HtmlWriter
         // NB:These paths are wrong for laravel type but will be set correctly by the Writer class
         $links = [];
         if ($this->config->get('postman.enabled', true)) {
-            $links[] = '<a href="./collection.json">View Postman collection</a>';
+            $links[] = '<a href="../docs/collection.json">View Postman collection</a>';
         }
         if ($this->config->get('openapi.enabled', false)) {
-            $links[] = '<a href="./openapi.yaml">View OpenAPI spec</a>';
+            $links[] = '<a href="../docs/openapi.yaml">View OpenAPI spec</a>';
         }
 
         $auth = $this->config->get('auth');

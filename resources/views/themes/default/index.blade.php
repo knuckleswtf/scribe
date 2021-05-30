@@ -11,21 +11,21 @@
 
     <link href="https://fonts.googleapis.com/css?family=PT+Sans&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="css/theme-default.style.css" media="screen">
-    <link rel="stylesheet" href="css/theme-default.print.css" media="print">
-    <script src="{{ u::getVersionedAsset('js/theme-default.js') }}"></script>
+    <link rel="stylesheet" href="../docs/css/theme-default.style.css" media="screen">
+    <link rel="stylesheet" href="../docs/css/theme-default.print.css" media="print">
+    <script src="{{ u::getVersionedAsset('../docs/js/theme-default.js') }}"></script>
 
     <link rel="stylesheet"
           href="//unpkg.com/@highlightjs/cdn-assets@10.7.2/styles/obsidian.min.css">
     <script src="//unpkg.com/@highlightjs/cdn-assets@10.7.2/highlight.min.js"></script>
     <script>hljs.highlightAll();</script>
 
-@if($tryItOut['enabled'] ?? false)
+@if($tryItOut['enabled'] ?? true)
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
     <script>
         var baseUrl = "{{ $tryItOut['base_url'] ?? config('app.url') }}";
     </script>
-    <script src="{{ u::getVersionedAsset('js/tryitout.js') }}"></script>
+    <script src="{{ u::getVersionedAsset('../docs/js/tryitout.js') }}"></script>
 @endif
 
 </head>
@@ -34,7 +34,7 @@
 <a href="#" id="nav-button">
       <span>
         MENU
-        <img src="images/navbar.png" alt="navbar-image" />
+        <img src="/docs/images/navbar.png" alt="navbar-image" />
       </span>
 </a>
 <div class="tocify-wrapper">

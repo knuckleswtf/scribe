@@ -146,10 +146,10 @@ class Writer
         $contents = file_get_contents("$this->laravelTypeOutputPath/index.blade.php");
 
         // Rewrite asset links to go through Laravel
-        $contents = preg_replace('#href="css/(.+?)"#', 'href="{{ asset("vendor/scribe/css/$1") }}"', $contents);
-        $contents = preg_replace('#src="(js|images)/(.+?)"#', 'src="{{ asset("vendor/scribe/$1/$2") }}"', $contents);
-        $contents = str_replace('href="./collection.json"', 'href="{{ route("scribe.postman") }}"', $contents);
-        $contents = str_replace('href="./openapi.yaml"', 'href="{{ route("scribe.openapi") }}"', $contents);
+        $contents = preg_replace('#href=".*css/(.+?)"#', 'href="{{ asset("vendor/scribe/css/$1") }}"', $contents);
+        $contents = preg_replace('#src=".*(js|images)/(.+?)"#', 'src="{{ asset("vendor/scribe/$1/$2") }}"', $contents);
+        $contents = str_replace('href="../docs/collection.json"', 'href="{{ route("scribe.postman") }}"', $contents);
+        $contents = str_replace('href="../docs/openapi.yaml"', 'href="{{ route("scribe.openapi") }}"', $contents);
 
         file_put_contents("$this->laravelTypeOutputPath/index.blade.php", $contents);
     }
