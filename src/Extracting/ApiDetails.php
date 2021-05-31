@@ -19,9 +19,9 @@ class ApiDetails
 
     private string $markdownOutputPath = '.scribe';
 
-    private string $fileModificationTimesFile;
+    private string $fileHashesTrackingFile;
 
-    private array $lastTimesWeModifiedTheseFiles = [];
+    private array $lastKnownFileContentHashes = [];
 
     public function __construct(DocumentationConfig $config = null, bool $preserveUserChanges = true)
     {
@@ -30,26 +30,26 @@ class ApiDetails
         $this->baseUrl = $this->config->get('base_url') ?? config('app.url');
         $this->preserveUserChanges = $preserveUserChanges;
 
-        $this->fileModificationTimesFile = $this->markdownOutputPath . '/.filemtimes';
-        $this->lastTimesWeModifiedTheseFiles = [];
+        $this->fileHashesTrackingFile = $this->markdownOutputPath . '/.filehashes';
+        $this->lastKnownFileContentHashes = [];
     }
 
     public function writeMarkdownFiles(): void
     {
-        ConsoleOutputUtils::info('Writing Markdown files to: ' . $this->markdownOutputPath);
+        ConsoleOutputUtils::info('Extracting intro and auth Markdown files to: ' . $this->markdownOutputPath);
 
         if (!is_dir($this->markdownOutputPath)) {
             mkdir($this->markdownOutputPath, 0777, true);
         }
 
-        $this->fetchLastTimeWeModifiedFilesFromTrackingFile();
+        $this->fetchFileHashesFromTrackingFile();
 
         $this->writeIndexMarkdownFile();
         $this->writeAuthMarkdownFile();
 
-        $this->writeModificationTimesTrackingFile();
+        $this->writeContentsTrackingFile();
 
-        ConsoleOutputUtils::info('Wrote Markdown files to: ' . $this->markdownOutputPath);
+        ConsoleOutputUtils::info('Extracted intro and auth Markdown files to: ' . $this->markdownOutputPath);
     }
 
 
@@ -69,7 +69,7 @@ class ApiDetails
             ->with('description', $this->config->get('description', ''))
             ->with('introText', $this->config->get('intro_text', ''))
             ->with('baseUrl', $this->baseUrl)->render();
-        $this->writeMarkdownFileAndRecordTime($indexMarkdownFile, $introMarkdown);
+        $this->writeMarkdownFileAndRecordHash($indexMarkdownFile, $introMarkdown);
     }
 
     public function writeAuthMarkdownFile(): void
@@ -125,43 +125,38 @@ class ApiDetails
             'authDescription' => $authDescription,
             'extraAuthInfo' => $extraInfo,
         ])->render();
-        $this->writeMarkdownFileAndRecordTime($authMarkdownFile, $authMarkdown);
+        $this->writeMarkdownFileAndRecordHash($authMarkdownFile, $authMarkdown);
     }
 
     /**
      */
-    protected function writeMarkdownFileAndRecordTime(string $filePath, string $markdown): void
+    protected function writeMarkdownFileAndRecordHash(string $filePath, string $markdown): void
     {
         file_put_contents($filePath, $markdown);
-        $this->lastTimesWeModifiedTheseFiles[$filePath] = time();
+        $this->lastKnownFileContentHashes[$filePath] = hash_file('md5', $filePath);
     }
 
-    /**
-     */
-    protected function writeModificationTimesTrackingFile(): void
+    protected function writeContentsTrackingFile(): void
     {
         $content = "# GENERATED. YOU SHOULDN'T MODIFY OR DELETE THIS FILE.\n";
         $content .= "# Scribe uses this file to know when you change something manually in your docs.\n";
-        $content .= collect($this->lastTimesWeModifiedTheseFiles)
-            ->map(function ($mtime, $filePath) {
-                return "$filePath=$mtime";
-            })->implode("\n");
-        file_put_contents($this->fileModificationTimesFile, $content);
+        $content .= collect($this->lastKnownFileContentHashes)
+            ->map(fn($hash, $filePath) => "$filePath=$hash")->implode("\n");
+        file_put_contents($this->fileHashesTrackingFile, $content);
     }
 
-    /**
-     */
     protected function hasFileBeenModified(string $filePath): bool
     {
         if (!file_exists($filePath)) {
             return false;
         }
 
-        $oldFileModificationTime = $this->lastTimesWeModifiedTheseFiles[$filePath] ?? null;
+        $oldFileHash = $this->lastKnownFileContentHashes[$filePath] ?? null;
 
-        if ($oldFileModificationTime) {
-            $latestFileModifiedTime = filemtime($filePath);
-            $wasFileModifiedManually = $latestFileModifiedTime > (int)$oldFileModificationTime;
+        if ($oldFileHash) {
+            $currentFileHash = hash_file('md5', $filePath);
+            // No danger of a timing attack, so no need for hash_equals() comparison
+            $wasFileModifiedManually = $currentFileHash != $oldFileHash;
 
             return $wasFileModifiedManually;
         }
@@ -169,17 +164,17 @@ class ApiDetails
         return false;
     }
 
-    protected function fetchLastTimeWeModifiedFilesFromTrackingFile()
+    protected function fetchFileHashesFromTrackingFile()
     {
-        if (file_exists($this->fileModificationTimesFile)) {
-            $lastTimesWeModifiedTheseFiles = explode("\n", trim(file_get_contents($this->fileModificationTimesFile)));
+        if (file_exists($this->fileHashesTrackingFile)) {
+            $lastKnownFileHashes = explode("\n", trim(file_get_contents($this->fileHashesTrackingFile)));
             // First two lines are comments
-            array_shift($lastTimesWeModifiedTheseFiles);
-            array_shift($lastTimesWeModifiedTheseFiles);
-            $this->lastTimesWeModifiedTheseFiles = collect($lastTimesWeModifiedTheseFiles)
+            array_shift($lastKnownFileHashes);
+            array_shift($lastKnownFileHashes);
+            $this->lastKnownFileContentHashes = collect($lastKnownFileHashes)
                 ->mapWithKeys(function ($line) {
-                    [$filePath, $modificationTime] = explode("=", $line);
-                    return [$filePath => $modificationTime];
+                    [$filePath, $hash] = explode("=", $line);
+                    return [$filePath => $hash];
                 })->toArray();
         }
     }

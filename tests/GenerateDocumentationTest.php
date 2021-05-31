@@ -356,7 +356,6 @@ class GenerateDocumentationTest extends BaseLaravelTest
             $group, 10, 2,
             Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP
         ));
-        sleep(1);
         file_put_contents($authFilePath, 'Some other useful stuff.', FILE_APPEND);
 
         $this->artisan('scribe:generate');
