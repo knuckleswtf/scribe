@@ -146,7 +146,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['file_param' => 'file|required'],
             ['file_param' => ['description' => $description]],
             [
-                'description' => "$description. The value must be a file.",
+                'description' => "$description. Must be a file.",
                 'type' => 'file',
             ],
         ];
@@ -154,7 +154,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['timezone_param' => 'timezone|required'],
             [],
             [
-                'description' => 'The value must be a valid time zone, such as <code>Africa/Accra</code>.',
+                'description' => 'Must be a valid time zone, such as <code>Africa/Accra</code>.',
                 'type' => 'string',
             ],
         ];
@@ -162,7 +162,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['email_param' => 'email|required'],
             [],
             [
-                'description' => 'The value must be a valid email address.',
+                'description' => 'Must be a valid email address.',
                 'type' => 'string',
             ],
         ];
@@ -170,7 +170,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['url_param' => 'url|required'],
             ['url_param' => ['description' => $description]],
             [
-                'description' => "$description. The value must be a valid URL.",
+                'description' => "$description. Must be a valid URL.",
                 'type' => 'string',
             ],
         ];
@@ -178,7 +178,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['ip_param' => 'ip|required'],
             ['ip_param' => ['description' => $description]],
             [
-                'description' => "$description. The value must be a valid IP address.",
+                'description' => "$description. Must be a valid IP address.",
                 'type' => 'string',
             ],
         ];
@@ -186,7 +186,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['json_param' => 'json|required'],
             ['json_param' => []],
             [
-                'description' => 'The value must be a valid JSON string.',
+                'description' => 'Must be a valid JSON string.',
                 'type' => 'string',
             ],
         ];
@@ -194,7 +194,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['date_param' => 'date|required'],
             [],
             [
-                'description' => 'The value must be a valid date.',
+                'description' => 'Must be a valid date.',
                 'type' => 'string',
             ],
         ];
@@ -202,7 +202,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['date_format_param' => 'date_format:Y-m-d|required'],
             ['date_format_param' => ['description' => $description]],
             [
-                'description' => "$description. The value must be a valid date in the format Y-m-d.",
+                'description' => "$description. Must be a valid date in the format <code>Y-m-d</code>.",
                 'type' => 'string',
             ],
         ];
@@ -210,7 +210,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['in_param' => 'in:3,5,6'],
             ['in_param' => ['description' => $description]],
             [
-                'description' => "$description. The value must be one of <code>3</code>, <code>5</code>, or <code>6</code>.",
+                'description' => "$description. Must be one of <code>3</code>, <code>5</code>, or <code>6</code>.",
                 'type' => 'string',
             ],
         ];
@@ -218,14 +218,14 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['not__param' => 'not_in:3,5,6'],
             [],
             [
-                'description' => "The value must not be one of <code>3</code>, <code>5</code>, or <code>6</code>.",
+                'description' => "Must not be one of <code>3</code>, <code>5</code>, or <code>6</code>.",
             ],
         ];
         yield 'digits' => [
             ['digits_param' => 'digits:8'],
             [],
             [
-                'description' => "The value must be 8 digits.",
+                'description' => "Must be 8 digits.",
                 'type' => 'number',
             ],
         ];
@@ -233,7 +233,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['digits_between_param' => 'digits_between:2,8'],
             [],
             [
-                'description' => "The value must be between 2 and 8 digits.",
+                'description' => "Must be between 2 and 8 digits.",
                 'type' => 'number',
             ],
         ];
@@ -241,7 +241,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['alpha_param' => 'alpha'],
             [],
             [
-                'description' => "The value must contain only letters.",
+                'description' => "Must contain only letters.",
                 'type' => 'string',
             ],
         ];
@@ -249,7 +249,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['alpha_dash_param' => 'alpha_dash'],
             [],
             [
-                'description' => "The value must contain only letters, numbers, dashes and underscores.",
+                'description' => "Must contain only letters, numbers, dashes and underscores.",
                 'type' => 'string',
             ],
         ];
@@ -257,7 +257,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['alpha_num_param' => 'alpha_num'],
             [],
             [
-                'description' => "The value must contain only letters and numbers.",
+                'description' => "Must contain only letters and numbers.",
                 'type' => 'string',
             ],
         ];
@@ -265,7 +265,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['ends_with_param' => 'ends_with:go,ha'],
             [],
             [
-                'description' => "The value must end with one of <code>go</code> or <code>ha</code>.",
+                'description' => "Must end with one of <code>go</code> or <code>ha</code>.",
                 'type' => 'string',
             ],
         ];
@@ -273,7 +273,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['starts_with_param' => 'starts_with:go,ha'],
             [],
             [
-                'description' => "The value must start with one of <code>go</code> or <code>ha</code>.",
+                'description' => "Must start with one of <code>go</code> or <code>ha</code>.",
                 'type' => 'string',
             ],
         ];
@@ -281,7 +281,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['uuid_param' => 'uuid'],
             [],
             [
-                'description' => "The value must be a valid UUID.",
+                'description' => "Must be a valid UUID.",
                 'type' => 'string',
             ],
         ];
@@ -328,42 +328,42 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         yield 'after' => [
             ['after_param' => 'after:2020-02-12'],
             [],
-            ['description' => "The value must be a date after <code>2020-02-12</code>."],
+            ['description' => "Must be a date after <code>2020-02-12</code>."],
         ];
         yield 'before_or_equal' => [
             ['before_or_equal_param' => 'before_or_equal:2020-02-12'],
             [],
-            ['description' => "The value must be a date before or equal to <code>2020-02-12</code>."],
+            ['description' => "Must be a date before or equal to <code>2020-02-12</code>."],
         ];
         yield 'size (number)' => [
             ['size_param' => 'numeric|size:6'],
             [],
-            ['description' => "The value must be 6."],
+            ['description' => "Must be 6."],
         ];
         yield 'size (string)' => [
             ['size_param' => 'string|size:6'],
             [],
-            ['description' => "The value must be 6 characters."],
+            ['description' => "Must be 6 characters."],
         ];
         yield 'size (file)' => [
             ['size_param' => 'file|size:6'],
             [],
-            ['description' => "The value must be a file. The value must be 6 kilobytes."],
+            ['description' => "Must be a file. Must be 6 kilobytes."],
         ];
         yield 'max (number)' => [
             ['max_param' => 'numeric|max:6'],
             [],
-            ['description' => "The value must not be greater than 6."],
+            ['description' => "Must not be greater than 6."],
         ];
         yield 'max (string)' => [
             ['max_param' => 'string|max:6'],
             [],
-            ['description' => "The value must not be greater than 6 characters."],
+            ['description' => "Must not be greater than 6 characters."],
         ];
         yield 'max (file)' => [
             ['max_param' => 'file|max:6'],
             [],
-            ['description' => "The value must be a file. The value must not be greater than 6 kilobytes."],
+            ['description' => "Must be a file. Must not be greater than 6 kilobytes."],
         ];
     }
 }

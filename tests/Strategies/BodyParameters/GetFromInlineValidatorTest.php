@@ -23,7 +23,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
         'room_id' => [
             'type' => 'string',
             'required' => false,
-            'description' => 'The id of the room. The value must be one of <code>3</code>, <code>5</code>, or <code>6</code>.',
+            'description' => 'The id of the room. Must be one of <code>3</code>, <code>5</code>, or <code>6</code>.',
         ],
         'forever' => [
             'type' => 'boolean',
