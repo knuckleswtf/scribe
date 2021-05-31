@@ -281,14 +281,16 @@ trait ParsesValidationRules
                 $parameterData['type'] = 'string';
                 $parameterData['description'] .= ' ' . $this->getDescription($rule, [':date' => "<code>{$arguments[0]}</code>"]);
                 // TODO introduce the concept of "modifiers", like date_format
-                $startDate = isset($allParameters[$arguments[0]]) ? null : $arguments[0];
+                // The startDate may refer to another field, in which case, we just ignore it for now.
+                $startDate = isset($allParameters[$arguments[0]]) ? 'today' : $arguments[0];
                 $parameterData['setter'] = fn() => $this->getFaker()->dateTimeBetween($startDate, '+100 years')->format('Y-m-d');
                 break;
             case 'before':
             case 'before_or_equal':
                 $parameterData['type'] = 'string';
                 // The argument can be either another field or a date
-                $endDate = isset($allParameters[$arguments[0]]) ? null : $arguments[0];
+                // The endDate may refer to another field, in which case, we just ignore it for now.
+                $endDate = isset($allParameters[$arguments[0]]) ? 'today' : $arguments[0];
                 $parameterData['description'] .= ' ' . $this->getDescription($rule, [':date' => "<code>{$arguments[0]}</code>"]);
                 $parameterData['setter'] = fn() => $this->getFaker()->dateTimeBetween('-30 years', $endDate)->format('Y-m-d');
                 break;
@@ -310,14 +312,13 @@ trait ParsesValidationRules
                 break;
 
             /**
-             * Special number types. Some rules here may apply to other types, but we treat them as being numeric.
+             * Special number types.
              */
             case 'digits':
                 $parameterData['description'] .= ' ' . $this->getDescription($rule, [':digits' => $arguments[0]]);
                 $parameterData['setter'] = fn() => $this->getFaker()->randomNumber($arguments[0], true);
                 $parameterData['type'] = 'number';
                 break;
-
             case 'digits_between':
                 $parameterData['description'] .= ' ' . $this->getDescription($rule, [':min' => $arguments[0], ':max' => $arguments[1]]);
                 $parameterData['setter'] = fn() => $this->getFaker()->randomNumber($this->getFaker()->numberBetween(...$arguments), true);
