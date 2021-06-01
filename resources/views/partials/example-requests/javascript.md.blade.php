@@ -2,7 +2,7 @@
     use Knuckles\Scribe\Tools\WritingUtils as u;
     /** @var  Knuckles\Camel\Output\OutputEndpointData $endpoint */
 @endphp
-<pre><code class="language-javascript">
+```javascript
 const url = new URL(
     "{{ rtrim($baseUrl, '/') }}/{{ ltrim($endpoint->boundUri, '/') }}"
 );
@@ -51,4 +51,4 @@ fetch(url, {
     body: JSON.stringify(body),
 @endif
 }).then(response => response.json());
-</code></pre>
+```

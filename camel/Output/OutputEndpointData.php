@@ -160,7 +160,7 @@ class OutputEndpointData extends BaseDTO
         return in_array('GET', $this->httpMethods);
     }
 
-    public function hasRequestOptions(): bool
+    public function hasHeadersOrQueryOrBodyParams(): bool
     {
         return !empty($this->headers)
             || !empty($this->cleanQueryParameters)

@@ -2,7 +2,7 @@
   use Knuckles\Scribe\Tools\WritingUtils as u;
   /** @var  Knuckles\Camel\Output\OutputEndpointData $endpoint */
 @endphp
-<pre><code class="language-python">
+```python
 import requests
 import json
 
@@ -44,4 +44,4 @@ $optionalArguments = implode(', ',$optionalArguments);
 @endphp
 response = requests.request('{{$endpoint->httpMethods[0]}}', url, {{ $optionalArguments }})
 response.json()
-</code></pre>
+```

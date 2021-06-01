@@ -1,14 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Knuckles\Scribe\Http\Controller;
 
 $prefix = config('scribe.laravel.docs_url', '/docs');
 $middleware = config('scribe.laravel.middleware', []);
 
-Route::namespace('\Knuckles\Scribe\Http')
-    ->middleware($middleware)
+Route::middleware($middleware)
     ->group(function () use ($prefix) {
-        Route::get($prefix, 'Controller@webpage')->name('scribe');
-        Route::get("$prefix.postman", 'Controller@postman')->name('scribe.postman');
-        Route::get("$prefix.openapi", 'Controller@openapi')->name('scribe.openapi');
+        Route::get($prefix, [Controller::class, 'webpage'])->name('scribe');
+        Route::get("$prefix.postman", [Controller::class, 'postman'])->name('scribe.postman');
+        Route::get("$prefix.openapi", [Controller::class, 'openapi'])->name('scribe.openapi');
     });

@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use Knuckles\Scribe\Http\Controller;
 
 $prefix = config('scribe.laravel.docs_url', '/docs');
 $middleware = config('scribe.laravel.middleware', []);
@@ -8,10 +8,9 @@ $middleware = config('scribe.laravel.middleware', []);
 $router = app()->router;
 
 $router->group([
-    'namespace' => '\Knuckles\Scribe\Http',
     'middleware' => $middleware
 ], function () use ($router, $prefix) {
-    $router->get($prefix, ['uses' => 'Controller@webpage', 'as' => 'scribe']);
-    $router->get("$prefix.postman", ['uses' => 'Controller@postman', 'as' => 'scribe.postman']);
-    $router->get("$prefix.openapi", ['uses' => 'Controller@openapi', 'as' => 'scribe.openapi']);
+    $router->get($prefix, ['uses' => [Controller::class, 'webpage'], 'as' => 'scribe']);
+    $router->get("$prefix.postman", ['uses' => [Controller::class, 'postman'], 'as' => 'scribe.postman']);
+    $router->get("$prefix.openapi", ['uses' => [Controller::class, 'openapi'], 'as' => 'scribe.openapi']);
 });

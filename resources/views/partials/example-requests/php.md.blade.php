@@ -2,9 +2,9 @@
     use Knuckles\Scribe\Tools\WritingUtils as u;
     /** @var  Knuckles\Camel\Output\OutputEndpointData $endpoint */
 @endphp
-<pre><code class="language-php">
+```php
 $client = new \GuzzleHttp\Client();
-@if($endpoint->hasRequestOptions())
+@if($endpoint->hasHeadersOrQueryOrBodyParams())
 $response = $client->{{ strtolower($endpoint->httpMethods[0]) }}(
     '{{ rtrim($baseUrl, '/') . '/' . ltrim($endpoint->boundUri, '/') }}',
     [
@@ -46,4 +46,4 @@ $response = $client->{{ strtolower($endpoint->httpMethods[0]) }}('{{ rtrim($base
 @endif
 $body = $response->getBody();
 print_r(json_decode((string) $body));
-</code></pre>
+```

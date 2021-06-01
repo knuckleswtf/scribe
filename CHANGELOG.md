@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Inline validators
 - 3 base URLs
 - static docs fix
+- switch to md for example langs
   
 - `include` not supported in frontmatter; use prepend or append
 - Endpoints in views are now objects

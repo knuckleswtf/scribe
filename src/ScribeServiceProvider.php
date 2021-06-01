@@ -7,10 +7,20 @@ use Knuckles\Scribe\Commands\GenerateDocumentation;
 use Knuckles\Scribe\Commands\MakeStrategy;
 use Knuckles\Scribe\Matching\RouteMatcher;
 use Knuckles\Scribe\Matching\RouteMatcherInterface;
+use Knuckles\Scribe\Tools\BladeMarkdownEngine;
 use Knuckles\Scribe\Tools\Utils;
 
 class ScribeServiceProvider extends ServiceProvider
 {
+    public function register()
+    {
+        // Register custom Markdown Blade compiler so we can automatically have MD views converted to HTML
+        $app = $this->app;
+        $app->view->getEngineResolver()
+            ->register('blademd', fn() => new BladeMarkdownEngine($app['blade.compiler']));
+        $app->view->addExtension('md.blade.php', 'blademd');
+    }
+
     /**
      * Bootstrap the application events.
      *

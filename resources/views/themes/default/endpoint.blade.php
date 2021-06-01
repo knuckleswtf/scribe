@@ -14,7 +14,9 @@
 <blockquote>Example request:</blockquote>
 
 @foreach($metadata['example_languages'] as $language)
-    @include("scribe::partials.example-requests.$language")
+
+@include("scribe::partials.example-requests.$language")
+
 @endforeach
 
 @if($endpoint->isGet() || $endpoint->hasResponses())
