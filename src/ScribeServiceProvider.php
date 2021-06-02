@@ -35,6 +35,14 @@ class ScribeServiceProvider extends ServiceProvider
         ], 'scribe-views');
 
         $this->publishes([
+            __DIR__ . '/../resources/views/partials/example-requests' => $this->app->basePath('resources/views/vendor/scribe/partials/example-requests'),
+        ], 'scribe-examples');
+
+        $this->publishes([
+            __DIR__ . '/../resources/views/themes' => $this->app->basePath('resources/views/vendor/scribe/themes'),
+        ], 'scribe-themes');
+
+        $this->publishes([
             __DIR__ . '/../config/scribe.php' => $this->app->configPath('scribe.php'),
         ], 'scribe-config');
 

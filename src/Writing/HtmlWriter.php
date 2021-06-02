@@ -55,13 +55,22 @@ class HtmlWriter
         if (!is_dir($destinationFolder . "/js")) {
             mkdir($destinationFolder."/js", 0777, true);
         }
-        Utils::copyDirectory($assetsFolder . '/images/', $destinationFolder . '/images');
-        Utils::copyDirectory($assetsFolder . '/css/', $destinationFolder . '/css');
-        copy($assetsFolder . "/js/theme-$theme.js", $destinationFolder . WritingUtils::getVersionedAsset("/js/theme-$theme.js"));
-        copy($assetsFolder . "/js/highlight.pack.js", $destinationFolder . "/js/highlight.pack.js");
+        Utils::copyDirectory("{$assetsFolder}/images/", "{$destinationFolder}/images");
+
+        $assets = [
+            "{$assetsFolder}/css/theme-$theme.style.css" => "{$destinationFolder}/css/theme-$theme.style.css",
+            "{$assetsFolder}/css/theme-$theme.print.css" => "{$destinationFolder}/css/theme-$theme.print.css",
+            "{$assetsFolder}/js/theme-$theme.js" => $destinationFolder . WritingUtils::getVersionedAsset("/js/theme-$theme.js"),
+        ];
+
+        foreach ($assets as $path => $destination) {
+            if (file_exists($path)) {
+                copy($path, $destination);
+            }
+        }
 
         if ($this->config->get('try_it_out.enabled', true)) {
-            copy($assetsFolder . '/js/tryitout.js', $destinationFolder . WritingUtils::getVersionedAsset('/js/tryitout.js'));
+            copy("{$assetsFolder}/js/tryitout.js", $destinationFolder . WritingUtils::getVersionedAsset('/js/tryitout.js'));
         }
     }
 

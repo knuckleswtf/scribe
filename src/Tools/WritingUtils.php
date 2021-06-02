@@ -7,7 +7,7 @@ use Symfony\Component\VarExporter\VarExporter;
 class WritingUtils
 {
 
-    public static $httpMethodToCssColour = [
+    public static array $httpMethodToCssColour = [
         'GET' => 'green',
         'HEAD' => 'darkgreen',
         'POST' => 'black',
@@ -66,6 +66,26 @@ class WritingUtils
         return rtrim($qs, '&');
     }
 
+    /**
+     * Print key-value query params as a hash { "key1": "value1", "key2": "value2" }
+     * Supports custom delimiters (eg "=>", default: ":"),
+     *   custom braces (eg "[]", default: "{}"),
+     *   custom quotes (eg ', default: "),
+     *   custom indentation, line endings etc.
+     * Expands/simplifies arrays {key: [1, 2,]} becomes {"key[]": "1"}
+     * Expands hashes {key: {a: 1, b: 2}} becomes {"key[a]": "1", "key[b]": "2"}
+     *
+     * @param array $cleanQueryParams
+     * @param string $quote
+     * @param string $delimiter
+     * @param int $spacesIndentation
+     * @param string $braces
+     * @param int $closingBraceIndentation
+     * @param string $startLinesWith
+     * @param string $endLinesWith
+     *
+     * @return string
+     */
     public static function printQueryParamsAsKeyValue(
         array $cleanQueryParams,
         string $quote = '"',
@@ -81,6 +101,7 @@ class WritingUtils
         foreach ($cleanQueryParams as $parameter => $value) {
             if (!is_array($value)) {
                 $output .= str_repeat(" ", $spacesIndentation);
+                // Example: -----"param_name": "value"----
                 $output .= "$startLinesWith$quote$parameter$quote$delimiter $quote$value$quote$endLinesWith\n";
             } else {
                 if (count($value) == 0) {
