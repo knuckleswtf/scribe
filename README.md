@@ -4,60 +4,30 @@
   <img src="logo-scribe.png"><br>
 </p>
 
-> Still on v1? Here's the [v2 migration guide](https://scribe.rtfd.io/en/latest/migrating-v2.html).
+> Still on v2? Here's the [v3 migration guide](https://scribe.knuckles.wtf/laravel/migrating-v3).
 
-Generate API documentation for humans from your Laravel codebase. [Here's what the output looks like](https://shalvah.me/TheCensorshipAPI/). There's a [Node.js version](https://github.com/knuckleswtf/scribe-js), too!
+Scribe helps you generate API documentation for humans from your Laravel/Lumen/[Dingo](https://github.com/dingo/api) codebase. See a live example at [demo.scribe.knuckles.wtf](https://demo.scribe.knuckles.wtf). There's a [Node.js version](https://github.com/knuckleswtf/scribe-js), too!
 
 [![Latest Stable Version](https://poser.pugx.org/knuckleswtf/scribe/v/stable)](https://packagist.org/packages/knuckleswtf/scribe) [![Total Downloads](https://poser.pugx.org/knuckleswtf/scribe/downloads)](https://packagist.org/packages/knuckleswtf/scribe) [![Build Status](https://travis-ci.com/knuckleswtf/scribe.svg?branch=master)](https://travis-ci.com/knuckleswtf/scribe)
 
 > 👋 Scribe helps you generate docs automatically, but if you really want to make friendly, maintainable and testable API docs, there's some more things you need to know. So I made [a course](https://apidocsfordevs.com?utm_source=scribe-laravel&utm_medium=referral&utm_campaign=none) for you.🤗
 
 ## Features
-- Pretty HTML documentation page, with included code samples and friendly text
-- Included "Try It Out" button so users can test endpoints right from their browser
-- Markdown source files that can be edited to modify docs
-- Extracts body parameters information from Laravel FormRequests
-- Safely calls API endpoints to generate sample responses, with authentication and other custom configuration supported
-- Supports generating responses from Eloquent API Resources or Fractal Transformers
-- Supports Postman collection and OpenAPI (Swagger) spec generation
-- Included UI components for additional styling
-- Easily customisable with custom views
+- Pretty single-page HTML doc, with human-friendly text, code samples, and included in-browser API tester ("Try It Out")
+- Extracts body parameters details from FormRequests or validation rules
+- Safely calls API endpoints to get sample responses
+- Supports generating responses from Transformers or Eloquent API Resources
+- Generates Postman collection and OpenAPI spec
+- Easily customisable with custom views and included UI components
 - Easily extensible with custom strategies
+- Statically define extra endpoints that aren't in your codebase
 
 ## Documentation
-> See the [migration guide](https://scribe.rtfd.io/en/latest/migrating.html) if you're coming from [mpociot/laravel-apidoc-generator](https://github.com/mpociot/laravel-apidoc-generator).
+Check out the documentation at [scribe.knuckles.wtf/laravel](http://scribe.knuckles.wtf/laravel).
 
-Check out the documentation at [ReadTheDocs](http://scribe.rtfd.io/).
+v2 docs (unmaintained) are at [scribe.rtfd.io](http://scribe.rtfd.io).
 
-## Installation
-PHP 7.4 and Laravel/Lumen 6.0 or higher are required.
-
-```sh
-composer require --dev knuckleswtf/scribe
-```
-
-### Laravel
-Publish the config file by running:
-
-```bash
-php artisan vendor:publish --provider="Knuckles\Scribe\ScribeServiceProvider" --tag=scribe-config
-```
-
-This will create a `scribe.php` file in your `config` folder.
-
-### Lumen
-- When using Lumen, you will need to run `composer require knuckleswtf/scribe` instead (no `--dev`).
-- Register the service provider in your `bootstrap/app.php`:
-
-```php
-$app->register(\Knuckles\Scribe\ScribeServiceProvider::class);
-```
-
-- Copy the config file from `vendor/knuckleswtf/scribe/config/scribe.php` to your project as `config/scribe.php`. Then add to your `bootstrap/app.php`:
-
-```php
-$app->configure('scribe');
-```
+If you're coming from `mpociot/laravel-apidoc-generator`, there's a [migration guide](https://scribe.knuckles.wtf/laravel/migrating-apidoc).
 
 ## Contributing
-Contributing is easy! See our [contribution guide](https://scribe.rtfd.io/en/latest/contributing.html).
+Contributing is easy! See our [contribution guide](https://scribe.knuckles.wtf/laravel/contributing).
