@@ -15,7 +15,7 @@ trait ParsesValidationRules
 
     public static \stdClass $MISSING_VALUE;
 
-    public function getBodyParametersFromValidationRules(array $validationRules, array $customParameterData = []): array
+    public function getParametersFromValidationRules(array $validationRules, array $customParameterData = []): array
     {
         self::$MISSING_VALUE = new \stdClass();
         $validationRules = $this->normaliseRules($validationRules);

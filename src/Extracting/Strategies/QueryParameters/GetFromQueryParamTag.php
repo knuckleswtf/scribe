@@ -3,22 +3,19 @@
 namespace Knuckles\Scribe\Extracting\Strategies\QueryParameters;
 
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
-use Dingo\Api\Http\FormRequest as DingoFormRequest;
-use Illuminate\Foundation\Http\FormRequest as LaravelFormRequest;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Str;
+use Knuckles\Scribe\Extracting\FindsFormRequestForMethod;
 use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Mpociot\Reflection\DocBlock;
 use Mpociot\Reflection\DocBlock\Tag;
-use ReflectionClass;
 use ReflectionFunctionAbstract;
-use ReflectionUnionType;
 
 class GetFromQueryParamTag extends Strategy
 {
-    use ParamHelpers;
+    use ParamHelpers, FindsFormRequestForMethod;
 
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): ?array
     {
@@ -27,39 +24,18 @@ class GetFromQueryParamTag extends Strategy
 
     public function getQueryParametersFromFormRequestOrMethod(Route $route, ReflectionFunctionAbstract $method): array
     {
-        foreach ($method->getParameters() as $param) {
-            $paramType = $param->getType();
-            if ($paramType === null) {
-                continue;
-            }
+        // Todo v4 change to overwrite FormRequest strategy individually
+        // If there's a FormRequest, we check there for @queryParam tags.
+        if ($formRequestClass = $this->getFormRequestReflectionClass($method)) {
+            $formRequestDocBlock = new DocBlock($formRequestClass->getDocComment());
+            $queryParametersFromDocBlock = $this->getQueryParametersFromDocBlock($formRequestDocBlock->getTags());
 
-            if (class_exists(ReflectionUnionType::class)
-                && $paramType instanceof ReflectionUnionType) {
-                continue;
-            }
-
-            $parameterClassName = $paramType->getName();
-
-            try {
-                $parameterClass = new ReflectionClass($parameterClassName);
-            } catch (\ReflectionException $e) {
-                continue;
-            }
-
-            // If there's a FormRequest, we check there for @queryParam tags.
-            if (class_exists(LaravelFormRequest::class) && $parameterClass->isSubclassOf(LaravelFormRequest::class)
-                || class_exists(DingoFormRequest::class) && $parameterClass->isSubclassOf(DingoFormRequest::class)) {
-                $formRequestDocBlock = new DocBlock($parameterClass->getDocComment());
-                $queryParametersFromDocBlock = $this->getQueryParametersFromDocBlock($formRequestDocBlock->getTags());
-
-                if (count($queryParametersFromDocBlock)) {
-                    return $queryParametersFromDocBlock;
-                }
+            if (count($queryParametersFromDocBlock)) {
+                return $queryParametersFromDocBlock;
             }
         }
 
         $methodDocBlock = RouteDocBlocker::getDocBlocksFromRoute($route)['method'];
-
         return $this->getQueryParametersFromDocBlock($methodDocBlock->getTags());
     }
 

@@ -21,7 +21,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             public function parse($validationRules, $customParameterData = []): array
             {
                 $this->config = new DocumentationConfig([]);
-                $bodyParametersFromValidationRules = $this->getBodyParametersFromValidationRules($validationRules, $customParameterData);
+                $bodyParametersFromValidationRules = $this->getParametersFromValidationRules($validationRules, $customParameterData);
                 return $this->normaliseArrayAndObjectParameters($bodyParametersFromValidationRules);
             }
         };

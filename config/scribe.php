@@ -325,6 +325,8 @@ INTRO
             Strategies\UrlParameters\GetFromUrlParamTag::class,
         ],
         'queryParameters' => [
+            Strategies\QueryParameters\GetFromFormRequest::class,
+            Strategies\QueryParameters\GetFromInlineValidator::class,
             Strategies\QueryParameters\GetFromQueryParamTag::class,
         ],
         'headers' => [

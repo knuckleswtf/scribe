@@ -1,11 +1,9 @@
 <?php
 
-namespace Knuckles\Scribe\Tests\Strategies\BodyParameters;
+namespace Knuckles\Scribe\Tests\Strategies;
 
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
-use Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromFormRequest;
-use Knuckles\Scribe\ScribeServiceProvider;
+use Knuckles\Scribe\Extracting\Strategies\BodyParameters;
+use Knuckles\Scribe\Extracting\Strategies\QueryParameters;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
@@ -16,12 +14,12 @@ class GetFromFormRequestTest extends BaseLaravelTest
     use ArraySubsetAsserts;
 
     /** @test */
-    public function can_fetch_from_form_request()
+    public function can_fetch_bodyparams_from_form_request()
     {
         $method = new \ReflectionMethod(TestController::class, 'withFormRequestParameter');
 
-        $strategy = new GetFromFormRequest(new DocumentationConfig([]));
-        $results = $strategy->getBodyParametersFromFormRequest($method);
+        $strategy = new BodyParameters\GetFromFormRequest(new DocumentationConfig([]));
+        $results = $strategy->getParametersFromFormRequest($method);
 
         $this->assertArraySubset([
             'user_id' => [
@@ -98,5 +96,50 @@ class GetFromFormRequestTest extends BaseLaravelTest
         ], $results);
 
         $this->assertIsArray($results['ids']['example']);
+    }
+
+    /** @test */
+    public function can_fetch_queryparams_from_form_request()
+    {
+        $strategy = new QueryParameters\GetFromFormRequest(new DocumentationConfig([]));
+
+        $method = new \ReflectionMethod(TestController::class, 'withFormRequestParameterQueryParams');
+        $results = $strategy->getParametersFromFormRequest($method);
+
+        $this->assertArraySubset([
+            'q_param' => [
+                'type' => 'integer',
+                'description' => 'The param.',
+                'required' => true,
+                'example' => 9,
+            ],
+        ], $results);
+
+        $method = new \ReflectionMethod(TestController::class, 'withFormRequestParameterQueryParamsComment');
+        $results = $strategy->getParametersFromFormRequest($method);
+
+        $this->assertArraySubset([
+            'type' => 'integer',
+            'description' => '',
+            'required' => true,
+        ], $results['q_param']);
+    }
+
+    /** @test */
+    public function will_ignore_not_relevant_form_request()
+    {
+        $queryParamsStrategy = new QueryParameters\GetFromFormRequest(new DocumentationConfig([]));
+        $method = new \ReflectionMethod(TestController::class, 'withFormRequestParameter');
+        $results = $queryParamsStrategy->getParametersFromFormRequest($method);
+        $this->assertEquals([], $results);
+
+        $bodyParamsStrategy = new BodyParameters\GetFromFormRequest(new DocumentationConfig([]));
+        $method = new \ReflectionMethod(TestController::class, 'withFormRequestParameterQueryParams');
+        $results = $bodyParamsStrategy->getParametersFromFormRequest($method);
+        $this->assertEquals([], $results);
+
+        $method = new \ReflectionMethod(TestController::class, 'withFormRequestParameterQueryParamsComment');
+        $results = $bodyParamsStrategy->getParametersFromFormRequest($method);
+        $this->assertEquals([], $results);
     }
 }

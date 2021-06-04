@@ -1,9 +1,10 @@
 <?php
 
-namespace Knuckles\Scribe\Tests\Strategies\BodyParameters;
+namespace Knuckles\Scribe\Tests\Strategies;
 
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
-use Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromInlineValidator;
+use Knuckles\Scribe\Extracting\Strategies\BodyParameters;
+use Knuckles\Scribe\Extracting\Strategies\QueryParameters;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
@@ -97,7 +98,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
             }
         };
 
-        $strategy = new GetFromInlineValidator(new DocumentationConfig([]));
+        $strategy = new BodyParameters\GetFromInlineValidator(new DocumentationConfig([]));
         $results = $strategy($endpoint, []);
 
         $this->assertArraySubset(self::$expected, $results);
@@ -114,10 +115,40 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
             }
         };
 
-        $strategy = new GetFromInlineValidator(new DocumentationConfig([]));
+        $strategy = new BodyParameters\GetFromInlineValidator(new DocumentationConfig([]));
         $results = $strategy($endpoint, []);
 
         $this->assertArraySubset(self::$expected, $results);
         $this->assertIsArray($results['ids']['example']);
     }
+
+    /** @test */
+    public function respects_query_params_comment()
+    {
+        $queryParamsEndpoint = new class extends ExtractedEndpointData {
+            public function __construct(array $parameters = [])
+            {
+                $this->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidateQueryParams');
+            }
+        };
+
+        $strategy = new BodyParameters\GetFromInlineValidator(new DocumentationConfig([]));
+        $results = $strategy($queryParamsEndpoint, []);
+        $this->assertEquals([], $results);
+
+        $queryParamsStrategy = new QueryParameters\GetFromInlineValidator(new DocumentationConfig([]));
+        $results = $queryParamsStrategy($queryParamsEndpoint, []);
+        $this->assertArraySubset(self::$expected, $results);
+        $this->assertIsArray($results['ids']['example']);
+
+        $bodyParamsEndpoint = new class extends ExtractedEndpointData {
+            public function __construct(array $parameters = [])
+            {
+                $this->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidate');
+            }
+        };
+        $results = $queryParamsStrategy($bodyParamsEndpoint, []);
+        $this->assertEquals([], $results);
+    }
+
 }
