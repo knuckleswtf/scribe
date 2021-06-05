@@ -338,7 +338,7 @@ class GenerateDocumentationTest extends BaseLaravelTest
 
         $this->artisan('scribe:generate');
 
-        $authFilePath = '.scribe/authentication.md';
+        $authFilePath = '.scribe/auth.md';
         $group1FilePath = '.scribe/endpoints/0.yaml';
 
         $group = Yaml::parseFile($group1FilePath);

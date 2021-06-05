@@ -27,8 +27,8 @@ class HtmlWriter
 
     public function generate(array $groupedEndpoints, string $sourceFolder, string $destinationFolder)
     {
-        $index = $this->transformMarkdownFileToHTML($sourceFolder . '/index.md');
-        $authentication = $this->transformMarkdownFileToHTML($sourceFolder . '/authentication.md');
+        $intro = $this->transformMarkdownFileToHTML($sourceFolder . '/intro.md');
+        $auth = $this->transformMarkdownFileToHTML($sourceFolder . '/auth.md');
 
         $appendFile = rtrim($sourceFolder, '/') . '/' . 'append.md';
         $append = file_exists($appendFile) ? $this->transformMarkdownFileToHTML($appendFile) : '';
@@ -38,8 +38,8 @@ class HtmlWriter
             'metadata' => $this->getMetadata(),
             'baseUrl' => $this->baseUrl,
             'tryItOut' => $this->config->get('try_it_out'),
-            'index' => $index,
-            'authentication' => $authentication,
+            'intro' => $intro,
+            'auth' => $auth,
             'groupedEndpoints' => $groupedEndpoints,
             'append' => $append,
         ])->render();

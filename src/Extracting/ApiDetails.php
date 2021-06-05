@@ -44,7 +44,7 @@ class ApiDetails
 
         $this->fetchFileHashesFromTrackingFile();
 
-        $this->writeIndexMarkdownFile();
+        $this->writeIntroMarkdownFile();
         $this->writeAuthMarkdownFile();
 
         $this->writeContentsTrackingFile();
@@ -53,28 +53,28 @@ class ApiDetails
     }
 
 
-    public function writeIndexMarkdownFile(): void
+    public function writeIntroMarkdownFile(): void
     {
-        $indexMarkdownFile = $this->markdownOutputPath . '/index.md';
-        if ($this->hasFileBeenModified($indexMarkdownFile)) {
+        $introMarkdownFile = $this->markdownOutputPath . '/intro.md';
+        if ($this->hasFileBeenModified($introMarkdownFile)) {
             if ($this->preserveUserChanges) {
-                ConsoleOutputUtils::warn("Skipping modified file $indexMarkdownFile");
+                ConsoleOutputUtils::warn("Skipping modified file $introMarkdownFile");
                 return;
             }
 
-            ConsoleOutputUtils::warn("Discarding manual changes for file $indexMarkdownFile because you specified --force");
+            ConsoleOutputUtils::warn("Discarding manual changes for file $introMarkdownFile because you specified --force");
         }
 
         $introMarkdown = view('scribe::markdown.intro')
             ->with('description', $this->config->get('description', ''))
             ->with('introText', $this->config->get('intro_text', ''))
             ->with('baseUrl', $this->baseUrl)->render();
-        $this->writeMarkdownFileAndRecordHash($indexMarkdownFile, $introMarkdown);
+        $this->writeMarkdownFileAndRecordHash($introMarkdownFile, $introMarkdown);
     }
 
     public function writeAuthMarkdownFile(): void
     {
-        $authMarkdownFile = $this->markdownOutputPath . '/authentication.md';
+        $authMarkdownFile = $this->markdownOutputPath . '/auth.md';
         if ($this->hasFileBeenModified($authMarkdownFile)) {
             if ($this->preserveUserChanges) {
                 ConsoleOutputUtils::warn("Skipping modified file $authMarkdownFile");
@@ -120,7 +120,7 @@ class ApiDetails
             $extraInfo = $this->config->get('auth.extra_info', '');
         }
 
-        $authMarkdown = view('scribe::markdown.authentication', [
+        $authMarkdown = view('scribe::markdown.auth', [
             'isAuthed' => $isAuthed,
             'authDescription' => $authDescription,
             'extraAuthInfo' => $extraInfo,

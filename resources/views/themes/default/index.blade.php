@@ -70,9 +70,9 @@
 <div class="page-wrapper">
     <div class="dark-box"></div>
     <div class="content">
-        {!! $index !!}
+        {!! $intro !!}
 
-        {!! $authentication !!}
+        {!! $auth !!}
 
         @include("scribe::themes.default.groups")
 
