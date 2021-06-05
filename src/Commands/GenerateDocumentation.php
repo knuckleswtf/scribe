@@ -7,7 +7,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
-use Knuckles\Camel\Output\OutputEndpointData as OutputEndpointData;
+use Knuckles\Camel\Output\OutputEndpointData;
 use Knuckles\Camel\Camel;
 use Knuckles\Scribe\Extracting\Extractor;
 use Knuckles\Scribe\Extracting\ApiDetails;
@@ -43,6 +43,7 @@ class GenerateDocumentation extends Command
 
     private bool $forcing;
     private bool $encounteredErrors = false;
+    private array $endpointGroupIndexes = [];
 
     public function handle(RouteMatcherInterface $routeMatcher): void
     {
@@ -76,13 +77,16 @@ class GenerateDocumentation extends Command
      * @param MatchedRoute[] $matches
      * @param array $cachedEndpoints
      * @param array $latestEndpointsData
+     * @param array[] $groups
      *
      * @return array
+     * @throws \Exception
      */
-    private function extractEndpointsInfoFromLaravelApp(array $matches, array $cachedEndpoints = [], array $latestEndpointsData = []): array
+    private function extractEndpointsInfoFromLaravelApp(array $matches, array $cachedEndpoints, array $latestEndpointsData, array $groups): array
     {
         $generator = new Extractor($this->docConfig);
-        $parsedRoutes = [];
+        $parsedEndpoints = [];
+
         foreach ($matches as $routeItem) {
             $route = $routeItem->getRoute();
 
@@ -106,8 +110,13 @@ class GenerateDocumentation extends Command
                 c::info('Processing route: ' . c::getRouteRepresentation($route));
                 $currentEndpointData = $generator->processRoute($route, $routeItem->getRules());
                 // If latest data is different from cached data, merge latest into current
-                $currentEndpointData = $this->mergeAnyEndpointDataUpdates($currentEndpointData, $cachedEndpoints, $latestEndpointsData);
-                $parsedRoutes[] = $currentEndpointData;
+                [$currentEndpointData, $index] = $this->mergeAnyEndpointDataUpdates($currentEndpointData, $cachedEndpoints, $latestEndpointsData, $groups);
+
+                // We need to preserve order of endpoints, in case user did custom sorting
+                $parsedEndpoints[] = $currentEndpointData;
+                if ($index !== null) {
+                    $this->endpointGroupIndexes[$currentEndpointData->endpointId()] = $index;
+                }
                 c::success('Processed route: ' . c::getRouteRepresentation($route));
             } catch (\Exception $exception) {
                 $this->encounteredErrors = true;
@@ -116,24 +125,32 @@ class GenerateDocumentation extends Command
             }
         }
 
-        return $parsedRoutes;
+        return $parsedEndpoints;
     }
 
-    private function mergeAnyEndpointDataUpdates(ExtractedEndpointData $endpointData, array $cachedEndpoints, array $latestEndpointsData): ExtractedEndpointData
+    /**
+     * @param ExtractedEndpointData $endpointData
+     * @param array[] $cachedEndpoints
+     * @param array[] $latestEndpointsData
+     * @param array[] $groups
+     *
+     * @return array{ExtractedEndpointData, int}
+     */
+    private function mergeAnyEndpointDataUpdates(ExtractedEndpointData $endpointData, array $cachedEndpoints, array $latestEndpointsData, array $groups): array
     {
         // First, find the corresponding endpoint in cached and latest
         $thisEndpointCached = Arr::first($cachedEndpoints, function (array $endpoint) use ($endpointData) {
             return $endpoint['uri'] === $endpointData->uri && $endpoint['httpMethods'] === $endpointData->httpMethods;
         });
         if (!$thisEndpointCached) {
-            return $endpointData;
+            return [$endpointData, null];
         }
 
         $thisEndpointLatest = Arr::first($latestEndpointsData, function (array $endpoint) use ($endpointData) {
             return $endpoint['uri'] === $endpointData->uri && $endpoint['httpMethods'] == $endpointData->httpMethods;
         });
         if (!$thisEndpointLatest) {
-            return $endpointData;
+            return [$endpointData, null];
         }
 
         // Then compare cached and latest to see what sections changed.
@@ -155,12 +172,13 @@ class GenerateDocumentation extends Command
         }
 
         // Finally, merge any changed sections.
+        $thisEndpointLatest = OutputEndpointData::create($thisEndpointLatest);
         foreach ($changed as $property) {
-            $thisEndpointLatest = OutputEndpointData::create($thisEndpointLatest);
             $endpointData->$property = $thisEndpointLatest->$property;
         }
+        $index = Camel::getEndpointIndexInGroup($groups, $thisEndpointLatest);
 
-        return $endpointData;
+        return [$endpointData, $index];
     }
 
     private function isValidRoute(array $routeControllerAndMethod = null): bool
@@ -292,15 +310,17 @@ class GenerateDocumentation extends Command
     {
         $latestEndpointsData = [];
         $cachedEndpoints = [];
+        $groups = [];
 
         if ($preserveUserChanges && is_dir(static::$camelDir) && is_dir(static::$cacheDir)) {
             $latestEndpointsData = Camel::loadEndpointsToFlatPrimitivesArray(static::$camelDir);
             $cachedEndpoints = Camel::loadEndpointsToFlatPrimitivesArray(static::$cacheDir, true);
+            $groups = Camel::loadEndpointsIntoGroups(static::$camelDir);
         }
 
         $routes = $routeMatcher->getRoutes($this->docConfig->get('routes'), $this->docConfig->get('router'));
-        $endpoints = $this->extractEndpointsInfoFromLaravelApp($routes, $cachedEndpoints, $latestEndpointsData);
-        $groupedEndpoints = Camel::groupEndpoints($endpoints);
+        $endpoints = $this->extractEndpointsInfoFromLaravelApp($routes, $cachedEndpoints, $latestEndpointsData, $groups);
+        $groupedEndpoints = Camel::groupEndpoints($endpoints, $this->endpointGroupIndexes);
         $this->writeEndpointsToDisk($groupedEndpoints);
         $this->writeExampleCustomEndpoint();
         $groupedEndpoints = Camel::prepareGroupedEndpointsForOutput($groupedEndpoints);

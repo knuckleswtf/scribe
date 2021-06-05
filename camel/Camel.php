@@ -103,36 +103,61 @@ class Camel
         return $userDefinedEndpoints;
     }
 
-    public static function doesGroupContainEndpoint(array $group, $endpoint): bool
+    public static function doesGroupContainEndpoint(array $group, OutputEndpointData $endpoint): bool
     {
         return boolval(Arr::first($group['endpoints'], function ($e) use ($endpoint) {
             return $e->endpointId() === $endpoint->endpointId();
         }));
     }
 
+    public static function getEndpointIndexInGroup(array $groups, OutputEndpointData $endpoint): ?int
+    {
+        foreach ($groups as $group) {
+            foreach ($group['endpoints'] as $index => $endpointInGroup) {
+                if ($endpointInGroup->endpointId() === $endpoint->endpointId()) {
+                    return $index;
+                }
+            }
+        }
+
+        return null;
+    }
+
     /**
      * @param array[] $endpoints
+     * @param array $endpointGroupIndexes Mapping of endpoint IDs to their index within their group
      *
      * @return array[]
      */
-    public static function groupEndpoints(array $endpoints): array
+    public static function groupEndpoints(array $endpoints, array $endpointGroupIndexes): array
     {
         $groupedEndpoints = collect($endpoints)
             ->groupBy('metadata.groupName')
             ->sortKeys(SORT_NATURAL);
 
-        return $groupedEndpoints->map(fn(Collection $group) => [
-            'name' => $group[0]->metadata->groupName,
-            'description' => Arr::first($group, function (ExtractedEndpointData $endpointData) {
-                    return $endpointData->metadata->groupDescription !== '';
-                })->metadata->groupDescription ?? '',
-            'endpoints' => $group->map(fn(ExtractedEndpointData $endpointData) => $endpointData->forSerialisation()->toArray())->all(),
-        ])->values()->all();
+        return $groupedEndpoints->map(function (Collection $endpointsInGroup) use ($endpointGroupIndexes) {
+            $sortedEndpoints = $endpointsInGroup;
+            if (!empty($endpointGroupIndexes)) {
+                $sortedEndpoints = $endpointsInGroup->sortBy(
+                    fn(ExtractedEndpointData $e) => $endpointGroupIndexes[$e->endpointId()] ?? INF,
+                );
+            }
+
+            return [
+                'name' => Arr::first($endpointsInGroup, function (ExtractedEndpointData $endpointData) {
+                        return !empty($endpointData->metadata->groupName);
+                    })->metadata->groupName ?? '',
+                'description' => Arr::first($endpointsInGroup, function (ExtractedEndpointData $endpointData) {
+                        return !empty($endpointData->metadata->groupDescription);
+                    })->metadata->groupDescription ?? '',
+                'endpoints' => $sortedEndpoints->map(fn(ExtractedEndpointData $endpointData) => $endpointData->forSerialisation()->toArray())->values()->all(),
+            ];
+        })->values()->all();
     }
 
     public static function prepareGroupedEndpointsForOutput(array $groupedEndpoints): array
     {
-        $groups =  array_map(function (array $group) {
+        $groups = array_map(function (array $group) {
             return [
                 'name' => $group['name'],
                 'description' => $group['description'],
