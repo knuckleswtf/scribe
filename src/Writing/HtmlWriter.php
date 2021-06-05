@@ -58,17 +58,17 @@ class HtmlWriter
         Utils::copyDirectory("{$assetsFolder}/images/", "{$destinationFolder}/images");
 
         $assets = [
-            "{$assetsFolder}/css/theme-$theme.style.css" => ["$destinationFolder}/css/", "theme-$theme.style.css"],
-            "{$assetsFolder}/css/theme-$theme.print.css" => ["$destinationFolder}/css/", "theme-$theme.print.css"],
+            "{$assetsFolder}/css/theme-$theme.style.css" => ["$destinationFolder/css/", "theme-$theme.style.css"],
+            "{$assetsFolder}/css/theme-$theme.print.css" => ["$destinationFolder/css/", "theme-$theme.print.css"],
             "{$assetsFolder}/js/theme-$theme.js" => ["$destinationFolder/js/", WritingUtils::getVersionedAsset("theme-$theme.js")],
         ];
 
-        foreach ($assets as $path => [$destinationDir, $fileName]) {
+        foreach ($assets as $path => [$destination, $fileName]) {
             if (file_exists($path)) {
-                if (!is_dir($destinationDir)) {
-                    mkdir($destinationDir, 0777, true);
+                if (!is_dir($destination)) {
+                    mkdir($destination, 0777, true);
                 }
-                copy($path, $destinationFolder.$fileName);
+                copy($path, $destination.$fileName);
             }
         }
 
