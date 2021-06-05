@@ -16,6 +16,12 @@ use Symfony\Component\Yaml\Yaml;
 class Camel
 {
     /**
+     * Mapping of group names to their generated file names. Helps us respect user reordering.
+     * @var array<string, string>
+     */
+    public static array $groupFileNames = [];
+
+    /**
      * Load endpoints from the Camel files into groups (arrays).
      *
      * @param string $folder
@@ -41,18 +47,18 @@ class Camel
      *
      * @return array[]
      */
-    public static function loadEndpointsToFlatPrimitivesArray(string $folder): array
+    public static function loadEndpointsToFlatPrimitivesArray(string $folder, bool $isFromCache = false): array
     {
         $endpoints = [];
         self::loadEndpointsFromCamelFiles($folder, function ($group) use (&$endpoints) {
             foreach ($group['endpoints'] as $endpoint) {
                 $endpoints[] = $endpoint;
             }
-        });
+        }, !$isFromCache);
         return $endpoints;
     }
 
-    public static function loadEndpointsFromCamelFiles(string $folder, callable $callback)
+    public static function loadEndpointsFromCamelFiles(string $folder, callable $callback, bool $storeGroupFilePaths = true)
     {
         $adapter = new Local(getcwd());
         $fs = new Filesystem($adapter);
@@ -65,6 +71,10 @@ class Camel
                 && !Str::startsWith($object['basename'], 'custom.')
             ) {
                 $group = Yaml::parseFile($object['path']);
+                if ($storeGroupFilePaths) {
+                    $filePathParts = explode('/', $object['path']);
+                    self::$groupFileNames[$group['name']] = end($filePathParts);
+                }
                 $callback($group);
             }
         }
@@ -122,14 +132,16 @@ class Camel
 
     public static function prepareGroupedEndpointsForOutput(array $groupedEndpoints): array
     {
-        return array_map(function (array $group) {
+        $groups =  array_map(function (array $group) {
             return [
                 'name' => $group['name'],
                 'description' => $group['description'],
+                'fileName' => self::$groupFileNames[$group['name']] ?? null,
                 'endpoints' => array_map(function (array $endpoint) {
                     return OutputEndpointData::fromExtractedEndpointArray($endpoint);
                 }, $group['endpoints']),
             ];
         }, $groupedEndpoints);
+        return Arr::sort($groups, 'fileName');
     }
 }
