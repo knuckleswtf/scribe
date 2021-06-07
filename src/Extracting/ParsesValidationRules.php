@@ -600,6 +600,7 @@ trait ParsesValidationRules
 
         // Convert messages from failure type ("The :attribute is not a valid date.") to info ("The :attribute must be a valid date.")
         $description = str_replace(['is not', 'does not'], ['must be', 'must'], $description);
+        $description = str_replace('may not', 'must not', $description);
 
         foreach ($arguments as $placeholder => $argument) {
             $description = str_replace($placeholder, $argument, $description);
