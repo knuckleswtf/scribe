@@ -32,6 +32,7 @@ class GetFromInlineValidatorBase extends Strategy
 
         $validationRules = null;
         $validationAssignmentExpression = null;
+        $index = null;
         foreach ($statements as $index => $node) {
             // Filter to only assignment expressions
             if (!($node instanceof Node\Stmt\Expression) || !($node->expr instanceof Node\Expr\Assign)) {
@@ -85,6 +86,11 @@ class GetFromInlineValidatorBase extends Strategy
         $rules = [];
         $customParameterData = [];
         foreach ($validationRules->items as $item) {
+            /** @var Node\Expr\ArrayItem $item */
+            if (!$item->key instanceof Node\Scalar\String_) {
+                continue;
+            }
+
             $paramName = $item->key->value;
 
             // Might be an expression or concatenated string, etc.

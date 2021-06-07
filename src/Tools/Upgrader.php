@@ -24,7 +24,7 @@ class Upgrader
 
     /** @var Node\Stmt[] */
     private ?array $outgoingConfigFileAst = [];
-    /** @var Node\Stmt[] */
+    /** @var Node[] */
     private array $incomingConfigFileAstForModification = [];
     /** @var Node\Stmt[]|null */
     private ?array $incomingConfigFileOriginalAst;
@@ -72,6 +72,11 @@ class Upgrader
                 // Here, we'll just get any extra items the user added
 
                 $outgoing = $this->getOutgoingConfigItem($rootKey);
+                if (!$outgoing instanceof Node\Expr\Array_) {
+                    return;
+                }
+
+                /** @var Node\Expr\Array_ $incoming */
                 $incoming = $this->getIncomingConfigItem($rootKey);
 
                 foreach ($outgoing->items as $i => $outgoingItem) {
@@ -79,6 +84,7 @@ class Upgrader
                         && $incoming->items[0]->value instanceof Node\Scalar) {
                         $inIncoming = Arr::first(
                             $incoming->items,
+                            // @phpstan-ignore-next-line
                             fn(Node\Expr\ArrayItem $incomingItem) => $incomingItem->value->value === $outgoingItem->value->value
                         );
                         if (!$inIncoming) {
@@ -93,9 +99,10 @@ class Upgrader
                                 // Rough equality check using final segments of class name
                                 $classNamePartsReversed = array_reverse($outgoingItem->value->class->parts);
                                 foreach ($classNamePartsReversed as $i => $classNamePart) {
+                                    // @phpstan-ignore-next-line
                                     $incomingClassNamePartsReversed = array_reverse($incomingItem->value->class->parts);
                                     if (isset($incomingClassNamePartsReversed[$i])
-                                    && $incomingClassNamePartsReversed[$i] === $classNamePart) {
+                                        && $incomingClassNamePartsReversed[$i] === $classNamePart) {
                                         return true;
                                     }
                                 }
@@ -239,37 +246,47 @@ class Upgrader
     protected function getOutgoingConfigItem(string $fullKey): ?Node\Expr
     {
         $ast = $this->getOutgoingConfigAst();
-        return $this->getAstItem($ast, $fullKey);
+        return $this->getConfigItemNode($ast, $fullKey);
     }
 
     protected function getIncomingConfigItem(string $fullKey): ?Node\Expr
     {
         $ast = $this->getIncomingConfigFileAst();
-        return $this->getAstItem($ast, $fullKey);
+        return $this->getConfigItemNode($ast, $fullKey);
     }
 
-    protected function getAstItem(array $ast, string $fullKey): ?Node\Expr
+    protected function getConfigItemNode(array $configFileAst, string $fullKey): ?Node\Expr
     {
-        $keySegments = explode('.', $fullKey);
         $nodeFinder = new NodeFinder;
-        /** @var Node\Expr\ArrayItem[] $configArray */
-        $configArray = $nodeFinder->findFirst(
-            $ast, fn(Node $node) => $node instanceof Node\Stmt\Return_
-        )->expr->items;
+        /** @var Node\Stmt\Return_ $returnStatement */
+        $returnStatement = $nodeFinder->findFirst(
+            $configFileAst, fn(Node $node) => $node instanceof Node\Stmt\Return_
+        );
+        if (!$returnStatement->expr instanceof Node\Expr\Array_) {
+            return null;
+        }
 
-        $searchArray = $configArray;
+        $searchArray = $returnStatement->expr->items;
+        $keySegments = explode('.', $fullKey);
+        $foundItem = null;
         try {
             while (count($keySegments)) {
                 $nextKeySegment = array_shift($keySegments);
                 foreach ($searchArray as $item) {
-                    if ($item->key->value === $nextKeySegment) {
+                    if (($item->key instanceof Node\Scalar\String_
+                        || $item->key instanceof Node\Scalar\LNumber)
+                    && $item->key->value === $nextKeySegment) {
+                        $foundItem = $item;
                         break;
                     }
                 }
-                if (count($keySegments)) {
-                    $searchArray = $item->value->items ?? [];
+                if (count($keySegments) && $foundItem) {
+                    // @phpstan-ignore-next-line
+                    $searchArray = $foundItem->value->items ?? [];
+                } else if ($foundItem) {
+                    return $foundItem->value;
                 } else {
-                    return $item->value;
+                    return null;
                 }
             }
         } catch (\Throwable $e) {
@@ -315,54 +332,76 @@ class Upgrader
         return $this->incomingConfigFileAstForModification = $clonedAst;
     }
 
-    protected function setValue($ast, string $key, $newValue)
+    protected function setValue($configFileAst, string $key, $newValue)
     {
-        $keySegments = explode('.', $key);
         $nodeFinder = new NodeFinder;
-        /** @var Node\Expr\ArrayItem[] $configArray */
-        $configArray = $nodeFinder->findFirst(
-            $ast, fn(Node $node) => $node instanceof Node\Stmt\Return_
-        )->expr->items;
+        /** @var Node\Stmt\Return_ $returnStatement */
+        $returnStatement = $nodeFinder->findFirst(
+            $configFileAst, fn(Node $node) => $node instanceof Node\Stmt\Return_
+        );
+        if (!$returnStatement->expr instanceof Node\Expr\Array_) {
+            return null;
+        }
 
-        $searchArray = $configArray;
+        $searchArray = $returnStatement->expr->items;
+        $keySegments = explode('.', $key);
+        $foundItem = null;
         while (count($keySegments)) {
             $nextKeySegment = array_shift($keySegments);
             foreach ($searchArray as $item) {
-                if ($item->key->value === $nextKeySegment) {
+                if (
+                    ($item->key instanceof Node\Scalar\String_
+                        || $item->key instanceof Node\Scalar\LNumber)
+                    && $item->key->value === $nextKeySegment
+                ) {
+                    $foundItem = $item;
                     break;
                 }
             }
 
-            if (count($keySegments)) {
-                $searchArray = $item->value->items ?? [];
-            } else {
-                $item->value = $newValue;
+            if (count($keySegments) && $foundItem) {
+                // @phpstan-ignore-next-line
+                $searchArray = $foundItem->value->items ?? [];
+            } else if ($foundItem) {
+                $foundItem->value = $newValue;
                 return;
             }
         }
     }
 
-    protected function pushValue($ast, string $arrayKey, $newValue)
+    protected function pushValue($configFileAst, string $arrayKey, $newValue)
     {
-        $keySegments = explode('.', $arrayKey);
         $nodeFinder = new NodeFinder;
-        /** @var Node\Expr\ArrayItem[] $configArray */
-        $configArray = $nodeFinder->findFirst(
-            $ast, fn(Node $node) => $node instanceof Node\Stmt\Return_
-        )->expr->items;
+        /** @var Node\Stmt\Return_ $returnStatement */
+        $returnStatement = $nodeFinder->findFirst(
+            $configFileAst, fn(Node $node) => $node instanceof Node\Stmt\Return_
+        );
+        if (!$returnStatement->expr instanceof Node\Expr\Array_) {
+            return null;
+        }
 
-        $searchArray = $configArray;
+        $searchArray = $returnStatement->expr->items;
+        $keySegments = explode('.', $arrayKey);
+        $foundItem = null;
         while (count($keySegments)) {
             $nextKeySegment = array_shift($keySegments);
             foreach ($searchArray as $item) {
-                if ($item->key->value === $nextKeySegment) {
+                if (
+                    ($item->key instanceof Node\Scalar\String_
+                        || $item->key instanceof Node\Scalar\LNumber)
+                    && $item->key->value === $nextKeySegment
+                ) {
+                    $foundItem = $item;
                     break;
                 }
             }
-            if (count($keySegments)) {
-                $searchArray = $item->value->items ?? [];
-            } else {
-                $item->value->items[] = $newValue;
+
+            if (count($keySegments) && $foundItem) {
+                // @phpstan-ignore-next-line
+                $searchArray = $foundItem->value->items ?? [];
+            } else if ($foundItem) {
+                // @phpstan-ignore-next-line
+                $foundItem->value->items[] = $newValue;
                 return;
             }
         }

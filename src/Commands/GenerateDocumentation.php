@@ -134,7 +134,7 @@ class GenerateDocumentation extends Command
      * @param array[] $latestEndpointsData
      * @param array[] $groups
      *
-     * @return array{ExtractedEndpointData, int}
+     * @return array The extracted endpoint data and the endpoint's index in the group file
      */
     private function mergeAnyEndpointDataUpdates(ExtractedEndpointData $endpointData, array $cachedEndpoints, array $latestEndpointsData, array $groups): array
     {
