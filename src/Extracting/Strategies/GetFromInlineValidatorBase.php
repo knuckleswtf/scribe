@@ -5,7 +5,6 @@ namespace Knuckles\Scribe\Extracting\Strategies;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Extracting\MethodAstParser;
 use Knuckles\Scribe\Extracting\ParsesValidationRules;
-use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 

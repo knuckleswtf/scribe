@@ -5,6 +5,7 @@ namespace Knuckles\Scribe;
 use Illuminate\Support\ServiceProvider;
 use Knuckles\Scribe\Commands\GenerateDocumentation;
 use Knuckles\Scribe\Commands\MakeStrategy;
+use Knuckles\Scribe\Commands\Upgrade;
 use Knuckles\Scribe\Matching\RouteMatcher;
 use Knuckles\Scribe\Matching\RouteMatcherInterface;
 use Knuckles\Scribe\Tools\BladeMarkdownEngine;
@@ -30,17 +31,18 @@ class ScribeServiceProvider extends ServiceProvider
     {
         $this->loadViewsFrom(__DIR__ . '/../resources/views/', 'scribe');
 
-        $this->publishes([
-            __DIR__ . '/../resources/views' => $this->app->basePath('resources/views/vendor/scribe'),
-        ], 'scribe-views');
-
-        $this->publishes([
-            __DIR__ . '/../resources/views/partials/example-requests' => $this->app->basePath('resources/views/vendor/scribe/partials/example-requests'),
-        ], 'scribe-examples');
-
-        $this->publishes([
-            __DIR__ . '/../resources/views/themes' => $this->app->basePath('resources/views/vendor/scribe/themes'),
-        ], 'scribe-themes');
+        // Publish views in separate, smaller groups for ease of end-user modifications
+        $viewGroups = [
+            'views' => '',
+            'examples' => 'partials/example-requests',
+            'themes' => 'themes',
+            'markdown' => 'markdown',
+        ];
+        foreach ($viewGroups as $group => $path) {
+            $this->publishes([
+                __DIR__ . "/../resources/views/$path" => $this->app->basePath("resources/views/vendor/scribe/$path"),
+            ], "scribe-$group");
+        }
 
         $this->publishes([
             __DIR__ . '/../config/scribe.php' => $this->app->configPath('scribe.php'),
@@ -54,6 +56,7 @@ class ScribeServiceProvider extends ServiceProvider
             $this->commands([
                 GenerateDocumentation::class,
                 MakeStrategy::class,
+                Upgrade::class,
             ]);
         }
 
