@@ -141,7 +141,7 @@ class UseApiResourceTags extends Strategy
     {
         $content = $tag->getContent();
         preg_match('/^(\d{3})?\s?([\s\S]*)$/', $content, $result);
-        $status = $result[1] ?: 0;
+        $status = (int)($result[1] ?: 0);
         $apiResourceClass = $result[2];
 
         return [$status, $apiResourceClass];
