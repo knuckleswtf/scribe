@@ -105,7 +105,7 @@ class UseTransformerTags extends Strategy
     {
         $content = $tag->getContent();
         preg_match('/^(\d{3})?\s?([\s\S]*)$/', $content, $result);
-        $status = $result[1] ?: 200;
+        $status = (int)($result[1] ?: 200);
         $transformerClass = $result[2];
 
         return [$status, $transformerClass];

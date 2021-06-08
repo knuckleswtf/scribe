@@ -115,14 +115,14 @@ class UseApiResourceTagsTest extends BaseLaravelTest
 
         $strategy = new UseApiResourceTags($config);
         $tags = [
-            new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
+            new Tag('apiResource', '201 \Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
             new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser states=state1,random-state'),
         ];
         $results = $strategy->getApiResourceResponse($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
 
         $this->assertArraySubset([
             [
-                'status' => 200,
+                'status' => 201,
                 'content' => json_encode([
                     'data' => [
                         'id' => 4,
