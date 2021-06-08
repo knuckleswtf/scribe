@@ -15,7 +15,6 @@ use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Extracting\ValidationRuleDescriptionParser as d;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
-use Knuckles\Scribe\Tools\Utils;
 use Knuckles\Scribe\Tools\WritingUtils as w;
 use ReflectionClass;
 use ReflectionException;
@@ -229,6 +228,10 @@ class GetFromFormRequest extends Strategy
 
     protected function parseRule($rule, &$parameterData)
     {
+        if (!(is_string($rule) || $rule instanceof Rule)) {
+            return;
+        }
+
         $parsedRule = $this->parseStringRuleIntoRuleAndArguments($rule);
         [$rule, $arguments] = $parsedRule;
 
