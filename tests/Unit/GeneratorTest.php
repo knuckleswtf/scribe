@@ -153,6 +153,14 @@ class GeneratorTest extends TestCase
                 'type' => 'string',
                 'value' => 'hoho',
             ],
+            '[].key3.key2' => [
+                'type' => 'array',
+                'value' => [],
+            ],
+            '[].key3.key2[].subkey1' => [
+                'type' => 'string',
+                'value' => 'haha',
+            ],
         ];
 
         $cleanBodyParameters = Generator::cleanParams($parameters);
@@ -163,8 +171,13 @@ class GeneratorTest extends TestCase
                 'key2' => 77,
                 'key3' => [
                     'key1' => [
-                      'objkey1' => 'hoho',
-                    ]
+                        'objkey1' => 'hoho',
+                    ],
+                    'key2' => [
+                        [
+                            'subkey1' => 'haha',
+                        ]
+                    ],
                 ]
             ],
         ], $cleanBodyParameters);

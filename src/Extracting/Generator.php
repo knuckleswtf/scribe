@@ -314,11 +314,17 @@ class Generator
         }
 
         if (empty($baseNameInOriginalParams)) {
-            // This indicates that the body is an array of objects, so each parameter should be a key in the first object in that array
+            // If this is empty, it indicates that the body is an array of objects. (i.e. "[].param")
+            // Therefore, each parameter should be an element of the first object in that array.
             $results[0][$paramName] = $value;
-        } elseif (array_key_exists(0, $results)) {
-            // The body is an array of objects, so every parameter must be an element of the array object.
-            $dotPath = '0.'.substr($path, 3);
+        } elseif (Str::startsWith($path, '[]')) {
+            // If the body is an array, then any top level parameters (i.e. "[].param") would have been handled by the previous block
+            // Therefore, we assume that this is a child parameter (i.e. "[].parent.child" or "[].parent[].child"
+
+            // Remove the top-level array brackets
+            $dotPath = substr($path, 3);
+            // Use correct dot notation for any child arrays
+            $dotPath = '0.' . str_replace('[]', '.0', $dotPath);
             Arr::set($results, $dotPath, $value);
         } elseif (Arr::has($source, $baseNameInOriginalParams)) {
             $parentData = Arr::get($source, $baseNameInOriginalParams);
