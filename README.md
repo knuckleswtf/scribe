@@ -26,7 +26,7 @@ Scribe helps you generate API documentation for humans from your Laravel/Lumen/[
 ## Documentation
 Check out the documentation at [scribe.knuckles.wtf/laravel](http://scribe.knuckles.wtf/laravel).
 
-v2 docs (unmaintained) are at [scribe.rtfd.io](http://scribe.rtfd.io).
+v2 docs (PHP 7.2+, not actively maintained) are at [scribe.rtfd.io](http://scribe.rtfd.io).
 
 If you're coming from `mpociot/laravel-apidoc-generator`, there's a [migration guide](https://scribe.knuckles.wtf/laravel/migrating-apidoc).
 

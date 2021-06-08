@@ -12,5 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.0.1 (Tuesday, 8 June, 2021)
+### Fixed
+- Properly cast status codes for API Resource and Transformer responses (https://github.com/knuckleswtf/scribe/pull/235)
+- Don't crash on unrecognized validation rule formats (https://github.com/knuckleswtf/scribe/commit/c86ea65e903a013f33dc660269d7fff5e2376490)
+
 ## 3.0.0 (Monday, 7 June, 2021)
 [Release announcement](https://scribe.knuckles.wtf/blog/2021/06/08/laravel-v3)
