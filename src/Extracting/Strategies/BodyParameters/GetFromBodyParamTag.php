@@ -75,6 +75,7 @@ class GetFromBodyParamTag extends Strategy
 
             $type = $this->normalizeTypeName($type);
             [$description, $example] = $this->parseExampleFromParamDescription($description, $type);
+
             $example = is_null($example) && !$this->shouldExcludeExample($tagContent)
                 ? $this->generateDummyValue($type)
                 : $example;

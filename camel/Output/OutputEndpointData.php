@@ -106,8 +106,10 @@ class OutputEndpointData extends BaseDTO
         [$files, $regularParameters] = collect($this->cleanBodyParameters)
             ->partition(
                 function ($example) {
-                    return $example instanceof UploadedFile
-                        || (is_array($example) && ($example[0] ?? null) instanceof UploadedFile);
+                    // We'll only check two levels: a file, or an array of files
+                    return is_array($example) && isset($example[0])
+                        ? $example[0] instanceof UploadedFile
+                        : $example instanceof UploadedFile;
                 }
             );
         if (count($files)) {
@@ -142,7 +144,7 @@ class OutputEndpointData extends BaseDTO
 
     public function endpointId(): string
     {
-        return $this->httpMethods[0].str_replace(['/', '?', '{', '}', ':'], '-', $this->uri);
+        return $this->httpMethods[0] . str_replace(['/', '?', '{', '}', ':'], '-', $this->uri);
     }
 
     public function hasResponses(): bool

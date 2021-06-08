@@ -143,6 +143,10 @@ trait ParsesValidationRules
      */
     protected function parseRule($rule, array &$parameterData, bool $independentOnly, array $allParameters = []): bool
     {
+        if (!(is_string($rule) || $rule instanceof Rule)) {
+            return true;
+        }
+
         // Convert string rules into rule + arguments (eg "in:1,2" becomes ["in", ["1", "2"]])
         $parsedRule = $this->parseStringRuleIntoRuleAndArguments($rule);
         [$rule, $arguments] = $parsedRule;
