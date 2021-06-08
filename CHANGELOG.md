@@ -14,7 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## 2.7.7 (Tuesday, 8 June 2021)
 ### Fixed
-- Don't crash on unrecognized validation rule formats (https://github.com/knuckleswtf/scribe/commit/1d3b9d4146431bf97a62be65b0add570405bb880)
+- Don't crash on unrecognized validation rule formats (https://github.com/knuckleswtf/scribe/commit/ec405dd8c2a78c819e1dcc0a42935e0113b44b32)
 
 ## 2.7.6 (Thursday, 27 May 2021)
 ### Fixed
