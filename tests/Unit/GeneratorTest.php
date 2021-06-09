@@ -130,6 +130,60 @@ class GeneratorTest extends TestCase
     }
 
     /** @test */
+    public function clean_can_properly_parse_a_body_array()
+    {
+        $parameters = [
+            '[].key1' => [
+                'type' => 'string',
+                'value' => '43',
+            ],
+            '[].key2' => [
+                'type' => 'integer',
+                'value' => 77,
+            ],
+            '[].key3' => [
+                'type' => 'object',
+                'value'=> [],
+            ],
+            '[].key3.key1' => [
+                'type' => 'object',
+                'value' => [],
+            ],
+            '[].key3.key1.objkey1' => [
+                'type' => 'string',
+                'value' => 'hoho',
+            ],
+            '[].key3.key2' => [
+                'type' => 'array',
+                'value' => [],
+            ],
+            '[].key3.key2[].subkey1' => [
+                'type' => 'string',
+                'value' => 'haha',
+            ],
+        ];
+
+        $cleanBodyParameters = Generator::cleanParams($parameters);
+
+        $this->assertEquals([
+            [
+                'key1' => '43',
+                'key2' => 77,
+                'key3' => [
+                    'key1' => [
+                        'objkey1' => 'hoho',
+                    ],
+                    'key2' => [
+                        [
+                            'subkey1' => 'haha',
+                        ]
+                    ],
+                ]
+            ],
+        ], $cleanBodyParameters);
+    }
+
+    /** @test */
     public function does_not_generate_values_for_excluded_params_and_excludes_them_from_clean_params()
     {
         $route = $this->createRoute('GET', '/api/test', 'withExcludedExamples');
