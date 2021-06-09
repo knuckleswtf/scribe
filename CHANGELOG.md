@@ -12,7 +12,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
-## 2.7.7 (Tuesday, 8 June 2021)
+## 2.7.9 (Wednesday, 9 June 2021)
+### Fixed
+- Handle array body properly (https://github.com/knuckleswtf/scribe/pull/234)
+- Make auto docs routes compatible with Lumen (https://github.com/knuckleswtf/scribe/commit/10bda0e6e969ea3cd01efa3f826caf486e772937)
+
+## 2.7.8 (Tuesday, 8 June 2021)
 ### Fixed
 - Don't crash on unrecognized validation rule formats (https://github.com/knuckleswtf/scribe/commit/ec405dd8c2a78c819e1dcc0a42935e0113b44b32)
 
