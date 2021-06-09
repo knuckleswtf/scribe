@@ -301,7 +301,7 @@ class Generator
     {
         $parts = explode('.', $path);
 
-        array_pop($parts); // Get rid of the field name
+        $paramName = array_pop($parts); // Remove the field name
 
         $baseName = join('.', $parts);
         // For array fields, the type should be indicated in the source object by now;
@@ -313,7 +313,20 @@ class Generator
             $baseNameInOriginalParams = substr($baseNameInOriginalParams, 0, -2);
         }
 
-        if (Arr::has($source, $baseNameInOriginalParams)) {
+        if (empty($baseNameInOriginalParams)) {
+            // If this is empty, it indicates that the body is an array of objects. (i.e. "[].param")
+            // Therefore, each parameter should be an element of the first object in that array.
+            $results[0][$paramName] = $value;
+        } elseif (Str::startsWith($path, '[]')) {
+            // If the body is an array, then any top level parameters (i.e. "[].param") would have been handled by the previous block
+            // Therefore, we assume that this is a child parameter (i.e. "[].parent.child" or "[].parent[].child"
+
+            // Remove the top-level array brackets
+            $dotPath = substr($path, 3);
+            // Use correct dot notation for any child arrays
+            $dotPath = '0.' . str_replace('[]', '.0', $dotPath);
+            Arr::set($results, $dotPath, $value);
+        } elseif (Arr::has($source, $baseNameInOriginalParams)) {
             $parentData = Arr::get($source, $baseNameInOriginalParams);
             // Path we use for data_set
             $dotPath = str_replace('[]', '.0', $path);
@@ -418,7 +431,7 @@ class Generator
 
                 // If the user didn't add a parent field, we'll conveniently add it for them
                 $parentName = rtrim(join('.', $parts), '[]');
-                if (empty($parameters[$parentName])) {
+                if (!empty($parentName) && empty($parameters[$parentName])) {
                     $normalisedParameters[$parentName] = [
                         "name" => $parentName,
                         "type" => "object",
@@ -426,6 +439,11 @@ class Generator
                         "required" => false,
                         "value" => [$fieldName => $parameter['value']],
                     ];
+                }
+
+                // If the body is an array, the parameter array must use sequential keys
+                if (Str::startsWith($name, '[].')) {
+                  $name = count($normalisedParameters);
                 }
             }
             $normalisedParameters[$name] = $parameter;
