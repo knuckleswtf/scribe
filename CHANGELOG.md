@@ -14,7 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## 3.0.2 (Friday, 11 June 2021)
 ### Fixed
-- Use regular relative paths for assets if not using default static output path (https://github.com/knuckleswtf/scribe/commit/235)
+- Use regular relative paths for assets if not using default static output path (https://github.com/knuckleswtf/scribe/commit/05aaba1877e9ca3dbf7a130dcbd12a2ba9438136)
 
 ## 3.0.1 (Tuesday, 8 June 2021)
 ### Fixed
