@@ -11,9 +11,9 @@
 
     <link href="https://fonts.googleapis.com/css?family=PT+Sans&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="../docs/css/theme-default.style.css" media="screen">
-    <link rel="stylesheet" href="../docs/css/theme-default.print.css" media="print">
-    <script src="{{ u::getVersionedAsset('../docs/js/theme-default.js') }}"></script>
+    <link rel="stylesheet" href="{!! $assetPathPrefix !!}css/theme-default.style.css" media="screen">
+    <link rel="stylesheet" href="{!! $assetPathPrefix !!}css/theme-default.print.css" media="print">
+    <script src="{{ u::getVersionedAsset($assetPathPrefix.'js/theme-default.js') }}"></script>
 
     <link rel="stylesheet"
           href="//unpkg.com/@highlightjs/cdn-assets@10.7.2/styles/obsidian.min.css">
@@ -25,7 +25,7 @@
     <script>
         var baseUrl = "{{ $tryItOut['base_url'] ?? config('app.url') }}";
     </script>
-    <script src="{{ u::getVersionedAsset('../docs/js/tryitout.js') }}"></script>
+    <script src="{{ u::getVersionedAsset($assetPathPrefix.'js/tryitout.js') }}"></script>
 @endif
 
 </head>
@@ -34,7 +34,7 @@
 <a href="#" id="nav-button">
       <span>
         MENU
-        <img src="../docs/images/navbar.png" alt="navbar-image" />
+        <img src="{!! $assetPathPrefix !!}images/navbar.png" alt="navbar-image" />
       </span>
 </a>
 <div class="tocify-wrapper">

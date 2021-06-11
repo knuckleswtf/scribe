@@ -33,6 +33,15 @@ class HtmlWriter
         $appendFile = rtrim($sourceFolder, '/') . '/' . 'append.md';
         $append = file_exists($appendFile) ? $this->transformMarkdownFileToHTML($appendFile) : '';
 
+        // If they're using the default static path,
+        // then use '../docs/{asset}', so assets can work via Laravel app or via index.html
+        $assetPathPrefix = '../docs/';
+        if ($this->config->get('type') == 'static'
+            && rtrim($this->config->get('static.output_path', ''), '/') != 'public/docs'
+        ) {
+            $assetPathPrefix = './';
+        }
+
         $theme = $this->config->get('theme') ?? 'default';
         $output = View::make("scribe::themes.$theme.index", [
             'metadata' => $this->getMetadata(),
@@ -42,6 +51,7 @@ class HtmlWriter
             'auth' => $auth,
             'groupedEndpoints' => $groupedEndpoints,
             'append' => $append,
+            'assetPathPrefix' => $assetPathPrefix,
         ])->render();
 
         if (!is_dir($destinationFolder)) {
