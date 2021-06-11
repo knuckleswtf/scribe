@@ -7,5 +7,5 @@ assignees: ''
 
 ---
 
-- [x] I've read the [documentation](https://scribe.rtfd.io) and I can't find details on how to achieve this.
+- [x] I've read the [documentation](https://scribe.knuckles.wtf/laravel) and I can't find details on how to achieve this.
 
