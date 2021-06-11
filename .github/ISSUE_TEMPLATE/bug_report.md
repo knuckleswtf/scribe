@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-- [x] **I confirm that I have read and attempted the tips in the [Troubleshooting Guide](https://scribe.readthedocs.io/en/latest/troubleshooting.html).**
+- [x] **I confirm that I have read and attempted the tips in the [Troubleshooting Guide](https://scribe.knuckles.wtf/laravel/troubleshooting).**
 
 **What happened?**
 1. I set my configuration to...
