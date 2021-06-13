@@ -1,7 +1,7 @@
 # Overview
 
 ```eval_rst
-.. attention:: These docs are for Scribe v3. See `scribe.knuckles.wtf/laravel <http://scribe.knuckles.wtf/laravel>`_ for Scribe v3.
+.. attention:: These docs are for Scribe v2, which is no longer maintained. See `scribe.knuckles.wtf/laravel <http://scribe.knuckles.wtf/laravel>`_ for Scribe v3.
 ```
 
 Generate API documentation for humans from your Laravel/Lumen/[Dingo](https://github.com/dingo/api) codebase. [Here's what the output looks like](https://shalvah.me/TheCensorshipAPI/). There's a [Node.js version](https://github.com/knuckleswtf/scribe-js), too!
