@@ -247,7 +247,7 @@ INTRO
     /*
      * Example requests for each endpoint will be shown in each of these languages.
      * Supported options are: bash, javascript, php, python
-     * To add a language of your own, see https://scribe.knuckles.wtf/laravel/advanced/adding-example-languages
+     * To add a language of your own, see https://scribe.knuckles.wtf/laravel/advanced/example-requests
      *
      */
     'example_languages' => [
