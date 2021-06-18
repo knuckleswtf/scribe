@@ -63,7 +63,7 @@
 <form id="form-{{ $endpoint->endpointId() }}" data-method="{{ $endpoint->httpMethods[0] }}"
       data-path="{{ $endpoint->uri }}"
       data-authed="{{ $endpoint->metadata->authenticated ? 1 : 0 }}"
-      data-hasfiles="{{ $endpoint->hasFiles() }}"
+      data-hasfiles="{{ $endpoint->hasFiles() ? 1 : 0 }}"
       data-headers='@json($endpoint->headers)'
       onsubmit="event.preventDefault(); executeTryOut('{{ $endpoint->endpointId() }}', this);">
     <h3>
