@@ -491,7 +491,7 @@ class OpenAPISpecWriter
                     ? $this->generateFieldData([
                         'name' => '',
                         'type' => $baseType,
-                        'value' => ($field->example ?: [null])[0],
+                        'example' => ($field->example ?: [null])[0],
                     ])
                     : ['type' => $baseType],
             ];
