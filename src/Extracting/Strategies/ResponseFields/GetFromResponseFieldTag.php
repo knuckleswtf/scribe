@@ -52,7 +52,8 @@ class GetFromResponseFieldTag extends Strategy
                 $type = $this->normalizeTypeName($type);
 
                 // Support optional type in annotation
-                if (!$this->isSupportedTypeInDocBlocks($type)) {
+                // The type can also be a union or nullable type (eg ?string or string|null)
+                if (!$this->isSupportedTypeInDocBlocks(explode('|', trim($type, '?'))[0])) {
                     // Then that wasn't a type, but part of the description
                     $description = trim("$type $description");
                     $type = '';
