@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.0.3 (Friday, 18 June 2021)
+### Fixed
+- Try It Out: Send body params in the right format (https://github.com/knuckleswtf/scribe/pull/245)
+
 ## 3.0.2 (Friday, 11 June 2021)
 ### Fixed
 - Use regular relative paths for assets if not using default static output path (https://github.com/knuckleswtf/scribe/commit/05aaba1877e9ca3dbf7a130dcbd12a2ba9438136)
