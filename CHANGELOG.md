@@ -12,6 +12,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.1.0 (Friday, 18 June 2021)
+### Added
+- Support nullable and union responseField types (https://github.com/knuckleswtf/scribe/commit/2912ac2344b37e30599aa1004c90e146a6f76aaa)
+
+### Fixed
+- Fix OAS generation (https://github.com/knuckleswtf/scribe/commit/a5f51714eafe9b281cc1bbeb1b3186c03f4e3e61)
+
 ## 3.0.3 (Friday, 18 June 2021)
 ### Fixed
 - Try It Out: Send body params in the right format (https://github.com/knuckleswtf/scribe/pull/245)
