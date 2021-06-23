@@ -194,7 +194,17 @@ async function executeTryOut(endpointId, form) {
         if (authHeaderEl) headers[authHeaderEl.name] = authHeaderEl.dataset.prefix + authHeaderEl.value;
     }
 
-    makeAPICall(form.dataset.method, path, body, query, headers)
+    let method = form.dataset.method;
+    if (headers['Content-Type'] === "multipart/form-data") {
+        delete headers['Content-Type'];
+
+        if (['PUT', 'PATCH'].includes(form.dataset.method)) {
+            method = 'POST';
+            setter('_method', form.dataset.method);
+        }
+    }
+
+    makeAPICall(method, path, body, query, headers)
         .then(([responseStatus, responseContent, responseHeaders]) => {
             handleResponse(form, endpointId, responseContent, responseStatus, responseHeaders)
         })
