@@ -23,6 +23,7 @@ curl --request {{$endpoint->httpMethods[0]}} \
 @endforeach
 @endforeach
 @elseif(count($endpoint->cleanBodyParameters))
-    --data "{!! addslashes(json_encode($endpoint->cleanBodyParameters, JSON_UNESCAPED_UNICODE)) !!}"
+    --data "{!! addslashes(json_encode($endpoint->cleanBodyParameters, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)) !!}"
 @endif
+
 ```

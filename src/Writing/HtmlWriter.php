@@ -94,8 +94,9 @@ class HtmlWriter
 
     protected function getMetadata(): array
     {
-        // NB:These paths are wrong for laravel type but will be set correctly by the Writer class
         $links = [];
+
+        // NB:These paths are wrong for laravel type but will be set correctly by the Writer class
         if ($this->config->get('postman.enabled', true)) {
             $links[] = '<a href="../docs/collection.json">View Postman collection</a>';
         }
@@ -120,7 +121,7 @@ class HtmlWriter
             'last_updated' => date("F j Y"),
             'auth' => $auth,
             'try_it_out' => $this->config->get('try_it_out'),
-            'links' => $links + ['<a href="http://github.com/knuckleswtf/scribe">Documentation powered by Scribe ✍</a>'],
+            'links' => array_merge($links, ['<a href="http://github.com/knuckleswtf/scribe">Documentation powered by Scribe ✍</a>']),
         ];
     }
 }

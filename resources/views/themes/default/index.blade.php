@@ -30,7 +30,7 @@
 
 </head>
 
-<body class="" data-languages="{{ json_encode($metadata['example_languages'] ?? []) }}">
+<body data-languages="{{ json_encode($metadata['example_languages'] ?? []) }}">
 <a href="#" id="nav-button">
       <span>
         MENU

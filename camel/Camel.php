@@ -150,7 +150,9 @@ class Camel
                 'description' => Arr::first($endpointsInGroup, function (ExtractedEndpointData $endpointData) {
                         return !empty($endpointData->metadata->groupDescription);
                     })->metadata->groupDescription ?? '',
-                'endpoints' => $sortedEndpoints->map(fn(ExtractedEndpointData $endpointData) => $endpointData->forSerialisation()->toArray())->values()->all(),
+                'endpoints' => $sortedEndpoints->map(
+                    fn(ExtractedEndpointData $endpointData) => $endpointData->forSerialisation()->toArray()
+                )->values()->all(),
             ];
         })->values()->all();
     }
