@@ -88,7 +88,7 @@ class ResponseCalls extends Strategy
                 [
                     'status' => $response->getStatusCode(),
                     'content' => $response->getContent(),
-                    'headers' => $response->headers->all(),
+                    'headers' => $this->getResponseHeaders($response),
                 ],
             ];
         } catch (Exception $e) {
@@ -343,5 +343,17 @@ class ResponseCalls extends Strategy
         }
 
         return $server;
+    }
+
+    protected function getResponseHeaders($response): array
+    {
+        $headers = $response->headers->all();
+        $formattedHeaders = [];
+
+        foreach ($headers as $header => $values) {
+            $formattedHeaders[$header] = implode('; ', $values);
+        }
+
+        return $formattedHeaders;
     }
 }

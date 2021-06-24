@@ -8,23 +8,13 @@ use Knuckles\Camel\BaseDTO;
 
 class Response extends BaseDTO
 {
-    /** @var int */
-    public $status;
+    public int $status;
 
-    /**
-     * @var string|null
-     */
-    public $content;
+    public ?string $content;
 
-    /**
-     * @var array
-     */
-    public $headers = [];
+    public array $headers = [];
 
-    /**
-     * @var string|null
-     */
-    public $description;
+    public ?string $description;
 
     public function __construct(array $parameters = [])
     {

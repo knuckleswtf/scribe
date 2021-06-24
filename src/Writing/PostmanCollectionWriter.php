@@ -303,8 +303,11 @@ class PostmanCollectionWriter
     {
         return collect($endpoint->responses)->map(function (Response $response) {
             $headers = [];
-            foreach ($response->headers as $header => $values) {
-                $headers[] = ['key' => $header, 'value' => implode('; ', $values)];
+            foreach ($response->headers as $header => $value) {
+                $headers[] = [
+                    'key' => $header,
+                    'value' => is_array($value) ? implode('; ', $value) : $value
+                ];
             }
 
             return [
