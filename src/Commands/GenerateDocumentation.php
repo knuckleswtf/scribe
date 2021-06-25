@@ -268,7 +268,7 @@ class GenerateDocumentation extends Command
         $fileNameIndex = 0;
         foreach ($grouped as $group) {
             $yaml = Yaml::dump(
-                $group, 10, 2,
+                $group, 20, 2,
                 Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP | Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK
             );
             if (count(Camel::$groupFileNames) == count($grouped)

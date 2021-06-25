@@ -313,7 +313,8 @@ class Extractor
         while (Str::endsWith($baseNameInOriginalParams, '[]')) {
             $baseNameInOriginalParams = substr($baseNameInOriginalParams, 0, -2);
         }
-        // When the body is an array, param names will be  "[].paramname", so $baseNameInOriginalParams here will be empty
+        // When the body is an array, param names will be  "[].paramname",
+        // so $baseNameInOriginalParams here will be empty
         if (Str::startsWith($path, '[].')) {
             $baseNameInOriginalParams = '[]';
         }
@@ -440,16 +441,19 @@ class Extractor
 
                 // If the user didn't add a parent field, we'll helpfully add it for them
                 $parentName = rtrim(join('.', $parts), '[]');
-                // When the body is an array, param names will be  "[].paramname", so $parentName is empty
+
+                // When the body is an array, param names will be "[].paramname",
+                // so $parentName is empty. Let's fix that.
                 if (empty($parentName)) {
                     $parentName = '[]';
                 }
-                if (empty($parameters[$parentName])) {
+
+                if (empty($normalisedParameters[$parentName])) {
                     $normalisedParameters[$parentName] = new Parameter([
                         "name" => $parentName,
                         "type" => $parentName === '[]' ? "object[]" : "object",
                         "description" => "",
-                        "required" => $parentName === '[]' ? true : false,
+                        "required" => true,
                         "example" => [$fieldName => $parameter->example],
                     ]);
                 }
@@ -471,7 +475,8 @@ class Extractor
                 // The difference would be in the parent field's `type` property (object[] vs object)
                 // So we can get rid of all [] to get the parent name
                 $dotPathToParent = str_replace('[]', '', $baseName);
-                // When the body is an array, param names will be  "[].paramname", so $parts is ['[]']
+                // When the body is an array, param names will be  "[].paramname",
+                // so $parts is ['[]']
                 if ($parts[0] == '[]') {
                     $dotPathToParent = '[]'.$dotPathToParent;
                 }
