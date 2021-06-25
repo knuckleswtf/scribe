@@ -429,7 +429,7 @@ class Extractor
      *
      * @return array
      */
-    public static function nestArrayAndObjectFields(array $parameters): array
+    public static function nestArrayAndObjectFields(array $parameters, array $cleanParameters = []): array
     {
         // First, we'll make sure all object fields have parent fields properly set
         $normalisedParameters = [];
@@ -496,6 +496,11 @@ class Extractor
         // Finally, if the body is an array, remove any other items.
         if (isset($finalParameters['[]'])) {
             $finalParameters = ["[]" => $finalParameters['[]']];
+            // At this point, the examples are likely [[], []],
+            // but have been correctly set in clean parameters, so let's update them
+            if ($finalParameters["[]"]["example"][0] == [] && !empty($cleanParameters)) {
+                $finalParameters["[]"]["example"] = $cleanParameters;
+            }
         }
 
         return $finalParameters;
