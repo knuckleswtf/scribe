@@ -62,8 +62,9 @@ class HtmlWriter
 
         // Copy assets
         $assetsFolder = __DIR__ . '/../../resources';
-        if (!is_dir($destinationFolder . "/js")) {
-            mkdir($destinationFolder."/js", 0777, true);
+        if (is_dir($assetsFolder)) {
+            // Prune older versioned assets
+            Utils::deleteDirectoryAndContents($assetsFolder);
         }
         Utils::copyDirectory("{$assetsFolder}/images/", "{$destinationFolder}/images");
 
