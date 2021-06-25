@@ -13,15 +13,6 @@ use Knuckles\Scribe\Tools\Utils;
 
 class ScribeServiceProvider extends ServiceProvider
 {
-    public function register()
-    {
-        // Register custom Markdown Blade compiler so we can automatically have MD views converted to HTML
-        $app = $this->app;
-        $app->view->getEngineResolver()
-            ->register('blademd', fn() => new BladeMarkdownEngine($app['blade.compiler']));
-        $app->view->addExtension('md.blade.php', 'blademd');
-    }
-
     /**
      * Bootstrap the application events.
      *
@@ -29,6 +20,11 @@ class ScribeServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        // Register custom Markdown Blade compiler so we can automatically have MD views converted to HTML
+        $this->app->view->getEngineResolver()
+            ->register('blademd', fn() => new BladeMarkdownEngine($this->app['blade.compiler']));
+        $this->app->view->addExtension('md.blade.php', 'blademd');
+
         $this->loadViewsFrom(__DIR__ . '/../resources/views/', 'scribe');
 
         // Publish views in separate, smaller groups for ease of end-user modifications
