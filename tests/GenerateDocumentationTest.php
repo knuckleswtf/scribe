@@ -260,9 +260,9 @@ class GenerateDocumentationTest extends BaseLaravelTest
 
         $this->artisan('scribe:generate');
 
-        $generatedCollection = Yaml::parseFile(__DIR__ . '/../public/docs/openapi.yaml');
-        $fixtureCollection = Yaml::parseFile(__DIR__ . '/Fixtures/openapi.yaml');
-        $this->assertEquals($fixtureCollection, $generatedCollection);
+        $generatedSpec = Yaml::parseFile(__DIR__ . '/../public/docs/openapi.yaml');
+        $fixtureSpec = Yaml::parseFile(__DIR__ . '/Fixtures/openapi.yaml');
+        $this->assertEquals($fixtureSpec, $generatedSpec);
     }
 
     /** @test */

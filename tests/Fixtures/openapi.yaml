@@ -291,8 +291,20 @@ paths:
                             type: array
                             description: Details.
                             example:
-                                - [ ]
-                                - [ ]
+                            - first_name: 'John'
+                              last_name: 'Doe'
+                              contacts:
+                              - first_name: Janelle
+                                last_name: Monáe
+                              - {}
+                              roles: [Admin]
+                            - first_name: 'John'
+                              last_name: 'Doe'
+                              contacts:
+                              - first_name: Janelle
+                                last_name: Monáe
+                              - {}
+                              roles: [Admin]
                             items:
                                 type: object
                                 properties:
