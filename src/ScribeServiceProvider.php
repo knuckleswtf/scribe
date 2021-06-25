@@ -21,10 +21,9 @@ class ScribeServiceProvider extends ServiceProvider
     public function boot()
     {
         // Register custom Markdown Blade compiler so we can automatically have MD views converted to HTML
-        $app = $this->app;
-        $app->view->getEngineResolver()
-            ->register('blademd', fn() => new BladeMarkdownEngine($app['blade.compiler']));
-        $app->view->addExtension('md.blade.php', 'blademd');
+        $this->app->view->getEngineResolver()
+            ->register('blademd', fn() => new BladeMarkdownEngine($this->app['blade.compiler']));
+        $this->app->view->addExtension('md.blade.php', 'blademd');
 
         $this->loadViewsFrom(__DIR__ . '/../resources/views/', 'scribe');
 
