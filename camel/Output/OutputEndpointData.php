@@ -103,20 +103,13 @@ class OutputEndpointData extends BaseDTO
 
         $this->boundUri = u::getUrlWithBoundParameters($this->uri, $this->cleanUrlParameters);
 
-        [$files, $regularParameters] = collect($this->cleanBodyParameters)
-            ->partition(
-                function ($example) {
-                    // We'll only check two levels: a file, or an array of files
-                    return is_array($example) && isset($example[0])
-                        ? $example[0] instanceof UploadedFile
-                        : $example instanceof UploadedFile;
-                }
-            );
+        [$files, $regularParameters] = static::getFileParameters($this->cleanBodyParameters);
+
         if (count($files)) {
             $this->headers['Content-Type'] = 'multipart/form-data';
         }
-        $this->fileParameters = $files->toArray();
-        $this->cleanBodyParameters = $regularParameters->toArray();
+        $this->fileParameters = $files;
+        $this->cleanBodyParameters = $regularParameters;
     }
 
     /**
@@ -167,5 +160,27 @@ class OutputEndpointData extends BaseDTO
         return !empty($this->headers)
             || !empty($this->cleanQueryParameters)
             || !empty($this->cleanBodyParameters);
+    }
+
+    public static function getFileParameters(array $parameters): array
+    {
+        $files = [];
+        $regularParameters = [];
+        foreach ($parameters as $name => $example) {
+            if ($example instanceof UploadedFile) {
+                $files[$name] = $example;
+            } else if (is_array($example)) {
+                [$subFiles, $subRegulars] = static::getFileParameters($example);
+                foreach ($subFiles as $subName => $subExample) {
+                    $files[$name][$subName] = $subExample;
+                }
+                foreach ($subRegulars as $subName => $subExample) {
+                    $regularParameters[$name][$subName] = $subExample;
+                }
+            } else {
+                $regularParameters[$name] = $example;
+            }
+        }
+        return [$files, $regularParameters];
     }
 }

@@ -12,6 +12,7 @@ use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Knuckles\Camel\Extraction\ResponseField;
+use Knuckles\Camel\Output\OutputEndpointData;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 
@@ -102,19 +103,15 @@ class Extractor
             // Set content type if the user forgot to set it
             $endpointData->headers['Content-Type'] = 'application/json';
         }
-        // We need to do all this so response calls can work correctly
-        [$files, $regularParameters] = collect($endpointData->cleanBodyParameters)
-            ->partition(
-                function ($example) {
-                    return $example instanceof UploadedFile
-                        || (is_array($example) && ($example[0] ?? null) instanceof UploadedFile);
-                }
-            );
+        // We need to do all this so response calls can work correctly,
+        // even though they're only needed for output
+        // Note that this
+        [$files, $regularParameters] = OutputEndpointData::getFileParameters($endpointData->cleanBodyParameters);
         if (count($files)) {
             $endpointData->headers['Content-Type'] = 'multipart/form-data';
         }
-        $endpointData->fileParameters = $files->toArray();
-        $endpointData->cleanBodyParameters = $regularParameters->toArray();
+        $endpointData->fileParameters = $files;
+        $endpointData->cleanBodyParameters = $regularParameters;
 
         $this->fetchResponses($endpointData, $routeRules);
 
