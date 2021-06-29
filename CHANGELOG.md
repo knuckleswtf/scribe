@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
-## 3.3.1 (Friday, 25 June 2021)
+## 3.3.1 (Tuesday, 29 June 2021)
 ### Fixed
 - Set nested file parameters properly in examples (https://github.com/knuckleswtf/scribe/commit/6354b5592d1e042fe627894156ff17a684fce667)
 
