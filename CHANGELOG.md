@@ -12,6 +12,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.3.2 (Wednesday, 30 June 2021)
+### Fixed
+- Try It Out: Add cancellable requests (https://github.com/knuckleswtf/scribe/commit/816e6fbd37ead033ca58bad048f38455622cb0b9)
+- Try It Out: Restore sample request/response after cancel (https://github.com/knuckleswtf/scribe/commit/25aaabbea3a4b0482e510932cc095c8ce9495427)
+- Try It Out: set FormData content-type properly (https://github.com/knuckleswtf/scribe/pull/249)
+
 ## 3.3.1 (Tuesday, 29 June 2021)
 ### Fixed
 - Set nested file parameters properly in examples (https://github.com/knuckleswtf/scribe/commit/6354b5592d1e042fe627894156ff17a684fce667)
