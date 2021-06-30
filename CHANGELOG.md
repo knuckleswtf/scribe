@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 2.7.10 (Wednesday, 30 June 2021)
+### Fixed
+- Don't crash on unsupported rules (https://github.com/knuckleswtf/scribe/commit/720bec74a1bf409205af04edd47b7ab6d85ddf85)
+
 ## 2.7.9 (Wednesday, 9 June 2021)
 ### Fixed
 - Handle array body properly (https://github.com/knuckleswtf/scribe/pull/234)
