@@ -465,7 +465,9 @@ class GetFromFormRequest extends Strategy
                     $details['type'] .= '[]';
                     if ($needsWrapping) {
                         // Make it two items in each array
-                        $secondItem = $secondValue = $details['setter']();
+                        $secondItem = $secondValue = isset($details['setter'])
+                            ? $details['setter']()
+                            : null;
                         for ($i = 0; $i < $nestingLevel; $i++) {
                             $secondItem = [$secondValue];
                         }
