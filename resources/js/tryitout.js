@@ -1,3 +1,5 @@
+window.abortControllers = {};
+
 function tryItOut(endpointId) {
     document.querySelector(`#btn-tryout-${endpointId}`).hidden = true;
     document.querySelector(`#btn-executetryout-${endpointId}`).hidden = false;
@@ -17,6 +19,11 @@ function tryItOut(endpointId) {
 }
 
 function cancelTryOut(endpointId) {
+    if (window.abortControllers[endpointId]) {
+        window.abortControllers[endpointId].abort();
+        delete window.abortControllers[endpointId];
+    }
+
     document.querySelector(`#btn-tryout-${endpointId}`).hidden = false;
     const executeBtn = document.querySelector(`#btn-executetryout-${endpointId}`);
     executeBtn.hidden = true;
@@ -38,8 +45,8 @@ function cancelTryOut(endpointId) {
     document.querySelector('#example-responses-' + endpointId).hidden = false;
 }
 
-function makeAPICall(method, path, body, query, headers) {
-    console.log({path, body, query, headers});
+function makeAPICall(method, path, body, query, headers, endpointId) {
+    console.log({endpointId, path, body, query, headers});
 
     if (!(body instanceof FormData)) {
         body = JSON.stringify(body)
@@ -68,10 +75,13 @@ function makeAPICall(method, path, body, query, headers) {
     Object.keys(query)
         .forEach(key => addItemToSearchParamsObject(key, query[key], url.searchParams));
 
+    window.abortControllers[endpointId] = new AbortController();
+
     return fetch(url, {
         method,
         headers,
         body: method === 'GET' ? undefined : body,
+        signal: window.abortControllers[endpointId].signal
     })
         .then(response => Promise.all([response.status, response.text(), response.headers]));
 }
@@ -181,11 +191,15 @@ async function executeTryOut(endpointId, form) {
         delete headers['Content-Type'];
     }
 
-    makeAPICall(form.dataset.method, path, body, query, headers)
+    makeAPICall(form.dataset.method, path, body, query, headers, endpointId)
         .then(([responseStatus, responseContent, responseHeaders]) => {
             handleResponse(endpointId, responseContent, responseStatus, responseHeaders)
         })
         .catch(err => {
+            if (err.name === "AbortError") {
+                console.log("Request cancelled");
+                return;
+            }
             console.log("Error while making request: ", err);
             handleError(endpointId, err);
         })
