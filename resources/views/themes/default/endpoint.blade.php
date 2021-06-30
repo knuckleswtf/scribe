@@ -11,6 +11,7 @@
 
 {!! Parsedown::instance()->text($endpoint->metadata->description ?: '') !!}
 
+<span id="example-requests-{!! $endpoint->endpointId() !!}">
 <blockquote>Example request:</blockquote>
 
 @foreach($metadata['example_languages'] as $language)
@@ -18,7 +19,9 @@
 @include("scribe::partials.example-requests.$language")
 
 @endforeach
+</span>
 
+<span id="example-responses-{!! $endpoint->endpointId() !!}">
 @if($endpoint->isGet() || $endpoint->hasResponses())
     @foreach($endpoint->responses as $response)
         <blockquote>
@@ -49,16 +52,17 @@
         </pre>
     @endforeach
 @endif
-<div id="execution-results-{{ $endpoint->endpointId() }}" hidden>
+</span>
+<span id="execution-results-{{ $endpoint->endpointId() }}" hidden>
     <blockquote>Received response<span
                 id="execution-response-status-{{ $endpoint->endpointId() }}"></span>:
     </blockquote>
     <pre class="json"><code id="execution-response-content-{{ $endpoint->endpointId() }}"></code></pre>
-</div>
-<div id="execution-error-{{ $endpoint->endpointId() }}" hidden>
+</span>
+<span id="execution-error-{{ $endpoint->endpointId() }}" hidden>
     <blockquote>Request failed with error:</blockquote>
     <pre><code id="execution-error-message-{{ $endpoint->endpointId() }}"></code></pre>
-</div>
+</span>
 <form id="form-{{ $endpoint->endpointId() }}" data-method="{{ $endpoint->httpMethods[0] }}"
       data-path="{{ $endpoint->uri }}"
       data-authed="{{ $endpoint->metadata->authenticated ? 1 : 0 }}"

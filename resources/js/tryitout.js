@@ -22,7 +22,7 @@ function cancelTryOut(endpointId) {
     executeBtn.hidden = true;
     executeBtn.textContent = "Send Request 💥";
     document.querySelector(`#btn-canceltryout-${endpointId}`).hidden = true;
-    // hide inputs
+    // Hide inputs
     document.querySelectorAll(`input[data-endpoint=${endpointId}],label[data-endpoint=${endpointId}]`)
         .forEach(el => el.hidden = true);
     document.querySelectorAll(`#form-${endpointId} details`)
@@ -34,21 +34,8 @@ function cancelTryOut(endpointId) {
     document.querySelector('#execution-error-' + endpointId).hidden = true;
 
     // Revert to sample code blocks
-    const query = new URLSearchParams(window.location.search);
-    const languages = JSON.parse(document.querySelector('body').dataset.languages);
-    const currentLanguage = languages.find(l => query.has(l)) || languages[0];
-
-    let codeblock = getPreviousSiblingUntil(document.querySelector('#form-' + endpointId), 'blockquote,pre', 'h2');
-    while (codeblock != null) {
-        if (codeblock.nodeName === 'PRE') {
-            if (codeblock.querySelector('code.language-' + currentLanguage)) {
-                codeblock.style.display = 'block';
-            }
-        } else {
-            codeblock.style.display = 'block';
-        }
-        codeblock = getPreviousSiblingUntil(codeblock, 'blockquote,pre', 'h2');
-    }
+    document.querySelector('#example-requests-' + endpointId).hidden = false;
+    document.querySelector('#example-responses-' + endpointId).hidden = false;
 }
 
 function makeAPICall(method, path, body, query, headers) {
@@ -89,24 +76,20 @@ function makeAPICall(method, path, body, query, headers) {
         .then(response => Promise.all([response.status, response.text(), response.headers]));
 }
 
-function hideCodeSamples(form) {
-    let codeblock = getPreviousSiblingUntil(form, 'blockquote,pre', 'h2');
-    while (codeblock != null) {
-        codeblock.style.display = 'none';
-        codeblock = getPreviousSiblingUntil(codeblock, 'blockquote,pre', 'h2');
-    }
+function hideCodeSamples(endpointId) {
+    document.querySelector('#example-requests-' + endpointId).hidden = true;
+    document.querySelector('#example-responses-' + endpointId).hidden = true;
 }
 
-function handleResponse(form, endpointId, response, status, headers) {
-    hideCodeSamples(form);
+function handleResponse(endpointId, response, status, headers) {
+    hideCodeSamples(endpointId);
 
     // Hide error views
     document.querySelector('#execution-error-' + endpointId).hidden = true;
 
-
     const responseContentEl = document.querySelector('#execution-response-content-' + endpointId);
 
-    // prettify it if it's JSON
+    // Prettify it if it's JSON
     let isJson = false;
     try {
         const jsonParsed = JSON.parse(response);
@@ -125,8 +108,8 @@ function handleResponse(form, endpointId, response, status, headers) {
     statusEl.scrollIntoView({behavior: "smooth", block: "center"});
 }
 
-function handleError(form, endpointId, err) {
-    hideCodeSamples(form);
+function handleError(endpointId, err) {
+    hideCodeSamples(endpointId);
     // Hide response views
     document.querySelector('#execution-results-' + endpointId).hidden = true;
 
@@ -194,28 +177,19 @@ async function executeTryOut(endpointId, form) {
         if (authHeaderEl) headers[authHeaderEl.name] = authHeaderEl.dataset.prefix + authHeaderEl.value;
     }
     // When using FormData, the browser sets the correct content-type + boundary
-    if (headers['Content-Type'] === "multipart/form-data") {
+    if (body instanceof FormData) {
         delete headers['Content-Type'];
     }
 
     makeAPICall(form.dataset.method, path, body, query, headers)
         .then(([responseStatus, responseContent, responseHeaders]) => {
-            handleResponse(form, endpointId, responseContent, responseStatus, responseHeaders)
+            handleResponse(endpointId, responseContent, responseStatus, responseHeaders)
         })
         .catch(err => {
             console.log("Error while making request: ", err);
-            handleError(form, endpointId, err);
+            handleError(endpointId, err);
         })
         .finally(() => {
             executeBtn.textContent = "Send Request 💥";
         });
-}
-
-function getPreviousSiblingUntil(elem, siblingSelector, stopSelector) {
-    let sibling = elem.previousElementSibling;
-    while (sibling) {
-        if (sibling.matches(siblingSelector)) return sibling;
-        if (sibling.matches(stopSelector)) return null;
-        sibling = sibling.previousElementSibling;
-    }
 }
