@@ -75,7 +75,7 @@ class GetFromFormRequestBase extends Strategy
             return call_user_func_array([$formRequest, $this->customParameterDataMethodName], []);
         }
 
-        c::warn("No {$this->customParameterDataMethodName}() method found in " . get_class($formRequest) . " Scribe will only be able to extract basic information from the rules() method.");
+        c::warn("No {$this->customParameterDataMethodName}() method found in " . get_class($formRequest) . ". Scribe will only be able to extract basic information from the rules() method.");
 
         return [];
     }
