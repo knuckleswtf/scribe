@@ -193,6 +193,7 @@ async function executeTryOut(endpointId, form) {
         const authHeaderEl = form.querySelector('input[data-component=header]');
         if (authHeaderEl) headers[authHeaderEl.name] = authHeaderEl.dataset.prefix + authHeaderEl.value;
     }
+    // When using FormData, the browser sets the correct content-type + boundary
     if (headers['Content-Type'] === "multipart/form-data") {
         delete headers['Content-Type'];
     }
