@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 - Correctly generate params and description for explicit field bindings in routes (https://github.com/knuckleswtf/scribe/commit/b0b89195e6ce0333cf07573462fa9ec083d04f4d)
+- Fix content-type header not showing (https://github.com/knuckleswtf/scribe/commit/d5a7b6d8be9f257df3146cd6026729232aa63f1e)
 - Try It Out: Spoof HTTP method for PUT/PATCH requests (https://github.com/knuckleswtf/scribe/pull/257)
 
 ## 3.3.2 (Wednesday, 30 June 2021)
