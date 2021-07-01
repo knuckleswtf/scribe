@@ -2,7 +2,7 @@
     /** @var  Knuckles\Camel\Output\OutputEndpointData $endpoint */
 @endphp
 
-<h2 id="{!! Str::slug($group['name']) !!}-{!! $endpoint->endpointId() !!}">{{ $endpoint->metadata->title ?: $endpoint->uri}}</h2>
+<h2 id="{!! Str::slug($group['name']) !!}-{!! $endpoint->endpointId() !!}">{{ $endpoint->metadata->title ?: ($endpoint->httpMethods[0]." ".$endpoint->uri)}}</h2>
 
 <p>
 @component('scribe::components.badges.auth', ['authenticated' => $endpoint->metadata->authenticated])
@@ -11,6 +11,7 @@
 
 {!! Parsedown::instance()->text($endpoint->metadata->description ?: '') !!}
 
+<span id="example-requests-{!! $endpoint->endpointId() !!}">
 <blockquote>Example request:</blockquote>
 
 @foreach($metadata['example_languages'] as $language)
@@ -18,7 +19,9 @@
 @include("scribe::partials.example-requests.$language")
 
 @endforeach
+</span>
 
+<span id="example-responses-{!! $endpoint->endpointId() !!}">
 @if($endpoint->isGet() || $endpoint->hasResponses())
     @foreach($endpoint->responses as $response)
         <blockquote>
@@ -30,8 +33,8 @@
                 <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
             </summary>
             <pre>
-            <code class="language-http">@foreach($response->headers as $header => $values)
-{{ $header }}: {{ implode('; ', $values) }}
+            <code class="language-http">@foreach($response->headers as $header => $value)
+{{ $header }}: {{ is_array($value) ? implode('; ', $value) : $value }}
 @endforeach </code>
             </pre>
         </details> @endif
@@ -41,25 +44,25 @@
 [Binary data] - {{ htmlentities(str_replace("<<binary>>", "", $response->content)) }}
 @elseif($response->status == 204)
 [Empty response]
-@elseif(is_string($response->content) && json_decode($response->content) == null && $response->content !== null)
-{{-- If response is a non-JSON string, just print it --}}
-{!! htmlentities($response->content) !!}
 @else
-{!! htmlentities(json_encode(json_decode($response->content), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) !!}
+@php($parsed = json_decode($response->content))
+{{-- If response is a JSON string, prettify it. Otherwise, just print it --}}
+{!! htmlentities($parsed != null ? json_encode($parsed, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) : $response->content) !!}
 @endif </code>
         </pre>
     @endforeach
 @endif
-<div id="execution-results-{{ $endpoint->endpointId() }}" hidden>
+</span>
+<span id="execution-results-{{ $endpoint->endpointId() }}" hidden>
     <blockquote>Received response<span
                 id="execution-response-status-{{ $endpoint->endpointId() }}"></span>:
     </blockquote>
     <pre class="json"><code id="execution-response-content-{{ $endpoint->endpointId() }}"></code></pre>
-</div>
-<div id="execution-error-{{ $endpoint->endpointId() }}" hidden>
+</span>
+<span id="execution-error-{{ $endpoint->endpointId() }}" hidden>
     <blockquote>Request failed with error:</blockquote>
     <pre><code id="execution-error-message-{{ $endpoint->endpointId() }}"></code></pre>
-</div>
+</span>
 <form id="form-{{ $endpoint->endpointId() }}" data-method="{{ $endpoint->httpMethods[0] }}"
       data-path="{{ $endpoint->uri }}"
       data-authed="{{ $endpoint->metadata->authenticated ? 1 : 0 }}"

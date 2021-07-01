@@ -8,13 +8,13 @@ const url = new URL(
 );
 @if(count($endpoint->cleanQueryParameters))
 
-let params = {!! u::printQueryParamsAsKeyValue($endpoint->cleanQueryParameters, "\"", ":", 4, "{}") !!};
+const params = {!! u::printQueryParamsAsKeyValue($endpoint->cleanQueryParameters, "\"", ":", 4, "{}") !!};
 Object.keys(params)
     .forEach(key => url.searchParams.append(key, params[key]));
 @endif
 
 @if(!empty($endpoint->headers))
-let headers = {
+const headers = {
 @foreach($endpoint->headers as $header => $value)
     "{{$header}}": "{{$value}}",
 @endforeach

@@ -1,3 +1,5 @@
+window.abortControllers = {};
+
 function tryItOut(endpointId) {
     document.querySelector(`#btn-tryout-${endpointId}`).hidden = true;
     document.querySelector(`#btn-executetryout-${endpointId}`).hidden = false;
@@ -17,12 +19,17 @@ function tryItOut(endpointId) {
 }
 
 function cancelTryOut(endpointId) {
+    if (window.abortControllers[endpointId]) {
+        window.abortControllers[endpointId].abort();
+        delete window.abortControllers[endpointId];
+    }
+
     document.querySelector(`#btn-tryout-${endpointId}`).hidden = false;
     const executeBtn = document.querySelector(`#btn-executetryout-${endpointId}`);
     executeBtn.hidden = true;
     executeBtn.textContent = "Send Request 💥";
     document.querySelector(`#btn-canceltryout-${endpointId}`).hidden = true;
-    // hide inputs
+    // Hide inputs
     document.querySelectorAll(`input[data-endpoint=${endpointId}],label[data-endpoint=${endpointId}]`)
         .forEach(el => el.hidden = true);
     document.querySelectorAll(`#form-${endpointId} details`)
@@ -34,25 +41,12 @@ function cancelTryOut(endpointId) {
     document.querySelector('#execution-error-' + endpointId).hidden = true;
 
     // Revert to sample code blocks
-    const query = new URLSearchParams(window.location.search);
-    const languages = JSON.parse(document.querySelector('body').dataset.languages);
-    const currentLanguage = languages.find(l => query.has(l)) || languages[0];
-
-    let codeblock = getPreviousSiblingUntil(document.querySelector('#form-' + endpointId), 'blockquote,pre', 'h2');
-    while (codeblock != null) {
-        if (codeblock.nodeName === 'PRE') {
-            if (codeblock.querySelector('code.language-' + currentLanguage)) {
-                codeblock.style.display = 'block';
-            }
-        } else {
-            codeblock.style.display = 'block';
-        }
-        codeblock = getPreviousSiblingUntil(codeblock, 'blockquote,pre', 'h2');
-    }
+    document.querySelector('#example-requests-' + endpointId).hidden = false;
+    document.querySelector('#example-responses-' + endpointId).hidden = false;
 }
 
-function makeAPICall(method, path, body, query, headers) {
-    console.log({path, body, query, headers});
+function makeAPICall(method, path, body, query, headers, endpointId) {
+    console.log({endpointId, path, body, query, headers});
 
     if (!(body instanceof FormData)) {
         body = JSON.stringify(body)
@@ -81,32 +75,31 @@ function makeAPICall(method, path, body, query, headers) {
     Object.keys(query)
         .forEach(key => addItemToSearchParamsObject(key, query[key], url.searchParams));
 
+    window.abortControllers[endpointId] = new AbortController();
+
     return fetch(url, {
         method,
         headers,
         body: method === 'GET' ? undefined : body,
+        signal: window.abortControllers[endpointId].signal
     })
         .then(response => Promise.all([response.status, response.text(), response.headers]));
 }
 
-function hideCodeSamples(form) {
-    let codeblock = getPreviousSiblingUntil(form, 'blockquote,pre', 'h2');
-    while (codeblock != null) {
-        codeblock.style.display = 'none';
-        codeblock = getPreviousSiblingUntil(codeblock, 'blockquote,pre', 'h2');
-    }
+function hideCodeSamples(endpointId) {
+    document.querySelector('#example-requests-' + endpointId).hidden = true;
+    document.querySelector('#example-responses-' + endpointId).hidden = true;
 }
 
-function handleResponse(form, endpointId, response, status, headers) {
-    hideCodeSamples(form);
+function handleResponse(endpointId, response, status, headers) {
+    hideCodeSamples(endpointId);
 
     // Hide error views
     document.querySelector('#execution-error-' + endpointId).hidden = true;
 
-
     const responseContentEl = document.querySelector('#execution-response-content-' + endpointId);
 
-    // prettify it if it's JSON
+    // Prettify it if it's JSON
     let isJson = false;
     try {
         const jsonParsed = JSON.parse(response);
@@ -125,8 +118,8 @@ function handleResponse(form, endpointId, response, status, headers) {
     statusEl.scrollIntoView({behavior: "smooth", block: "center"});
 }
 
-function handleError(form, endpointId, err) {
-    hideCodeSamples(form);
+function handleError(endpointId, err) {
+    hideCodeSamples(endpointId);
     // Hide response views
     document.querySelector('#execution-results-' + endpointId).hidden = true;
 
@@ -193,35 +186,31 @@ async function executeTryOut(endpointId, form) {
         const authHeaderEl = form.querySelector('input[data-component=header]');
         if (authHeaderEl) headers[authHeaderEl.name] = authHeaderEl.dataset.prefix + authHeaderEl.value;
     }
-
+    // When using FormData, the browser sets the correct content-type + boundary
     let method = form.dataset.method;
-    if (headers['Content-Type'] === "multipart/form-data") {
+    if (body instanceof FormData) {
         delete headers['Content-Type'];
 
+        // When using FormData with PUT or PATCH, send with post and add _method
         if (['PUT', 'PATCH'].includes(form.dataset.method)) {
             method = 'POST';
             setter('_method', form.dataset.method);
         }
     }
 
-    makeAPICall(method, path, body, query, headers)
+    makeAPICall(method, path, body, query, headers, endpointId)
         .then(([responseStatus, responseContent, responseHeaders]) => {
-            handleResponse(form, endpointId, responseContent, responseStatus, responseHeaders)
+            handleResponse(endpointId, responseContent, responseStatus, responseHeaders)
         })
         .catch(err => {
+            if (err.name === "AbortError") {
+                console.log("Request cancelled");
+                return;
+            }
             console.log("Error while making request: ", err);
-            handleError(form, endpointId, err);
+            handleError(endpointId, err);
         })
         .finally(() => {
             executeBtn.textContent = "Send Request 💥";
         });
-}
-
-function getPreviousSiblingUntil(elem, siblingSelector, stopSelector) {
-    let sibling = elem.previousElementSibling;
-    while (sibling) {
-        if (sibling.matches(siblingSelector)) return sibling;
-        if (sibling.matches(stopSelector)) return null;
-        sibling = sibling.previousElementSibling;
-    }
 }

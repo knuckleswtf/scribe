@@ -121,7 +121,7 @@ class Writer
                 data_set($spec, $key, $value);
             }
         }
-        return Yaml::dump($spec, 10, 2, Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP);
+        return Yaml::dump($spec, 20, 2, Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP);
     }
 
     protected function performFinalTasksForLaravelType(): void

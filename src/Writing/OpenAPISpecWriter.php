@@ -220,7 +220,6 @@ class OpenAPISpecWriter
                     $schema['required'][] = $name;
                 }
 
-
                 if ($details['type'] === 'file') {
                     $hasFileParameter = true;
                 }
@@ -399,7 +398,7 @@ class OpenAPISpecWriter
         }
     }
 
-    protected function generateSecurityPartialSpec()
+    protected function generateSecurityPartialSpec(): array
     {
         $isApiAuthed = $this->config->get('auth.enabled', false);
         if (!$isApiAuthed) {
@@ -483,6 +482,11 @@ class OpenAPISpecWriter
             ];
         } else if (Utils::isArrayType($field->type)) {
             $baseType = Utils::getBaseTypeFromArrayType($field->type);
+            $baseItem = ($baseType === 'file') ? [
+                'type' => 'string',
+                'format' => 'binary',
+            ] : ['type' => $baseType];
+
             $fieldData = [
                 'type' => 'array',
                 'description' => $field->description ?: '',
@@ -493,10 +497,17 @@ class OpenAPISpecWriter
                         'type' => $baseType,
                         'example' => ($field->example ?: [null])[0],
                     ])
-                    : ['type' => $baseType],
+                    : $baseItem,
             ];
+            if (str_replace('[]', "", $field->type) === 'file') {
+                // Don't include example for file params in OAS; it's hard to translate it correctly
+                unset($fieldData['example']);
+            }
 
             if ($baseType === 'object' && !empty($field->__fields)) {
+                if ($fieldData['items']['type'] === 'object') {
+                    $fieldData['items']['properties'] = [];
+                }
                 foreach ($field->__fields as $fieldSimpleName => $subfield) {
                     $fieldData['items']['properties'][$fieldSimpleName] = $this->generateFieldData($subfield);
                     if ($subfield['required']) {

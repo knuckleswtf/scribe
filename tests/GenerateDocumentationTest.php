@@ -260,9 +260,9 @@ class GenerateDocumentationTest extends BaseLaravelTest
 
         $this->artisan('scribe:generate');
 
-        $generatedCollection = Yaml::parseFile(__DIR__ . '/../public/docs/openapi.yaml');
-        $fixtureCollection = Yaml::parseFile(__DIR__ . '/Fixtures/openapi.yaml');
-        $this->assertEquals($fixtureCollection, $generatedCollection);
+        $generatedSpec = Yaml::parseFile(__DIR__ . '/../public/docs/openapi.yaml');
+        $fixtureSpec = Yaml::parseFile(__DIR__ . '/Fixtures/openapi.yaml');
+        $this->assertEquals($fixtureSpec, $generatedSpec);
     }
 
     /** @test */
@@ -353,7 +353,7 @@ class GenerateDocumentationTest extends BaseLaravelTest
         ];
         $group['endpoints'][0]['urlParameters']['a_param'] = $extraParam;
         file_put_contents($group1FilePath, Yaml::dump(
-            $group, 10, 2,
+            $group, 20, 2,
             Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP
         ));
         file_put_contents($authFilePath, 'Some other useful stuff.', FILE_APPEND);

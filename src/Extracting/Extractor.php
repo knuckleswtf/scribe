@@ -12,6 +12,7 @@ use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Knuckles\Camel\Extraction\ResponseField;
+use Knuckles\Camel\Output\OutputEndpointData;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 
@@ -102,19 +103,15 @@ class Extractor
             // Set content type if the user forgot to set it
             $endpointData->headers['Content-Type'] = 'application/json';
         }
-        // We need to do all this so response calls can work correctly
-        [$files, $regularParameters] = collect($endpointData->cleanBodyParameters)
-            ->partition(
-                function ($example) {
-                    return $example instanceof UploadedFile
-                        || (is_array($example) && ($example[0] ?? null) instanceof UploadedFile);
-                }
-            );
+        // We need to do all this so response calls can work correctly,
+        // even though they're only needed for output
+        // Note that this
+        [$files, $regularParameters] = OutputEndpointData::getFileParameters($endpointData->cleanBodyParameters);
         if (count($files)) {
             $endpointData->headers['Content-Type'] = 'multipart/form-data';
         }
-        $endpointData->fileParameters = $files->toArray();
-        $endpointData->cleanBodyParameters = $regularParameters->toArray();
+        $endpointData->fileParameters = $files;
+        $endpointData->cleanBodyParameters = $regularParameters;
 
         $this->fetchResponses($endpointData, $routeRules);
 
@@ -313,7 +310,8 @@ class Extractor
         while (Str::endsWith($baseNameInOriginalParams, '[]')) {
             $baseNameInOriginalParams = substr($baseNameInOriginalParams, 0, -2);
         }
-        // When the body is an array, param names will be  "[].paramname", so $baseNameInOriginalParams here will be empty
+        // When the body is an array, param names will be  "[].paramname",
+        // so $baseNameInOriginalParams here will be empty
         if (Str::startsWith($path, '[].')) {
             $baseNameInOriginalParams = '[]';
         }
@@ -428,7 +426,7 @@ class Extractor
      *
      * @return array
      */
-    public static function nestArrayAndObjectFields(array $parameters): array
+    public static function nestArrayAndObjectFields(array $parameters, array $cleanParameters = []): array
     {
         // First, we'll make sure all object fields have parent fields properly set
         $normalisedParameters = [];
@@ -440,16 +438,19 @@ class Extractor
 
                 // If the user didn't add a parent field, we'll helpfully add it for them
                 $parentName = rtrim(join('.', $parts), '[]');
-                // When the body is an array, param names will be  "[].paramname", so $parentName is empty
+
+                // When the body is an array, param names will be "[].paramname",
+                // so $parentName is empty. Let's fix that.
                 if (empty($parentName)) {
                     $parentName = '[]';
                 }
-                if (empty($parameters[$parentName])) {
+
+                if (empty($normalisedParameters[$parentName])) {
                     $normalisedParameters[$parentName] = new Parameter([
                         "name" => $parentName,
                         "type" => $parentName === '[]' ? "object[]" : "object",
                         "description" => "",
-                        "required" => $parentName === '[]' ? true : false,
+                        "required" => true,
                         "example" => [$fieldName => $parameter->example],
                     ]);
                 }
@@ -471,7 +472,8 @@ class Extractor
                 // The difference would be in the parent field's `type` property (object[] vs object)
                 // So we can get rid of all [] to get the parent name
                 $dotPathToParent = str_replace('[]', '', $baseName);
-                // When the body is an array, param names will be  "[].paramname", so $parts is ['[]']
+                // When the body is an array, param names will be  "[].paramname",
+                // so $parts is ['[]']
                 if ($parts[0] == '[]') {
                     $dotPathToParent = '[]'.$dotPathToParent;
                 }
@@ -491,6 +493,11 @@ class Extractor
         // Finally, if the body is an array, remove any other items.
         if (isset($finalParameters['[]'])) {
             $finalParameters = ["[]" => $finalParameters['[]']];
+            // At this point, the examples are likely [[], []],
+            // but have been correctly set in clean parameters, so let's update them
+            if ($finalParameters["[]"]["example"][0] == [] && !empty($cleanParameters)) {
+                $finalParameters["[]"]["example"] = $cleanParameters;
+            }
         }
 
         return $finalParameters;

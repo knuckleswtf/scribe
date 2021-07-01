@@ -3,37 +3,44 @@
 namespace Knuckles\Camel\Extraction;
 
 
-
 use Knuckles\Camel\BaseDTO;
 
 class Response extends BaseDTO
 {
-    /** @var int */
-    public $status;
+    public int $status;
 
-    /**
-     * @var string|null
-     */
-    public $content;
+    public ?string $content;
 
-    /**
-     * @var array
-     */
-    public $headers = [];
+    public array $headers = [];
 
-    /**
-     * @var string|null
-     */
-    public $description;
+    public ?string $description;
 
     public function __construct(array $parameters = [])
     {
         if (is_array($parameters['content'])) {
             $parameters['content'] = json_encode($parameters['content']);
         }
+
+        $hiddenHeaders = [
+            'date',
+            'Date',
+            'etag',
+            'ETag',
+            'last-modified',
+            'Last-Modified',
+            'date',
+            'Date',
+            'content-length',
+            'Content-Length',
+            'connection',
+            'Connection',
+            'x-powered-by',
+            'X-Powered-By',
+        ];
         if (!empty($parameters['headers'])) {
-            unset($parameters['headers']['date']);
-            unset($parameters['headers']['Date']);
+            foreach ($hiddenHeaders as $headerName) {
+                unset($parameters['headers'][$headerName]);
+            }
         }
 
         return parent::__construct($parameters);

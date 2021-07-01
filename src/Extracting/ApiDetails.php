@@ -52,7 +52,6 @@ class ApiDetails
         ConsoleOutputUtils::info('Extracted intro and auth Markdown files to: ' . $this->markdownOutputPath);
     }
 
-
     public function writeIntroMarkdownFile(): void
     {
         $introMarkdownFile = $this->markdownOutputPath . '/intro.md';

@@ -12,6 +12,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.3.2 (Wednesday, 30 June 2021)
+### Fixed
+- Try It Out: Add cancellable requests (https://github.com/knuckleswtf/scribe/commit/816e6fbd37ead033ca58bad048f38455622cb0b9)
+- Try It Out: Restore sample request/response after cancel (https://github.com/knuckleswtf/scribe/commit/25aaabbea3a4b0482e510932cc095c8ce9495427)
+- Try It Out: set FormData content-type properly (https://github.com/knuckleswtf/scribe/pull/249)
+
+## 3.3.1 (Tuesday, 29 June 2021)
+### Fixed
+- Set nested file parameters properly in examples (https://github.com/knuckleswtf/scribe/commit/6354b5592d1e042fe627894156ff17a684fce667)
+
+## 3.3.0 (Friday, 25 June 2021)
+### Fixed
+- Don't depend on unavailable view service provider (https://github.com/knuckleswtf/scribe/pull/254)
+- Delete older versioned assets (https://github.com/knuckleswtf/scribe/commit/b02af7e21f89406ec33be2e6ca1c206df3733b1b)
+- Generate proper OAS types for files and request body arrays (https://github.com/knuckleswtf/scribe/commit/8b51d839d213a1abe110e439281273b33facb344)
+
+### Modified
+- Exclude more specific headers from sample responses (https://github.com/knuckleswtf/scribe/commit/5583b725d714090a198cf906115860626f537c09)
+
+## 3.2.0 (Thursday, 24 June 2021)
+### Added
+- Support simple key-value for response headers (https://github.com/knuckleswtf/scribe/commit/20afb7e10ca8c5616fd5b9ce1b5333739fdd2348)
+
+### Modified
+- Throw helpful error if factory instantiation errors (https://github.com/knuckleswtf/scribe/commit/5eb0d72f9b2898702c14d28582195722c27f00d0)
+
 ## 3.1.0 (Friday, 18 June 2021)
 ### Added
 - Support nullable and union responseField types (https://github.com/knuckleswtf/scribe/commit/2912ac2344b37e30599aa1004c90e146a6f76aaa)
