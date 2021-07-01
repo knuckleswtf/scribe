@@ -10,9 +10,10 @@ $response = $client->{{ strtolower($endpoint->httpMethods[0]) }}(
     [
 @if(!empty($endpoint->headers))@php
 // We don't need the Content-Type header because Guzzle sets it automatically when you use json or multipart.
-unset($endpoint->headers['Content-Type']);
+$headers = $endpoint->headers;
+unset($headers['Content-Type']);
 @endphp
-        'headers' => {!! u::printPhpValue($endpoint->headers, 8) !!},
+        'headers' => {!! u::printPhpValue($headers, 8) !!},
 @endif
 @if(!empty($endpoint->cleanQueryParameters))
         'query' => {!! u::printQueryParamsAsKeyValue($endpoint->cleanQueryParameters, "'", "=>", 12, "[]", 8) !!},
