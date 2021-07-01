@@ -27,9 +27,12 @@ class GetFromLaravelAPI extends Strategy
         foreach ($matches[1] as $match) {
             $optional = Str::endsWith($match, '?');
             $name = rtrim($match, '?');
+
+            // In case of /users/{user:id}, make the param {user}, but
+            $binding = $endpointData->route->bindingFieldFor($name);
             $parameters[$name] = [
                 'name' => $name,
-                'description' => $this->inferUrlParamDescription($endpointData->uri, $name),
+                'description' => $this->inferUrlParamDescription($endpointData->uri, $binding ?: $name, $name),
                 'required' => !$optional,
             ];
         }
@@ -103,17 +106,20 @@ class GetFromLaravelAPI extends Strategy
         return $parameters;
     }
 
-    protected function inferUrlParamDescription(string $url, string $paramName): string
+    protected function inferUrlParamDescription(string $url, string $paramName, string $originalBindingName = null): string
     {
         if ($paramName == "id") {
-            // If $url is sth like /users/{id}, return "The ID of the user."
+            // If $url is sth like /users/{id} or /users/{user}, return "The ID of the user."
             // Make sure to replace underscores, so "side_projects" becomes "side project"
-            $thing = str_replace(["_", "-"], " ",$this->getNameOfUrlThing($url, $paramName));
+            $thing = str_replace(["_", "-"], " ",$this->getNameOfUrlThing($url, $paramName, $originalBindingName));
             return "The ID of the $thing.";
         } else if (Str::is("*_id", $paramName)) {
             // If $url is sth like /something/{user_id}, return "The ID of the user."
             $parts = explode("_", $paramName);
             return "The ID of the $parts[0].";
+        } else if ($paramName && $originalBindingName) {
+            // A case like /posts/{post:slug} -> The slug of the post
+            return "The $paramName of the $originalBindingName.";
         }
 
         return '';
@@ -122,11 +128,16 @@ class GetFromLaravelAPI extends Strategy
     /**
      * Extract "thing" in the URL /<whatever>/things/{paramName}
      */
-    protected function getNameOfUrlThing(string $url, string $paramName): ?string
+    protected function getNameOfUrlThing(string $url, string $paramName, string $alternateParamName = null): ?string
     {
         try {
             $parts = explode("/", $url);
             $paramIndex = array_search("{{$paramName}}", $parts);
+
+            if ($paramIndex === false) {
+                // Try with the other param name
+                $paramIndex = array_search("{{$alternateParamName}}", $parts);
+            }
             $things = $parts[$paramIndex - 1];
             return Str::singular($things);
         } catch (\Throwable $e) {

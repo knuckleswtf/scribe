@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.3.3 (Thursday, 1 July 2021)
+### Fixed
+- Try It Out: Spoof HTTP method for PUT/PATCH requests (https://github.com/knuckleswtf/scribe/pull/)
+
 ## 3.3.2 (Wednesday, 30 June 2021)
 ### Fixed
 - Try It Out: Add cancellable requests (https://github.com/knuckleswtf/scribe/commit/816e6fbd37ead033ca58bad048f38455622cb0b9)
