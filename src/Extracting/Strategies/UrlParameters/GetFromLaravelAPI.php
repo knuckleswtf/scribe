@@ -32,7 +32,7 @@ class GetFromLaravelAPI extends Strategy
             $binding = $endpointData->route->bindingFieldFor($name);
             $parameters[$name] = [
                 'name' => $name,
-                'description' => $this->inferUrlParamDescription($endpointData->uri, $binding ?: $name, $name),
+                'description' => $this->inferUrlParamDescription($endpointData->uri, $binding ?: $name, $binding ? $name : null),
                 'required' => !$optional,
             ];
         }
