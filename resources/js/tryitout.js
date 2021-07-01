@@ -187,11 +187,18 @@ async function executeTryOut(endpointId, form) {
         if (authHeaderEl) headers[authHeaderEl.name] = authHeaderEl.dataset.prefix + authHeaderEl.value;
     }
     // When using FormData, the browser sets the correct content-type + boundary
+    let method = form.dataset.method;
     if (body instanceof FormData) {
         delete headers['Content-Type'];
+
+        // When using FormData with PUT or PATCH, send with post and add _method
+        if (['PUT', 'PATCH'].includes(form.dataset.method)) {
+            method = 'POST';
+            setter('_method', form.dataset.method);
+        }
     }
 
-    makeAPICall(form.dataset.method, path, body, query, headers, endpointId)
+    makeAPICall(method, path, body, query, headers, endpointId)
         .then(([responseStatus, responseContent, responseHeaders]) => {
             handleResponse(endpointId, responseContent, responseStatus, responseHeaders)
         })
