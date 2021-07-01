@@ -103,6 +103,12 @@ class GetFromLaravelAPITest extends BaseLaravelTest
     /** @test */
     public function can_infer_data_from_field_bindings()
     {
+        if (version_compare($this->app->version(), '7.0.0', '<')) {
+            $this->markTestSkipped("Laravel < 7.x doesn't support field binding syntax.");
+
+            return;
+        }
+
         $strategy = new GetFromLaravelAPI(new DocumentationConfig([]));
 
         $endpoint = new class extends ExtractedEndpointData {

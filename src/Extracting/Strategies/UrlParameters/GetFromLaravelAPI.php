@@ -29,7 +29,11 @@ class GetFromLaravelAPI extends Strategy
             $name = rtrim($match, '?');
 
             // In case of /users/{user:id}, make the param {user}, but
-            $binding = $endpointData->route->bindingFieldFor($name);
+            $binding = null;
+            // Was added in Laravel 7.x
+            if (method_exists($endpointData->route, 'bindingFieldFor')) {
+                $binding = $endpointData->route->bindingFieldFor($name);
+            }
             $parameters[$name] = [
                 'name' => $name,
                 'description' => $this->inferUrlParamDescription($endpointData->uri, $binding ?: $name, $binding ? $name : null),
