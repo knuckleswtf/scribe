@@ -191,7 +191,7 @@ async function executeTryOut(endpointId, form) {
     if (body instanceof FormData) {
         delete headers['Content-Type'];
 
-        // When using FormData with PUT or PATCH, send with post and add _method
+        // When using FormData with PUT or PATCH, use method spoofing so PHP can access the post body
         if (['PUT', 'PATCH'].includes(form.dataset.method)) {
             method = 'POST';
             setter('_method', form.dataset.method);

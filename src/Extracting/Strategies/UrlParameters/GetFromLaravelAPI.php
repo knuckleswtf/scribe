@@ -27,7 +27,6 @@ class GetFromLaravelAPI extends Strategy
         foreach ($matches[1] as $match) {
             $optional = Str::endsWith($match, '?');
             $name = rtrim($match, '?');
-            $type = 'string';
             $parameters[$name] = [
                 'name' => $name,
                 'description' => $this->inferUrlParamDescription($endpointData->uri, $name),
@@ -44,6 +43,10 @@ class GetFromLaravelAPI extends Strategy
         $methodArguments = $endpointData->method->getParameters();
         foreach ($methodArguments as $argument) {
             $argumentType = $argument->getType();
+            // If there's no typehint, continue
+            if (!$argumentType) {
+                continue;
+            }
             try {
                 $argumentClassName = $argumentType->getName();
                 $argumentInstance = new $argumentClassName;
@@ -58,7 +61,13 @@ class GetFromLaravelAPI extends Strategy
 
                     $type = $this->normalizeTypeName($argumentInstance->getKeyType());
                     $parameters[$paramName]['type'] = $type;
-                    $parameters[$paramName]['example'] = $this->generateDummyValue($type);
+
+                    // If the user explicitly set a `where()` constraint, use that to refine examples
+                    $parameterRegex = $endpointData->route->wheres[$paramName] ?? null;
+                    $example = $parameterRegex
+                        ? $this->castToType($this->getFaker()->regexify($parameterRegex), $type)
+                        : $this->generateDummyValue($type);
+                    $parameters[$paramName]['example'] = $example;
                 }
             } catch (\Throwable $e) {
                 continue;
@@ -80,12 +89,14 @@ class GetFromLaravelAPI extends Strategy
                     || class_exists($class = $rootNamespace . Str::title($urlThing))) {
                     $argumentInstance = new $class;
                     $type = $this->normalizeTypeName($argumentInstance->getKeyType());
-                    $parameters[$name]['type'] = $type;
-                    $parameters[$name]['example'] = $this->generateDummyValue($type);
                 }
             }
 
-            $parameters[$name]['example'] = $this->generateDummyValue($type);
+            $parameterRegex = $endpointData->route->wheres[$name] ?? null;
+            $example = $parameterRegex
+                ? $this->castToType($this->getFaker()->regexify($parameterRegex), $type)
+                : $this->generateDummyValue($type);
+            $parameters[$name]['example'] =$example;
             $parameters[$name]['type'] = $type;
         }
 
