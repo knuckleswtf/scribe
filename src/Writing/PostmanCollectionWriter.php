@@ -139,9 +139,16 @@ class PostmanCollectionWriter
             case 'formdata':
                 $body[$inputMode] = $this->getFormDataParams($endpoint->cleanBodyParameters);
                 foreach ($endpoint->fileParameters as $key => $value) {
-                    while (is_array($value)) { // For arrays of files, just send the first one
-                        $key .= '[]';
-                        $value = $value[0];
+                    while (is_array($value)) {
+                        $keys = array_keys($value);
+                        if ($keys[0] === 0) {
+                            // List of files
+                            $key .= '[]';
+                            $value = $value[0];
+                        } else {
+                            $key .= '['.$keys[0].']';
+                            $value = $value[$keys[0]];
+                        }
                     }
                     $params = [
                         'key' => $key,
