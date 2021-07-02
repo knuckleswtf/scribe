@@ -8,7 +8,7 @@ use Knuckles\Scribe\Matching\RouteMatcherInterface;
 
 class GroupedEndpointsFactory
 {
-    public static function make(GenerateDocumentation $command, RouteMatcherInterface $routeMatcher)
+    public static function make(GenerateDocumentation $command, RouteMatcherInterface $routeMatcher): GroupedEndpointsContract
     {
         if ($command->isForcing()) {
             return new GroupedEndpointsFromApp($command, $routeMatcher, false);
