@@ -16,7 +16,7 @@ class ConsoleOutputUtils
     public static function bootstrapOutput(OutputInterface $outputInterface)
     {
         $showDebug = Globals::$shouldBeVerbose;
-        self::$clara = clara('knuckleswtf/scribe')
+        self::$clara = clara('knuckleswtf/scribe', \Shalvah\Clara\Clara::MODE_ICONS)
             ->showDebugOutput($showDebug)
             ->useOutput($outputInterface)
             ->only();

@@ -49,7 +49,7 @@ class ApiDetails
 
         $this->writeContentsTrackingFile();
 
-        ConsoleOutputUtils::info('Extracted intro and auth Markdown files to: ' . $this->markdownOutputPath);
+        ConsoleOutputUtils::success('Extracted intro and auth Markdown files to: ' . $this->markdownOutputPath);
     }
 
     public function writeIntroMarkdownFile(): void
