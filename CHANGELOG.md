@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.4.1 (Friday, 2 July 2021)
+### Fixed
+- Set nested file fields properly in Postman. (https://github.com/knuckleswtf/scribe/commit/39d53eac5db30c1d4b6b16cff836c1d3a3898f89)
+
 ## 3.4.0 (Thursday, 1 July 2021)
 ### Added
 - Support better examples based on the `where` clause in routes. (https://github.com/knuckleswtf/scribe/commit/cf2b53c16d405e655886b6225e9ebbf29a6621a8)
