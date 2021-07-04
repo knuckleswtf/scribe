@@ -66,7 +66,9 @@ class GetFromLaravelAPI extends Strategy
                         continue;
                     }
 
-                    $type = $this->normalizeTypeName($argumentInstance->getKeyType());
+                    $typeName = $argumentInstance->getKeyName() === $argumentInstance->getRouteKeyName()
+                        ? $argumentInstance->getKeyType() : 'string';
+                    $type = $this->normalizeTypeName($typeName);
                     $parameters[$paramName]['type'] = $type;
 
                     // If the user explicitly set a `where()` constraint, use that to refine examples
