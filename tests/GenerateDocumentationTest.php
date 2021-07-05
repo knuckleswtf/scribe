@@ -360,6 +360,12 @@ class GenerateDocumentationTest extends BaseLaravelTest
     /** @test */
     public function generates_correct_url_params_from_resource_routes_and_field_bindings()
     {
+        if (version_compare($this->app->version(), '7.0.0', '<')) {
+            $this->markTestSkipped("Laravel < 7.x doesn't support field binding syntax.");
+
+            return;
+        }
+
         RouteFacade::prefix('providers/{provider:slug}')->group(function () {
             RouteFacade::resource('users.addresses', TestPartialResourceController::class)->parameters([
                 'addresses' => 'address:uuid',
