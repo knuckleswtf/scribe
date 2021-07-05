@@ -2,7 +2,7 @@
     - POST
   uri: userDefined/yeah
   metadata:
-    groupName: 1. Group 1
+    groupName: '1. Group 1'
     title: 'User defined'
     description: 'This endpoint allows you to do something.'
     authenticated: false

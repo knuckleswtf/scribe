@@ -248,6 +248,8 @@ class GenerateDocumentation extends Command
         if ($this->forcing && !$this->shouldExtract) {
             throw new \Exception("Can't use --force and --no-extraction together.");
         }
+
+        Camel::$groupFileNames = [];
     }
 
     protected function writeEndpointsToDisk(array $grouped): void
