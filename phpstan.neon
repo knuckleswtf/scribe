@@ -20,3 +20,4 @@ parameters:
         - '#Access to an undefined property Illuminate\\Support\\HigherOrderCollectionProxy#'
         - '#Access to an undefined property Illuminate\\Contracts\\Foundation\\Application::\$view#'
         - '#Call to an undefined method Faker\\Generator::uuid#'
+        - '#Unsafe usage of new static#'

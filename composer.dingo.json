@@ -43,7 +43,7 @@
         "laravel/legacy-factories": "^1.0.4",
         "laravel/lumen-framework": "^6.0|^7.0|^8.0",
         "orchestra/testbench": "^4.0|^5.0|^6.0",
-        "phpstan/phpstan": "^0.12.19",
+        "phpstan/phpstan": "^0.12.90",
         "phpunit/phpunit": "^9.0",
         "symfony/css-selector": "^5.3",
         "symfony/dom-crawler": "^5.3"
@@ -63,7 +63,7 @@
         }
     },
     "scripts": {
-        "lint": "phpstan analyse -c ./phpstan.neon src",
+        "lint": "phpstan analyse -c ./phpstan.neon src camel --memory-limit 1G",
         "test": "phpunit --no-coverage --stop-on-failure --group dingo",
         "test-ci": "phpunit --no-coverage --group dingo",
         "test-parallel": "paratest -p16 --stop-on-failure --no-coverage --group dingo tests",

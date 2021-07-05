@@ -43,6 +43,6 @@ class Response extends BaseDTO
             }
         }
 
-        return parent::__construct($parameters);
+        parent::__construct($parameters);
     }
 }

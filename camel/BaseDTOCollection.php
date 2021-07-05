@@ -4,11 +4,10 @@ namespace Knuckles\Camel;
 
 use ArrayIterator;
 use Illuminate\Support\Arr;
-use Knuckles\Camel\Extraction\T;
 use Spatie\DataTransferObject\DataTransferObjectCollection;
 
 /**
- * @template T of \Spatie\DataTransferObject
+ * @template T of \Spatie\DataTransferObject\DataTransferObject
  */
 class BaseDTOCollection extends DataTransferObjectCollection
 {
@@ -31,7 +30,7 @@ class BaseDTOCollection extends DataTransferObjectCollection
     }
 
     /**
-     * @param T[] $items
+     * @param T[]|array[] $items
      */
     public function concat(array $items)
     {

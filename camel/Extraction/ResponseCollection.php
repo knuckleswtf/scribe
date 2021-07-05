@@ -5,7 +5,7 @@ namespace Knuckles\Camel\Extraction;
 use Knuckles\Camel\BaseDTOCollection;
 
 /**
- * @extends BaseCollection<Response>
+ * @extends BaseDTOCollection<Response>
  */
 class ResponseCollection extends BaseDTOCollection
 {
