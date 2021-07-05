@@ -66,6 +66,8 @@ class GetFromLaravelAPI extends Strategy
                         continue;
                     }
 
+                    // If a user customized their routeKeyName,
+                    // we can't guarantee that it's the same type as the PK
                     $typeName = $argumentInstance->getKeyName() === $argumentInstance->getRouteKeyName()
                         ? $argumentInstance->getKeyType() : 'string';
                     $type = $this->normalizeTypeName($typeName);
