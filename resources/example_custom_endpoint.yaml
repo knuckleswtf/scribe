@@ -8,7 +8,7 @@
 #  metadata:
 #    groupName: The group the endpoint belongs to. Can be a new group or an existing group.
 #    groupDescription: A description for the group. You don't need to set this for every endpoint; once is enough.
-#    title: 'Do something.'
+#    title: Do something
 #    description: 'This endpoint allows you to do something.'
 #    authenticated: false
 #  headers:

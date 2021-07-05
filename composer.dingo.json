@@ -44,7 +44,9 @@
         "laravel/lumen-framework": "^6.0|^7.0|^8.0",
         "orchestra/testbench": "^4.0|^5.0|^6.0",
         "phpstan/phpstan": "^0.12.19",
-        "phpunit/phpunit": "^9.0"
+        "phpunit/phpunit": "^9.0",
+        "symfony/css-selector": "^5.3",
+        "symfony/dom-crawler": "^5.3"
     },
     "suggest": {
         "league/fractal": "Required for transformers support"

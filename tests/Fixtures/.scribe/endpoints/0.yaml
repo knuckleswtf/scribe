@@ -1,0 +1,45 @@
+name: General
+description: 'Swalla la la'
+endpoints:
+  -
+    httpMethods:
+      - GET
+    uri: api/healthcheck
+    metadata:
+      title: Healthcheck
+      description: |-
+        Check that the service is up. If everything is okay, you'll get a 200 OK response.
+
+        Otherwise, the request will fail with a 400 error, and a response listing the failed services.
+      authenticated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    queryParameters: []
+    bodyParameters: []
+    responses:
+      -
+        status: 200
+        content: '{"status":"up","services":{"database":"up","redis":"up"}}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-ratelimit-limit: '60'
+          x-ratelimit-remaining: '56'
+          access-control-allow-origin: '*'
+        description: null
+      -
+        status: 400
+        content: '{"status": "down", "services": {"database": "up", "redis": "down"}}'
+        headers: []
+        description: '400, Service is unhealthy'
+    responseFields:
+      status:
+        name: status
+        description: 'The status of this API (`up` or `down`).'
+        type: string
+      services:
+        name: services
+        description: 'Map of each downstream service and their status (`up` or `down`).'
+        type: object

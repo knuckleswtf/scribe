@@ -292,7 +292,7 @@ class GenerateDocumentation extends Command
                 return $group['name'] === ($endpoint['metadata']['groupName'] ?? $this->docConfig->get('default_group', ''));
             });
 
-            if ($existingGroupKey) {
+            if ($existingGroupKey !== null) {
                 $groupedEndpoints[$existingGroupKey]['endpoints'][] = OutputEndpointData::fromExtractedEndpointArray($endpoint);
             } else {
                 $groupedEndpoints[] = [

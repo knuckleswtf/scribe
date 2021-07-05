@@ -11,6 +11,7 @@ use Knuckles\Scribe\Tests\Fixtures\TestPartialResourceController;
 use Knuckles\Scribe\Tests\Fixtures\TestResourceController;
 use Knuckles\Scribe\Tests\Fixtures\TestUser;
 use Knuckles\Scribe\Tools\Utils;
+use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Yaml\Yaml;
 
 class GenerateDocumentationTest extends BaseLaravelTest
@@ -38,22 +39,6 @@ class GenerateDocumentationTest extends BaseLaravelTest
     {
         Utils::deleteDirectoryAndContents('public/docs');
         Utils::deleteDirectoryAndContents('.scribe');
-    }
-
-    /**
-     * @param \Illuminate\Foundation\Application $app
-     *
-     * @return array
-     */
-    protected function getPackageProviders($app)
-    {
-        $providers = [
-            ScribeServiceProvider::class,
-        ];
-        if (class_exists(\Dingo\Api\Provider\LaravelServiceProvider::class)) {
-            $providers[] = \Dingo\Api\Provider\LaravelServiceProvider::class;
-        }
-        return $providers;
     }
 
     /** @test */
@@ -371,5 +356,54 @@ class GenerateDocumentationTest extends BaseLaravelTest
         $this->assertEquals('api/action1', $group['endpoints'][0]['uri']);
         $this->assertEquals([], $group['endpoints'][0]['urlParameters']);
         $this->assertStringNotContainsString('Some other useful stuff.', file_get_contents($authFilePath));
+    }
+
+    /** @test */
+    public function will_not_extract_if_noExtraction_flag_is_set()
+    {
+        config(['scribe.routes.0.exclude' => ['*']]);
+
+        Utils::copyDirectory(__DIR__.'/Fixtures/.scribe', '.scribe');
+        $output = $this->artisan('scribe:generate', ['--no-extraction' => true]);
+        $this->assertStringNotContainsString("Processing route", $output);
+
+        $html = file_get_contents('public/docs/index.html');
+
+        $crawler = new Crawler($html);
+        [$intro, $auth] = $crawler->filter('h1 + p')->getIterator();
+        $this->assertEquals('Heyaa introduction!👋', trim($intro->firstChild->textContent));
+        $this->assertEquals('This is just a test.', trim($auth->firstChild->textContent));
+        $endpoints = $crawler->filter('h1')->getNode(2);
+        $this->assertEquals('General', trim($endpoints->textContent));
+        $expectedEndpoint = $crawler->filter('h2');
+        $this->assertCount(1, $expectedEndpoint);
+        $this->assertEquals("Healthcheck", $expectedEndpoint->text());
+    }
+
+    /** @test */
+    public function merges_user_defined_endpoints()
+    {
+        RouteFacade::get('/api/action1', [TestGroupController::class, 'action1']);
+        RouteFacade::get('/api/action2', [TestGroupController::class, 'action2']);
+        config(['scribe.routes.0.prefixes' => ['api/*']]);
+
+        if (!is_dir('.scribe/endpoints')) mkdir('.scribe/endpoints', 0777, true);
+        copy(__DIR__ . '/Fixtures/custom.0.yaml', '.scribe/endpoints/custom.0.yaml');
+
+        $this->artisan('scribe:generate');
+        $html = file_get_contents('public/docs/index.html');
+
+        $crawler = new Crawler($html);
+        $headings = $crawler->filter('h1')->getIterator();
+        // There should only be four headings — intro, auth and two groups
+        $this->assertCount(4, $headings);
+        [$_, $_, $group1, $group2] = $headings;
+        $this->assertEquals('1. Group 1', trim($group1->textContent));
+        $this->assertEquals('2. Group 2', trim($group2->textContent));
+        $expectedEndpoints = $crawler->filter('h2');
+        $this->assertCount(3, $expectedEndpoints->getIterator());
+        $this->assertEquals("Some endpoint.", $expectedEndpoints->getNode(0)->textContent);
+        $this->assertEquals("User defined", $expectedEndpoints->getNode(1)->textContent);
+        $this->assertEquals("GET api/action2", $expectedEndpoints->getNode(2)->textContent);
     }
 }
