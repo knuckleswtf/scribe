@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.4.2 (Monday, 5 July 2021)
+### Fixed
+- Merge user-defined endpoints correctly. (https://github.com/knuckleswtf/scribe/commit/b7f8539b1bd5cd4d97496fa93803a3d7894889f6)
+
 ## 3.4.1 (Friday, 2 July 2021)
 ### Fixed
 - Set nested file fields properly in Postman. (https://github.com/knuckleswtf/scribe/commit/39d53eac5db30c1d4b6b16cff836c1d3a3898f89)
