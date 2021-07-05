@@ -9,12 +9,13 @@ class GroupedEndpointsFromCamelDir implements GroupedEndpointsContract
 {
     public function get(): array
     {
-        if (!is_dir(GenerateDocumentation::$camelDir)) {
-            throw new \InvalidArgumentException("Can't use --no-extraction because there are no endpoints in the " .
-                GenerateDocumentation::$camelDir . " directory.");
+        if (!is_dir(Camel::$camelDir)) {
+            throw new \InvalidArgumentException(
+                "Can't use --no-extraction because there are no endpoints in the " . Camel::$camelDir . " directory."
+            );
         }
 
-        return Camel::loadEndpointsIntoGroups(GenerateDocumentation::$camelDir);
+        return Camel::loadEndpointsIntoGroups(Camel::$camelDir);
     }
 
     public function hasEncounteredErrors(): bool

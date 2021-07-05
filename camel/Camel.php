@@ -20,6 +20,8 @@ class Camel
      * @var array<string, string>
      */
     public static array $groupFileNames = [];
+    public static string $cacheDir = ".scribe/endpoints.cache";
+    public static string $camelDir = ".scribe/endpoints";
 
     /**
      * Load endpoints from the Camel files into groups (arrays).

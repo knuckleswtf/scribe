@@ -3,7 +3,7 @@
 namespace Knuckles\Scribe\Writing;
 
 use Illuminate\Support\Facades\Storage;
-use Knuckles\Scribe\Tools\ConsoleOutputUtils;
+use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\Utils;
 use Symfony\Component\Yaml\Yaml;
@@ -49,7 +49,7 @@ class Writer
     protected function writePostmanCollection(array $groups): void
     {
         if ($this->config->get('postman.enabled', true)) {
-            ConsoleOutputUtils::info('Generating Postman collection');
+            c::info('Generating Postman collection');
 
             $collection = $this->generatePostmanCollection($groups);
             if ($this->isStatic) {
@@ -60,14 +60,14 @@ class Writer
                 $collectionPath = 'storage/app/scribe/collection.json';
             }
 
-            ConsoleOutputUtils::success("Wrote Postman collection to: {$collectionPath}");
+            c::success("Wrote Postman collection to: {$collectionPath}");
         }
     }
 
     protected function writeOpenAPISpec(array $parsedRoutes): void
     {
         if ($this->config->get('openapi.enabled', false)) {
-            ConsoleOutputUtils::info('Generating OpenAPI specification');
+            c::info('Generating OpenAPI specification');
 
             $spec = $this->generateOpenAPISpec($parsedRoutes);
             if ($this->isStatic) {
@@ -78,7 +78,7 @@ class Writer
                 $specPath = 'storage/app/scribe/openapi.yaml';
             }
 
-            ConsoleOutputUtils::success("Wrote OpenAPI specification to: {$specPath}");
+            c::success("Wrote OpenAPI specification to: {$specPath}");
         }
     }
 
@@ -156,7 +156,7 @@ class Writer
 
     public function writeHtmlDocs(array $groupedEndpoints): void
     {
-        ConsoleOutputUtils::info('Writing HTML docs...');
+        c::info('Writing HTML docs...');
 
         // Then we convert them to HTML, and throw in the endpoints as well.
         /** @var HtmlWriter $writer */
@@ -167,7 +167,7 @@ class Writer
             $this->performFinalTasksForLaravelType();
         }
 
-        ConsoleOutputUtils::success("Wrote HTML documentation to: " . ($this->isStatic ? $this->staticTypeOutputPath : $this->laravelTypeOutputPath));
+        c::success("Wrote HTML docs to: " . rtrim($this->isStatic ? $this->staticTypeOutputPath : $this->laravelTypeOutputPath, '/').'/');
     }
 
 }

@@ -5,21 +5,14 @@ namespace Knuckles\Scribe\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Str;
 use Knuckles\Camel\Camel;
-use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Camel\Output\OutputEndpointData;
-use Knuckles\Scribe\Extracting\ApiDetails;
-use Knuckles\Scribe\Extracting\Extractor;
 use Knuckles\Scribe\GroupedEndpoints\GroupedEndpointsFactory;
 use Knuckles\Scribe\Matching\RouteMatcherInterface;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\DocumentationConfig;
-use Knuckles\Scribe\Tools\ErrorHandlingUtils as e;
 use Knuckles\Scribe\Tools\Globals;
-use Knuckles\Scribe\Tools\Utils;
 use Knuckles\Scribe\Writing\Writer;
-use Symfony\Component\Yaml\Yaml;
 
 class GenerateDocumentation extends Command
 {
@@ -31,9 +24,6 @@ class GenerateDocumentation extends Command
     protected $description = 'Generate API documentation from your Laravel/Dingo routes.';
 
     private DocumentationConfig $docConfig;
-
-    public static string $camelDir = ".scribe/endpoints";
-    public static string $cacheDir = ".scribe/endpoints.cache";
 
     private bool $shouldExtract;
 
@@ -47,7 +37,7 @@ class GenerateDocumentation extends Command
 
         $groupedEndpoints = $this->mergeUserDefinedEndpoints(
             $groupedEndpointsInstance->get(),
-            Camel::loadUserDefinedEndpoints(static::$camelDir)
+            Camel::loadUserDefinedEndpoints(Camel::$camelDir)
         );
 
         $writer = new Writer($this->docConfig);
@@ -69,7 +59,7 @@ class GenerateDocumentation extends Command
         return $this->shouldExtract;
     }
 
-    public function getDocConfig()
+    public function getDocConfig(): DocumentationConfig
     {
         return $this->docConfig;
     }
@@ -94,6 +84,7 @@ class GenerateDocumentation extends Command
             throw new \Exception("Can't use --force and --no-extraction together.");
         }
 
+        // Reset this map useful for tests)
         Camel::$groupFileNames = [];
     }
 

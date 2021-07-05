@@ -13,6 +13,7 @@ use Knuckles\Scribe\Extracting\Extractor;
 use Knuckles\Scribe\Matching\MatchedRoute;
 use Knuckles\Scribe\Matching\RouteMatcherInterface;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
+use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\ErrorHandlingUtils as e;
 use Knuckles\Scribe\Tools\Utils as u;
 use Knuckles\Scribe\Tools\Utils;
@@ -23,10 +24,10 @@ use Symfony\Component\Yaml\Yaml;
 
 class GroupedEndpointsFromApp implements GroupedEndpointsContract
 {
-    private $command;
-    private $routeMatcher;
-    private $docConfig;
-    private $preserveUserChanges;
+    private GenerateDocumentation $command;
+    private RouteMatcherInterface $routeMatcher;
+    private DocumentationConfig $docConfig;
+    private bool $preserveUserChanges = true;
     private bool $encounteredErrors = false;
 
     public static string $camelDir;
@@ -41,8 +42,8 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
         $this->docConfig = $command->getDocConfig();
         $this->preserveUserChanges = $preserveUserChanges;
 
-        static::$camelDir = GenerateDocumentation::$camelDir;
-        static::$cacheDir = GenerateDocumentation::$cacheDir;
+        static::$camelDir = Camel::$camelDir;
+        static::$cacheDir = Camel::$cacheDir;
     }
 
     public function get(): array
