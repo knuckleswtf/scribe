@@ -174,7 +174,7 @@ class GenerateDocumentationTest extends BaseLaravelTest
     {
         RouteFacade::resource('/api/users', TestPartialResourceController::class);
 
-        config(['scribe.routes.0.prefixes' => ['api/*']]);
+        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
 
         $output = $this->artisan('scribe:generate');
 
@@ -273,7 +273,7 @@ class GenerateDocumentationTest extends BaseLaravelTest
     {
         RouteFacade::get('/api/utf8', [TestController::class, 'withUtf8ResponseTag']);
 
-        config(['scribe.routes.0.prefixes' => ['api/*']]);
+        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
         $this->artisan('scribe:generate');
 
         $generatedHtml = file_get_contents('public/docs/index.html');
@@ -288,7 +288,7 @@ class GenerateDocumentationTest extends BaseLaravelTest
         RouteFacade::get('/api/action2', TestGroupController::class . '@action2');
         RouteFacade::get('/api/action10', TestGroupController::class . '@action10');
 
-        config(['scribe.routes.0.prefixes' => ['api/*']]);
+        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
         $this->artisan('scribe:generate');
 
         $this->assertFileExists(__DIR__ . '/../.scribe/endpoints/0.yaml');
@@ -304,7 +304,7 @@ class GenerateDocumentationTest extends BaseLaravelTest
     {
         RouteFacade::get('/api/action1', TestGroupController::class . '@action1');
 
-        config(['scribe.routes.0.prefixes' => ['*']]);
+        config(['scribe.routes.0.match.prefixes' => ['*']]);
         config(['scribe.static.output_path' => 'static/docs']);
         $this->artisan('scribe:generate');
 
@@ -318,7 +318,7 @@ class GenerateDocumentationTest extends BaseLaravelTest
     {
         RouteFacade::get('/api/action1', [TestGroupController::class, 'action1']);
         RouteFacade::get('/api/action1b', [TestGroupController::class, 'action1b']);
-        config(['scribe.routes.0.prefixes' => ['api/*']]);
+        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
 
         $this->artisan('scribe:generate');
 
@@ -358,9 +358,31 @@ class GenerateDocumentationTest extends BaseLaravelTest
     }
 
     /** @test */
+    public function generates_correct_url_params_from_resource_routes_and_field_bindings()
+    {
+        RouteFacade::prefix('providers/{provider:slug}')->group(function () {
+            RouteFacade::resource('users.addresses', TestPartialResourceController::class)->parameters([
+                'addresses' => 'address:uuid',
+            ]);
+        });
+        config(['scribe.routes.0.match.prefixes' => ['*']]);
+        config(['scribe.openapi.enabled' => false]);
+        config(['scribe.postman.enabled' => false]);
+
+        $this->artisan('scribe:generate');
+
+        $groupA = Yaml::parseFile('.scribe/endpoints/0.yaml');
+        $this->assertEquals('providers/{provider_slug}/users/{user_id}/addresses', $groupA['endpoints'][0]['uri']);
+        $groupB = Yaml::parseFile('.scribe/endpoints/1.yaml');
+        $this->assertEquals('providers/{provider_slug}/users/{user_id}/addresses/{uuid}', $groupB['endpoints'][0]['uri']);
+    }
+
+    /** @test */
     public function will_not_extract_if_noExtraction_flag_is_set()
     {
         config(['scribe.routes.0.exclude' => ['*']]);
+        config(['scribe.openapi.enabled' => false]);
+        config(['scribe.postman.enabled' => false]);
         Utils::copyDirectory(__DIR__.'/Fixtures/.scribe', '.scribe');
 
         $output = $this->artisan('scribe:generate', ['--no-extraction' => true]);
@@ -383,7 +405,9 @@ class GenerateDocumentationTest extends BaseLaravelTest
     {
         RouteFacade::get('/api/action1', [TestGroupController::class, 'action1']);
         RouteFacade::get('/api/action2', [TestGroupController::class, 'action2']);
-        config(['scribe.routes.0.prefixes' => ['api/*']]);
+        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
+        config(['scribe.openapi.enabled' => false]);
+        config(['scribe.postman.enabled' => false]);
         if (!is_dir('.scribe/endpoints'))
             mkdir('.scribe/endpoints', 0777, true);
         copy(__DIR__ . '/Fixtures/custom.0.yaml', '.scribe/endpoints/custom.0.yaml');
@@ -412,7 +436,9 @@ class GenerateDocumentationTest extends BaseLaravelTest
         RouteFacade::get('/api/action1', [TestGroupController::class, 'action1']);
         RouteFacade::get('/api/action1b', [TestGroupController::class, 'action1b']);
         RouteFacade::get('/api/action2', [TestGroupController::class, 'action2']);
-        config(['scribe.routes.0.prefixes' => ['api/*']]);
+        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
+        config(['scribe.openapi.enabled' => false]);
+        config(['scribe.postman.enabled' => false]);
 
         $this->artisan('scribe:generate');
 

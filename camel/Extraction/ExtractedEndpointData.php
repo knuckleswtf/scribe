@@ -139,21 +139,40 @@ class ExtractedEndpointData extends BaseDTO
         $params = [];
         preg_match_all('#\{(\w+?)}#', $uri, $params);
 
-        $foundResourceParam = false;
-        foreach ($params[1] as $param) {
-            $pluralParam = Str::plural($param);
-            $resourceRouteNames = ["$pluralParam.show", "$pluralParam.update", "$pluralParam.destroy"];
+        $resourceRouteNames = [
+            ".index", ".show", ".update", ".destroy",
+        ];
 
-            if (Str::contains($route->action['as'] ?? '', $resourceRouteNames)) {
-                $search = sprintf("%s/{%s}", $pluralParam, $param);
+        if (Str::endsWith($route->action['as'] ?? '', $resourceRouteNames)) {
+            // Note that resource routes can be nested eg users.posts.show
+            $pluralResources = explode('.', $route->action['as']);
+            array_pop($pluralResources);
+
+            $foundResourceParam = false;
+            foreach (array_reverse($pluralResources) as $pluralResource) {
+                $singularResource = Str::singular($pluralResource);
+                $search = ["{$pluralResource}/{{$singularResource}}", "{$pluralResource}/{{$singularResource}?}"];
+
+                // We'll replace with {id} by default, but if the user is using a different key,
+                // like /users/{user:uuid}, use that instead
+                $binding = static::getFieldBindingForUrlParam($route, $singularResource, 'id');
                 if (!$foundResourceParam) {
-                    // Only the first resource param should be {id}
-                    $replace = "$pluralParam/{id}";
+                    // Only the last resource param should be {id}
+                    $replace = ["$pluralResource/{{$binding}}", "$pluralResource/{{$binding}?}"];
                     $foundResourceParam = true;
                 } else {
-                    // Subsequent ones should be {<param>_id}
-                    $replace = sprintf("%s/{%s}", $pluralParam, $param.'_id');
+                    // Earlier ones should be {<param>_id}
+                    $replace = ["{$pluralResource}/{{$singularResource}_{$binding}}", "{$pluralResource}/{{$singularResource}_{$binding}?}"];
                 }
+                $uri = str_replace($search, $replace, $uri);
+            }
+        }
+
+        foreach ($params[1] as $param) {
+            // For non-resource parameters, if there's a field binding, replace that too:
+            if ($binding = static::getFieldBindingForUrlParam($route, $param)) {
+                $search = ["{{$param}}", "{{$param}?}"];
+                $replace = ["{{$param}_{$binding}}", "{{$param}_{$binding}?}"];
                 $uri = str_replace($search, $replace, $uri);
             }
         }
@@ -173,5 +192,15 @@ class ExtractedEndpointData extends BaseDTO
             // and objects used only in extraction
             'route', 'controller', 'method', 'auth',
         );
+    }
+
+    public static function getFieldBindingForUrlParam(Route $route, string $paramName, string $default = null): ?string
+    {
+        $binding = null;
+        // Was added in Laravel 7.x
+        if (method_exists($route, 'bindingFieldFor')) {
+            $binding = $route->bindingFieldFor($paramName);
+        }
+        return $binding ?: $default;
     }
 }
