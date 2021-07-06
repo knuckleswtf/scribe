@@ -150,6 +150,12 @@ class OutputEndpointData extends BaseDTO
         return count($this->fileParameters) > 0;
     }
 
+    public function isArrayBody(): bool
+    {
+        return count($this->nestedBodyParameters) === 1
+            && array_keys($this->nestedBodyParameters)[0] === "[]";
+    }
+
     public function isGet(): bool
     {
         return in_array('GET', $this->httpMethods);

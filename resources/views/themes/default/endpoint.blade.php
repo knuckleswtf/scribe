@@ -63,7 +63,9 @@
       data-path="{{ $endpoint->uri }}"
       data-authed="{{ $endpoint->metadata->authenticated ? 1 : 0 }}"
       data-hasfiles="{{ $endpoint->hasFiles() ? 1 : 0 }}"
+      data-isarraybody="{{ $endpoint->isArrayBody() ? 1 : 0 }}"
       data-headers='@json($endpoint->headers)'
+      autocomplete="off"
       onsubmit="event.preventDefault(); executeTryOut('{{ $endpoint->endpointId() }}', this);">
     <h3>
         Request&nbsp;&nbsp;&nbsp;

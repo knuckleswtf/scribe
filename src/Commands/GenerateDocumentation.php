@@ -84,7 +84,7 @@ class GenerateDocumentation extends Command
             throw new \Exception("Can't use --force and --no-extraction together.");
         }
 
-        // Reset this map useful for tests)
+        // Reset this map (useful for tests)
         Camel::$groupFileNames = [];
     }
 
