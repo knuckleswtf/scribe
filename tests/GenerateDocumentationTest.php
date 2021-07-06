@@ -485,4 +485,37 @@ class GenerateDocumentationTest extends BaseLaravelTest
         $this->assertEquals("Another endpoint.", $expectedEndpoints->getNode(1)->textContent);
         $this->assertEquals("Some endpoint.", $expectedEndpoints->getNode(2)->textContent);
     }
+
+    /** @test */
+    public function will_auto_set_content_type_to_multipart_if_file_params_are_present()
+    {
+        /**
+         * @bodyParam param string required
+         */
+        RouteFacade::post('no-file', fn() => null);
+        /**
+         * @bodyParam a_file file required
+         */
+        RouteFacade::post('top-level-file', fn() => null);
+        /**
+         * @bodyParam data object
+         * @bodyParam data.thing string
+         * @bodyParam data.a_file file
+         */
+        RouteFacade::post('nested-file', fn() => null);
+        config(['scribe.routes.0.match.prefixes' => ['*']]);
+        config(['scribe.openapi.enabled' => false]);
+        config(['scribe.postman.enabled' => false]);
+
+        $this->artisan('scribe:generate');
+
+        $group = Yaml::parseFile('.scribe/endpoints/0.yaml');
+        $this->assertEquals('no-file', $group['endpoints'][0]['uri']);
+        $this->assertEquals('application/json', $group['endpoints'][0]['headers']['Content-Type']);
+        $this->assertEquals('top-level-file', $group['endpoints'][1]['uri']);
+        $this->assertEquals('multipart/form-data', $group['endpoints'][1]['headers']['Content-Type']);
+        $this->assertEquals('nested-file', $group['endpoints'][2]['uri']);
+        $this->assertEquals('multipart/form-data', $group['endpoints'][2]['headers']['Content-Type']);
+
+    }
 }
