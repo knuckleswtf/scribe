@@ -18,16 +18,24 @@ class RouteDocBlocker
     protected static array $docBlocks = [];
 
     /**
-     * @param Route $route
-     *
-     * @throws \ReflectionException
-     * @throws \Exception
-     *
      * @return array{method: DocBlock, class: DocBlock} Method and class docblocks
      */
     public static function getDocBlocksFromRoute(Route $route): array
     {
         [$className, $methodName] = u::getRouteClassAndMethodNames($route);
+
+        return static::getDocBlocks($route, $className, $methodName);
+    }
+    
+    /**
+     * @return array{method: DocBlock, class: DocBlock} Method and class docblocks
+     */
+    public static function getDocBlocks(Route $route, $className, $methodName = null): array
+    {
+        if (is_array($className)) {
+            [$className, $methodName] = $className;
+        }
+
         $normalizedClassName = static::normalizeClassName($className);
         $docBlocks = self::getCachedDocBlock($route, $normalizedClassName, $methodName);
 
