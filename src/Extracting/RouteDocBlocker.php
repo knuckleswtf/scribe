@@ -32,7 +32,7 @@ class RouteDocBlocker
         return static::getDocBlocks($route, $className, $methodName);
     }
 
-    public static function getDocBlocks(Route $route, $className, $methodName = null)
+    public static function getDocBlocks(Route $route, $className, $methodName = null): array
     {
         if (is_array($className)) {
             [$className, $methodName] = $className;
