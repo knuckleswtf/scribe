@@ -32,24 +32,20 @@
             <summary>
                 <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
             </summary>
-            <pre>
-            <code class="language-http">@foreach($response->headers as $header => $value)
+            <pre><code class="language-http">@foreach($response->headers as $header => $value)
 {{ $header }}: {{ is_array($value) ? implode('; ', $value) : $value }}
-@endforeach </code>
-            </pre>
+@endforeach </code></pre>
         </details> @endif
         <pre>
-                <code class="language-json">
 @if(is_string($response->content) && Str::startsWith($response->content, "<<binary>>"))
-[Binary data] - {{ htmlentities(str_replace("<<binary>>", "", $response->content)) }}
+<code>[Binary data] - {{ htmlentities(str_replace("<<binary>>", "", $response->content)) }}</code>
 @elseif($response->status == 204)
-[Empty response]
+<code>[Empty response]</code>
 @else
 @php($parsed = json_decode($response->content))
 {{-- If response is a JSON string, prettify it. Otherwise, just print it --}}
-{!! htmlentities($parsed != null ? json_encode($parsed, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) : $response->content) !!}
-@endif </code>
-        </pre>
+<code class="language-json">{!! htmlentities($parsed != null ? json_encode($parsed, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) : $response->content) !!}</code>
+@endif </pre>
     @endforeach
 @endif
 </span>
@@ -67,7 +63,9 @@
       data-path="{{ $endpoint->uri }}"
       data-authed="{{ $endpoint->metadata->authenticated ? 1 : 0 }}"
       data-hasfiles="{{ $endpoint->hasFiles() ? 1 : 0 }}"
+      data-isarraybody="{{ $endpoint->isArrayBody() ? 1 : 0 }}"
       data-headers='@json($endpoint->headers)'
+      autocomplete="off"
       onsubmit="event.preventDefault(); executeTryOut('{{ $endpoint->endpointId() }}', this);">
     <h3>
         Request&nbsp;&nbsp;&nbsp;

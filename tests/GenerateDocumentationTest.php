@@ -22,6 +22,9 @@ class GenerateDocumentationTest extends BaseLaravelTest
         parent::setUp();
 
         config(['scribe.database_connections_to_transact' => []]);
+        // Skip these ones for faster tests
+        config(['scribe.openapi.enabled' => false]);
+        config(['scribe.postman.enabled' => false]);
 
         $factory = app(\Illuminate\Database\Eloquent\Factory::class);
         $factory->define(TestUser::class, function () {
@@ -206,7 +209,6 @@ class GenerateDocumentationTest extends BaseLaravelTest
             ],
         ]);
         config(['scribe.postman.enabled' => true]);
-        config(['scribe.openapi.enabled' => false]);
 
         $this->artisan('scribe:generate');
 
@@ -230,7 +232,6 @@ class GenerateDocumentationTest extends BaseLaravelTest
 
         // We want to have the same values for params each time
         config(['scribe.faker_seed' => 1234]);
-        config(['scribe.postman.enabled' => false]);
         config(['scribe.openapi.enabled' => true]);
         config(['scribe.openapi.overrides' => [
             'info.version' => '3.9.9',
@@ -372,8 +373,6 @@ class GenerateDocumentationTest extends BaseLaravelTest
             ]);
         });
         config(['scribe.routes.0.match.prefixes' => ['*']]);
-        config(['scribe.openapi.enabled' => false]);
-        config(['scribe.postman.enabled' => false]);
 
         $this->artisan('scribe:generate');
 
@@ -387,8 +386,6 @@ class GenerateDocumentationTest extends BaseLaravelTest
     public function will_not_extract_if_noExtraction_flag_is_set()
     {
         config(['scribe.routes.0.exclude' => ['*']]);
-        config(['scribe.openapi.enabled' => false]);
-        config(['scribe.postman.enabled' => false]);
         Utils::copyDirectory(__DIR__.'/Fixtures/.scribe', '.scribe');
 
         $output = $this->artisan('scribe:generate', ['--no-extraction' => true]);
@@ -412,8 +409,6 @@ class GenerateDocumentationTest extends BaseLaravelTest
         RouteFacade::get('/api/action1', [TestGroupController::class, 'action1']);
         RouteFacade::get('/api/action2', [TestGroupController::class, 'action2']);
         config(['scribe.routes.0.match.prefixes' => ['api/*']]);
-        config(['scribe.openapi.enabled' => false]);
-        config(['scribe.postman.enabled' => false]);
         if (!is_dir('.scribe/endpoints'))
             mkdir('.scribe/endpoints', 0777, true);
         copy(__DIR__ . '/Fixtures/custom.0.yaml', '.scribe/endpoints/custom.0.yaml');
@@ -443,8 +438,6 @@ class GenerateDocumentationTest extends BaseLaravelTest
         RouteFacade::get('/api/action1b', [TestGroupController::class, 'action1b']);
         RouteFacade::get('/api/action2', [TestGroupController::class, 'action2']);
         config(['scribe.routes.0.match.prefixes' => ['api/*']]);
-        config(['scribe.openapi.enabled' => false]);
-        config(['scribe.postman.enabled' => false]);
 
         $this->artisan('scribe:generate');
 
@@ -484,5 +477,36 @@ class GenerateDocumentationTest extends BaseLaravelTest
         $this->assertEquals("GET api/action2", $expectedEndpoints->getNode(0)->textContent);
         $this->assertEquals("Another endpoint.", $expectedEndpoints->getNode(1)->textContent);
         $this->assertEquals("Some endpoint.", $expectedEndpoints->getNode(2)->textContent);
+    }
+
+    /** @test */
+    public function will_auto_set_content_type_to_multipart_if_file_params_are_present()
+    {
+        /**
+         * @bodyParam param string required
+         */
+        RouteFacade::post('no-file', fn() => null);
+        /**
+         * @bodyParam a_file file required
+         */
+        RouteFacade::post('top-level-file', fn() => null);
+        /**
+         * @bodyParam data object
+         * @bodyParam data.thing string
+         * @bodyParam data.a_file file
+         */
+        RouteFacade::post('nested-file', fn() => null);
+        config(['scribe.routes.0.match.prefixes' => ['*']]);
+
+        $this->artisan('scribe:generate');
+
+        $group = Yaml::parseFile('.scribe/endpoints/0.yaml');
+        $this->assertEquals('no-file', $group['endpoints'][0]['uri']);
+        $this->assertEquals('application/json', $group['endpoints'][0]['headers']['Content-Type']);
+        $this->assertEquals('top-level-file', $group['endpoints'][1]['uri']);
+        $this->assertEquals('multipart/form-data', $group['endpoints'][1]['headers']['Content-Type']);
+        $this->assertEquals('nested-file', $group['endpoints'][2]['uri']);
+        $this->assertEquals('multipart/form-data', $group['endpoints'][2]['headers']['Content-Type']);
+
     }
 }

@@ -142,12 +142,15 @@ async function executeTryOut(endpointId, form) {
 
     let body;
     let setter;
-    if (form.dataset.hasfiles === "0") {
-        body = {};
-        setter = (name, value) => _.set(body, name, value);
-    } else {
+    if (form.dataset.hasfiles === "1") {
         body = new FormData();
         setter = (name, value) => body.append(name, value);
+    } else if (form.dataset.isarraybody === "1") {
+        body = [];
+        setter = (name, value) => _.set(body, name, value);
+    } else {
+        body = {};
+        setter = (name, value) => _.set(body, name, value);
     }
     const bodyParameters = form.querySelectorAll('input[data-component=body]');
     bodyParameters.forEach(el => {

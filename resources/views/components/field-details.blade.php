@@ -10,6 +10,8 @@
             $fullName .= '.0';
             $baseType = substr($baseType, 0, -2);
         }
+        // When the body is an array, the item names will be ".0.thing"
+        $fullName = ltrim($fullName, '.');
         switch($baseType) {
             case 'number':
             case 'integer':
