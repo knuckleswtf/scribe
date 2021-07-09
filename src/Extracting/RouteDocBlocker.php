@@ -23,7 +23,7 @@ class RouteDocBlocker
      * @throws \ReflectionException
      * @throws \Exception
      *
-     * @return array<"method"|"class", DocBlock> Method and class docblocks
+     * @return array{method: DocBlock, class: DocBlock} Method and class docblocks
      */
     public static function getDocBlocksFromRoute(Route $route): array
     {

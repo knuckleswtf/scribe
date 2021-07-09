@@ -11,11 +11,11 @@ matrix:
   fast_finish: true
   include:
     - php: 7.4
-      env: COMPOSER=composer.dingo.json
-      name: "With Dingo router"
-    - php: 7.4
       env: SETUP=lint
       name: "Lint code"
+    - php: 7.4
+      env: COMPOSER=composer.dingo.json
+      name: "With Dingo router"
     - php: 7.4.7
     - php: 7.4
       env: SETUP=lowest
@@ -31,7 +31,6 @@ before_install:
 install:
   - if [[ $SETUP = 'stable' ]]; then travis_retry composer update --prefer-dist --prefer-stable; fi
   - if [[ $SETUP = 'lowest' ]]; then travis_retry composer require laravel/framework:^$LOWEST; composer require laravel/lumen-framework:^$LOWEST; fi
-  - if [[ $SETUP = 'lint' ]]; then travis_retry composer update --prefer-dist --prefer-stable; composer lint; fi
 
 script:
   - if [[ $SETUP = 'lint' ]]; then exit 0; fi; composer test-parallel-ci;

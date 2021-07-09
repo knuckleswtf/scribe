@@ -56,7 +56,7 @@ class GetFromHeaderTag extends Strategy
         return $this->getHeadersFromDocBlock($methodDocBlock->getTags());
     }
 
-    public function getHeadersFromDocBlock($tags)
+    public function getHeadersFromDocBlock($tags): array
     {
         $headers = collect($tags)
             ->filter(function ($tag) {
