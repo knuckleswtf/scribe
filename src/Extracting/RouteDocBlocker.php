@@ -28,6 +28,17 @@ class RouteDocBlocker
     public static function getDocBlocksFromRoute(Route $route): array
     {
         [$className, $methodName] = u::getRouteClassAndMethodNames($route);
+
+        return static::getDocBlocks($route, $className, $methodName);
+    }
+
+    public static function getDocBlocks(Route $route, $className, $methodName = null)
+    {
+        if (is_array($className)) {
+            [$className, $methodName] = $className;
+        }
+
+        [$className, $methodName] = u::getRouteClassAndMethodNames($route);
         $normalizedClassName = static::normalizeClassName($className);
         $docBlocks = self::getCachedDocBlock($route, $normalizedClassName, $methodName);
 
