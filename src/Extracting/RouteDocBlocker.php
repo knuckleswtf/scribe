@@ -38,7 +38,6 @@ class RouteDocBlocker
             [$className, $methodName] = $className;
         }
 
-        [$className, $methodName] = u::getRouteClassAndMethodNames($route);
         $normalizedClassName = static::normalizeClassName($className);
         $docBlocks = self::getCachedDocBlock($route, $normalizedClassName, $methodName);
 
