@@ -130,7 +130,7 @@ class GenerateDocumentationTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_skip_nonexistent_response_files()
+    public function warns_of_nonexistent_response_files()
     {
         RouteFacade::get('/api/non-existent', [TestController::class, 'withNonExistentResponseFile']);
 
@@ -383,7 +383,7 @@ class GenerateDocumentationTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function will_not_extract_if_noExtraction_flag_is_set()
+    public function will_generate_without_extracting_if_noExtraction_flag_is_set()
     {
         config(['scribe.routes.0.exclude' => ['*']]);
         Utils::copyDirectory(__DIR__.'/Fixtures/.scribe', '.scribe');

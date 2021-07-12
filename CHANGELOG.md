@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.5.2 (Monday, 12 July 2021)
+### Modified
+- Internal change: refactor RouteDocBlocker (https://github.com/knuckleswtf/scribe/pull/272)
+
 ## 3.5.1 (Tuesday, 6 July 2021)
 ### Fixed
 - Try It Out: Turn off autocomplete; make sure it works for array body; improve UI spacing ([579f672b57ad0417a5563aee1621b84c3b4ff1f2](https://github.com/knuckleswtf/scribe/commit/579f672b57ad0417a5563aee1621b84c3b4ff1f2), [2af8d8eacd661e0601b2d6f4dbc1766bf75e702a](https://github.com/knuckleswtf/scribe/commit/2af8d8eacd661e0601b2d6f4dbc1766bf75e702a))

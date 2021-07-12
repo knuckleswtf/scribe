@@ -25,12 +25,10 @@ cache:
   directories:
     - $HOME/.composer/cache
 
-before_install:
-  - travis_retry composer self-update
-
 install:
-  - if [[ $SETUP = 'stable' ]]; then travis_retry composer update --prefer-dist --prefer-stable; fi
+  - if [[ $SETUP = 'stable' ]]; then travis_retry composer update; fi
   - if [[ $SETUP = 'lowest' ]]; then travis_retry composer require laravel/framework:^$LOWEST; composer require laravel/lumen-framework:^$LOWEST; fi
+  - if [[ $SETUP = 'lint' ]]; then composer lint; fi
 
 script:
   - if [[ $SETUP = 'lint' ]]; then exit 0; fi; composer test-parallel-ci;
