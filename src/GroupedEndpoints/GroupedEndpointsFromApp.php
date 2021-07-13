@@ -213,7 +213,9 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
                 && isset(Camel::$groupFileNames[$group['name']])) {
                 $fileName = Camel::$groupFileNames[$group['name']];
             } else {
-                $fileName = "$fileNameIndex.yaml";
+                // Format numbers as two digits so they are sorted properly when retrieving later
+                // (ie "10.yaml" comes after "9.yaml", not after "1.yaml")
+                $fileName = sprintf("%02d.yaml", $fileNameIndex);
                 $fileNameIndex++;
             }
 

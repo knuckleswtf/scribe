@@ -264,7 +264,7 @@ class GenerateDocumentationTest extends BaseLaravelTest
         ]);
         $this->artisan('scribe:generate');
 
-        $endpointDetails = Yaml::parseFile(__DIR__ . '/../.scribe/endpoints/0.yaml')['endpoints'][0];
+        $endpointDetails = Yaml::parseFile(__DIR__ . '/../.scribe/endpoints/00.yaml')['endpoints'][0];
         $this->assertEquals("customAuthToken", $endpointDetails['headers']["Authorization"]);
         $this->assertEquals("NotSoCustom", $endpointDetails['headers']["Custom-Header"]);
     }
@@ -292,12 +292,12 @@ class GenerateDocumentationTest extends BaseLaravelTest
         config(['scribe.routes.0.match.prefixes' => ['api/*']]);
         $this->artisan('scribe:generate');
 
-        $this->assertFileExists(__DIR__ . '/../.scribe/endpoints/0.yaml');
-        $this->assertFileExists(__DIR__ . '/../.scribe/endpoints/1.yaml');
-        $this->assertFileExists(__DIR__ . '/../.scribe/endpoints/2.yaml');
-        $this->assertEquals('1. Group 1', Yaml::parseFile(__DIR__ . '/../.scribe/endpoints/0.yaml')['name']);
-        $this->assertEquals('2. Group 2', Yaml::parseFile(__DIR__ . '/../.scribe/endpoints/1.yaml')['name']);
-        $this->assertEquals('10. Group 10', Yaml::parseFile(__DIR__ . '/../.scribe/endpoints/2.yaml')['name']);
+        $this->assertFileExists(__DIR__ . '/../.scribe/endpoints/00.yaml');
+        $this->assertFileExists(__DIR__ . '/../.scribe/endpoints/01.yaml');
+        $this->assertFileExists(__DIR__ . '/../.scribe/endpoints/02.yaml');
+        $this->assertEquals('1. Group 1', Yaml::parseFile(__DIR__ . '/../.scribe/endpoints/00.yaml')['name']);
+        $this->assertEquals('2. Group 2', Yaml::parseFile(__DIR__ . '/../.scribe/endpoints/01.yaml')['name']);
+        $this->assertEquals('10. Group 10', Yaml::parseFile(__DIR__ . '/../.scribe/endpoints/02.yaml')['name']);
     }
 
     /** @test */
@@ -324,7 +324,7 @@ class GenerateDocumentationTest extends BaseLaravelTest
         $this->artisan('scribe:generate');
 
         $authFilePath = '.scribe/auth.md';
-        $group1FilePath = '.scribe/endpoints/0.yaml';
+        $group1FilePath = '.scribe/endpoints/00.yaml';
 
         $group = Yaml::parseFile($group1FilePath);
         $this->assertEquals('api/action1', $group['endpoints'][0]['uri']);
@@ -376,9 +376,9 @@ class GenerateDocumentationTest extends BaseLaravelTest
 
         $this->artisan('scribe:generate');
 
-        $groupA = Yaml::parseFile('.scribe/endpoints/0.yaml');
+        $groupA = Yaml::parseFile('.scribe/endpoints/00.yaml');
         $this->assertEquals('providers/{provider_slug}/users/{user_id}/addresses', $groupA['endpoints'][0]['uri']);
-        $groupB = Yaml::parseFile('.scribe/endpoints/1.yaml');
+        $groupB = Yaml::parseFile('.scribe/endpoints/01.yaml');
         $this->assertEquals('providers/{provider_slug}/users/{user_id}/addresses/{uuid}', $groupB['endpoints'][0]['uri']);
     }
 
@@ -452,19 +452,19 @@ class GenerateDocumentationTest extends BaseLaravelTest
         $this->assertEquals("GET api/action2", $expectedEndpoints->getNode(2)->textContent);
 
         // Now swap the endpoints
-        $group = Yaml::parseFile('.scribe/endpoints/0.yaml');
+        $group = Yaml::parseFile('.scribe/endpoints/00.yaml');
         $this->assertEquals('api/action1', $group['endpoints'][0]['uri']);
         $this->assertEquals('api/action1b', $group['endpoints'][1]['uri']);
         $action1 = $group['endpoints'][0];
         $group['endpoints'][0] = $group['endpoints'][1];
         $group['endpoints'][1] = $action1;
-        file_put_contents('.scribe/endpoints/0.yaml', Yaml::dump(
+        file_put_contents('.scribe/endpoints/00.yaml', Yaml::dump(
             $group, 20, 2,
             Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP
         ));
         // And then the groups
-        rename('.scribe/endpoints/0.yaml', '.scribe/endpoints/temp.yaml');
-        rename('.scribe/endpoints/1.yaml', '.scribe/endpoints/0.yaml');
+        rename('.scribe/endpoints/00.yaml', '.scribe/endpoints/temp.yaml');
+        rename('.scribe/endpoints/01.yaml', '.scribe/endpoints/00.yaml');
         rename('.scribe/endpoints/temp.yaml', '.scribe/endpoints/1.yaml');
 
         $this->artisan('scribe:generate');
@@ -500,7 +500,7 @@ class GenerateDocumentationTest extends BaseLaravelTest
 
         $this->artisan('scribe:generate');
 
-        $group = Yaml::parseFile('.scribe/endpoints/0.yaml');
+        $group = Yaml::parseFile('.scribe/endpoints/00.yaml');
         $this->assertEquals('no-file', $group['endpoints'][0]['uri']);
         $this->assertEquals('application/json', $group['endpoints'][0]['headers']['Content-Type']);
         $this->assertEquals('top-level-file', $group['endpoints'][1]['uri']);
