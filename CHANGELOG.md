@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.6.0 (Tuesday, 13 July 2021)
+### Fixed
+- Sort group filenames numerically (fixes #273)([c77fed23f04ab1f13bb06bf5b099227ced46dbdc](https://github.com/knuckleswtf/scribe/commit/c77fed23f04ab1f13bb06bf5b099227ced46dbdc),
+
 ## 3.5.2 (Monday, 12 July 2021)
 ### Modified
 - Internal change: refactor RouteDocBlocker (https://github.com/knuckleswtf/scribe/pull/272)
