@@ -95,6 +95,7 @@ class Camel
                 && Str::endsWith($object['basename'], '.yaml')
                 && Str::startsWith($object['basename'], 'custom.')
             ) {
+                dump(file_get_contents($object['path']));
                 $endpoints = Yaml::parseFile($object['path']);
                 foreach (($endpoints ?: []) as $endpoint) {
                     $userDefinedEndpoints[] = $endpoint;
