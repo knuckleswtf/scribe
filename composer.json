@@ -64,10 +64,10 @@
   },
   "scripts": {
     "lint": "phpstan analyse -c ./phpstan.neon src camel --memory-limit 1G",
-    "test": "phpunit --no-coverage --stop-on-failure --exclude-group dingo",
-    "test-ci": "phpunit --no-coverage --exclude-group dingo",
-    "test-parallel": "paratest -p16 --stop-on-failure --no-coverage --exclude-group dingo",
-    "test-parallel-ci": "paratest -p16 --no-coverage --exclude-group dingo"
+    "test": "phpunit --stop-on-failure --exclude-group dingo",
+    "test-ci": "phpunit --exclude-group dingo",
+    "test-parallel": "paratest -p16 --stop-on-failure --exclude-group dingo",
+    "test-parallel-ci": "paratest -p16 --exclude-group dingo"
   },
   "extra": {
     "laravel": {
