@@ -10,7 +10,10 @@ jobs:
         php:
         - 7.4
         - 8.0
-        deps: [stable, lowest, dingo]
+        deps:
+        - stable
+        - lowest
+        - dingo
 
     name: Tests (PHP ${{ matrix.php }} - ${{ matrix.deps }})
 
@@ -30,10 +33,8 @@ jobs:
         run: composer update --prefer-stable;
 
       - name: Install dependencies (Dingo)
-        if: ${{ matrix.deps == 'dingo' }}
-        env:
-          COMPOSER: composer.dingo.json
-        run: composer update --prefer-stable;
+        run: COMPOSER=composer.dingo.json composer update --prefer-stable;
+        if: ${{ matrix.deps == 'dingo' && matrix.php == '7.4.7' }}
 
       - name: Install dependencies (lowest)
         if: ${{ matrix.deps == 'lowest' }}
@@ -41,5 +42,10 @@ jobs:
           LOWEST: "6.0"
         run: composer update --prefer-lowest; composer require laravel/framework:^$LOWEST; composer require laravel/lumen-framework:^$LOWEST
 
-      - name: Execute tests
+      - name: Execute tests (Laravel/Lumen)
         run: composer test-parallel-ci
+        if: ${{ matrix.deps == 'stable' || matrix.deps == 'lowest' }}
+
+      - name: Execute tests (Dingo)
+        run: COMPOSER=composer.dingo.json composer test-parallel-ci
+        if: ${{ matrix.deps == 'dingo' && matrix.php == '7.4.7' }}
