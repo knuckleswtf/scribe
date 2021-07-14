@@ -50,9 +50,9 @@ jobs:
 
 
       - name: Execute tests (Laravel/Lumen)
-        run: composer test-parallel-ci
+        run: composer test-ci
         if: ${{ matrix.deps != 'dingo' }}
 
       - name: Execute tests (Dingo)
-        run: COMPOSER=composer.dingo.json composer test-parallel-ci
+        run: COMPOSER=composer.dingo.json composer test-ci
         if: ${{ matrix.deps == 'dingo' }}
