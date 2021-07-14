@@ -183,7 +183,7 @@ trait ParamHelpers
             case 'bool':
                 return str_replace($base, 'boolean', $typeName);
             case 'array':
-                return array_keys($value)[0] === 0 ? 'array' : 'object';
+                return is_null($value) || array_keys($value)[0] === 0 ? 'array' : 'object';
             default:
                 return $typeName;
         }
