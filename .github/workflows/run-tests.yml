@@ -1,0 +1,45 @@
+name: Tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php:
+        - 7.4
+        - 8.0
+        deps: [stable, lowest, dingo]
+
+    name: Tests (PHP ${{ matrix.php }} - ${{ matrix.deps }})
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick
+          coverage: none
+
+      - name: Install dependencies
+        if: ${{ matrix.deps == 'stable' }}
+        run: composer update --prefer-stable;
+
+      - name: Install dependencies (Dingo)
+        if: ${{ matrix.deps == 'dingo' }}
+        env:
+          COMPOSER: composer.dingo.json
+        run: composer update --prefer-stable;
+
+      - name: Install dependencies (lowest)
+        if: ${{ matrix.deps == 'lowest' }}
+        env:
+          LOWEST: "6.0"
+        run: composer require laravel/framework:^$LOWEST; composer require laravel/lumen-framework:^$LOWEST
+
+      - name: Execute tests
+        run: composer test-parallel-ci

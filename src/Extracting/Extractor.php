@@ -369,7 +369,7 @@ class Extractor
         if ($this->config->get('faker_seed')) {
             $faker->seed($this->config->get('faker_seed'));
         }
-        $token = $faker->shuffle('abcdefghkvaZVDPE1864563');
+        $token = $faker->shuffleString('abcdefghkvaZVDPE1864563');
         $valueToUse = $this->config->get('auth.use_value');
         $valueToDisplay = $this->config->get('auth.placeholder');
 

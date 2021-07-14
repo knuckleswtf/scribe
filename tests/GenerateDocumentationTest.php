@@ -320,6 +320,7 @@ class GenerateDocumentationTest extends BaseLaravelTest
         RouteFacade::get('/api/action1', [TestGroupController::class, 'action1']);
         RouteFacade::get('/api/action1b', [TestGroupController::class, 'action1b']);
         config(['scribe.routes.0.match.prefixes' => ['api/*']]);
+        config(['scribe.routes.0.apply.response_calls.methods' => []]);
 
         $this->artisan('scribe:generate');
 
@@ -373,6 +374,7 @@ class GenerateDocumentationTest extends BaseLaravelTest
             ]);
         });
         config(['scribe.routes.0.match.prefixes' => ['*']]);
+        config(['scribe.routes.0.apply.response_calls.methods' => []]);
 
         $this->artisan('scribe:generate');
 
@@ -396,8 +398,8 @@ class GenerateDocumentationTest extends BaseLaravelTest
         [$intro, $auth] = $crawler->filter('h1 + p')->getIterator();
         $this->assertEquals('Heyaa introduction!👋', trim($intro->firstChild->textContent));
         $this->assertEquals('This is just a test.', trim($auth->firstChild->textContent));
-        $endpoints = $crawler->filter('h1')->getNode(2);
-        $this->assertEquals('General', trim($endpoints->textContent));
+        $group = $crawler->filter('h1')->getNode(2);
+        $this->assertEquals('General', trim($group->textContent));
         $expectedEndpoint = $crawler->filter('h2');
         $this->assertCount(1, $expectedEndpoint);
         $this->assertEquals("Healthcheck", $expectedEndpoint->text());
@@ -409,6 +411,7 @@ class GenerateDocumentationTest extends BaseLaravelTest
         RouteFacade::get('/api/action1', [TestGroupController::class, 'action1']);
         RouteFacade::get('/api/action2', [TestGroupController::class, 'action2']);
         config(['scribe.routes.0.match.prefixes' => ['api/*']]);
+        config(['scribe.routes.0.apply.response_calls.methods' => []]);
         if (!is_dir('.scribe/endpoints'))
             mkdir('.scribe/endpoints', 0777, true);
         copy(__DIR__ . '/Fixtures/custom.0.yaml', '.scribe/endpoints/custom.0.yaml');
@@ -438,6 +441,7 @@ class GenerateDocumentationTest extends BaseLaravelTest
         RouteFacade::get('/api/action1b', [TestGroupController::class, 'action1b']);
         RouteFacade::get('/api/action2', [TestGroupController::class, 'action2']);
         config(['scribe.routes.0.match.prefixes' => ['api/*']]);
+        config(['scribe.routes.0.apply.response_calls.methods' => []]);
 
         $this->artisan('scribe:generate');
 
@@ -497,6 +501,7 @@ class GenerateDocumentationTest extends BaseLaravelTest
          */
         RouteFacade::post('nested-file', fn() => null);
         config(['scribe.routes.0.match.prefixes' => ['*']]);
+        config(['scribe.routes.0.apply.response_calls.methods' => []]);
 
         $this->artisan('scribe:generate');
 
