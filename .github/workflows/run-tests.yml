@@ -39,7 +39,7 @@ jobs:
         if: ${{ matrix.deps == 'lowest' }}
         env:
           LOWEST: "6.0"
-        run: composer require laravel/framework:^$LOWEST; composer require laravel/lumen-framework:^$LOWEST
+        run: composer update --prefer-lowest; composer require laravel/framework:^$LOWEST; composer require laravel/lumen-framework:^$LOWEST
 
       - name: Execute tests
         run: composer test-parallel-ci
