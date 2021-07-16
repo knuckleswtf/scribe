@@ -16,6 +16,7 @@ class HtmlWriter
 {
     protected DocumentationConfig $config;
     protected string $baseUrl;
+    protected string $assetPathPrefix;
     protected Parsedown $markdownParser;
 
     public function __construct(DocumentationConfig $config = null)
@@ -23,6 +24,14 @@ class HtmlWriter
         $this->config = $config ?: new DocumentationConfig(config('scribe', []));
         $this->markdownParser = new Parsedown();
         $this->baseUrl = $this->config->get('base_url') ?? config('app.url');
+        // If they're using the default static path,
+        // then use '../docs/{asset}', so assets can work via Laravel app or via index.html
+        $this->assetPathPrefix = '../docs/';
+        if ($this->config->get('type') == 'static'
+            && rtrim($this->config->get('static.output_path', ''), '/') != 'public/docs'
+        ) {
+            $this->assetPathPrefix = './';
+        }
     }
 
     public function generate(array $groupedEndpoints, string $sourceFolder, string $destinationFolder)
@@ -33,15 +42,6 @@ class HtmlWriter
         $appendFile = rtrim($sourceFolder, '/') . '/' . 'append.md';
         $append = file_exists($appendFile) ? $this->transformMarkdownFileToHTML($appendFile) : '';
 
-        // If they're using the default static path,
-        // then use '../docs/{asset}', so assets can work via Laravel app or via index.html
-        $assetPathPrefix = '../docs/';
-        if ($this->config->get('type') == 'static'
-            && rtrim($this->config->get('static.output_path', ''), '/') != 'public/docs'
-        ) {
-            $assetPathPrefix = './';
-        }
-
         $theme = $this->config->get('theme') ?? 'default';
         $output = View::make("scribe::themes.$theme.index", [
             'metadata' => $this->getMetadata(),
@@ -51,7 +51,7 @@ class HtmlWriter
             'auth' => $auth,
             'groupedEndpoints' => $groupedEndpoints,
             'append' => $append,
-            'assetPathPrefix' => $assetPathPrefix,
+            'assetPathPrefix' => $this->assetPathPrefix,
         ])->render();
 
         if (!is_dir($destinationFolder)) {
@@ -102,10 +102,10 @@ class HtmlWriter
 
         // NB:These paths are wrong for laravel type but will be set correctly by the Writer class
         if ($this->config->get('postman.enabled', true)) {
-            $links[] = '<a href="../docs/collection.json">View Postman collection</a>';
+            $links[] = "<a href=\"{$this->assetPathPrefix}collection.json\">View Postman collection</a>";
         }
         if ($this->config->get('openapi.enabled', false)) {
-            $links[] = '<a href="../docs/openapi.yaml">View OpenAPI spec</a>';
+            $links[] = "<a href=\"{$this->assetPathPrefix}openapi.yaml\">View OpenAPI spec</a>";
         }
 
         $auth = $this->config->get('auth');
