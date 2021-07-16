@@ -1,6 +1,9 @@
 name: Tests
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [master]
+  pull_request:
 
 jobs:
   test:
@@ -23,10 +26,8 @@ jobs:
     name: Tests (PHP ${{ matrix.php }} - ${{ matrix.deps }})
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Setup PHP
+      - uses: actions/checkout@v2
+      - name: Setup PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}

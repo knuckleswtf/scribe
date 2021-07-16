@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.6.1 (Friday, 16 July 2021)
+### Fixed
+- Use correct asset path (fixes #274)([00b77e4b144e13b579e5ad820ab79a1b42eac756](https://github.com/knuckleswtf/scribe/commit/00b77e4b144e13b579e5ad820ab79a1b42eac756),
+
 ## 3.6.0 (Tuesday, 13 July 2021)
 ### Fixed
 - Sort group filenames numerically (fixes #273)([c77fed23f04ab1f13bb06bf5b099227ced46dbdc](https://github.com/knuckleswtf/scribe/commit/c77fed23f04ab1f13bb06bf5b099227ced46dbdc),

@@ -2,8 +2,7 @@ name: Lint
 
 on:
   push:
-    branches:
-      - master
+    branches: [master]
   pull_request:
 
 jobs:
@@ -17,10 +16,8 @@ jobs:
     name: Lint code (PHP ${{ matrix.php }})
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Setup PHP
+      - uses: actions/checkout@v2
+      - name: Setup PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
