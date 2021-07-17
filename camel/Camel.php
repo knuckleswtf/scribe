@@ -171,6 +171,6 @@ class Camel
                 }, $group['endpoints']),
             ];
         }, $groupedEndpoints);
-        return Arr::sort($groups, 'fileName');
+        return array_values(Arr::sort($groups, 'fileName'));
     }
 }
