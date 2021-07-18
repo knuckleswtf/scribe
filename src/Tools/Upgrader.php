@@ -5,14 +5,13 @@ namespace Knuckles\Scribe\Tools;
 
 
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 use PhpParser;
 use PhpParser\{Node, NodeFinder, Lexer, NodeTraverser, NodeVisitor, Parser, ParserFactory, PrettyPrinter};
 
 class Upgrader
 {
     public const CHANGE_REMOVED = 'removed';
-    public const CHANGE_RENAMED = 'renamed';
+    public const CHANGE_MOVED = 'moved';
     public const CHANGE_ADDED = 'added';
     public const CHANGE_ARRAY_ITEM_ADDED = 'added_to_array';
 
@@ -30,15 +29,15 @@ class Upgrader
     private ?array $incomingConfigFileOriginalAst;
     private array $incomingConfigFileOriginalTokens;
 
-    public function __construct(string $userRelativeLocation, string $packageAbsolutePath)
+    public function __construct(string $userOldConfigRelativePath, string $sampleNewConfigAbsolutePath)
     {
-        $this->configFiles['user_relative'] = $userRelativeLocation;
-        $this->configFiles['package_absolute'] = $packageAbsolutePath;
+        $this->configFiles['user_relative'] = $userOldConfigRelativePath;
+        $this->configFiles['package_absolute'] = $sampleNewConfigAbsolutePath;
     }
 
-    public static function ofConfigFile(string $userRelativeLocation, string $packageAbsolutePath): self
+    public static function ofConfigFile(string $userOldConfigRelativePath, string $sampleNewConfigAbsolutePath): self
     {
-        return new self($userRelativeLocation, $packageAbsolutePath);
+        return new self($userOldConfigRelativePath, $sampleNewConfigAbsolutePath);
     }
 
     public function upgrade()
@@ -59,10 +58,10 @@ class Upgrader
         $incomingConfig = require $this->configFiles['package_absolute'];
 
         $forDisplay && $this->fetchAddedItems($userCurrentConfig, $incomingConfig);
-        $this->fetchRemovedOrRenamedItems($userCurrentConfig, $incomingConfig);
+        $this->fetchRemovedAndRenamedItems($userCurrentConfig, $incomingConfig);
     }
 
-    protected function fetchRemovedOrRenamedItems(array $userCurrentConfig, $incomingConfig, string $rootKey = '')
+    protected function fetchRemovedAndRenamedItems(array $userCurrentConfig, $incomingConfig, string $rootKey = '')
     {
 
         if (is_array($incomingConfig)) {
@@ -119,14 +118,16 @@ class Upgrader
             }
         }
 
+        // Loop over the old config
         foreach ($userCurrentConfig as $key => $value) {
             $fullKey = $this->getFullKey($key, $rootKey);
 
             $outgoing = $this->getOutgoingConfigItem($fullKey);
 
+            // Key is in old, but was moved somewhere else in new
             if ($this->wasKeyMoved($fullKey)) {
                 $this->userFacingChanges[] = [
-                    'type' => self::CHANGE_RENAMED,
+                    'type' => self::CHANGE_MOVED,
                     'key' => $fullKey,
                     'new_key' => $this->movedKeys[$fullKey],
                     'new_value' => $outgoing,
@@ -135,6 +136,7 @@ class Upgrader
                 continue;
             }
 
+            // Key is in old, but not in new
             if (!array_key_exists($key, $incomingConfig)) {
                 $this->userFacingChanges[] = [
                     'type' => self::CHANGE_REMOVED,
@@ -144,9 +146,9 @@ class Upgrader
                 continue;
             }
 
-            if ($this->canModifyKey($fullKey) && is_array($value)) {
+            if (!$this->shouldntTouch($fullKey) && is_array($value)) {
                 // Recurse into the array
-                $this->fetchRemovedOrRenamedItems($value, data_get($incomingConfig, $key), $fullKey);
+                $this->fetchRemovedAndRenamedItems($value, data_get($incomingConfig, $key), $fullKey);
             } else {
                 // This key is present in both existing and incoming configs
                 // Save the user's value so we can replace the default in the incoming
@@ -167,6 +169,7 @@ class Upgrader
                 // We're dealing with a list of items (numeric array)
                 $diff = array_diff($incomingConfig, $userCurrentConfig);
                 if (!empty($diff)) {
+                    // TODO this evalutaes dynamic expressions
                     foreach ($diff as $item) {
                         $this->userFacingChanges[] = [
                             'type' => self::CHANGE_ARRAY_ITEM_ADDED,
@@ -183,21 +186,22 @@ class Upgrader
         foreach ($incomingConfig as $key => $value) {
             $fullKey = $this->getFullKey($key, $rootKey);
 
-            if (!$this->canModifyKey($fullKey)) {
+            if ($this->shouldntTouch($fullKey)) {
                 continue;
             }
 
-            if (Arr::exists($userCurrentConfig, $key)) {
-                if (is_array($value)) {
-                    // Recurse into array
-                    $this->fetchAddedItems(data_get($userCurrentConfig, $key), $value, $fullKey);
-                }
-            } else {
+            // Key is in new, but not in old
+            if (!array_key_exists($key, $userCurrentConfig)) {
                 $this->userFacingChanges[] = [
                     'type' => self::CHANGE_ADDED,
                     'key' => $fullKey,
                     'description' => "- `{$fullKey}` will be added.",
                 ];
+            } else {
+                if (is_array($value)) {
+                    // Key is in both old and new; recurse into array and compare the inner items
+                    $this->fetchAddedItems(data_get($userCurrentConfig, $key), $value, $fullKey);
+                }
             }
 
         }
@@ -210,7 +214,8 @@ class Upgrader
         $ast = $this->getIncomingConfigFileAst();
         foreach ($this->catchUps as $key => $value) {
             if (preg_match('/.*\.\d+$/', $key)) {
-                // Array item
+                // Array item (xxx.0, xxx.1), etc.
+                // Discard the index and push them onto the array
                 $this->pushValue($ast, preg_replace('/.\d+$/', '', $key), $value);
             } else {
                 $this->setValue($ast, $key, $value);
@@ -224,7 +229,7 @@ class Upgrader
                 case self::CHANGE_REMOVED:
                     // Do nothing; the new config already doesn't have this
                     break;
-                case self::CHANGE_RENAMED:
+                case self::CHANGE_MOVED:
                     $this->setValue($ast, $change['new_key'], $change['new_value']);
                     break;
                 case self::CHANGE_ARRAY_ITEM_ADDED:
@@ -419,15 +424,20 @@ class Upgrader
         return "$rootKey.$key";
     }
 
+    /**
+     * "Don't touch" these config items.
+     * Useful if they contain arrays with keys specified by the user,
+     * or lists with values provided entirely by the user
+     */
     public function dontTouch(string ...$keys): self
     {
         $this->dontTouchKeys += $keys;
         return $this;
     }
 
-    protected function canModifyKey(string $key): bool
+    protected function shouldntTouch(string $key): bool
     {
-        return !in_array($key, $this->dontTouchKeys);
+        return in_array($key, $this->dontTouchKeys);
     }
 
     public function move(string $oldKey, string $newKey): self
