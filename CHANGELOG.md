@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.6.3 (Tuesday, 20 July 2021)
+### Fixed
+- Stop Validator::make parsing from crashing unnecessarily [#281]((https://github.com/knuckleswtf/scribe/pull/281))
+
 ## 3.6.2 (Saturday, 17 July 2021)
 ### Fixed
 - Encode Postman collection items correctly (fixes #278)([87b99bc717f541d6a4d2925fc7bc544958451d12](https://github.com/knuckleswtf/scribe/commit/87b99bc717f541d6a4d2925fc7bc544958451d12),
