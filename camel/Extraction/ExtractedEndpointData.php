@@ -185,13 +185,16 @@ class ExtractedEndpointData extends BaseDTO
      */
     public function forSerialisation()
     {
-        $this->metadata = $this->metadata->except('groupName', 'groupDescription');
-        return $this->except(
+        $copy = $this->except(
             // Get rid of all duplicate data
             'cleanQueryParameters', 'cleanUrlParameters', 'fileParameters', 'cleanBodyParameters',
             // and objects used only in extraction
             'route', 'controller', 'method', 'auth',
         );
+        $copy->metadata = $copy->metadata->except('groupName', 'groupDescription');
+        $copy->responses = $copy->responses->toArray();
+
+        return $copy;
     }
 
     public static function getFieldBindingForUrlParam(Route $route, string $paramName, string $default = null): ?string

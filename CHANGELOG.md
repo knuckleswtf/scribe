@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.7.0 (Thursday, 22 July 2021)
+### Added
+- Allow installation of spatie/dto 3 [#282]((https://github.com/knuckleswtf/scribe/pull/282))
+
 ## 3.6.3 (Tuesday, 20 July 2021)
 ### Fixed
 - Stop Validator::make parsing from crashing unnecessarily [#281]((https://github.com/knuckleswtf/scribe/pull/281))

@@ -3,49 +3,49 @@
 namespace Knuckles\Camel;
 
 use ArrayIterator;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Spatie\DataTransferObject\DataTransferObjectCollection;
 
 /**
  * @template T of \Spatie\DataTransferObject\DataTransferObject
  */
-class BaseDTOCollection extends DataTransferObjectCollection
+class BaseDTOCollection extends Collection
 {
     /**
      * @var string The name of the base DTO class.
      */
     public static string $base = '';
 
-    public function __construct(array $collection = [])
+    public function __construct($items = [])
     {
         // Manually cast nested arrays
-        $collection = array_map(
-            function ($item) {
-                return is_array($item) ? new static::$base($item) : $item;
-            },
-            $collection
+        $items = array_map(
+            fn($item) => is_array($item) ? new static::$base($item) : $item,
+            $items instanceof Collection ? $items->toArray() : $items
         );
 
-        parent::__construct($collection);
+        parent::__construct($items);
     }
 
     /**
+     * Append items to the collection, mutating it.
+     *
      * @param T[]|array[] $items
      */
-    public function concat(array $items)
+    public function concat($items)
     {
         foreach ($items as $item) {
-            $this[] = is_array($item) ? new static::$base($item) : $item;
+            $this->push(is_array($item) ? new static::$base($item) : $item);
         }
     }
 
-    /**
-     * @param string $key
-     */
-    public function sortBy(string $key): void
+    public function toArray(): array
     {
-        $items = $this->items();
-        $items = Arr::sort($items, $key);
-        $this->iterator = new ArrayIterator(array_values($items));
+        return array_map(
+            fn($item) => $item instanceof Arrayable ? $item->toArray() : $item,
+            $this->items
+        );
     }
 }
