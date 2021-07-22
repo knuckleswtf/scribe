@@ -35,12 +35,6 @@
     "symfony/var-exporter": "^4.0|^5.0",
     "symfony/yaml": "^4.0|^5.0"
   },
-  "repositories": [
-    {
-      "type": "path",
-      "url": "../upgrader"
-    }
-  ],
   "require-dev": {
     "brianium/paratest": "^6.0",
     "dms/phpunit-arraysubset-asserts": "^0.2.0",
