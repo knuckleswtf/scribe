@@ -67,10 +67,10 @@ class ResponseCallsTest extends BaseLaravelTest
         $responses = $parsed->responses->toArray();
         $this->assertCount(1, $responses);
         $this->assertArraySubset([
-                "status" => 200,
-                "description" => null,
-                "content" => '{"filename":"scribe.php","filepath":"config","name":"cat.jpg"}',
-            ], $responses[0]);
+            "status" => 200,
+            "description" => null,
+            "content" => '{"filename":"scribe.php","filepath":"config","name":"cat.jpg"}',
+        ], $responses[0]);
     }
 
     /** @test */

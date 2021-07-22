@@ -3,7 +3,6 @@
 namespace Knuckles\Scribe\Tests\Unit;
 
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
-use Faker\Factory;
 use Knuckles\Camel\Output\OutputEndpointData;
 use Knuckles\Camel\Output\Parameter;
 use Knuckles\Scribe\Extracting\Extractor;
