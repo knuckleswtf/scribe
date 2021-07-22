@@ -14,7 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## 3.7.0 (Thursday, 22 July 2021)
 ### Added
-- Allow installation of spatie/dto 3 [#282]((https://github.com/knuckleswtf/scribe/pull/282))
+- Allow installation of spatie/dto 3 [#285]((https://github.com/knuckleswtf/scribe/pull/285))
 
 ## 3.6.3 (Tuesday, 20 July 2021)
 ### Fixed
