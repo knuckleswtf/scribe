@@ -60,10 +60,7 @@ class ExtractedEndpointData extends BaseDTO
      */
     public array $fileParameters = [];
 
-    /**
-     * @var ResponseCollection|array
-     */
-    public $responses;
+    public ResponseCollection $responses;
 
     /**
      * @var array<string,\Knuckles\Camel\Extraction\ResponseField>
@@ -192,7 +189,6 @@ class ExtractedEndpointData extends BaseDTO
             'route', 'controller', 'method', 'auth',
         );
         $copy->metadata = $copy->metadata->except('groupName', 'groupDescription');
-        $copy->responses = $copy->responses->toArray();
 
         return $copy;
     }

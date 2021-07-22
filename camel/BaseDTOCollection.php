@@ -39,6 +39,7 @@ class BaseDTOCollection extends Collection
         foreach ($items as $item) {
             $this->push(is_array($item) ? new static::$base($item) : $item);
         }
+        return $this;
     }
 
     public function toArray(): array
