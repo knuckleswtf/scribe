@@ -200,7 +200,7 @@ class Utils
             try {
                 $factory = factory($modelName);
             } catch (\Throwable $e) {
-                if (Str::contains($e->getMessage(), "Call to undefined function Knuckles\Scribe\Tools\\factory()")) {
+                if (Str::contains($e->getMessage(), "Call to undefined function Knuckles\\Scribe\\Tools\\factory()")) {
                     throw new \Exception("Couldn't find the Eloquent model factory. Did you add the HasFactory trait to your $modelName model?");
                 } else {
                     throw $e;
