@@ -51,7 +51,7 @@ class GetFromInlineValidatorBase extends Strategy
                 break;
             } else if (
                 // Try $validator = Validator::make(...)
-                $rvalue instanceof Node\Expr\StaticCall && $rvalue->class->parts && end($rvalue->class->parts) == "Validator"
+                $rvalue instanceof Node\Expr\StaticCall && isset($rvalue->class->parts) && $rvalue->class->parts && end($rvalue->class->parts) == "Validator"
                 && $rvalue->name->name == "make"
             ) {
                 $validationRules = $rvalue->args[1]->value;
