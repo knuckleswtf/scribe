@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Tests\Unit;
 
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Knuckles\Scribe\Extracting\ParsesValidationRules;
@@ -319,7 +320,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             [],
             ['description' => "The value and <code>other_field</code> must match."],
         ];
-        if (version_compare($this->app->version(), '7.0.0', '<')) {
+        if (version_compare(Application::VERSION, '7.0.0', '<')) {
             yield 'different' => [
                 ['different_param' => 'string|different:other_field'],
                 [],
