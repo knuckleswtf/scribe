@@ -320,7 +320,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             [],
             ['description' => "The value and <code>other_field</code> must match."],
         ];
-        if (version_compare(Application::VERSION, '7.0.0', '<')) {
+        if (version_compare(Application::VERSION, '7.0.0', '>=')) {
             yield 'different' => [
                 ['different_param' => 'string|different:other_field'],
                 [],
