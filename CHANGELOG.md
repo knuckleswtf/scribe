@@ -12,6 +12,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.8.0 (Wednesday, 28 July 2021)
+### Modified
+- Fallback generated validation rules examples to null ([204d3dbab8665c9478f2808cf0b2ac2329c608ea](https://github.com/knuckleswtf/scribe/commit/204d3dbab8665c9478f2808cf0b2ac2329c608ea))
+- Extract Upgrader to separate package ([d17cd655b4f02e9701e47a4d328dfebfc1dd4610](https://github.com/knuckleswtf/scribe/commit/d17cd655b4f02e9701e47a4d328dfebfc1dd4610)))
+
+### Fixed
+- Better error handling (factories, validation rule parsing) ([#287](https://github.com/knuckleswtf/scribe/pull/287), [#288](https://github.com/knuckleswtf/scribe/pull/288), [a768c4733a3d397efdbac83067032a68abd66838](https://github.com/knuckleswtf/scribe/commit/a768c4733a3d397efdbac83067032a68abd66838), [0c4da381da7505afec6dd8e8ed082dcc4e1b7a3d](https://github.com/knuckleswtf/scribe/commit/0c4da381da7505afec6dd8e8ed082dcc4e1b7a3d))
+
 ## 3.7.0 (Thursday, 22 July 2021)
 ### Added
 - Allow installation of spatie/dto 3 [#285]((https://github.com/knuckleswtf/scribe/pull/285))
