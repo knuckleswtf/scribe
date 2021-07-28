@@ -47,7 +47,7 @@ jobs:
         if: ${{ matrix.deps == 'lowest' }}
         env:
           LOWEST: "6.0"
-        run: composer update --prefer-lowest; composer require orchestra/testbench:^5.0 laravel/framework:^$LOWEST laravel/lumen-framework:^$LOWEST
+        run: composer update --prefer-lowest; composer require orchestra/testbench:^5.0 laravel/framework:^$LOWEST laravel/lumen-framework:^$LOWEST --with-all-dependencies
 
 
       - name: Execute tests (Laravel/Lumen)
