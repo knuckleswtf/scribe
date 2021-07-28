@@ -8,6 +8,7 @@ use Exception;
 use FastRoute\RouteParser\Std;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Str;
+use Knuckles\Scribe\Exceptions\CouldntFindFactory;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
@@ -15,6 +16,7 @@ use ReflectionClass;
 use ReflectionException;
 use ReflectionFunction;
 use ReflectionFunctionAbstract;
+use Throwable;
 
 class Utils
 {
@@ -199,9 +201,9 @@ class Utils
         } else {
             try {
                 $factory = factory($modelName);
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 if (Str::contains($e->getMessage(), "Call to undefined function Knuckles\\Scribe\\Tools\\factory()")) {
-                    throw new \Exception("Couldn't find the Eloquent model factory. Did you add the HasFactory trait to your $modelName model?");
+                    throw CouldntFindFactory::forModel($modelName);
                 } else {
                     throw $e;
                 }

@@ -20,6 +20,7 @@ use League\Fractal\Resource\Item;
 use Mpociot\Reflection\DocBlock\Tag;
 use ReflectionClass;
 use ReflectionFunctionAbstract;
+use Throwable;
 
 /**
  * Parse a transformer response from the docblock ( @transformer || @transformercollection ).
@@ -159,23 +160,23 @@ class UseTransformerTags extends Strategy
 
             try {
                 return $factory->create();
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 // If there was no working database, ->create() would fail. Try ->make() instead
                 return $factory->make();
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             c::warn("Eloquent model factory failed to instantiate {$type}; trying to fetch from database.");
             e::dumpExceptionIfVerbose($e, true);
 
             $instance = new $type();
             if ($instance instanceof IlluminateModel) {
                 try {
-                    // we can't use a factory but can try to get one from the database
+                    // We can't use a factory but can try to get one from the database
                     $firstInstance = $type::with($relations)->first();
                     if ($firstInstance) {
                         return $firstInstance;
                     }
-                } catch (Exception $e) {
+                } catch (Throwable $e) {
                     // okay, we'll stick with `new`
                     c::warn("Failed to fetch first {$type} from database; using `new` to instantiate.");
                     e::dumpExceptionIfVerbose($e);
