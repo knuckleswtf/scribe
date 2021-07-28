@@ -3,21 +3,16 @@
 namespace Knuckles\Scribe\Commands;
 
 use Illuminate\Console\Command;
-use Knuckles\Scribe\Tools\Upgrader;
+use Shalvah\Upgrader\Upgrader;
 
 class Upgrade extends Command
 {
-    protected $signature = "scribe:upgrade {version=v3} {--dry-run}";
+    protected $signature = "scribe:upgrade {--dry-run}";
 
     protected $description = '';
 
     public function handle(): void
     {
-        $toVersion = $this->argument('version');
-        if ($toVersion !== 'v3') {
-            return;
-        }
-
         $oldConfig = config('scribe');
         $upgrader = Upgrader::ofConfigFile('config/scribe.php', __DIR__ . '/../../config/scribe.php')
             ->dontTouch('routes')
@@ -47,7 +42,7 @@ class Upgrade extends Command
         }
 
         $this->newLine();
-        $this->info("✔ Upgraded your config to $toVersion. Your old config is backed up at config/scribe.php.bak.");
+        $this->info("✔ Upgraded your config to v3. Your old config is backed up at config/scribe.php.bak.");
         $this->info("Please review to catch any mistakes.");
         $this->warn("If you have any custom strategies or views, you should migrate those manually. See the migration guide at http://scribe.knuckles.wtf.");
         $this->info("Don't forget to check out the release announcement for new features!");
