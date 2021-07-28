@@ -43,16 +43,15 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         }
 
         // Validate that the generated values actually pass validation
-        dump('Value: ', $parameterName, $results[$parameterName]['example']);
-            $exampleData = [$parameterName => $results[$parameterName]['example']];
-            $validator = Validator::make($exampleData, $ruleset);
-            try {
-                $validator->validate();
-            } catch (ValidationException $e) {
-                dump('Value: ', $exampleData[$parameterName]);
-                dump($e->errors());
-                $this->fail("Generated example data from validation rule failed to match actual.");
-            }
+        $exampleData = [$parameterName => $results[$parameterName]['example']];
+        $validator = Validator::make($exampleData, $ruleset);
+        try {
+            $validator->validate();
+        } catch (ValidationException $e) {
+            dump('Value: ', $exampleData[$parameterName]);
+            dump($e->errors());
+            $this->fail("Generated example data from validation rule failed to match actual.");
+        }
     }
 
 
@@ -321,7 +320,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['description' => "The value and <code>other_field</code> must match."],
         ];
         yield 'different' => [
-            ['different_param' => 'different:other_field'],
+            ['different_param' => 'string|different:other_field'],
             [],
             ['description' => "The value and <code>other_field</code> must be different."],
         ];
