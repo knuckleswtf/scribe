@@ -43,16 +43,16 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         }
 
         // Validate that the generated values actually pass validation
-        if (!$results[$parameterName]['example'] instanceof \stdClass) {
-            $validator = Validator::make([$parameterName => $results[$parameterName]['example']], $ruleset);
+        dump('Value: ', $parameterName, $results[$parameterName]['example']);
+            $exampleData = [$parameterName => $results[$parameterName]['example']];
+            $validator = Validator::make($exampleData, $ruleset);
             try {
                 $validator->validate();
             } catch (ValidationException $e) {
-                dump('Value: ', $results[$parameterName]['example']);
+                dump('Value: ', $exampleData[$parameterName]);
                 dump($e->errors());
-                throw $e;
+                $this->fail("Generated example data from validation rule failed to match actual.");
             }
-        }
     }
 
 
@@ -215,7 +215,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ],
         ];
         yield 'not_in' => [
-            ['not__param' => 'not_in:3,5,6'],
+            ['not_param' => 'not_in:3,5,6'],
             [],
             [
                 'description' => "Must not be one of <code>3</code>, <code>5</code>, or <code>6</code>.",
@@ -291,7 +291,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['description' => "This field is required when <code>another_field</code> is <code>a_value</code>."],
         ];
         yield 'required_unless' => [
-            ['required_unless_param' => 'required_unless:another_field,a_value'],
+            ['required_unless_param' => 'string|required_unless:another_field,a_value'],
             [],
             ['description' => "This field is required unless <code>another_field</code> is in <code>a_value</code>."],
         ];
@@ -306,12 +306,12 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['description' => 'This field is required when <code>another_field</code> and <code>some_other_field</code> are present.'],
         ];
         yield 'required_without' => [
-            ['required_without_param' => 'required_without:another_field,some_other_field'],
+            ['required_without_param' => 'string|required_without:another_field,some_other_field'],
             [],
             ['description' => 'This field is required when <code>another_field</code> or <code>some_other_field</code> is not present.'],
         ];
         yield 'required_without_all' => [
-            ['required_without_all_param' => 'required_without_all:another_field,some_other_field'],
+            ['required_without_all_param' => 'string|required_without_all:another_field,some_other_field'],
             [],
             ['description' => 'This field is required when none of <code>another_field</code> and <code>some_other_field</code> are present.'],
         ];

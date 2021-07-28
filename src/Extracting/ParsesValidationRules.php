@@ -492,9 +492,10 @@ trait ParsesValidationRules
             $parameterData['example'] = $parameterData['setter']();
         }
 
-        // If the parameter is required and has no example, generate one.
-        if ($parameterData['required'] === true && $parameterData['example'] === self::$MISSING_VALUE) {
-            $parameterData['example'] = $this->generateDummyValue($parameterData['type']);
+        if ($parameterData['example'] === self::$MISSING_VALUE) {
+            $parameterData['example'] = $parameterData['required']
+                ? $this->generateDummyValue($parameterData['type'])
+                : null;
         }
 
         if (!is_null($parameterData['example']) && $parameterData['example'] !== self::$MISSING_VALUE) {
@@ -513,14 +514,14 @@ trait ParsesValidationRules
      * 'cars.*.things.*.*' with type 'string' becomes 'cars[].things' with type 'string[][]' and 'cars' with type
      * 'object[]'
      *
-     * @param array[] $bodyParametersFromValidationRules
+     * @param array[] $parametersFromValidationRules
      *
      * @return array
      */
-    public function normaliseArrayAndObjectParameters(array $bodyParametersFromValidationRules): array
+    public function normaliseArrayAndObjectParameters(array $parametersFromValidationRules): array
     {
         $results = [];
-        foreach ($bodyParametersFromValidationRules as $name => $details) {
+        foreach ($parametersFromValidationRules as $name => $details) {
             if (isset($results[$name])) {
                 continue;
             }
@@ -539,12 +540,15 @@ trait ParsesValidationRules
                 while (Str::endsWith($name, '.*')) {
                     $details['type'] .= '[]';
                     if ($needsWrapping) {
+                        $details['example'] = [$details['example']];
                         // Make it two items in each array
-                        $secondItem = $secondValue = $details['setter']();
-                        for ($i = 0; $i < $nestingLevel; $i++) {
-                            $secondItem = [$secondValue];
+                        if (isset($details['setter'])) {
+                            $secondArrayItem = $secondExampleValue = $details['setter']();
+                            for ($i = 0; $i < $nestingLevel; $i++) {
+                                $secondArrayItem = [$secondExampleValue];
+                            }
+                            $details['example'][] = $secondArrayItem;
                         }
-                        $details['example'] = [$details['example'], $secondItem];
                     }
                     $name = substr($name, 0, -2);
                     $nestingLevel++;
@@ -555,7 +559,7 @@ trait ParsesValidationRules
             $parentPath = $name;
             while (Str::contains($parentPath, '.')) {
                 $parentPath = preg_replace('/\.[^.]+$/', '', $parentPath);
-                if (empty($bodyParametersFromValidationRules[$parentPath])) {
+                if (empty($parametersFromValidationRules[$parentPath])) {
                     if (Str::endsWith($parentPath, '.*')) {
                         $parentPath = substr($parentPath, 0, -2);
                         $type = 'object[]';
@@ -574,8 +578,8 @@ trait ParsesValidationRules
                     ];
                 } else {
                     // if the parent field already exists with a type 'array'
-                    $parentDetails = $bodyParametersFromValidationRules[$parentPath];
-                    unset($bodyParametersFromValidationRules[$parentPath]);
+                    $parentDetails = $parametersFromValidationRules[$parentPath];
+                    unset($parametersFromValidationRules[$parentPath]);
                     if (Str::endsWith($parentPath, '.*')) {
                         $parentPath = substr($parentPath, 0, -2);
                         $parentDetails['type'] = 'object[]';
@@ -601,7 +605,7 @@ trait ParsesValidationRules
             // Change type 'array' to 'object' if there are subfields
             if (
                 $details['type'] === 'array'
-                && Arr::first(array_keys($bodyParametersFromValidationRules), function ($key) use ($name) {
+                && Arr::first(array_keys($parametersFromValidationRules), function ($key) use ($name) {
                     return preg_match("/{$name}\\.[^*]/", $key);
                 })
             ) {
