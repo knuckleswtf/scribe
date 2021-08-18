@@ -344,7 +344,7 @@ trait ParsesValidationRules
                     break;
                 case 'digits_between':
                     $parameterData['description'] .= ' ' . $this->getDescription($rule, [':min' => $arguments[0], ':max' => $arguments[1]]);
-                    $parameterData['setter'] = fn() => $this->getFaker()->randomNumber($this->getFaker()->numberBetween(...$arguments), true);
+                    $parameterData['setter'] = fn() => $this->getFaker()->numberBetween(...$arguments);
                     $parameterData['type'] = 'number';
                     break;
 
