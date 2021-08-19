@@ -226,7 +226,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             [],
             [
                 'description' => "Must be 8 digits.",
-                'type' => 'number',
+                'type' => 'string',
             ],
         ];
         yield 'digits_between' => [
@@ -234,7 +234,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             [],
             [
                 'description' => "Must be between 2 and 8 digits.",
-                'type' => 'number',
+                'type' => 'string',
             ],
         ];
         yield 'alpha' => [
