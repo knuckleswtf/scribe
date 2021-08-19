@@ -339,13 +339,13 @@ trait ParsesValidationRules
                  */
                 case 'digits':
                     $parameterData['description'] .= ' ' . $this->getDescription($rule, [':digits' => $arguments[0]]);
-                    $parameterData['setter'] = fn() => $this->getFaker()->randomNumber($arguments[0], true);
-                    $parameterData['type'] = 'number';
+                    $parameterData['setter'] = fn() => $this->getFaker()->numerify(str_repeat("#", $arguments[0]));
+                    $parameterData['type'] = 'string';
                     break;
                 case 'digits_between':
                     $parameterData['description'] .= ' ' . $this->getDescription($rule, [':min' => $arguments[0], ':max' => $arguments[1]]);
-                    $parameterData['setter'] = fn() => $this->getFaker()->randomNumber($this->getFaker()->numberBetween(...$arguments), true);
-                    $parameterData['type'] = 'number';
+                    $parameterData['setter'] = fn() => $this->getFaker()->numerify(str_repeat("#", rand($arguments[0], $arguments[1])));
+                    $parameterData['type'] = 'string';
                     break;
 
                 /**
