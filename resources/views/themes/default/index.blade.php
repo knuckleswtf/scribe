@@ -72,6 +72,8 @@
     <div class="content">
         {!! $intro !!}
 
+        {!! $prepend !!}
+
         {!! $auth !!}
 
         @include("scribe::themes.default.groups")

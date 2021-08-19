@@ -39,6 +39,8 @@ class HtmlWriter
         $intro = $this->transformMarkdownFileToHTML($sourceFolder . '/intro.md');
         $auth = $this->transformMarkdownFileToHTML($sourceFolder . '/auth.md');
 
+        $prependFile = rtrim($sourceFolder, '/') . '/' . 'prepend.md';
+        $prepend = file_exists($prependFile) ? $this->transformMarkdownFileToHTML($prependFile) : '';
         $appendFile = rtrim($sourceFolder, '/') . '/' . 'append.md';
         $append = file_exists($appendFile) ? $this->transformMarkdownFileToHTML($appendFile) : '';
 
@@ -50,6 +52,7 @@ class HtmlWriter
             'intro' => $intro,
             'auth' => $auth,
             'groupedEndpoints' => $groupedEndpoints,
+            'prepend' => $prepend,
             'append' => $append,
             'assetPathPrefix' => $this->assetPathPrefix,
         ])->render();
