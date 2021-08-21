@@ -9,7 +9,7 @@ class CouldntProcessValidationRule extends \RuntimeException implements ScribeEx
     public static function forParam(string $paramName, $rule,  Throwable $innerException): CouldntProcessValidationRule
     {
         return new self(
-            "Couldn't process this validation rule for the param `$paramName`: ".var_export($rule, true),
+            "Couldn't process the validation rule ".var_export($rule, true)." for the param `$paramName`: {$innerException->getMessage()}",
             0, $innerException
         );
     }
