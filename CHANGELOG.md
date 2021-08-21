@@ -12,6 +12,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.9.0 (Saturday, 21 August 2021)
+### Modified
+- Change `digits_between` generation to support longer numbers ([#299](https://github.com/knuckleswtf/scribe/pull/299))
+- OAS: Include group descriptions as tags ([84e2c95ce3e086a9cfe41f42ae71852debe91504](https://github.com/knuckleswtf/scribe/commit/84e2c95ce3e086a9cfe41f42ae71852debe91504))
+- OAS/Postman: Dont include response status code in description ([a81d8785ed3f928f5c6a4dccc7f65968ede4987f](https://github.com/knuckleswtf/scribe/commit/a81d8785ed3f928f5c6a4dccc7f65968ede4987f))
+
 ## 3.8.0 (Wednesday, 28 July 2021)
 ### Modified
 - Fallback generated validation rules examples to null ([204d3dbab8665c9478f2808cf0b2ac2329c608ea](https://github.com/knuckleswtf/scribe/commit/204d3dbab8665c9478f2808cf0b2ac2329c608ea))
