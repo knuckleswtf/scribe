@@ -1,4 +1,9 @@
 # Contributing to Scribe
+
+```eval_rst
+.. attention:: These docs are for Scribe v2, which is no longer maintained. See `scribe.knuckles.wtf/laravel <http://scribe.knuckles.wtf/laravel>`_ for Scribe v3.
+```
+
 ```eval_rst
 .. Important:: Please read this guide before sending in your contribution! There aren't many rules, just a few guidelines to help everyone.😄
 ```

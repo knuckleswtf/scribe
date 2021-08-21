@@ -1,5 +1,10 @@
 # Documenting headers for endpoints
 
+```eval_rst
+.. attention:: These docs are for Scribe v2, which is no longer maintained. See `scribe.knuckles.wtf/laravel <http://scribe.knuckles.wtf/laravel>`_ for Scribe v3.
+```
+
+
 To specify headers to be added to your endpoints, use the `apply.headers` section of the route group in `scribe.php`. For instance, if you have this config:
 
 ```php

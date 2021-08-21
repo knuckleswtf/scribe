@@ -1,4 +1,8 @@
 # Troubleshooting and Debugging
+```eval_rst
+.. attention:: These docs are for Scribe v2, which is no longer maintained. See `scribe.knuckles.wtf/laravel <http://scribe.knuckles.wtf/laravel>`_ for Scribe v3.
+```
+
 This page contains a few tips to help you figure out what's wrong when Scribe seems to be slow or malfunctioning.
 
 ## Update your installation

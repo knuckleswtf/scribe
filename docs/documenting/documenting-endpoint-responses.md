@@ -1,4 +1,9 @@
 # Documenting responses from an endpoint
+
+```eval_rst
+.. attention:: These docs are for Scribe v2, which is no longer maintained. See `scribe.knuckles.wtf/laravel <http://scribe.knuckles.wtf/laravel>`_ for Scribe v3.
+```
+
 It's helpful if your API's consumers can see what a response should be like before writing any code. There are multiple strategies to provide example responses for your endpoint:
 - describing the response using the `@response` tag
 - specifying a file containing the response using the `@responseFile` tag

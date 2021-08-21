@@ -1,4 +1,8 @@
 # Scribe 2: What's new, and how to migrate
+```eval_rst
+.. attention:: These docs are for Scribe v2, which is no longer maintained. See `scribe.knuckles.wtf/laravel <http://scribe.knuckles.wtf/laravel>`_ for Scribe v3.
+```
+
 
 Scribe 2 comes with a bunch of changes focused on making the documentation process easier and the output nicer. There aren't many "shiny" changes, mostly improvements to what works. We've marked required changes in the list below with a "Migration Required" label.
 

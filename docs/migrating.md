@@ -1,4 +1,9 @@
 # Migrating from mpociot/laravel-apidoc-generator to Scribe v1
+
+```eval_rst
+.. attention:: These docs are for Scribe v2, which is no longer maintained. See `scribe.knuckles.wtf/laravel <http://scribe.knuckles.wtf/laravel>`_ for Scribe v3.
+```
+
 There's quite a few changes in Scribe, and this guide aims to show you the key parts you need to look out for so things don't break. After migrating, you should also check out the [list of new features](./whats-new.html).
 
 ```eval_rst

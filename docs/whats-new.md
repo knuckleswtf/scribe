@@ -1,5 +1,9 @@
 # What's new in Scribe
 ```eval_rst
+.. attention:: These docs are for Scribe v2, which is no longer maintained. See `scribe.knuckles.wtf/laravel <http://scribe.knuckles.wtf/laravel>`_ for Scribe v3.
+```
+
+```eval_rst
 .. Note:: This page is aimed at users coming from mpociot/laravel-apidoc-generator. It should give you an overview of what's new in Scribe, and point you to the relevant documentation on each. Once you're ready to migrate, check out `the migration guide <migrating.html>`_.
 ```
 

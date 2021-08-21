@@ -1,5 +1,10 @@
 # Generating Documentation
 
+```eval_rst
+.. attention:: These docs are for Scribe v2, which is no longer maintained. See `scribe.knuckles.wtf/laravel <http://scribe.knuckles.wtf/laravel>`_ for Scribe v3.
+```
+
+
 To generate your API documentation, use the `scribe:generate` artisan command.
 
 ```sh

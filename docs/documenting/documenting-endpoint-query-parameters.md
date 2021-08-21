@@ -1,5 +1,10 @@
 # Documenting query and URL parameters for an endpoint
 
+```eval_rst
+.. attention:: These docs are for Scribe v2, which is no longer maintained. See `scribe.knuckles.wtf/laravel <http://scribe.knuckles.wtf/laravel>`_ for Scribe v3.
+```
+
+
 ## Specifying query parameters
 To describe query parameters for your endpoint, use the `@queryParam` annotation on the method handling it.
 

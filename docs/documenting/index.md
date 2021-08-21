@@ -1,4 +1,9 @@
 # Documenting your API
+
+```eval_rst
+.. attention:: These docs are for Scribe v2, which is no longer maintained. See `scribe.knuckles.wtf/laravel <http://scribe.knuckles.wtf/laravel>`_ for Scribe v3.
+```
+
 Scribe tries to infer information about your API from your code, but you can enrich this information in the config and by using annotations (tags in doc block comments).
 
 ```eval_rst

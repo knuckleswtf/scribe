@@ -1,4 +1,9 @@
 # Documenting body and file parameters for an endpoint
+
+```eval_rst
+.. attention:: These docs are for Scribe v2, which is no longer maintained. See `scribe.knuckles.wtf/laravel <http://scribe.knuckles.wtf/laravel>`_ for Scribe v3.
+```
+
 Scribe can get information about your endpoint's body parameters in two ways:
 - the fully-manual way (using the `@bodyParam` annotation)
 - the mostly-automatic way (using FormRequests)

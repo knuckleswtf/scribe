@@ -1,5 +1,10 @@
 # Specifying metadata about an endpoint
 
+```eval_rst
+.. attention:: These docs are for Scribe v2, which is no longer maintained. See `scribe.knuckles.wtf/laravel <http://scribe.knuckles.wtf/laravel>`_ for Scribe v3.
+```
+
+
 ## Endpoint title and description
 To set an endpoint's title and description, just write in the method's docblock. The first paragraph will be used as the title, the rest as the description. Custom formatting (such as `<aside>` tags) is also supported (see the [Pastel docs](http://github.com/knuckleswtf/pastel)).
 

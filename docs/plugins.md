@@ -1,4 +1,8 @@
 # Extending functionality with plugins
+```eval_rst
+.. attention:: These docs are for Scribe v2, which is no longer maintained. See `scribe.knuckles.wtf/laravel <http://scribe.knuckles.wtf/laravel>`_ for Scribe v3.
+```
+
 You can use plugins to alter Scribe's behaviour when extracting info about your endpoints. For instance, suppose all your listing endpoints support pagination query parameters `pageSize` and `page`, and you don't want to annotate with `@queryParam` on each method. You can create a plugin that adds this to all your query parameters. Let's see how to do this.
 
 ## The stages of route processing
