@@ -318,4 +318,11 @@ paths:
                                     - contacts
                                     - roles
             security: [ ]
+tags:
+    -
+        name: 'Group A'
+        description: ''
+    -
+        name: Other😎
+        description: ''
 

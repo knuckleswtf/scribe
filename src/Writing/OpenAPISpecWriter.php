@@ -13,6 +13,7 @@ use Knuckles\Camel\Output\Parameter;
 use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\Utils;
+use function array_map;
 
 class OpenAPISpecWriter
 {
@@ -57,6 +58,12 @@ class OpenAPISpecWriter
                 ],
             ],
             'paths' => $this->generatePathsSpec($groupedEndpoints),
+            'tags' => array_map(function (array $group) {
+                return [
+                    'name' => $group['name'],
+                    'description' => $group['description'],
+                ];
+            }, $groupedEndpoints),
         ], $this->generateSecurityPartialSpec());
     }
 
