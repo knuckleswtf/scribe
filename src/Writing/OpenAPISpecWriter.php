@@ -279,7 +279,14 @@ class OpenAPISpecWriter
             return trim(str_replace("<<binary>>", "", $response->content));
         }
 
-        return strval($response->description);
+        $description = strval($response->description);
+        // Don't include the status code in description; see https://github.com/knuckleswtf/scribe/issues/271
+        if (preg_match("/\d{3},\s+(.+)/", $description, $matches)) {
+            $description = $matches[1];
+        } else if ($description === strval($response->status)) {
+            $description = '';
+        }
+        return $description;
     }
 
     protected function generateResponseContentSpec(?string $responseContent, OutputEndpointData $endpoint)

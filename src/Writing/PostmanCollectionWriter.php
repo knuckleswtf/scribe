@@ -322,8 +322,24 @@ class PostmanCollectionWriter
                 'header' => $headers,
                 'code' => $response->status,
                 'body' => $response->content,
-                'name' => $response->description,
+                'name' => $this->getResponseDescription($response),
             ];
         })->toArray();
+    }
+
+    protected function getResponseDescription(Response $response): string
+    {
+        if (Str::startsWith($response->content, "<<binary>>")) {
+            return trim(str_replace("<<binary>>", "", $response->content));
+        }
+
+        $description = strval($response->description);
+        // Don't include the status code in description; see https://github.com/knuckleswtf/scribe/issues/271
+        if (preg_match("/\d{3},\s+(.+)/", $description, $matches)) {
+            $description = $matches[1];
+        } else if ($description === strval($response->status)) {
+            $description = '';
+        }
+        return $description;
     }
 }
