@@ -14,7 +14,7 @@ class Writer
 
     private bool $isStatic;
 
-    private string $markdownOutputPath = '.scribe';
+    private string $markdownOutputPath;
 
     private string $staticTypeOutputPath;
 
@@ -24,7 +24,7 @@ class Writer
     {
         // If no config is injected, pull from global. Makes testing easier.
         $this->config = $config ?: new DocumentationConfig(config('scribe'));
-
+        $this->markdownOutputPath = storage_path('scribe');
         $this->isStatic = $this->config->get('type') === 'static';
         $this->staticTypeOutputPath = rtrim($this->config->get('static.output_path', 'public/docs'), '/');
     }

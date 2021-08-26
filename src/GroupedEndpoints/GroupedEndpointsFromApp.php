@@ -42,8 +42,8 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
         $this->docConfig = $command->getDocConfig();
         $this->preserveUserChanges = $preserveUserChanges;
 
-        static::$camelDir = Camel::$camelDir;
-        static::$cacheDir = Camel::$cacheDir;
+        static::$camelDir = Camel::camelDir();
+        static::$cacheDir = Camel::cacheDir();
     }
 
     public function get(): array

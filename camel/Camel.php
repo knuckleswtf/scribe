@@ -12,7 +12,6 @@ use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 use Symfony\Component\Yaml\Yaml;
 
-
 class Camel
 {
     /**
@@ -20,8 +19,24 @@ class Camel
      * @var array<string, string>
      */
     public static array $groupFileNames = [];
-    public static string $cacheDir = ".scribe/endpoints.cache";
-    public static string $camelDir = ".scribe/endpoints";
+
+    /**
+     * Define the endpoint cache directory.
+     *
+     * @return string
+     */
+    public static function cacheDir() {
+        return storage_path('scribe/endpoints.cache');
+    }
+
+    /**
+     * Define the endpoint directory.
+     *
+     * @return string
+     */
+    public static function camelDir() {
+        return storage_path('scribe/endpoints');
+    }
 
     /**
      * Load endpoints from the Camel files into groups (arrays).
@@ -62,7 +77,7 @@ class Camel
 
     public static function loadEndpointsFromCamelFiles(string $folder, callable $callback, bool $storeGroupFilePaths = true)
     {
-        $adapter = new Local(getcwd());
+        $adapter = new Local('/');
         $fs = new Filesystem($adapter);
         $contents = $fs->listContents($folder);;
 
@@ -72,7 +87,7 @@ class Camel
                 && Str::endsWith($object['basename'], '.yaml')
                 && !Str::startsWith($object['basename'], 'custom.')
             ) {
-                $group = Yaml::parseFile($object['path']);
+                $group = Yaml::parseFile('/'.$object['path']);
                 if ($storeGroupFilePaths) {
                     $filePathParts = explode('/', $object['path']);
                     self::$groupFileNames[$group['name']] = end($filePathParts);
@@ -84,7 +99,7 @@ class Camel
 
     public static function loadUserDefinedEndpoints(string $folder): array
     {
-        $adapter = new Local(getcwd());
+        $adapter = new Local('/');
         $fs = new Filesystem($adapter);
         $contents = $fs->listContents($folder);;
 
@@ -95,7 +110,7 @@ class Camel
                 && Str::endsWith($object['basename'], '.yaml')
                 && Str::startsWith($object['basename'], 'custom.')
             ) {
-                $endpoints = Yaml::parseFile($object['path']);
+                $endpoints = Yaml::parseFile('/'.$object['path']);
                 foreach (($endpoints ?: []) as $endpoint) {
                     $userDefinedEndpoints[] = $endpoint;
                 }

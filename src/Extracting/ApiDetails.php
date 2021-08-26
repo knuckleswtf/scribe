@@ -17,7 +17,7 @@ class ApiDetails
 
     private bool $preserveUserChanges;
 
-    private string $markdownOutputPath = '.scribe';
+    private string $markdownOutputPath;
 
     private string $fileHashesTrackingFile;
 
@@ -29,7 +29,7 @@ class ApiDetails
         $this->config = $config ?: new DocumentationConfig(config('scribe'));
         $this->baseUrl = $this->config->get('base_url') ?? config('app.url');
         $this->preserveUserChanges = $preserveUserChanges;
-
+        $this->markdownOutputPath = storage_path('scribe');
         $this->fileHashesTrackingFile = $this->markdownOutputPath . '/.filehashes';
         $this->lastKnownFileContentHashes = [];
     }
