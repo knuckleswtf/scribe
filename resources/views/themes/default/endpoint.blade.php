@@ -44,7 +44,7 @@
 @else
 @php($parsed = json_decode($response->content))
 {{-- If response is a JSON string, prettify it. Otherwise, just print it --}}
-<code class="language-json">{!! htmlentities($parsed != null ? json_encode($parsed, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) : $response->content) !!}</code>
+<code class="language-json">{!! htmlentities($parsed != null ? json_encode($parsed, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : $response->content) !!}</code>
 @endif </pre>
     @endforeach
 @endif
