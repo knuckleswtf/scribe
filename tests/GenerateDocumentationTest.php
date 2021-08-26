@@ -315,48 +315,48 @@ class GenerateDocumentationTest extends BaseLaravelTest
     }
 
     /** @test */
-    // public function will_not_overwrite_manually_modified_content_unless_force_flag_is_set()
-    // {
-    //     RouteFacade::get('/api/action1', [TestGroupController::class, 'action1']);
-    //     RouteFacade::get('/api/action1b', [TestGroupController::class, 'action1b']);
-    //     config(['scribe.routes.0.match.prefixes' => ['api/*']]);
-    //     config(['scribe.routes.0.apply.response_calls.methods' => []]);
+    public function will_not_overwrite_manually_modified_content_unless_force_flag_is_set()
+    {
+        RouteFacade::get('/api/action1', [TestGroupController::class, 'action1']);
+        RouteFacade::get('/api/action1b', [TestGroupController::class, 'action1b']);
+        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
+        config(['scribe.routes.0.apply.response_calls.methods' => []]);
 
-    //     $this->artisan('scribe:generate');
+        $this->artisan('scribe:generate');
 
-    //     $authFilePath = storage_path('scribe/auth.md');
-    //     $group1FilePath = storage_path('scribe/endpoints/00.yaml');
+        $authFilePath = storage_path('scribe/auth.md');
+        $group1FilePath = storage_path('scribe/endpoints/00.yaml');
 
-    //     $group = Yaml::parseFile($group1FilePath);
-    //     $this->assertEquals('api/action1', $group['endpoints'][0]['uri']);
-    //     $this->assertEquals([], $group['endpoints'][0]['urlParameters']);
-    //     $extraParam = [
-    //         'name' => 'a_param',
-    //         'description' => 'A URL param.',
-    //         'required' => true,
-    //         'example' => 6,
-    //         'type' => 'integer',
-    //     ];
-    //     $group['endpoints'][0]['urlParameters']['a_param'] = $extraParam;
-    //     $a=file_put_contents($group1FilePath, Yaml::dump(
-    //         $group, 20, 2,
-    //         Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP
-    //     ));
-    //     $b=file_put_contents($authFilePath, 'Some other useful stuff.', FILE_APPEND);
+        $group = Yaml::parseFile($group1FilePath);
+        $this->assertEquals('api/action1', $group['endpoints'][0]['uri']);
+        $this->assertEquals([], $group['endpoints'][0]['urlParameters']);
+        $extraParam = [
+            'name' => 'a_param',
+            'description' => 'A URL param.',
+            'required' => true,
+            'example' => 6,
+            'type' => 'integer',
+        ];
+        $group['endpoints'][0]['urlParameters']['a_param'] = $extraParam;
+        $a=file_put_contents($group1FilePath, Yaml::dump(
+            $group, 20, 2,
+            Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP
+        ));
+        $b=file_put_contents($authFilePath, 'Some other useful stuff.', FILE_APPEND);
 
-    //     $this->artisan('scribe:generate');
-    //     $group = Yaml::parseFile($group1FilePath);
-    //     $this->assertEquals('api/action1', $group['endpoints'][0]['uri']);
-    //     $this->assertEquals(['a_param' => $extraParam], $group['endpoints'][0]['urlParameters']);
-    //     $this->assertStringContainsString('Some other useful stuff.', file_get_contents($authFilePath));
+        $this->artisan('scribe:generate');
+        $group = Yaml::parseFile($group1FilePath);
+        $this->assertEquals('api/action1', $group['endpoints'][0]['uri']);
+        $this->assertEquals(['a_param' => $extraParam], $group['endpoints'][0]['urlParameters']);
+        $this->assertStringContainsString('Some other useful stuff.', file_get_contents($authFilePath));
 
-    //     $this->artisan('scribe:generate', ['--force' => true]);
+        $this->artisan('scribe:generate', ['--force' => true]);
 
-    //     $group = Yaml::parseFile($group1FilePath);
-    //     $this->assertEquals('api/action1', $group['endpoints'][0]['uri']);
-    //     $this->assertEquals([], $group['endpoints'][0]['urlParameters']);
-    //     $this->assertStringNotContainsString('Some other useful stuff.', file_get_contents($authFilePath));
-    // }
+        $group = Yaml::parseFile($group1FilePath);
+        $this->assertEquals('api/action1', $group['endpoints'][0]['uri']);
+        $this->assertEquals([], $group['endpoints'][0]['urlParameters']);
+        $this->assertStringNotContainsString('Some other useful stuff.', file_get_contents($authFilePath));
+    }
 
     /** @test */
     public function generates_correct_url_params_from_resource_routes_and_field_bindings()
