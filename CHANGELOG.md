@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.9.1 (Thursday, 26 August 2021)
+### Modified
+- Unescape slashes in JSON ([#304](https://github.com/knuckleswtf/scribe/pull/304))
+
 ## 3.9.0 (Saturday, 21 August 2021)
 ### Modified
 - Change `digits_between` generation to support longer numbers ([#299](https://github.com/knuckleswtf/scribe/pull/299))
