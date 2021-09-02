@@ -102,7 +102,8 @@ class WritingUtils
             if (!is_array($value)) {
                 $output .= str_repeat(" ", $spacesIndentation);
                 // Example: -----"param_name": "value"----
-                $output .= "$startLinesWith$quote$parameter$quote$delimiter $quote$value$quote$endLinesWith\n";
+                $formattedValue = gettype($value) === "boolean" ? ($value ? 1 : 0) : $value;
+                $output .= "$startLinesWith$quote$parameter$quote$delimiter $quote$formattedValue$quote$endLinesWith\n";
             } else {
                 if (count($value) == 0) {
                     continue;
