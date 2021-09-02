@@ -260,7 +260,7 @@ body {
 .content aside.warning:before,
 .content aside.notice:before,
 .content aside.success:before {
-    font-family: 'slate';
+    font-family: 'slate', serif;
     speak: none;
     font-style: normal;
     font-weight: normal;
@@ -289,7 +289,7 @@ body {
     display: none
 }
 
-.tocify-wrapper>img {
+.tocify-wrapper > img {
     margin: 0 auto;
     display: block
 }
@@ -346,7 +346,6 @@ body {
     margin-top: 1em;
     margin-bottom: 21px;
     border: 2px solid #ccc;
-    border-width: 2px 0;
     text-align: center
 }
 
@@ -357,8 +356,8 @@ body {
     padding-top: 0.8em
 }
 
-.content h1+h2,
-.content h1+div+h2 {
+.content h1 + h2,
+.content h1 + div + h2 {
     border-top: none;
     padding-top: 0;
     margin-top: 0

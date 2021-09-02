@@ -1,32 +1,32 @@
 @php
     use Knuckles\Scribe\Tools\WritingUtils as u;
 @endphp
-<!doctype html>
+<!DOCTYPE HTML>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>{!! $metadata['title'] !!}</title>
-
+    <link rel=preconnect href=https://fonts.googleapis.com>
+    <link rel=preconnect href=https://fonts.gstatic.com>
+    <link rel=preconnect href=https://unpkg.com>
+    <link rel=preconnect href=https://cdn.jsdelivr.net>
     <link href="https://fonts.googleapis.com/css?family=PT+Sans&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="{!! $assetPathPrefix !!}css/theme-default.style.css" media="screen">
-    <link rel="stylesheet" href="{!! $assetPathPrefix !!}css/theme-default.print.css" media="print">
-    <script src="{{ u::getVersionedAsset($assetPathPrefix.'js/theme-default.js') }}"></script>
-
-    <link rel="stylesheet"
-          href="//unpkg.com/@highlightjs/cdn-assets@10.7.2/styles/obsidian.min.css">
+    <link rel="stylesheet" href="{!! $assetPathPrefix !!}css/theme-default.style.min.css" media="screen">
+    <link rel="stylesheet" href="{!! $assetPathPrefix !!}css/theme-default.print.min.css" media="print">
+    <link rel="stylesheet" href="//unpkg.com/@highlightjs/cdn-assets@10.7.2/styles/obsidian.min.css">
+    <script src="{{ u::getVersionedAsset($assetPathPrefix.'js/theme-default.min.js') }}"></script>
     <script src="//unpkg.com/@highlightjs/cdn-assets@10.7.2/highlight.min.js"></script>
     <script>hljs.highlightAll();</script>
 
-@if($tryItOut['enabled'] ?? true)
-    <script src="//cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
-    <script>
-        var baseUrl = "{{ $tryItOut['base_url'] ?? config('app.url') }}";
-    </script>
-    <script src="{{ u::getVersionedAsset($assetPathPrefix.'js/tryitout.js') }}"></script>
-@endif
+    @if($tryItOut['enabled'] ?? true)
+        <script src="//cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
+        <script>
+            const baseUrl = "{{ $tryItOut['base_url'] ?? config('app.url') }}";
+        </script>
+        <script src="{{ u::getVersionedAsset($assetPathPrefix.'js/tryitout.min.js') }}"></script>
+    @endif
 
 </head>
 
@@ -34,12 +34,12 @@
 <a href="#" id="nav-button">
       <span>
         MENU
-        <img src="{!! $assetPathPrefix !!}images/navbar.png" alt="navbar-image" />
+        <img src="{!! $assetPathPrefix !!}images/navbar.png" alt="navbar-image"/>
       </span>
 </a>
 <div class="tocify-wrapper">
-    @if($metadata['logo'] != false)
-    <img src="{{ $metadata['logo'] }}" alt="logo" class="logo" style="padding-top: 10px;" width="230px"/>
+    @if($metadata['logo'] !== false)
+        <img src="{{ $metadata['logo'] }}" alt="logo" class="logo" style="padding-top: 10px;" width="230px"/>
     @endif
     @isset($metadata['example_languages'])
         <div class="lang-selector">
@@ -49,7 +49,7 @@
         </div>
     @endisset
     <div class="search">
-        <input type="text" class="search" id="input-search" placeholder="Search">
+        <input type="text" class="search" id="input-search" placeholder="Search"/>
     </div>
     <ul class="search-results"></ul>
 
@@ -63,9 +63,9 @@
             @endforeach
         </ul>
     @endif
-        <ul class="toc-footer" id="last-updated">
-            <li>Last updated: {{ $metadata['last_updated'] }}</li>
-        </ul>
+    <ul class="toc-footer" id="last-updated">
+        <li>Last updated: {{ $metadata['last_updated'] }}</li>
+    </ul>
 </div>
 <div class="page-wrapper">
     <div class="dark-box"></div>
@@ -89,12 +89,12 @@
     </div>
 </div>
 @isset($metadata['example_languages'])
-<script>
-    $(function () {
-        var exampleLanguages = @json($metadata['example_languages']);
-        setupLanguages(exampleLanguages);
-    });
-</script>
+    <script>
+        $(function () {
+            let exampleLanguages = @json($metadata['example_languages']);
+            setupLanguages(exampleLanguages);
+        });
+    </script>
 @endisset
 </body>
 </html>
