@@ -178,6 +178,21 @@ async function executeTryOut(endpointId, form) {
     const query = {};
     const queryParameters = form.querySelectorAll('input[data-component=query]');
     queryParameters.forEach(el => _.set(query, el.name, el.value));
+    
+    // Group radio buttons by their name, and then set the checked value from that group
+    Array.from(queryParameters)
+        .filter(el => el.type === "radio")
+        .reduce(
+            (entryMap, el) => entryMap.set(el.name, [...(entryMap.get(el.name) || []), el]),
+            new Map()
+        )
+        .forEach((v, k) => {
+            v.forEach(el => {
+                if (el.checked) {
+                    _.set(query, k, el.value);
+                }
+            });
+        });
 
     let path = form.dataset.path;
     const urlParameters = form.querySelectorAll('input[data-component=url]');
