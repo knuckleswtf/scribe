@@ -8,10 +8,10 @@
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>{!! $metadata['title'] !!}</title>
-    <link rel=preconnect href=https://fonts.googleapis.com>
-    <link rel=preconnect href=https://fonts.gstatic.com>
-    <link rel=preconnect href=https://unpkg.com>
-    <link rel=preconnect href=https://cdn.jsdelivr.net>
+    <link rel=preconnect href=//fonts.googleapis.com>
+    <link rel=preconnect href=//fonts.gstatic.com>
+    <link rel=preconnect href=//unpkg.com>
+    <link rel=preconnect href=//cdn.jsdelivr.net>
     <link href="https://fonts.googleapis.com/css?family=PT+Sans&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{!! $assetPathPrefix !!}css/theme-default.style.min.css" media="screen">
     <link rel="stylesheet" href="{!! $assetPathPrefix !!}css/theme-default.print.min.css" media="print">
