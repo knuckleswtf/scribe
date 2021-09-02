@@ -178,10 +178,12 @@ async function executeTryOut(endpointId, form) {
     const query = {};
     const queryParameters = form.querySelectorAll('input[data-component=query]');
     queryParameters.forEach(el => _.set(query, el.name, el.value));
+    
+    // Group radio buttons by their name, and then set the checked value from that group
     Array.from(queryParameters)
         .filter(el => el.type === "radio")
         .reduce(
-            (entryMap, e) => entryMap.set(e.name, [...(entryMap.get(e.name) || []), e]),
+            (entryMap, el) => entryMap.set(el.name, [...(entryMap.get(el.name) || []), el]),
             new Map()
         )
         .forEach((v, k) => {
