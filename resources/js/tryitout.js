@@ -178,6 +178,19 @@ async function executeTryOut(endpointId, form) {
     const query = {};
     const queryParameters = form.querySelectorAll('input[data-component=query]');
     queryParameters.forEach(el => _.set(query, el.name, el.value));
+    Array.from(queryParameters)
+        .filter(el => el.type === "radio")
+        .reduce(
+            (entryMap, e) => entryMap.set(e.name, [...(entryMap.get(e.name) || []), e]),
+            new Map()
+        )
+        .forEach((v, k) => {
+            v.forEach(el => {
+                if (el.checked) {
+                    _.set(query, k, el.value);
+                }
+            });
+        });
 
     let path = form.dataset.path;
     const urlParameters = form.querySelectorAll('input[data-component=url]');
