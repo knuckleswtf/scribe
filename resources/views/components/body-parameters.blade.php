@@ -1,8 +1,12 @@
 
 @foreach($parameters as $name => $parameter)
     @if($name === '[]')
+        @php
+            $description = "The request body is an array (<code>{$parameter['type']}</code>`)";
+            $description .= !empty($parameter['description']) ? ", representing ".lcfirst($parameter['description'])."." : '.';
+        @endphp
         <p>
-            Body: <code>{{ $parameter['type'] }}</code> {!! Parsedown::instance()->text($parameter['description'] ?? '') !!}
+            {!! Parsedown::instance()->text($description) !!}
         </p>
         @foreach($parameter['__fields'] as $subfieldName => $subfield)
                 @if(!empty($subfield['__fields']))
