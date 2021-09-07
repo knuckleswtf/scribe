@@ -176,7 +176,6 @@ return [
     'try_it_out' => [
         /**
          * Add a Try It Out button to your endpoints so consumers can test endpoints right from their browser.
-         * Don't forget to enable CORS headers for your endpoints.
          */
         'enabled' => true,
 
@@ -185,6 +184,28 @@ return [
          * Leave as null to use the current app URL (config(app.url)).
          */
         'base_url' => null,
+
+        /**
+         * Set the referrer, mode, and credentials, values in the fetch calls
+         */
+        'use_cors' => true,
+
+        /**
+         * Fetch the CSRF token before each request. This is required if you are using Laravel Sanctum
+         */
+        'use_csrf' => false,
+
+        /**
+         * The URL to set the sessions CSRF token for the application
+         * Only used when 'use_csrf' is not set to false
+         */
+        'csrf_url' => '/sanctum/csrf-token',
+
+        /**
+         * The name of the cookie to set when making requests
+         * Only used when 'use_csrf' is not set to false
+         */
+        'csrf_cookie_name' => 'X-XSRF-TOKEN',
     ],
 
     /*

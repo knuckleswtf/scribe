@@ -24,6 +24,10 @@
     <script src="//cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
     <script>
         var baseUrl = "{{ $tryItOut['base_url'] ?? config('app.url') }}";
+        var useCors = Boolean({{ $tryItOut['use_cors'] ?? null }});
+        var useCsrf = Boolean({{ $tryItOut['use_csrf'] ?? null }});
+        var csrfUrl = "{{ $tryItOut['csrf_url'] }}";
+        var csrfCookieName = "{{ $tryItOut['csrf_cookie_name'] ?? "XSRF-TOKEN" }}";
     </script>
     <script src="{{ u::getVersionedAsset($assetPathPrefix.'js/tryitout.js') }}"></script>
 @endif
