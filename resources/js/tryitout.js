@@ -1,5 +1,21 @@
 window.abortControllers = {};
 
+function getCookie(name) {
+    if (!document.cookie) {
+        return null;
+    }
+
+    const xsrfCookies = document.cookie.split(';')
+        .map(c => c.trim())
+        .filter(c => c.startsWith(name + '='));
+
+    if (xsrfCookies.length === 0) {
+        return null;
+    }
+
+    return decodeURIComponent(xsrfCookies[0].split('=')[1]);
+}
+
 function tryItOut(endpointId) {
     document.querySelector(`#btn-tryout-${endpointId}`).hidden = true;
     document.querySelector(`#btn-executetryout-${endpointId}`).hidden = false;
@@ -81,7 +97,10 @@ function makeAPICall(method, path, body, query, headers, endpointId) {
         method,
         headers,
         body: method === 'GET' ? undefined : body,
-        signal: window.abortControllers[endpointId].signal
+        signal: window.abortControllers[endpointId].signal,
+        referrer: window.baseUrl,
+        mode: 'cors',
+        credentials: 'same-origin',
     })
         .then(response => Promise.all([response.status, response.text(), response.headers]));
 }
@@ -178,7 +197,7 @@ async function executeTryOut(endpointId, form) {
     const query = {};
     const queryParameters = form.querySelectorAll('input[data-component=query]');
     queryParameters.forEach(el => _.set(query, el.name, el.value));
-    
+
     // Group radio buttons by their name, and then set the checked value from that group
     Array.from(queryParameters)
         .filter(el => el.type === "radio")
@@ -216,7 +235,13 @@ async function executeTryOut(endpointId, form) {
         }
     }
 
-    makeAPICall(method, path, body, query, headers, endpointId)
+    const preflightPromise = window.useCsrf && window.csrfUrl ? makeAPICall('GET', window.csrfUrl, {}, {}, {}, null).then(() => {
+            headers['X-XSRF-TOKEN'] = getCookie(window.csrfCookieName);
+
+            return makeAPICall(method, path, body, query, headers, endpointId);
+        }) : makeAPICall(method, path, body, query, headers, endpointId);
+
+    preflightPromise
         .then(([responseStatus, responseContent, responseHeaders]) => {
             handleResponse(endpointId, responseContent, responseStatus, responseHeaders)
         })
