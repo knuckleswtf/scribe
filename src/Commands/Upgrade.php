@@ -18,18 +18,19 @@ class Upgrade extends Command
             ->dontTouch('routes')
             ->move('interactive', 'try_it_out.enabled');
 
-        if ($this->option('dry-run')) {
-            $changes = $upgrader->dryRun();
-            if (empty($changes)) {
-                $this->info("No changes needed! Looks like you're all set.");
-                return;
-            }
+        $changes = $upgrader->dryRun();
+        if (empty($changes)) {
+            $this->info("No changes needed! Looks like you're all set.");
+            return;
+        }
 
-            $this->info('The following changes will be made to your config file:');
-            $this->newLine();
-            foreach ($changes as $change) {
-                $this->info($change["description"]);
-            }
+        $this->info('The following changes will be made to your config file:');
+        $this->newLine();
+        foreach ($changes as $change) {
+            $this->info($change["description"]);
+        }
+
+        if ($this->option('dry-run')) {
             return;
         }
 
@@ -42,10 +43,8 @@ class Upgrade extends Command
         }
 
         $this->newLine();
-        $this->info("✔ Upgraded your config to v3. Your old config is backed up at config/scribe.php.bak.");
-        $this->info("Please review to catch any mistakes.");
-        $this->warn("If you have any custom strategies or views, you should migrate those manually. See the migration guide at http://scribe.knuckles.wtf.");
-        $this->info("Don't forget to check out the release announcement for new features!");
+        $this->info("✔ Upgraded your config file. Your old config is backed up at config/scribe.php.bak.");
+        $this->info("Don't forget to check out the changelog or release announcement for new features!");
     }
 
 }
