@@ -194,7 +194,7 @@ return [
         /**
          * The URL to fetch the CSRF token from (if `use_csrf` is true).
          */
-        'csrf_url' => '/sanctum/csrf-token',
+        'csrf_url' => '/sanctum/csrf-cookie',
     ],
 
     /*
