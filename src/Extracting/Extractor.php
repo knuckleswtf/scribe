@@ -161,9 +161,6 @@ class Extractor
 
     protected function fetchBodyParameters(ExtractedEndpointData $endpointData, array $rulesToApply): void
     {
-        if (in_array('GET', $endpointData->httpMethods)) {
-            return;
-        }
         $this->iterateThroughStrategies('bodyParameters', $endpointData, $rulesToApply, function ($results) use ($endpointData) {
             foreach ($results as $key => $item) {
                 if (empty($item['name'])) {

@@ -65,6 +65,7 @@ class ExtractorPluginSystemTest extends TestCase
     {
         $config = [
             'strategies' => [
+                'bodyParameters' => [],
                 'responses' => [DummyResponseStrategy200::class, DummyResponseStrategy400::class],
             ],
         ];
@@ -94,6 +95,7 @@ class ExtractorPluginSystemTest extends TestCase
         $config = [
             'strategies' => [
                 'metadata' => [PartialDummyMetadataStrategy1::class, PartialDummyMetadataStrategy2::class],
+                'bodyParameters' => [],
                 'responses' => [],
             ],
         ];
@@ -117,6 +119,7 @@ class ExtractorPluginSystemTest extends TestCase
         $config = [
             'strategies' => [
                 'metadata' => [PartialDummyMetadataStrategy2::class],
+                'bodyParameters' => [],
                 'responses' => [],
             ],
         ];
@@ -140,6 +143,7 @@ class ExtractorPluginSystemTest extends TestCase
         $config = [
             'strategies' => [
                 'metadata' => [NotDummyMetadataStrategy::class, PartialDummyMetadataStrategy1::class],
+                'bodyParameters' => [],
                 'responses' => [],
             ],
         ];
