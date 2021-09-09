@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.10.1 (Thursday, 9 September 2021)
+### Added
+- Try It Out: Fixed default CSRF URL for Larave Sanctum ([#319](https://github.com/knuckleswtf/scribe/pull/319))
+
 ## 3.10.0 (Thursday, 9 September 2021)
 ### Added
 - Scribe will now check for new config items automatically on each run ([3d451f556da08e9f236ca45e373905e3dd8f76e7](https://github.com/knuckleswtf/scribe/commit/3d451f556da08e9f236ca45e373905e3dd8f76e7))
