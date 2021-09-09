@@ -187,11 +187,6 @@ return [
         'base_url' => null,
 
         /**
-         * Set the referrer, mode, and credentials, values in the fetch calls
-         */
-        'use_cors' => true,
-
-        /**
          * Fetch the CSRF token before each request. This is required if you are using Laravel Sanctum
          */
         'use_csrf' => false,

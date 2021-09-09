@@ -98,11 +98,9 @@ function makeAPICall(method, path, body, query, headers, endpointId) {
         headers,
         body: method === 'GET' ? undefined : body,
         signal: window.abortControllers[endpointId].signal,
-        ...window.useCors ? {
-            referrer: window.baseUrl,
-            mode: 'cors',
-            credentials: 'same-origin',
-        } : {},
+        referrer: window.baseUrl,
+        mode: 'cors',
+        credentials: 'same-origin',
     })
         .then(response => Promise.all([response.status, response.text(), response.headers]));
 }
