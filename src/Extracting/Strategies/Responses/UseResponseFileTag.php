@@ -55,13 +55,7 @@ class UseResponseFileTag extends Strategy
             if (!file_exists($filePath)) {
                 // Try Laravel storage folder
                 if (!file_exists(storage_path($filePath))) {
-                    c::warn("@responseFile {$filePath} does not exist");
-
-                    return [
-                        'content' => null,
-                        'status' => (int)$status,
-                        'description' => $description,
-                    ];
+                    throw new \InvalidArgumentException("@responseFile {$filePath} does not exist");
                 }
 
                 $filePath = storage_path($filePath);
