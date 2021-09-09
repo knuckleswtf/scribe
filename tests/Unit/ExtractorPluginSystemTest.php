@@ -140,6 +140,7 @@ class ExtractorPluginSystemTest extends TestCase
         $config = [
             'strategies' => [
                 'metadata' => [NotDummyMetadataStrategy::class, PartialDummyMetadataStrategy1::class],
+                'bodyParameters' => [],
                 'responses' => [],
             ],
         ];
