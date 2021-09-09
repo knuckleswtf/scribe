@@ -12,6 +12,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.10.0 (Thursday, 9 September 2021)
+### Added
+- Scribe will now check for new config items automatically on each run ([3d451f556da08e9f236ca45e373905e3dd8f76e7](https://github.com/knuckleswtf/scribe/commit/3d451f556da08e9f236ca45e373905e3dd8f76e7))
+- Try It Out: Support CSRF tokens for Laravel Sanctum ([#317](https://github.com/knuckleswtf/scribe/pull/317))
+
+### Modified
+- Throw error on missing response file ([123e64b8203c55e359c76cd477dacb3e324846c4](https://github.com/knuckleswtf/scribe/commit/123e64b8203c55e359c76cd477dacb3e324846c4))
+
+### Fixed
+- Try It Out: Only set checked radio buttons in query ([#312](https://github.com/knuckleswtf/scribe/pull/312))
+- Try It Out: Format booleans properly in query ([#313](https://github.com/knuckleswtf/scribe/pull/313))
+- Support body params in GET requests🤷‍♀️ ([#318](https://github.com/knuckleswtf/scribe/pull/318))
+
 ## 3.9.1 (Thursday, 26 August 2021)
 ### Modified
 - Unescape slashes in JSON ([#304](https://github.com/knuckleswtf/scribe/pull/304))
