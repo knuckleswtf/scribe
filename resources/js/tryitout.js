@@ -5,15 +5,15 @@ function getCookie(name) {
         return null;
     }
 
-    const xsrfCookies = document.cookie.split(';')
+    const cookies = document.cookie.split(';')
         .map(c => c.trim())
         .filter(c => c.startsWith(name + '='));
 
-    if (xsrfCookies.length === 0) {
+    if (cookies.length === 0) {
         return null;
     }
 
-    return decodeURIComponent(xsrfCookies[0].split('=')[1]);
+    return decodeURIComponent(cookies[0].split('=')[1]);
 }
 
 function tryItOut(endpointId) {
@@ -224,13 +224,14 @@ async function executeTryOut(endpointId, form) {
         }
     }
 
-    const preflightPromise = window.useCsrf && window.csrfUrl ? makeAPICall('GET', window.csrfUrl, {}, {}, {}, null).then(() => {
+    let preflightPromise = Promise.resolve();
+    if (window.useCsrf && window.csrfUrl) {
+        preflightPromise = makeAPICall('GET', window.csrfUrl, {}, {}, {}, null).then(() => {
             headers['X-XSRF-TOKEN'] = getCookie(window.csrfCookieName);
+        });
+    }
 
-            return makeAPICall(method, path, body, query, headers, endpointId);
-        }) : makeAPICall(method, path, body, query, headers, endpointId);
-
-    preflightPromise
+    return preflightPromise.then(() => makeAPICall(method, path, body, query, headers, endpointId))
         .then(([responseStatus, responseContent, responseHeaders]) => {
             handleResponse(endpointId, responseContent, responseStatus, responseHeaders)
         })
