@@ -227,7 +227,7 @@ async function executeTryOut(endpointId, form) {
     let preflightPromise = Promise.resolve();
     if (window.useCsrf && window.csrfUrl) {
         preflightPromise = makeAPICall('GET', window.csrfUrl, {}, {}, {}, null).then(() => {
-            headers['X-XSRF-TOKEN'] = getCookie(window.csrfCookieName);
+            headers['X-XSRF-TOKEN'] = getCookie('XSRF-TOKEN');
         });
     }
 

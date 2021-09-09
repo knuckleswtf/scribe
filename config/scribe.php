@@ -187,7 +187,7 @@ return [
         'base_url' => null,
 
         /**
-         * Fetch a CSRF token before each request. Needed if you're using Laravel Sanctum.
+         * Fetch a CSRF token before each request, and add it as an X-XSRF-TOKEN header. Needed if you're using Laravel Sanctum.
          */
         'use_csrf' => false,
 
@@ -195,11 +195,6 @@ return [
          * The URL to fetch the CSRF token from (if `use_csrf` is true).
          */
         'csrf_url' => '/sanctum/csrf-token',
-
-        /**
-         * The name of the cookie to fetch the CSRF token from after hitting the `csrf_url`.
-         */
-        'csrf_cookie_name' => 'XSRF-TOKEN',
     ],
 
     /*

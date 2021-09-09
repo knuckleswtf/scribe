@@ -120,7 +120,7 @@ class GenerateDocumentation extends Command
         $changes = $upgrader->dryRun();
         if (!empty($changes)) {
             $this->newLine();
-            sleep(0.4);
+
             $this->warn("You're using an updated version of Scribe, which added new items to the config file.");
             $this->info("Here are the changes:");
             foreach ($changes as $change) {
