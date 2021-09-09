@@ -185,6 +185,23 @@ return [
          * Leave as null to use the current app URL (config(app.url)).
          */
         'base_url' => null,
+
+        /**
+         * Fetch the CSRF token before each request. This is required if you are using Laravel Sanctum
+         */
+        'use_csrf' => false,
+
+        /**
+         * The URL to set the sessions CSRF token for the application
+         * Only used when 'use_csrf' is not set to false
+         */
+        'csrf_url' => '/sanctum/csrf-token',
+
+        /**
+         * The name of the cookie to set when making requests
+         * Only used when 'use_csrf' is not set to false
+         */
+        'csrf_cookie_name' => 'X-XSRF-TOKEN',
     ],
 
     /*
