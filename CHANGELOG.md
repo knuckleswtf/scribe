@@ -12,9 +12,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.10.2 (Friday, 10 September 2021)
+### Fixed
+- Shim `newLine()` method on Laravel 6 (fixes #320) ([31087fc330ebb305b163d72fc68d0603687df8d2](https://github.com/knuckleswtf/scribe/commit/31087fc330ebb305b163d72fc68d0603687df8d2))
+
 ## 3.10.1 (Thursday, 9 September 2021)
-### Added
-- Try It Out: Fixed default CSRF URL for Larave Sanctum ([#319](https://github.com/knuckleswtf/scribe/pull/319))
+### Fixed
+- Try It Out: Fixed default CSRF URL for Laravel Sanctum ([#319](https://github.com/knuckleswtf/scribe/pull/319))
 
 ## 3.10.0 (Thursday, 9 September 2021)
 ### Added
