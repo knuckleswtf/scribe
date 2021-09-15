@@ -111,6 +111,7 @@
                   'type' => $parameter->type ?? 'string',
                   'required' => $parameter->required,
                   'description' => $parameter->description,
+                  'example' => $parameter->example ?? '',
                   'endpointId' => $endpoint->endpointId(),
                   'component' => 'url',
                 ])
@@ -127,6 +128,7 @@
                   'type' => $parameter->type,
                   'required' => $parameter->required,
                   'description' => $parameter->description,
+                  'example' => $parameter->example ?? '',
                   'endpointId' => $endpoint->endpointId(),
                   'component' => 'query',
                 ])

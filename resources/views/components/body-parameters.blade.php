@@ -19,6 +19,7 @@
                           'type' => $subfield['type'] ?? 'string',
                           'required' => $subfield['required'] ?? false,
                           'description' => $subfield['description'] ?? '',
+                          'example' => $subfield['example'] ?? '',
                           'endpointId' => $endpointId,
                           'hasChildren' => false,
                           'component' => 'body',
@@ -53,6 +54,7 @@
                           'type' => $subfield['type'] ?? 'string',
                           'required' => $subfield['required'] ?? false,
                           'description' => $subfield['description'] ?? '',
+                          'example' => $subfield['example'] ?? '',
                           'endpointId' => $endpointId,
                           'hasChildren' => false,
                           'component' => 'body',
@@ -70,6 +72,7 @@
               'type' => $parameter['type'] ?? 'string',
               'required' => $parameter['required'] ?? false,
               'description' => $parameter['description'] ?? '',
+              'example' => $parameter['example'] ?? '',
               'endpointId' => $endpointId,
               'hasChildren' => false,
               'component' => 'body',
@@ -78,4 +81,3 @@
         </p>
     @endif
 @endforeach
-
