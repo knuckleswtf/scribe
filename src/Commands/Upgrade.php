@@ -21,7 +21,7 @@ class Upgrade extends Command
     {
         $oldConfig = config('scribe');
         $upgrader = Upgrader::ofConfigFile('config/scribe.php', __DIR__ . '/../../config/scribe.php')
-            ->dontTouch('routes')
+            ->dontTouch('routes', 'laravel.middleware', 'postman.overrides', 'openapi.overrides')
             ->move('interactive', 'try_it_out.enabled');
 
         $changes = $upgrader->dryRun();

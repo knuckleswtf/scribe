@@ -32,7 +32,7 @@ class GenerateDocumentation extends Command
 
     public function newLine($count = 1)
     {
-        // TODO Remove when Laravel g is no longer supported
+        // TODO Remove when Laravel 6 is no longer supported
         $this->getOutput()->write(str_repeat("\n", $count));
     }
 
@@ -122,7 +122,10 @@ class GenerateDocumentation extends Command
     protected function upgradeConfigFileIfNeeded(): void
     {
         $upgrader = Upgrader::ofConfigFile('config/scribe.php', __DIR__ . '/../../config/scribe.php')
-            ->dontTouch('routes','example_languages', 'database_connections_to_transact', 'strategies');
+            ->dontTouch(
+                'routes','example_languages', 'database_connections_to_transact', 'strategies' ,'laravel.middleware',
+                'postman.overrides', 'openapi.overrides'
+            );
         $changes = $upgrader->dryRun();
         if (!empty($changes)) {
             $this->newLine();
