@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.10.3 (Monday, 20 September 2021)
+### Fixed
+- Ignore user-specified values in upgrader (fixes #327) ([75b592724a8639583b4d660033549c8645a61b2b](https://github.com/knuckleswtf/scribe/commit/75b592724a8639583b4d660033549c8645a61b2b))
+
 ## 3.10.2 (Friday, 10 September 2021)
 ### Fixed
 - Shim `newLine()` method on Laravel 6 (fixes #320) ([31087fc330ebb305b163d72fc68d0603687df8d2](https://github.com/knuckleswtf/scribe/commit/31087fc330ebb305b163d72fc68d0603687df8d2))
