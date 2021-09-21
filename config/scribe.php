@@ -350,9 +350,9 @@ INTRO
         ],
         'responses' => [
             Strategies\Responses\UseTransformerTags::class,
+            Strategies\Responses\UseApiResourceTags::class,
             Strategies\Responses\UseResponseTag::class,
             Strategies\Responses\UseResponseFileTag::class,
-            Strategies\Responses\UseApiResourceTags::class,
             Strategies\Responses\ResponseCalls::class,
         ],
         'responseFields' => [

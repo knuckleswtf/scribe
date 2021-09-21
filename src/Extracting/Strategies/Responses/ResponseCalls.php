@@ -18,6 +18,7 @@ use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\ErrorHandlingUtils as e;
+use Knuckles\Scribe\Tools\Globals;
 use Knuckles\Scribe\Tools\Utils;
 
 /**
@@ -81,6 +82,10 @@ class ResponseCalls extends Strategy
         $fileParameters = array_merge($endpointData->fileParameters, $hardcodedFileParams);
 
         $request = $this->prepareRequest($endpointData->route, $rulesToApply, $urlParameters, $bodyParameters, $queryParameters, $fileParameters, $headers);
+
+        $request = $this->runPreRequestHook($request, $endpointData);
+
+        ray($request->headers);
 
         try {
             $response = $this->makeApiCall($request, $endpointData->route);
@@ -149,6 +154,15 @@ class ResponseCalls extends Strategy
 
         $request = $this->addQueryParameters($request, $queryParams);
         $request = $this->addBodyParameters($request, $bodyParams);
+
+        return $request;
+    }
+
+    protected function runPreRequestHook(Request $request, ExtractedEndpointData $endpointData): Request
+    {
+        if (is_callable(Globals::$beforeResponseCall)) {
+            call_user_func_array(Globals::$beforeResponseCall, [$request, $endpointData]);
+        }
 
         return $request;
     }
