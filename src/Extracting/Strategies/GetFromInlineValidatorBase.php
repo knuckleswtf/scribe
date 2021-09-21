@@ -122,7 +122,7 @@ class GetFromInlineValidatorBase extends Strategy
             if ($comments) {
                 $description = trim(str_replace(['No-example.', 'No-example'], '', $comments));
                 $example = null;
-                if (preg_match('/(.*\s+|^)Example:\s*([\s\S]+)\s*/m', $description, $matches)) {
+                if (preg_match('/(.*\s+|^)Example:\s*([\s\S]+)\s*/s', $description, $matches)) {
                     $description = trim($matches[1]);
                     $example = $matches[2];
                 }
