@@ -85,8 +85,6 @@ class ResponseCalls extends Strategy
 
         $request = $this->runPreRequestHook($request, $endpointData);
 
-        ray($request->headers);
-
         try {
             $response = $this->makeApiCall($request, $endpointData->route);
             $response = [

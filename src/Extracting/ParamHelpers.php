@@ -36,11 +36,8 @@ trait ParamHelpers
         }
 
         if ($isListType) {
-            // Return a two-array item for a list.
-            return fn() => array_map(
-                fn() => $this->generateDummyValue($baseType),
-                range(0, $size ? $size - 1 : 1)
-            );
+            // Return a one-array item for a list.
+            return fn() => [$this->generateDummyValue($baseType)];
         }
 
         $faker = $this->getFaker();

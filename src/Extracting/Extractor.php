@@ -280,7 +280,7 @@ class Extractor
             if (Str::contains($paramName, '.')) { // Object field (or array of objects)
                 self::setObject($cleanParameters, $paramName, $details->example, $parameters, $details->required);
             } else {
-                $cleanParameters[$paramName] = $details->example;
+                $cleanParameters[$paramName] = $details->example instanceof \stdClass ? $details->example : $details->example;
             }
         }
 
@@ -318,8 +318,16 @@ class Extractor
             $parentData = Arr::get($source, $baseNameInOriginalParams);
             // Path we use for data_set
             $dotPath = str_replace('[]', '.0', $path);
+
+            // Don't overwrite parent if there's already data there
+
             if ($parentData->type === 'object') {
-                if (!Arr::has($results, $dotPath)) {
+                $parentPath = explode('.', $dotPath);
+                $property = array_pop($parentPath);
+                $parentPath = implode('.', $parentPath);
+
+                $exampleFromParent = Arr::get($results, $dotPath) ?? $parentData->example[$property] ?? null;
+                if (empty($exampleFromParent)) {
                     Arr::set($results, $dotPath, $value);
                 }
             } else if ($parentData->type === 'object[]') {
@@ -329,23 +337,14 @@ class Extractor
                     if (isset($results['[]'][0]) && !Arr::has($results['[]'][0], $valueDotPath)) {
                         Arr::set($results['[]'][0], $valueDotPath, $value);
                     }
-                    // If there's a second item in the array, set for that too.
-                    if ($value !== null && isset($results['[]'][1])) {
-                        // If value is optional, flip a coin on whether to set or not
-                        if ($isRequired || array_rand([true, false], 1)) {
-                            Arr::set($results['[]'][1], $valueDotPath, $value);
-                        }
-                    }
                 } else {
-                    if (!Arr::has($results, $dotPath)) {
+                    $parentPath = explode('.', $dotPath);
+                    $index = (int)array_pop($parentPath);
+                    $parentPath = implode('.', $parentPath);
+
+                    $exampleFromParent = Arr::get($results, $dotPath) ?? $parentData->example[$index] ?? null;
+                    if (empty($exampleFromParent)) {
                         Arr::set($results, $dotPath, $value);
-                    }
-                    // If there's a second item in the array, set for that too.
-                    if ($value !== null && Arr::has($results, Str::replaceLast('[]', '.1', $baseName))) {
-                        // If value is optional, flip a coin on whether to set or not
-                        if ($isRequired || array_rand([true, false], 1)) {
-                            Arr::set($results, Str::replaceLast('.0', '.1', $dotPath), $value);
-                        }
                     }
                 }
             }

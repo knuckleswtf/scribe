@@ -12,6 +12,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.11.0 (Tuesday, 21 September 2021)
+### Added
+- Introduced `beforeResponseCall()` ([25cbdc193f277c70d471a92b5019156c603255b7](https://github.com/knuckleswtf/scribe/commit/25cbdc193f277c70d471a92b5019156c603255b7))
+
+### Fixed
+- Parse multiline validation comments properly  ([e3b7dbefc1cbb25ca773f7c74c84bbe8fe8740e5](https://github.com/knuckleswtf/scribe/commit/e3b7dbefc1cbb25ca773f7c74c84bbe8fe8740e5))
+
 ## 3.10.3 (Monday, 20 September 2021)
 ### Fixed
 - Ignore user-specified values in upgrader (fixes #327) ([75b592724a8639583b4d660033549c8645a61b2b](https://github.com/knuckleswtf/scribe/commit/75b592724a8639583b4d660033549c8645a61b2b))
