@@ -148,18 +148,21 @@ class ExtractedEndpointData extends BaseDTO
             $foundResourceParam = false;
             foreach (array_reverse($pluralResources) as $pluralResource) {
                 $singularResource = Str::singular($pluralResource);
-                $search = ["{$pluralResource}/{{$singularResource}}", "{$pluralResource}/{{$singularResource}?}"];
+                $singularResourceParam = str_replace('-', '_', $singularResource);
+                
+                $search = ["{$pluralResource}/{{$singularResourceParam}}", "{$pluralResource}/{{$singularResource}?}"];
 
                 // We'll replace with {id} by default, but if the user is using a different key,
                 // like /users/{user:uuid}, use that instead
                 $binding = static::getFieldBindingForUrlParam($route, $singularResource, 'id');
+
                 if (!$foundResourceParam) {
                     // Only the last resource param should be {id}
                     $replace = ["$pluralResource/{{$binding}}", "$pluralResource/{{$binding}?}"];
                     $foundResourceParam = true;
                 } else {
                     // Earlier ones should be {<param>_id}
-                    $replace = ["{$pluralResource}/{{$singularResource}_{$binding}}", "{$pluralResource}/{{$singularResource}_{$binding}?}"];
+                    $replace = ["{$pluralResource}/{{$singularResource}_{$binding}}", "{$pluralResource}/{{$singularResourceParam}_{$binding}?}"];
                 }
                 $uri = str_replace($search, $replace, $uri);
             }
