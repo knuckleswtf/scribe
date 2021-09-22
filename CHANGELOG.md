@@ -12,12 +12,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
-## 3.11.0 (Tuesday, 21 September 2021)
+## 3.11.0 (Wednesday, 22 September 2021)
 ### Added
 - Introduced `beforeResponseCall()` ([25cbdc193f277c70d471a92b5019156c603255b7](https://github.com/knuckleswtf/scribe/commit/25cbdc193f277c70d471a92b5019156c603255b7))
 
 ### Fixed
 - Parse multiline validation comments properly  ([e3b7dbefc1cbb25ca773f7c74c84bbe8fe8740e5](https://github.com/knuckleswtf/scribe/commit/e3b7dbefc1cbb25ca773f7c74c84bbe8fe8740e5))
+- Respect examples set on parent items for array/objects (closes #328)  ([12937e1ea148cb5bf162f4c8688f4c2816b679b0](https://github.com/knuckleswtf/scribe/commit/12937e1ea148cb5bf162f4c8688f4c2816b679b0))
 
 ## 3.10.3 (Monday, 20 September 2021)
 ### Fixed
