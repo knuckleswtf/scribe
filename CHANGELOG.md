@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.11.1 (Thursday, 23 September 2021)
+### Modified
+- Infer array type name properly ([7457dccf19218a80e43e2fc7d5ec4c2c4b1816e3](https://github.com/knuckleswtf/scribe/commit/7457dccf19218a80e43e2fc7d5ec4c2c4b1816e3))
+
 ## 3.11.0 (Wednesday, 22 September 2021)
 ### Added
 - Introduced `beforeResponseCall()` ([25cbdc193f277c70d471a92b5019156c603255b7](https://github.com/knuckleswtf/scribe/commit/25cbdc193f277c70d471a92b5019156c603255b7))
