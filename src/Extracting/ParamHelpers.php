@@ -180,7 +180,11 @@ trait ParamHelpers
             case 'bool':
                 return str_replace($base, 'boolean', $typeName);
             case 'array':
-                return is_null($value) || array_keys($value)[0] === 0 ? 'array' : 'object';
+                if (empty($value) || array_keys($value)[0] === 0) {
+                    return $this->normalizeTypeName(gettype($value[0] ?? '')).'[]';
+                } else {
+                    return 'object';
+                }
             default:
                 return $typeName;
         }
