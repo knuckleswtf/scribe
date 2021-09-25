@@ -37,7 +37,11 @@ body.append('{!! $key !!}', document.querySelector('input[name="{!! $key !!}"]')
 @endforeach
 @endforeach
 @elseif(count($endpoint->cleanBodyParameters))
-let body = {!! json_encode($endpoint->cleanBodyParameters, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}
+@if ($endpoint->headers['Content-Type'] == 'application/x-www-form-urlencoded')
+let body = "{!! http_build_query($endpoint->cleanBodyParameters, '', '&') !!}";
+@else
+let body = {!! json_encode($endpoint->cleanBodyParameters, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!};
+@endif
 @endif
 
 fetch(url, {
@@ -48,7 +52,11 @@ fetch(url, {
 @if($endpoint->hasFiles())
     body,
 @elseif(count($endpoint->cleanBodyParameters))
+@if ($endpoint->headers['Content-Type'] == 'application/x-www-form-urlencoded')
+    body: body,
+@else
     body: JSON.stringify(body),
+@endif
 @endif
 }).then(response => response.json());
 ```
