@@ -38,7 +38,11 @@ unset($headers['Content-Type']);
 @endforeach
         ],
 @elseif(!empty($endpoint->cleanBodyParameters))
+@if ($endpoint->headers['Content-Type'] == 'application/x-www-form-urlencoded')
+        'form_params' => {!! u::printPhpValue($endpoint->cleanBodyParameters, 8) !!},
+@else
         'json' => {!! u::printPhpValue($endpoint->cleanBodyParameters, 8) !!},
+@endif
 @endif
     ]
 );

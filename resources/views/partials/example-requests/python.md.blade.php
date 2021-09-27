@@ -38,7 +38,7 @@ headers = {
 $optionalArguments = [];
 if (count($endpoint->headers)) $optionalArguments[] = "headers=headers";
 if (count($endpoint->fileParameters)) $optionalArguments[] = "files=files";
-if (count($endpoint->cleanBodyParameters)) $optionalArguments[] = (count($endpoint->fileParameters) ? "data=payload" : "json=payload");
+if (count($endpoint->cleanBodyParameters)) $optionalArguments[] = (count($endpoint->fileParameters) || $endpoint->headers['Content-Type'] == 'application/x-www-form-urlencoded' ? "data=payload" : "json=payload");
 if (count($endpoint->cleanQueryParameters)) $optionalArguments[] = "params=params";
 $optionalArguments = implode(', ',$optionalArguments);
 @endphp
