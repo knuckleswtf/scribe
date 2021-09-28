@@ -13,6 +13,7 @@ use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\Globals;
 use Knuckles\Scribe\Writing\Writer;
+use Shalvah\Upgrader\Upgrader;
 
 class GenerateDocumentation extends Command
 {
@@ -28,6 +29,12 @@ class GenerateDocumentation extends Command
     private bool $shouldExtract;
 
     private bool $forcing;
+
+    public function newLine($count = 1)
+    {
+        // TODO Remove when Laravel 6 is no longer supported
+        $this->getOutput()->write(str_repeat("\n", $count));
+    }
 
     public function handle(RouteMatcherInterface $routeMatcher, GroupedEndpointsFactory $groupedEndpointsFactory): void
     {
@@ -47,6 +54,8 @@ class GenerateDocumentation extends Command
             c::warn('Generated docs, but encountered some errors while processing routes.');
             c::warn('Check the output above for details.');
         }
+
+        $this->upgradeConfigFileIfNeeded();
     }
 
     public function isForcing(): bool
@@ -108,5 +117,36 @@ class GenerateDocumentation extends Command
         }
 
         return $groupedEndpoints;
+    }
+
+    protected function upgradeConfigFileIfNeeded(): void
+    {
+        $upgrader = Upgrader::ofConfigFile('config/scribe.php', __DIR__ . '/../../config/scribe.php')
+            ->dontTouch(
+                'routes','example_languages', 'database_connections_to_transact', 'strategies' ,'laravel.middleware',
+                'postman.overrides', 'openapi.overrides'
+            );
+        $changes = $upgrader->dryRun();
+        if (!empty($changes)) {
+            $this->newLine();
+
+            $this->warn("You're using an updated version of Scribe, which added new items to the config file.");
+            $this->info("Here are the changes:");
+            foreach ($changes as $change) {
+                $this->info($change["description"]);
+            }
+
+            if (!$this->input->isInteractive()) {
+                $this->info("Run `php artisan scribe:upgrade` from an interactive terminal to update your config file automatically.");
+                $this->info(sprintf("Or see the full changelog at: https://github.com/knuckleswtf/scribe/blob/%s/CHANGELOG.md,", Globals::SCRIBE_VERSION));
+                return;
+            }
+
+            if ($this->confirm("Let's help you update your config file. Accept changes?")) {
+                $upgrader->upgrade();
+                $this->info(sprintf("✔ Updated. See the full changelog: https://github.com/knuckleswtf/scribe/blob/%s/CHANGELOG.md", Globals::SCRIBE_VERSION));
+            }
+        }
+
     }
 }

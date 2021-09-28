@@ -36,11 +36,8 @@ trait ParamHelpers
         }
 
         if ($isListType) {
-            // Return a two-array item for a list.
-            return fn() => array_map(
-                fn() => $this->generateDummyValue($baseType),
-                range(0, $size ? $size - 1 : 1)
-            );
+            // Return a one-array item for a list.
+            return fn() => [$this->generateDummyValue($baseType)];
         }
 
         $faker = $this->getFaker();
@@ -183,7 +180,11 @@ trait ParamHelpers
             case 'bool':
                 return str_replace($base, 'boolean', $typeName);
             case 'array':
-                return is_null($value) || array_keys($value)[0] === 0 ? 'array' : 'object';
+                if (empty($value) || array_keys($value)[0] === 0) {
+                    return $this->normalizeTypeName(gettype($value[0] ?? '')).'[]';
+                } else {
+                    return 'object';
+                }
             default:
                 return $typeName;
         }

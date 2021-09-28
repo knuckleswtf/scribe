@@ -99,7 +99,7 @@ class ExtractorTest extends TestCase
             'list_of_objects' => [
                 'name' => 'list_of_objects',
                 'type' => 'object[]',
-                'example' => [[], []],
+                'example' => [[]],
             ],
             'list_of_objects[].key1' => [
                 'name' => 'list_of_objects.key1',
@@ -127,10 +127,6 @@ class ExtractorTest extends TestCase
             ],
             'list' => [4],
             'list_of_objects' => [
-                [
-                    'key1' => 'John',
-                    'key2' => false,
-                ],
                 [
                     'key1' => 'John',
                     'key2' => false,

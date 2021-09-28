@@ -296,21 +296,13 @@ paths:
                               contacts:
                               - first_name: Janelle
                                 last_name: Monáe
-                              - {}
-                              roles: [Admin]
-                            - first_name: 'John'
-                              last_name: 'Doe'
-                              contacts:
-                              - first_name: Janelle
-                                last_name: Monáe
-                              - {}
                               roles: [Admin]
                             items:
                                 type: object
                                 properties:
                                     first_name: { type: string, description: 'The first name of the user.', example: John }
                                     last_name: { type: string, description: 'The last name of the user.', example: Doe }
-                                    contacts: { type: array, description: 'Contact info', example: [ [ ], [ ] ], items: { type: object, properties: { first_name: { type: string, description: 'The first name of the contact.', example: Janelle }, last_name: { type: string, description: 'The last name of the contact.', example: Monáe } }, required: [ first_name, last_name ] } }
+                                    contacts: { type: array, description: 'Contact info', example: [ [ ] ], items: { type: object, properties: { first_name: { type: string, description: 'The first name of the contact.', example: Janelle }, last_name: { type: string, description: 'The last name of the contact.', example: Monáe } }, required: [ first_name, last_name ] } }
                                     roles: { type: array, description: 'The name of the role.', example: [ Admin ], items: { type: string } }
                                 required:
                                     - first_name

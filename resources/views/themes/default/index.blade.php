@@ -24,6 +24,8 @@
     <script src="//cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
     <script>
         var baseUrl = "{{ $tryItOut['base_url'] ?? config('app.url') }}";
+        var useCsrf = Boolean({{ $tryItOut['use_csrf'] ?? null }});
+        var csrfUrl = "{{ $tryItOut['csrf_url'] ?? null }}";
     </script>
     <script src="{{ u::getVersionedAsset($assetPathPrefix.'js/tryitout.js') }}"></script>
 @endif

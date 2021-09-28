@@ -185,6 +185,16 @@ return [
          * Leave as null to use the current app URL (config(app.url)).
          */
         'base_url' => null,
+
+        /**
+         * Fetch a CSRF token before each request, and add it as an X-XSRF-TOKEN header. Needed if you're using Laravel Sanctum.
+         */
+        'use_csrf' => false,
+
+        /**
+         * The URL to fetch the CSRF token from (if `use_csrf` is true).
+         */
+        'csrf_url' => '/sanctum/csrf-cookie',
     ],
 
     /*
@@ -340,9 +350,9 @@ INTRO
         ],
         'responses' => [
             Strategies\Responses\UseTransformerTags::class,
+            Strategies\Responses\UseApiResourceTags::class,
             Strategies\Responses\UseResponseTag::class,
             Strategies\Responses\UseResponseFileTag::class,
-            Strategies\Responses\UseApiResourceTags::class,
             Strategies\Responses\ResponseCalls::class,
         ],
         'responseFields' => [

@@ -12,6 +12,43 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.11.1 (Thursday, 23 September 2021)
+### Modified
+- Infer array type name properly ([7457dccf19218a80e43e2fc7d5ec4c2c4b1816e3](https://github.com/knuckleswtf/scribe/commit/7457dccf19218a80e43e2fc7d5ec4c2c4b1816e3))
+
+## 3.11.0 (Wednesday, 22 September 2021)
+### Added
+- Introduced `beforeResponseCall()` ([25cbdc193f277c70d471a92b5019156c603255b7](https://github.com/knuckleswtf/scribe/commit/25cbdc193f277c70d471a92b5019156c603255b7))
+
+### Fixed
+- Parse multiline validation comments properly  ([e3b7dbefc1cbb25ca773f7c74c84bbe8fe8740e5](https://github.com/knuckleswtf/scribe/commit/e3b7dbefc1cbb25ca773f7c74c84bbe8fe8740e5))
+- Respect examples set on parent items for array/objects (closes #328)  ([12937e1ea148cb5bf162f4c8688f4c2816b679b0](https://github.com/knuckleswtf/scribe/commit/12937e1ea148cb5bf162f4c8688f4c2816b679b0))
+
+## 3.10.3 (Monday, 20 September 2021)
+### Fixed
+- Ignore user-specified values in upgrader (fixes #327) ([75b592724a8639583b4d660033549c8645a61b2b](https://github.com/knuckleswtf/scribe/commit/75b592724a8639583b4d660033549c8645a61b2b))
+
+## 3.10.2 (Friday, 10 September 2021)
+### Fixed
+- Shim `newLine()` method on Laravel 6 (fixes #320) ([31087fc330ebb305b163d72fc68d0603687df8d2](https://github.com/knuckleswtf/scribe/commit/31087fc330ebb305b163d72fc68d0603687df8d2))
+
+## 3.10.1 (Thursday, 9 September 2021)
+### Fixed
+- Try It Out: Fixed default CSRF URL for Laravel Sanctum ([#319](https://github.com/knuckleswtf/scribe/pull/319))
+
+## 3.10.0 (Thursday, 9 September 2021)
+### Added
+- Scribe will now check for new config items automatically on each run ([3d451f556da08e9f236ca45e373905e3dd8f76e7](https://github.com/knuckleswtf/scribe/commit/3d451f556da08e9f236ca45e373905e3dd8f76e7))
+- Try It Out: Support CSRF tokens for Laravel Sanctum ([#317](https://github.com/knuckleswtf/scribe/pull/317))
+
+### Modified
+- Throw error on missing response file ([123e64b8203c55e359c76cd477dacb3e324846c4](https://github.com/knuckleswtf/scribe/commit/123e64b8203c55e359c76cd477dacb3e324846c4))
+
+### Fixed
+- Try It Out: Only set checked radio buttons in query ([#312](https://github.com/knuckleswtf/scribe/pull/312))
+- Try It Out: Format booleans properly in query ([#313](https://github.com/knuckleswtf/scribe/pull/313))
+- Support body params in GET requests🤷‍♀️ ([#318](https://github.com/knuckleswtf/scribe/pull/318))
+
 ## 3.9.1 (Thursday, 26 August 2021)
 ### Modified
 - Unescape slashes in JSON ([#304](https://github.com/knuckleswtf/scribe/pull/304))
