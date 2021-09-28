@@ -57,6 +57,10 @@ function makeAPICall(method, path, body, query, headers, endpointId) {
     // We need this function because if you try to set an array or object directly to a URLSearchParams object,
     // you'll get [object Object] or the array.toString()
     function addItemToSearchParamsObject(key, value, searchParams) {
+            // skip null query string values as they are taken as literal nulls when present and empty
+            if (Boolean(value) === false) {
+                return;
+            }
             if (Array.isArray(value)) {
                 value.forEach((v, i) => {
                     // Append {filters: [first, second]} as filters[0]=first&filters[1]second
@@ -178,7 +182,7 @@ async function executeTryOut(endpointId, form) {
     const query = {};
     const queryParameters = form.querySelectorAll('input[data-component=query]');
     queryParameters.forEach(el => _.set(query, el.name, el.value));
-    
+
     // Group radio buttons by their name, and then set the checked value from that group
     Array.from(queryParameters)
         .filter(el => el.type === "radio")
