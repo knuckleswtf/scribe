@@ -21,6 +21,10 @@ class Response extends BaseDTO
             $parameters['content'] = json_encode($parameters['content']);
         }
 
+        if (isset($parameters['status'])) {
+            $parameters['status'] = (int) $parameters['status'];
+        }
+
         $hiddenHeaders = [
             'date',
             'Date',
