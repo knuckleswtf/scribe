@@ -12,6 +12,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.12.0 (Sunday, 24 October 2021)
+### Added
+- Try It Out: Prepopulate fields with examples ([#324](https://github.com/knuckleswtf/scribe/pull/324))
+
+### Fixed
+- Display form-encoded data properly in examples ([#331](https://github.com/knuckleswtf/scribe/pull/331))
+- Cast response status to int ([#346](https://github.com/knuckleswtf/scribe/pull/346))
+
 ## 3.11.1 (Thursday, 23 September 2021)
 ### Modified
 - Infer array type name properly ([7457dccf19218a80e43e2fc7d5ec4c2c4b1816e3](https://github.com/knuckleswtf/scribe/commit/7457dccf19218a80e43e2fc7d5ec4c2c4b1816e3))
