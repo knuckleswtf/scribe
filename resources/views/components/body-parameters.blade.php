@@ -37,6 +37,7 @@
                   'type' => $parameter['type'] ?? 'string',
                   'required' => $parameter['required'] ?? false,
                   'description' => $parameter['description'] ?? '',
+                  'example' => $parameter['example'] ?? '',
                   'endpointId' => $endpointId,
                   'hasChildren' => true,
                   'component' => 'body',
