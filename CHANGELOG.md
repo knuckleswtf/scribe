@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.12.1 (Monday, 25 October 2021)
+### Fixed
+- Fix for prefilling examples
+
 ## 3.12.0 (Sunday, 24 October 2021)
 ### Added
 - Try It Out: Prepopulate fields with examples ([#324](https://github.com/knuckleswtf/scribe/pull/324))
