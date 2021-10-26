@@ -12,6 +12,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.13.0 (Tuesday, 26 October 2021)
+### Added
+- Add `afterGenerating()` hook ([#61a4821e103bad2bdd5068890c7ed2c90ba6cdee](https://github.com/knuckleswtf/scribe/commit/61a4821e103bad2bdd5068890c7ed2c90ba6cdee))
+
+### Fixed
+- Prefill examples without breaking BC ([4fb2447182998835ba1ddcc10af12dfbe3a49f4b](https://github.com/knuckleswtf/scribe/commit/4fb2447182998835ba1ddcc10af12dfbe3a49f4b)
+
 ## 3.12.1 (Monday, 25 October 2021)
 ### Fixed
 - Fix for prefilling examples

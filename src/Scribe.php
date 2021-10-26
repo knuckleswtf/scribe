@@ -37,7 +37,7 @@ class Scribe
      *
      * If you disabled `postman` or `openapi`, their values will be null.
      *
-     * @param callable(array<string, string>): mixed $callable
+     * @param callable(array<string, string|array<string, string>): mixed $callable
      */
     public static function afterGenerating(callable $callable)
     {
