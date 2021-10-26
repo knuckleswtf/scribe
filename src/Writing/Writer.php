@@ -5,6 +5,7 @@ namespace Knuckles\Scribe\Writing;
 use Illuminate\Support\Facades\Storage;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\DocumentationConfig;
+use Knuckles\Scribe\Tools\Globals;
 use Knuckles\Scribe\Tools\Utils;
 use Symfony\Component\Yaml\Yaml;
 
@@ -19,6 +20,17 @@ class Writer
     private string $staticTypeOutputPath;
 
     private string $laravelTypeOutputPath = 'resources/views/scribe';
+    protected array $generatedFiles = [
+        'postman' => null,
+        'openapi' => null,
+        'html' => null,
+        'blade' => null,
+        'assets' => [
+            'js' => null,
+            'css' => null,
+            'images' => null,
+        ]
+    ];
 
     public function __construct(DocumentationConfig $config = null)
     {
@@ -44,6 +56,8 @@ class Writer
         $this->writePostmanCollection($groupedEndpoints);
 
         $this->writeOpenAPISpec($groupedEndpoints);
+
+        $this->runAfterGeneratingHook();
     }
 
     protected function writePostmanCollection(array $groups): void
@@ -61,6 +75,7 @@ class Writer
             }
 
             c::success("Wrote Postman collection to: {$collectionPath}");
+            $this->generatedFiles['postman'] = realpath($collectionPath);
         }
     }
 
@@ -79,6 +94,7 @@ class Writer
             }
 
             c::success("Wrote OpenAPI specification to: {$specPath}");
+            $this->generatedFiles['openapi'] = realpath($specPath);
         }
     }
 
@@ -167,7 +183,28 @@ class Writer
             $this->performFinalTasksForLaravelType();
         }
 
-        c::success("Wrote HTML docs to: " . rtrim($this->isStatic ? $this->staticTypeOutputPath : $this->laravelTypeOutputPath, '/').'/');
+        if ($this->isStatic) {
+            $outputPath = rtrim($this->staticTypeOutputPath, '/') . '/';
+            c::success("Wrote HTML docs to: $outputPath");
+            $this->generatedFiles['html'] = realpath("{$outputPath}index.html");
+            $assetsOutputPath = $outputPath;
+        } else {
+            $outputPath = rtrim($this->laravelTypeOutputPath, '/') . '/';
+            c::success("Wrote Blade docs to: $outputPath");
+            $this->generatedFiles['blade'] = realpath("{$outputPath}index.blade.php");
+            $assetsOutputPath = app()->get('path.public')."/vendor/scribe/";
+        }
+        $this->generatedFiles['assets']['js'] = realpath("{$assetsOutputPath}css");
+        $this->generatedFiles['assets']['css'] = realpath("{$assetsOutputPath}js");
+        $this->generatedFiles['assets']['images'] = realpath("{$assetsOutputPath}images");
+    }
+
+    protected function runAfterGeneratingHook()
+    {
+        if (is_callable(Globals::$afterGenerating)) {
+            c::info("Running `afterGenerating()` hook...");
+            call_user_func_array(Globals::$afterGenerating, [$this->generatedFiles]);
+        }
     }
 
 }

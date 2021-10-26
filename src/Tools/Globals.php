@@ -9,4 +9,6 @@ class Globals
     public static bool $shouldBeVerbose = false;
 
     public static $beforeResponseCall;
+
+    public static $afterGenerating;
 }
