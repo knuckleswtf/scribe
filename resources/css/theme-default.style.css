@@ -475,7 +475,7 @@ html {
     line-height: 1
 }
 
-.tocify-wrapper .search-results a {
+.tocify-wrapper a {
     color: #fff;
     text-decoration: none
 }

@@ -18,7 +18,8 @@
     <link rel="stylesheet"
           href="//unpkg.com/@highlightjs/cdn-assets@10.7.2/styles/obsidian.min.css">
     <script src="//unpkg.com/@highlightjs/cdn-assets@10.7.2/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jets/0.14.1/jets.min.js"></script>
 
 @if($tryItOut['enabled'] ?? true)
     <script src="//cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
@@ -53,9 +54,9 @@
     <div class="search">
         <input type="text" class="search" id="input-search" placeholder="Search">
     </div>
-    <ul class="search-results"></ul>
 
     <ul id="toc">
+        @include("scribe::themes.default.sidebar")
     </ul>
 
     @if(isset($metadata['links']))
@@ -90,13 +91,5 @@
         @endif
     </div>
 </div>
-@isset($metadata['example_languages'])
-<script>
-    $(function () {
-        var exampleLanguages = @json($metadata['example_languages']);
-        setupLanguages(exampleLanguages);
-    });
-</script>
-@endisset
 </body>
 </html>
