@@ -54,7 +54,7 @@
         <input type="{{ $inputType }}"
                name="{{ $fullName }}"
                data-endpoint="{{ $endpointId }}"
-               value="{{ $example }}"
+               value="{{ $example ?? '' }}"
                data-component="{{ $component }}" @if($required)required @endif hidden>
     @endif
 @endif
