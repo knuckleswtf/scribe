@@ -1,3 +1,22 @@
+function hashChange() {
+    const currentItems = document.querySelectorAll('.tocify-subheader');
+    Array.from(currentItems).forEach((elem) => {
+        elem.classList.remove('visible');
+    });
+
+    const currentTag = document.querySelector(`a[href="${window.location.hash}"]`);
+    if (currentTag) {
+        if (currentTag.parentElement.matches('.level-2')) {
+            const parent = currentTag.closest('.tocify-subheader');
+            if (parent) {
+                parent.classList.add('visible');
+            }
+        }
+    }
+}
+
+window.addEventListener('hashchange', hashChange, false);
+
 document.addEventListener('DOMContentLoaded', function() {
     window.hljs.highlightAll();
     // https://jets.js.org/
@@ -28,4 +47,6 @@ document.addEventListener('DOMContentLoaded', function() {
             z: 'ŽžżŻźŹ'
         }
     });
+
+    hashChange();
 });

@@ -2,7 +2,7 @@
     /** @var  Knuckles\Camel\Output\OutputEndpointData $endpoint */
 @endphp
 
-<h2 id="{!! Str::slug($group['name']) !!}-{!! $endpoint->endpointId() !!}">{{ $endpoint->metadata->title ?: ($endpoint->httpMethods[0]." ".$endpoint->uri)}}</h2>
+<h2 id="{!! Str::slug($group['name']) !!}-{!! $endpoint->endpointId() !!}"><a href="#{!! Str::slug($group['name']) !!}-{!! $endpoint->endpointId() !!}">🔗</a>&nbsp;{{ $endpoint->metadata->title ?: ($endpoint->httpMethods[0]." ".$endpoint->uri)}}</h2>
 
 <p>
 @component('scribe::components.badges.auth', ['authenticated' => $endpoint->metadata->authenticated])

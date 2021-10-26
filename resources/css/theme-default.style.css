@@ -521,6 +521,11 @@ html {
     background: linear-gradient(180deg, rgba(0, 0, 0, .2), transparent 8px), linear-gradient(0deg, rgba(0, 0, 0, .2), transparent 8px), linear-gradient(180deg, #000, transparent 1.5px), linear-gradient(0deg, #939393, hsla(0, 0%, 58%, 0) 1.5px), #262626
 }
 
+.tocify-wrapper .jets-searching .tocify-subheader,
+.tocify-wrapper .tocify-subheader.visible {
+    display: block;
+}
+
 .tocify-wrapper .tocify-subheader .tocify-item>a {
     padding-left: 25px;
     font-size: 12px
