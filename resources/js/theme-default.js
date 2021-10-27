@@ -20,13 +20,35 @@ function hashChange() {
 
         currentTag.classList.add('active');
         // wait for dom changes to be done
-        setTimeout(() => currentTag.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' }), 1000);
+        setTimeout(() => currentTag.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' }), 1500);
     }
 }
 
 window.addEventListener('hashchange', hashChange, false);
 
+const observer = new IntersectionObserver((entries) => {
+    // If intersectionRatio is 0, the target is out of view
+    // and we do not need to do anything.
+    if (entries[0].intersectionRatio <= 0) {
+        return;
+    }
+
+    _.throttle(() => {
+        window.location.hash = `#${entries[0].target.id}`;
+    }, 100)();
+}, {
+    rootMargin: '-8% 0px -8% 0px', // shrink the intersection viewport
+    threshold: 1.0, // trigger at 100% visibility
+});
+
+function makeObserver(elem) {
+    return observer.observe(elem);
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    const titles = document.querySelectorAll('.content h1, .content h2');
+    Array.from(titles).forEach(makeObserver);
+
     window.hljs.highlightAll();
     // https://jets.js.org/
     const wrapper = document.getElementById('toc');
