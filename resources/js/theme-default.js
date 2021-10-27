@@ -1,17 +1,26 @@
 function hashChange() {
-    const currentItems = document.querySelectorAll('.tocify-subheader');
+    const currentItems = document.querySelectorAll('.tocify-subheader.visible, .tocify-item a.active');
     Array.from(currentItems).forEach((elem) => {
-        elem.classList.remove('visible');
+        elem.classList.remove('visible', 'active');
     });
 
     const currentTag = document.querySelector(`a[href="${window.location.hash}"]`);
     if (currentTag) {
-        if (currentTag.parentElement.matches('.level-2')) {
-            const parent = currentTag.closest('.tocify-subheader');
-            if (parent) {
-                parent.classList.add('visible');
-            }
+        const parent = currentTag.closest('.tocify-subheader');
+        if (parent) {
+            parent.classList.add('visible');
         }
+
+        const siblings = currentTag.closest('.tocify-header');
+        if (siblings) {
+            Array.from(siblings.querySelectorAll('.tocify-subheader')).forEach((elem) => {
+                elem.classList.add('visible');
+            });
+        }
+
+        currentTag.classList.add('active');
+        // wait for dom changes to be done
+        setTimeout(() => currentTag.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' }), 1000);
     }
 }
 
