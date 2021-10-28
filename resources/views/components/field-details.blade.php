@@ -29,7 +29,7 @@
             <input type="radio" name="{{ $fullName }}"
                    value="{{$component === 'body' ? 'true' : 1}}"
                    data-endpoint="{{ $endpointId }}"
-                   data-component="{{ $component }}" @if($required)required @endif
+                   data-component="{{ $component }}"
             >
             <code>true</code>
         </label>
@@ -37,7 +37,7 @@
             <input type="radio" name="{{ $fullName }}"
                    value="{{$component === 'body' ? 'false' : 0}}"
                    data-endpoint="{{ $endpointId }}"
-                   data-component="{{ $component }}" @if($required)required @endif
+                   data-component="{{ $component }}"
             >
             <code>false</code>
         </label>
@@ -45,7 +45,7 @@
         <input type="{{ $inputType }}"
                name="{{ $fullName.".0" }}"
                data-endpoint="{{ $endpointId }}"
-               data-component="{{ $component }}" @if($required)required @endif hidden>
+               data-component="{{ $component }}" hidden>
         <input type="{{ $inputType }}"
                name="{{ $fullName.".1" }}"
                data-endpoint="{{ $endpointId }}"
@@ -55,7 +55,7 @@
                name="{{ $fullName }}"
                data-endpoint="{{ $endpointId }}"
                value="{{ $example ?? '' }}"
-               data-component="{{ $component }}" @if($required)required @endif hidden>
+               data-component="{{ $component }}" hidden>
     @endif
 @endif
 <br>
