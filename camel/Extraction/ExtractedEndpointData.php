@@ -128,7 +128,7 @@ class ExtractedEndpointData extends BaseDTO
 
     public function endpointId()
     {
-        return $this->httpMethods[0] . str_replace(['/', '?', '{', '}', ':'], '-', $this->uri);
+        return $this->httpMethods[0] . str_replace(['/', '?', '{', '}', ':', '\\', '+', '|'], '-', $this->uri);
     }
 
     public function normalizeResourceParamName(string $uri, Route $route): string
