@@ -12,6 +12,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.14.0 (Tuesday, 26 October 2021)
+### Added
+- `beforeGroup` and `afterGroup` ([#98d5be7ade2a549e72b343b7f660b412188c30c8](https://github.com/knuckleswtf/scribe/commit/98d5be7ade2a549e72b343b7f660b412188c30c8))
+
+### Modified
+- Try It Out: Remove `required` input field validation ([#3722637092d1c40060169cf22054a0145a0d2cec](https://github.com/knuckleswtf/scribe/commit/3722637092d1c40060169cf22054a0145a0d2cec))
+
+### Fixed
+- Remove invalid characters from endpoint ID ([#352](https://github.com/knuckleswtf/scribe/pull/352))
+
 ## 3.13.0 (Tuesday, 26 October 2021)
 ### Added
 - Add `afterGenerating()` hook ([#61a4821e103bad2bdd5068890c7ed2c90ba6cdee](https://github.com/knuckleswtf/scribe/commit/61a4821e103bad2bdd5068890c7ed2c90ba6cdee))
