@@ -7,18 +7,25 @@ use Knuckles\Camel\BaseDTO;
 
 class Metadata extends BaseDTO
 {
-    /** @var string|null */
-    public $groupName;
+    public ?string $groupName;
 
-    /** @var string|null */
-    public $groupDescription;
+    /**
+     * Name of the group that this group should be placed just before.
+     * Only used in custom endpoints, if the endpoint's `groupName` doesn't already exist.
+     */
+    public ?string $beforeGroup;
 
-    /** @var string|null */
-    public $title;
+    /**
+     * Name of the group that this group should be placed just after.
+     * Only used in custom endpoints, if the endpoint's `groupName` doesn't already exist.
+     */
+    public ?string $afterGroup;
 
-    /** @var string|null */
-    public $description;
+    public ?string $groupDescription;
 
-    /** @var bool */
-    public $authenticated = false;
+    public ?string $title;
+
+    public ?string $description;
+
+    public bool $authenticated = false;
 }

@@ -7,6 +7,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\URL;
 use Knuckles\Camel\Camel;
 use Knuckles\Camel\Output\OutputEndpointData;
+use Knuckles\Scribe\Exceptions\GroupNotFound;
 use Knuckles\Scribe\GroupedEndpoints\GroupedEndpointsFactory;
 use Knuckles\Scribe\Matching\RouteMatcherInterface;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
@@ -106,19 +107,58 @@ class GenerateDocumentation extends Command
     protected function mergeUserDefinedEndpoints(array $groupedEndpoints, array $userDefinedEndpoints): array
     {
         foreach ($userDefinedEndpoints as $endpoint) {
-            $existingGroupKey = Arr::first(array_keys($groupedEndpoints), function ($key) use ($groupedEndpoints, $endpoint) {
+            $indexOfGroupWhereThisEndpointShouldBeAdded = Arr::first(array_keys($groupedEndpoints), function ($key) use ($groupedEndpoints, $endpoint) {
                 $group = $groupedEndpoints[$key];
                 return $group['name'] === ($endpoint['metadata']['groupName'] ?? $this->docConfig->get('default_group', ''));
             });
 
-            if ($existingGroupKey !== null) {
-                $groupedEndpoints[$existingGroupKey]['endpoints'][] = OutputEndpointData::fromExtractedEndpointArray($endpoint);
+            if ($indexOfGroupWhereThisEndpointShouldBeAdded !== null) {
+                $groupedEndpoints[$indexOfGroupWhereThisEndpointShouldBeAdded]['endpoints'][] = OutputEndpointData::fromExtractedEndpointArray($endpoint);
             } else {
-                $groupedEndpoints[] = [
+                $newGroup = [
                     'name' => $endpoint['metadata']['groupName'] ?? $this->docConfig->get('default_group', ''),
                     'description' => $endpoint['metadata']['groupDescription'] ?? null,
                     'endpoints' => [OutputEndpointData::fromExtractedEndpointArray($endpoint)],
                 ];
+
+                // Place the new group directly before/after an existing group
+                // if `beforeGroup` or `afterGroup` was set.
+                $beforeGroupName = $endpoint['metadata']['beforeGroup'] ?? null;
+                $afterGroupName = $endpoint['metadata']['afterGroup'] ?? null;
+
+                if ($beforeGroupName) {
+                    $found = false;
+                    $sortedGroupedEndpoints = [];
+                    foreach ($groupedEndpoints as $group) {
+                        if ($group['name'] === $beforeGroupName) {
+                            $found = true;
+                            $sortedGroupedEndpoints[] = $newGroup;
+                        }
+                        $sortedGroupedEndpoints[] = $group;
+                    }
+
+                    if (!$found) {
+                        throw GroupNotFound::forTag($beforeGroupName, "beforeGroup:");
+                    }
+                    $groupedEndpoints = $sortedGroupedEndpoints;
+                } else if ($afterGroupName) {
+                    $found = false;
+                    $sortedGroupedEndpoints = [];
+                    foreach ($groupedEndpoints as $group) {
+                        $sortedGroupedEndpoints[] = $group;
+                        if ($group['name'] === $afterGroupName) {
+                            $found = true;
+                            $sortedGroupedEndpoints[] = $newGroup;
+                        }
+                    }
+
+                    if (!$found) {
+                        throw GroupNotFound::forTag($afterGroupName, "afterGroup:");
+                    }
+                    $groupedEndpoints = $sortedGroupedEndpoints;
+                } else {
+                    $groupedEndpoints[] = $newGroup;
+                }
             }
         }
 

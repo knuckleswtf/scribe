@@ -188,7 +188,7 @@ class ExtractedEndpointData extends BaseDTO
             // and objects used only in extraction
             'route', 'controller', 'method', 'auth',
         );
-        $copy->metadata = $copy->metadata->except('groupName', 'groupDescription');
+        $copy->metadata = $copy->metadata->except('groupName', 'groupDescription', 'beforeGroup', 'afterGroup');
 
         return $copy;
     }

@@ -406,7 +406,7 @@ class GenerateDocumentationTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function merges_user_defined_endpoints()
+    public function merges_and_correctly_sorts_user_defined_endpoints()
     {
         RouteFacade::get('/api/action1', [TestGroupController::class, 'action1']);
         RouteFacade::get('/api/action2', [TestGroupController::class, 'action2']);
@@ -420,18 +420,23 @@ class GenerateDocumentationTest extends BaseLaravelTest
 
         $crawler = new Crawler(file_get_contents('public/docs/index.html'));
         $headings = $crawler->filter('h1')->getIterator();
-        // There should only be four headings — intro, auth and two groups
-        $this->assertCount(4, $headings);
-        [$_, $_, $group1, $group2] = $headings;
+        // There should only be six headings — intro, auth and four groups
+        $this->assertCount(6, $headings);
+        [$_, $_, $group1, $group2, $group3, $group4] = $headings;
         $this->assertEquals('1. Group 1', trim($group1->textContent));
-        $this->assertEquals('2. Group 2', trim($group2->textContent));
+        $this->assertEquals('5. Group 5', trim($group2->textContent));
+        $this->assertEquals('4. Group 4', trim($group3->textContent));
+        $this->assertEquals('2. Group 2', trim($group4->textContent));
         $expectedEndpoints = $crawler->filter('h2');
-        $this->assertEquals(3, $expectedEndpoints->count());
+        $this->assertEquals(6, $expectedEndpoints->count());
         // Enforce the order of the endpoints
         // Ideally, we should also check the groups they're under
         $this->assertEquals("Some endpoint.", $expectedEndpoints->getNode(0)->textContent);
         $this->assertEquals("User defined", $expectedEndpoints->getNode(1)->textContent);
-        $this->assertEquals("GET api/action2", $expectedEndpoints->getNode(2)->textContent);
+        $this->assertEquals("GET withBeforeGroup", $expectedEndpoints->getNode(2)->textContent);
+        $this->assertEquals("GET belongingToAnEarlierBeforeGroup", $expectedEndpoints->getNode(3)->textContent);
+        $this->assertEquals("GET withAfterGroup", $expectedEndpoints->getNode(4)->textContent);
+        $this->assertEquals("GET api/action2", $expectedEndpoints->getNode(5)->textContent);
     }
 
     /** @test */

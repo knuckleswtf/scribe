@@ -66,6 +66,8 @@ trait ParsesValidationRules
                 $parameters[$parameter] = $parameterData;
             } catch (Throwable $e) {
                 if ($e instanceof ScribeException) {
+                    // This is a lower-level error that we've encountered and wrapped;
+                    // Pass it on to the user.
                     throw $e;
                 }
                 throw ProblemParsingValidationRules::forParam($parameter, $e);
@@ -101,6 +103,8 @@ trait ParsesValidationRules
                 $parameters[$parameter] = $parameterData;
             } catch (Throwable $e) {
                 if ($e instanceof ScribeException) {
+                    // This is a lower-level error that we've encountered and wrapped;
+                    // Pass it on to the user.
                     throw $e;
                 }
                 throw ProblemParsingValidationRules::forParam($parameter, $e);
