@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
-## 3.14.0 (Tuesday, 26 October 2021)
+## 3.14.0 (Friday, 29 October 2021)
 ### Added
 - `beforeGroup` and `afterGroup` ([#98d5be7ade2a549e72b343b7f660b412188c30c8](https://github.com/knuckleswtf/scribe/commit/98d5be7ade2a549e72b343b7f660b412188c30c8))
 
