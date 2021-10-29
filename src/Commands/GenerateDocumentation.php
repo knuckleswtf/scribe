@@ -42,10 +42,16 @@ class GenerateDocumentation extends Command
 
         $groupedEndpointsInstance = $groupedEndpointsFactory->make($this, $routeMatcher);
 
+        $userDefinedEndpoints = Camel::loadUserDefinedEndpoints(Camel::$camelDir);
         $groupedEndpoints = $this->mergeUserDefinedEndpoints(
             $groupedEndpointsInstance->get(),
-            Camel::loadUserDefinedEndpoints(Camel::$camelDir)
+            $userDefinedEndpoints
         );
+
+        if (!count($userDefinedEndpoints)) {
+            // Update the example custom file if there were no custom endpoints
+            $this->writeExampleCustomEndpoint();
+        }
 
         $writer = new Writer($this->docConfig);
         $writer->writeDocs($groupedEndpoints);
@@ -117,6 +123,12 @@ class GenerateDocumentation extends Command
         }
 
         return $groupedEndpoints;
+    }
+
+    protected function writeExampleCustomEndpoint(): void
+    {
+        // We add an example to guide users in case they need to add a custom endpoint.
+        copy(__DIR__ . '/../../resources/example_custom_endpoint.yaml', Camel::$camelDir . '/custom.0.yaml');
     }
 
     protected function upgradeConfigFileIfNeeded(): void

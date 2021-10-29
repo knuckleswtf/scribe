@@ -75,7 +75,6 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
         $endpoints = $this->extractEndpointsInfoFromLaravelApp($routes, $cachedEndpoints, $latestEndpointsData, $groups);
         $groupedEndpoints = Camel::groupEndpoints($endpoints, $this->endpointGroupIndexes);
         $this->writeEndpointsToDisk($groupedEndpoints);
-        $this->writeExampleCustomEndpoint();
         $groupedEndpoints = Camel::prepareGroupedEndpointsForOutput($groupedEndpoints);
         return $groupedEndpoints;
     }
@@ -270,14 +269,6 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
             })->isNotEmpty();
 
         return $shouldIgnoreMethod;
-    }
-
-    protected function writeExampleCustomEndpoint(): void
-    {
-        // We add an example to guide users in case they need to add a custom endpoint.
-        if (!file_exists(static::$camelDir . '/custom.0.yaml')) {
-            copy(__DIR__ . '/../../resources/example_custom_endpoint.yaml', static::$camelDir . '/custom.0.yaml');
-        }
     }
 
     protected function extractAndWriteApiDetailsToDisk(): void
