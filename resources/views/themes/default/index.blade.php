@@ -34,42 +34,9 @@
 </head>
 
 <body data-languages="{{ json_encode($metadata['example_languages'] ?? []) }}">
-<a href="#" id="nav-button">
-      <span>
-        MENU
-        <img src="{!! $assetPathPrefix !!}images/navbar.png" alt="navbar-image" />
-      </span>
-</a>
-<div class="tocify-wrapper">
-    @if($metadata['logo'] != false)
-    <img src="{{ $metadata['logo'] }}" alt="logo" class="logo" style="padding-top: 10px;" width="230px"/>
-    @endif
-    @isset($metadata['example_languages'])
-        <div class="lang-selector">
-            @foreach($metadata['example_languages'] as $lang)
-                <a href="#" data-language-name="{{ $lang }}">{{ $lang }}</a>
-            @endforeach
-        </div>
-    @endisset
-    <div class="search">
-        <input type="text" class="search" id="input-search" placeholder="Search">
-    </div>
 
-    <ul id="toc">
-        @include("scribe::themes.default.sidebar")
-    </ul>
+@include("scribe::themes.default.sidebar")
 
-    @if(isset($metadata['links']))
-        <ul class="toc-footer" id="toc-footer">
-            @foreach($metadata['links'] as $link)
-                <li>{!! $link !!}</li>
-            @endforeach
-        </ul>
-    @endif
-        <ul class="toc-footer" id="last-updated">
-            <li>Last updated: {{ $metadata['last_updated'] }}</li>
-        </ul>
-</div>
 <div class="page-wrapper">
     <div class="dark-box"></div>
     <div class="content">
