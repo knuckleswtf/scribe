@@ -54,7 +54,7 @@
         <input type="{{ $inputType }}"
                name="{{ $fullName }}"
                data-endpoint="{{ $endpointId }}"
-               value="{{ $example ?? '' }}"
+               value="{!! (isset($example) && (is_string($example) || is_numeric($example))) ? $example : '' !!}"
                data-component="{{ $component }}" hidden>
     @endif
 @endif
