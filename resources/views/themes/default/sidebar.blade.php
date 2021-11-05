@@ -27,13 +27,17 @@
                 <li class="tocify-item level-1" data-unique="{!! Str::slug($group['name']) !!}">
                     <a href="#{!! Str::slug($group['name']) !!}">{!! $group['name'] !!}</a>
                 </li>
-                @foreach($group['endpoints'] as $endpoint)
+                @if (count($group['endpoints']) > 0)
                     <ul class="tocify-subheader" data-tag="{{ $loop->index }}">
-                        <li class="tocify-item level-2" data-unique="{!! Str::slug($group['name']) !!}-{!! $endpoint->endpointId() !!}">
-                            <a href="#{!! Str::slug($group['name']) !!}-{!! $endpoint->endpointId() !!}">{{ $endpoint->metadata->title ?: ($endpoint->httpMethods[0]." ".$endpoint->uri)}}</a>
-                        </li>
-                    </ul>
+                @endif
+                @foreach($group['endpoints'] as $endpoint)
+                    <li class="tocify-item level-2" data-unique="{!! Str::slug($group['name']) !!}-{!! $endpoint->endpointId() !!}">
+                        <a href="#{!! Str::slug($group['name']) !!}-{!! $endpoint->endpointId() !!}">{{ $endpoint->metadata->title ?: ($endpoint->httpMethods[0]." ".$endpoint->uri)}}</a>
+                    </li>
                 @endforeach
+                @if (count($group['endpoints']) > 0)
+                    </ul>
+                @endif
             </ul>
         @endforeach
     </ul>
