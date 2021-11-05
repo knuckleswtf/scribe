@@ -1,31 +1,3 @@
-function hashChange() {
-    const currentItems = document.querySelectorAll('.tocify-subheader.visible, .tocify-item.tocify-focus');
-    Array.from(currentItems).forEach((elem) => {
-        elem.classList.remove('visible', 'tocify-focus');
-    });
-
-    const currentTag = document.querySelector(`a[href="${window.location.hash}"]`);
-    if (currentTag) {
-        const parent = currentTag.closest('.tocify-subheader');
-        if (parent) {
-            parent.classList.add('visible');
-        }
-
-        const siblings = currentTag.closest('.tocify-header');
-        if (siblings) {
-            Array.from(siblings.querySelectorAll('.tocify-subheader')).forEach((elem) => {
-                elem.classList.add('visible');
-            });
-        }
-
-        currentTag.parentElement.classList.add('tocify-focus');
-        // wait for dom changes to be done
-        setTimeout(() => currentTag.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' }), 1500);
-    }
-}
-
-window.addEventListener('hashchange', hashChange, false);
-
 document.addEventListener('DOMContentLoaded', function() {
     const updateHash = function (id) {
         window.location.hash = `#${id}`;
@@ -53,9 +25,26 @@ document.addEventListener('DOMContentLoaded', function() {
     const titles = document.querySelectorAll('.content h1, .content h2');
     Array.from(titles).forEach(makeObserver);
 
+    const navButton = document.getElementById('nav-button');
+    const menuWrapper = document.querySelector('.tocify-wrapper');
+    function toggleSidebar() {
+        if (menuWrapper) {
+            menuWrapper.classList.toggle('open');
+            navButton.classList.toggle('open');
+        }
+    }
+    function closeSidebar() {
+        if (menuWrapper) {
+            menuWrapper.classList.remove('open');
+            navButton.classList.remove('open');
+        }
+    }
+    navButton.addEventListener('click', toggleSidebar);
+
     window.hljs.highlightAll();
-    // https://jets.js.org/
+
     const wrapper = document.getElementById('toc');
+    // https://jets.js.org/
     window.jets = new window.Jets({
         // *OR - Selects elements whose values contains at least one part of search substring
         searchSelector: '*OR',
@@ -82,6 +71,41 @@ document.addEventListener('DOMContentLoaded', function() {
             z: 'ŽžżŻźŹ'
         }
     });
+
+    function hashChange() {
+        const currentItems = document.querySelectorAll('.tocify-subheader.visible, .tocify-item.tocify-focus');
+        Array.from(currentItems).forEach((elem) => {
+            elem.classList.remove('visible', 'tocify-focus');
+        });
+
+        const currentTag = document.querySelector(`a[href="${window.location.hash}"]`);
+        if (currentTag) {
+            const parent = currentTag.closest('.tocify-subheader');
+            if (parent) {
+                parent.classList.add('visible');
+            }
+
+            const siblings = currentTag.closest('.tocify-header');
+            if (siblings) {
+                Array.from(siblings.querySelectorAll('.tocify-subheader')).forEach((elem) => {
+                    elem.classList.add('visible');
+                });
+            }
+
+            currentTag.parentElement.classList.add('tocify-focus');
+
+            // wait for dom changes to be done
+            setTimeout(() => {
+                currentTag.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+                // only close the sidebar on level-2 events
+                if (currentTag.parentElement.classList.contains('level-2')) {
+                    closeSidebar();
+                }
+            }, 1500);
+        }
+    }
+
+    window.addEventListener('hashchange', hashChange, false);
 
     hashChange();
 });
