@@ -627,23 +627,26 @@ html {
     font-weight: 700
 }
 
-.lang-selector a {
+.lang-selector button {
     display: block;
     float: left;
     color: #fff;
     text-decoration: none;
     padding: 0 10px;
     line-height: 30px;
-    outline: 0
+    outline: 0;
+    background: transparent;
+    border: none;
 }
 
-.lang-selector a:active,
-.lang-selector a:focus {
+.lang-selector button:active,
+.lang-selector button:hover,
+.lang-selector button:focus {
     background-color: #111;
     color: #fff
 }
 
-.lang-selector a.active {
+.lang-selector button.active {
     background-color: #393939;
     color: #fff
 }

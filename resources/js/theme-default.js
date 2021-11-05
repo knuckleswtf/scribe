@@ -105,6 +105,48 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    const languages = JSON.parse(document.body.getAttribute('data-languages'));
+    // if there is no language use the first one
+    const currentLanguage = window.localStorage.getItem('language') || languages[0];
+    const languageStyle = document.getElementById('language-style');
+    const langSelector = document.querySelectorAll('.lang-selector button.lang-button');
+
+    function setActiveLanguage(newLanguage) {
+        window.localStorage.setItem('language', newLanguage);
+        if (!languageStyle) {
+            return;
+        }
+
+        const newStyle = languages.map((language) => {
+            return language === newLanguage
+                // the current one should be visible
+                ? `body .content .${language}-example code { display: block; }`
+                // the inactive one should be hidden
+                : `body .content .${language}-example code { display: none; }`;
+        }).join(`\n`);
+
+        Array.from(langSelector).forEach((elem) => {
+            elem.classList.toggle('active', elem.getAttribute('data-language-name') === newLanguage);
+        });
+
+        const activeHash = window.location.hash.slice(1);
+
+        languageStyle.innerHTML = newStyle;
+
+        setTimeout(() => {
+            updateHash(activeHash);
+        }, 200);
+    }
+
+    setActiveLanguage(currentLanguage);
+
+    Array.from(langSelector).forEach((elem) => {
+        elem.addEventListener('click', () => {
+            const newLanguage = elem.getAttribute('data-language-name');
+            setActiveLanguage(newLanguage);
+        });
+    });
+
     window.addEventListener('hashchange', hashChange, false);
 
     hashChange();
