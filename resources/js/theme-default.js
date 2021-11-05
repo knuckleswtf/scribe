@@ -26,26 +26,30 @@ function hashChange() {
 
 window.addEventListener('hashchange', hashChange, false);
 
-const observer = new IntersectionObserver((entries) => {
-    // If intersectionRatio is 0, the target is out of view
-    // and we do not need to do anything.
-    if (entries[0].intersectionRatio <= 0) {
-        return;
+document.addEventListener('DOMContentLoaded', function() {
+    const updateHash = function (id) {
+        window.location.hash = `#${id}`;
+    };
+
+    const throttledUpdateHash = _.throttle(updateHash, 200);
+
+    const observer = new IntersectionObserver((entries) => {
+        // If intersectionRatio is 0, the target is out of view
+        // and we do not need to do anything.
+        if (entries[0].intersectionRatio <= 0) {
+            return;
+        }
+
+        throttledUpdateHash(entries[0].target.id);
+    }, {
+        rootMargin: '-8% 0px -8% 0px', // shrink the intersection viewport
+        threshold: 1.0, // trigger at 100% visibility
+    });
+
+    function makeObserver(elem) {
+        return observer.observe(elem);
     }
 
-    _.throttle(() => {
-        window.location.hash = `#${entries[0].target.id}`;
-    }, 100)();
-}, {
-    rootMargin: '-8% 0px -8% 0px', // shrink the intersection viewport
-    threshold: 1.0, // trigger at 100% visibility
-});
-
-function makeObserver(elem) {
-    return observer.observe(elem);
-}
-
-document.addEventListener('DOMContentLoaded', function() {
     const titles = document.querySelectorAll('.content h1, .content h2');
     Array.from(titles).forEach(makeObserver);
 
