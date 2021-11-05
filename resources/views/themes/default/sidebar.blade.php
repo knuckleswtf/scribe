@@ -21,14 +21,14 @@
         <input type="text" class="search" id="input-search" placeholder="Search">
     </div>
 
-    <ul id="toc">
+    <div id="toc">
         @foreach($groupedEndpoints as $group)
-            <ul id="tocify-header{{ $loop->index }}" class="tocify-header">
+            <ul id="tocify-header-{{ $loop->index }}" class="tocify-header">
                 <li class="tocify-item level-1" data-unique="{!! Str::slug($group['name']) !!}">
                     <a href="#{!! Str::slug($group['name']) !!}">{!! $group['name'] !!}</a>
                 </li>
                 @if (count($group['endpoints']) > 0)
-                    <ul class="tocify-subheader" data-tag="{{ $loop->index }}">
+                    <ul id="tocify-subheader-{!! Str::slug($group['name']) !!}" class="tocify-subheader">
                 @endif
                 @foreach($group['endpoints'] as $endpoint)
                     <li class="tocify-item level-2" data-unique="{!! Str::slug($group['name']) !!}-{!! $endpoint->endpointId() !!}">
@@ -40,7 +40,7 @@
                 @endif
             </ul>
         @endforeach
-    </ul>
+    </div>
 
     @if(isset($metadata['links']))
         <ul class="toc-footer" id="toc-footer">
