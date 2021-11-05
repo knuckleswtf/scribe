@@ -21,6 +21,15 @@
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/jets/0.14.1/jets.min.js"></script>
 
+    @if(isset($metadata['example_languages']))
+    <style id="language-style">
+        /* starts out as display none and is replaced with js later  */
+        @foreach($metadata['example_languages'] as $lang)
+            body .content .{{ $lang }}-example code { display: none; }
+        @endforeach
+    </style>
+    @endif
+
 @if($tryItOut['enabled'] ?? true)
     <script src="//cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
     <script>
