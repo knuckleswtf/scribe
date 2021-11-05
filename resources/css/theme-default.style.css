@@ -511,7 +511,8 @@ html {
 .tocify-wrapper .tocify-focus {
     box-shadow: 0 1px 0 #000;
     background-color: #2467af;
-    color: #fff
+    color: #fff;
+    font-weight: bold;
 }
 
 .tocify-wrapper .tocify-subheader {
@@ -524,10 +525,6 @@ html {
 .tocify-wrapper .jets-searching .tocify-subheader,
 .tocify-wrapper .tocify-subheader.visible {
     display: block;
-}
-
-.tocify-wrapper .tocify-subheader .tocify-item>a.active {
-    font-weight: bold;
 }
 
 .tocify-wrapper .tocify-subheader .tocify-item>a {

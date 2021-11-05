@@ -1,7 +1,7 @@
 function hashChange() {
-    const currentItems = document.querySelectorAll('.tocify-subheader.visible, .tocify-item a.active');
+    const currentItems = document.querySelectorAll('.tocify-subheader.visible, .tocify-item.tocify-focus');
     Array.from(currentItems).forEach((elem) => {
-        elem.classList.remove('visible', 'active');
+        elem.classList.remove('visible', 'tocify-focus');
     });
 
     const currentTag = document.querySelector(`a[href="${window.location.hash}"]`);
@@ -18,7 +18,7 @@ function hashChange() {
             });
         }
 
-        currentTag.classList.add('active');
+        currentTag.parentElement.classList.add('tocify-focus');
         // wait for dom changes to be done
         setTimeout(() => currentTag.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' }), 1500);
     }
