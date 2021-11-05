@@ -16,7 +16,9 @@
 
 @foreach($metadata['example_languages'] as $language)
 
-@include("scribe::partials.example-requests.$language")
+<div class="{{ $language }}-example">
+    @include("scribe::partials.example-requests.$language")
+</div>
 
 @endforeach
 </span>
