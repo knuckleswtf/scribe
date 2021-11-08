@@ -12,13 +12,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.15.0 (Monday, 8 November 2021)
+### Added
+- Try it Out: entering an auth header value will auto-set it for all endpoints ([3f9800924128536a4d8b8ea366be9573da758ad2](https://github.com/knuckleswtf/scribe/commit/3f9800924128536a4d8b8ea366be9573da758ad2))
+
 ## 3.14.1 (Tuesday, 2 November 2021)
 ### Fixed
-- Example display in input ([#43f37502a3fdccdcc7799b8160c2d4921f4d75f1](https://github.com/knuckleswtf/scribe/commit/43f37502a3fdccdcc7799b8160c2d4921f4d75f1))
+- Example display in input ([43f37502a3fdccdcc7799b8160c2d4921f4d75f1](https://github.com/knuckleswtf/scribe/commit/43f37502a3fdccdcc7799b8160c2d4921f4d75f1))
 
 ## 3.14.0 (Friday, 29 October 2021)
 ### Added
-- `beforeGroup` and `afterGroup` ([#98d5be7ade2a549e72b343b7f660b412188c30c8](https://github.com/knuckleswtf/scribe/commit/98d5be7ade2a549e72b343b7f660b412188c30c8))
+- `beforeGroup` and `afterGroup` ([98d5be7ade2a549e72b343b7f660b412188c30c8](https://github.com/knuckleswtf/scribe/commit/98d5be7ade2a549e72b343b7f660b412188c30c8))
 
 ### Modified
 - Try It Out: Remove `required` input field validation ([#3722637092d1c40060169cf22054a0145a0d2cec](https://github.com/knuckleswtf/scribe/commit/3722637092d1c40060169cf22054a0145a0d2cec))
@@ -28,7 +32,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## 3.13.0 (Tuesday, 26 October 2021)
 ### Added
-- Add `afterGenerating()` hook ([#61a4821e103bad2bdd5068890c7ed2c90ba6cdee](https://github.com/knuckleswtf/scribe/commit/61a4821e103bad2bdd5068890c7ed2c90ba6cdee))
+- Add `afterGenerating()` hook ([61a4821e103bad2bdd5068890c7ed2c90ba6cdee](https://github.com/knuckleswtf/scribe/commit/61a4821e103bad2bdd5068890c7ed2c90ba6cdee))
 
 ### Fixed
 - Prefill examples without breaking BC ([4fb2447182998835ba1ddcc10af12dfbe3a49f4b](https://github.com/knuckleswtf/scribe/commit/4fb2447182998835ba1ddcc10af12dfbe3a49f4b)
