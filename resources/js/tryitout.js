@@ -1,5 +1,26 @@
 window.abortControllers = {};
 
+function cacheAuthValue() {
+    // Whenever the auth header is set for one endpoint, cache it for the others
+    window.lastAuthValue = '';
+    document.querySelectorAll(`label[id^=auth-] > input`)
+        .forEach(el => {
+            el.addEventListener('change', (event) => {
+                window.lastAuthValue = event.target.value;
+                document.querySelectorAll(`label[id^=auth-] > input`)
+                    .forEach(otherInput => {
+                        if (otherInput === el) return;
+                        // Don't block the main thread
+                       setTimeout(() => {
+                           otherInput.value = window.lastAuthValue;
+                        }, 0);
+                    });
+            });
+        });
+}
+
+window.addEventListener('DOMContentLoaded', cacheAuthValue);
+
 function getCookie(name) {
     if (!document.cookie) {
         return null;
