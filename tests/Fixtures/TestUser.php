@@ -11,4 +11,9 @@ class TestUser extends Model
     {
         return $this->hasMany(TestUser::class, 'parent_id');
     }
+
+    public function pets()
+    {
+        return $this->belongsToMany(TestPet::class)->withPivot('duration');
+    }
 }

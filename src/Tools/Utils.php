@@ -2,10 +2,13 @@
 
 namespace Knuckles\Scribe\Tools;
 
+use _PHPStan_76800bfb5\Nette\PhpGenerator\PhpFile;
 use Closure;
 use DirectoryIterator;
 use Exception;
 use FastRoute\RouteParser\Std;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Str;
 use Knuckles\Scribe\Exceptions\CouldntFindFactory;
@@ -190,13 +193,31 @@ class Utils
             /** @var \Illuminate\Database\Eloquent\Factories\Factory $factory */
             $factory = call_user_func_array([$modelName, 'factory'], []);
             foreach ($states as $state) {
-                $factory = $factory->$state();
+                if (method_exists(get_class($factory), $state)) {
+                    $factory = $factory->$state();
+                }
             }
 
             foreach ($relations as $relation) {
-                // Eg "posts" relation becomes hasPosts() method
-                $methodName = "has$relation";
-                $factory = $factory->$methodName();
+                $relationChain = explode('.', $relation);
+                $relationVector = array_shift($relationChain);
+
+                $relationModel = get_class((new $modelName())->{$relationVector}()->getModel());
+                $relationType = get_class((new $modelName())->{$relationVector}());
+
+                $factoryChain = empty($relationChain)
+                    ? call_user_func_array([$relationModel, 'factory'], [])
+                    : Utils::getModelFactory($relationModel, $states, $relationChain);
+
+                if ($relationType === BelongsToMany::class) {
+                    $pivot = method_exists($factory, 'pivot' . $relationVector)
+                        ? $factory->{'pivot' . $relationVector}()
+                        : [];
+
+                    $factory = $factory->hasAttached($factoryChain, $pivot, $relationVector);
+                } else {
+                    $factory = $factory->has($factoryChain, $relationVector);
+                }
             }
         } else {
             try {
