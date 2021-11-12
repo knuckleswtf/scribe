@@ -1,5 +1,25 @@
 /*! normalize.css v3.0.2 | MIT License | git.io/normalize */
-
+/* width */
+::-webkit-scrollbar {
+    width: 5px;
+    height: 7px;
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, .0);
+    border: rgba(0, 0, 0, .0);
+  }
+  
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, .0);
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #c4c4c4;
+  }
 html {
     font-family: 'PT Sans', sans-serif;
     font-size: 1.2em;
@@ -284,9 +304,9 @@ html {
     content: "✅"
 }
 
-.tocify-wrapper>.search:before {
+/* .tocify-wrapper>.search:before {
     content: "🔎"
-}
+} */
 
 .highlight .c,
 .highlight .c1,
@@ -407,7 +427,7 @@ html {
     left: 0;
     bottom: 0;
     width: 230px;
-    background-color: #393939;
+    background-color: #ffffff;
     font-size: 13px;
     font-weight: 700
 }
@@ -430,7 +450,7 @@ html {
 }
 
 .tocify-wrapper>.search input {
-    background: #393939;
+    background: #ffffff;
     border-width: 0 0 1px;
     border-color: #666;
     padding: 6px 0 6px 20px;
@@ -438,7 +458,7 @@ html {
     margin: 10px 15px;
     width: 200px;
     outline: none;
-    color: #fff;
+    color: rgb(54, 54, 54);
     border-radius: 0
 }
 
@@ -462,7 +482,7 @@ html {
     transition-property: height, margin;
     transition-duration: .18s;
     transition-timing-function: ease-in-out;
-    background: linear-gradient(180deg, rgba(0, 0, 0, .2), transparent 8px), linear-gradient(0deg, rgba(0, 0, 0, .2), transparent 8px), linear-gradient(180deg, #000, transparent 1.5px), linear-gradient(0deg, #939393, hsla(0, 0%, 58%, 0) 1.5px), #262626
+    background: #f7fbff;
 }
 
 .tocify-wrapper .search-results.visible {
@@ -476,7 +496,7 @@ html {
 }
 
 .tocify-wrapper .search-results a {
-    color: #fff;
+    color: rgb(54, 54, 54);
     text-decoration: none
 }
 
@@ -502,7 +522,7 @@ html {
 }
 
 .tocify-wrapper li {
-    color: #fff;
+    color: rgb(54, 54, 54);
     transition-property: background;
     transition-timing-function: linear;
     transition-duration: .23s
@@ -510,15 +530,15 @@ html {
 
 .tocify-wrapper .tocify-focus {
     box-shadow: 0 1px 0 #000;
-    background-color: #2467af;
+    background-color: #71007f;
     color: #fff
 }
 
 .tocify-wrapper .tocify-subheader {
     display: none;
-    background-color: #262626;
+    background-color: #fff7fb;
     font-weight: 500;
-    background: linear-gradient(180deg, rgba(0, 0, 0, .2), transparent 8px), linear-gradient(0deg, rgba(0, 0, 0, .2), transparent 8px), linear-gradient(180deg, #000, transparent 1.5px), linear-gradient(0deg, #939393, hsla(0, 0%, 58%, 0) 1.5px), #262626
+    background: #fff7fb;
 }
 
 .tocify-wrapper .tocify-subheader .tocify-item>a {
@@ -538,7 +558,7 @@ html {
 
 .tocify-wrapper .toc-footer a,
 .tocify-wrapper .toc-footer li {
-    color: #fff;
+    color: rgb(54, 54, 54);
     text-decoration: none
 }
 
@@ -595,14 +615,14 @@ html {
     margin-left: 230px;
     position: relative;
     z-index: 10;
-    background-color: #eaf2f6;
+    background-color: #f6eaf6;
     min-height: 100%;
     padding-bottom: 1px
 }
 
 .page-wrapper .dark-box {
     width: 50%;
-    background-color: #393939;
+    background-color: #4c0055;
     position: absolute;
     right: 0;
     top: 0;
@@ -612,11 +632,11 @@ html {
 .page-wrapper .lang-selector {
     position: fixed;
     z-index: 50;
-    border-bottom: 5px solid #393939
+    border-bottom: 5px solid #4c0055
 }
 
 .lang-selector {
-    background-color: #222;
+    background-color: #4c0055;
     width: 100%;
     font-weight: 700
 }
@@ -638,8 +658,8 @@ html {
 }
 
 .lang-selector a.active {
-    background-color: #393939;
-    color: #fff
+    background-color: #e2e2e2;
+    color: #111
 }
 
 .lang-selector:after {
@@ -751,7 +771,7 @@ html {
 
 .content hr {
     margin: 2em 0;
-    border-top: 2px solid #393939;
+    border-top: 2px solid #ffffff;
     border-bottom: 2px solid #eaf2f6
 }
 
@@ -822,10 +842,11 @@ html {
 .content aside {
     padding-top: 1em;
     padding-bottom: 1em;
-    text-shadow: 0 1px 0 #a0c6da;
+    color: rgb(243, 243, 243);
+    text-shadow: 0 1px 0 #71007f;
     margin-top: 1.5em;
     margin-bottom: 1.5em;
-    background: #8fbcd4;
+    background: #71007f;
     line-height: 1.6
 }
 
@@ -856,27 +877,25 @@ html {
 
 .content blockquote,
 .content pre {
-    background-color: #292929;
-    color: #fff;
+    background-color: #4c0055;
+    color: rgb(250, 250, 250);
     padding: 1.5em 28px;
     margin: 0;
     width: 50%;
     float: right;
     clear: right;
     box-sizing: border-box;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, .4)
 }
 
 .content .annotation {
-    background-color: #292929;
-    color: #fff;
+    background-color: #680074;
+    color: rgb(250, 250, 250);
     padding: 0 28px;
     margin: 0;
     width: 50%;
     float: right;
     clear: right;
     box-sizing: border-box;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, .4)
 }
 
 .content .annotation pre {
@@ -892,7 +911,7 @@ html {
 
 .content blockquote a,
 .content pre a {
-    color: #fff;
+    color: rgb(54, 54, 54);
     text-decoration: none;
     border-bottom: 1px dashed #ccc
 }
