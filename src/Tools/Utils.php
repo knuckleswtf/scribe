@@ -2,7 +2,6 @@
 
 namespace Knuckles\Scribe\Tools;
 
-use _PHPStan_76800bfb5\Nette\PhpGenerator\PhpFile;
 use Closure;
 use DirectoryIterator;
 use Exception;
