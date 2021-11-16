@@ -198,6 +198,7 @@ class Utils
             }
 
             foreach ($relations as $relation) {
+                // Support nested relations; see https://github.com/knuckleswtf/scribe/pull/364 for a detailed example
                 $relationChain = explode('.', $relation);
                 $relationVector = array_shift($relationChain);
 

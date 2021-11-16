@@ -12,6 +12,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.16.0 (Tuesday, 16 November 2021)
+### Added
+- Support for nested relations in factories ([364](https://github.com/knuckleswtf/scribe/pull/364))
+
+### Fixed
+- Try it Out: show examples for empty array ([4351be8567f98f7779422a3a5beaaf5f3ca53e00](https://github.com/knuckleswtf/scribe/commit/4351be8567f98f7779422a3a5beaaf5f3ca53e00))
+- Route docs properly in Lumen ([b859f9ac7d2bac0b43b5358337565889593af6b7](https://github.com/knuckleswtf/scribe/commit/b859f9ac7d2bac0b43b5358337565889593af6b7))
+
 ## 3.15.0 (Monday, 8 November 2021)
 ### Added
 - Try it Out: entering an auth header value will auto-set it for all endpoints ([3f9800924128536a4d8b8ea366be9573da758ad2](https://github.com/knuckleswtf/scribe/commit/3f9800924128536a4d8b8ea366be9573da758ad2))
