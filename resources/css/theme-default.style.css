@@ -475,7 +475,7 @@ html {
     line-height: 1
 }
 
-.tocify-wrapper .search-results a {
+.tocify-wrapper a {
     color: #fff;
     text-decoration: none
 }
@@ -511,7 +511,8 @@ html {
 .tocify-wrapper .tocify-focus {
     box-shadow: 0 1px 0 #000;
     background-color: #2467af;
-    color: #fff
+    color: #fff;
+    font-weight: bold;
 }
 
 .tocify-wrapper .tocify-subheader {
@@ -519,6 +520,11 @@ html {
     background-color: #262626;
     font-weight: 500;
     background: linear-gradient(180deg, rgba(0, 0, 0, .2), transparent 8px), linear-gradient(0deg, rgba(0, 0, 0, .2), transparent 8px), linear-gradient(180deg, #000, transparent 1.5px), linear-gradient(0deg, #939393, hsla(0, 0%, 58%, 0) 1.5px), #262626
+}
+
+.tocify-wrapper .jets-searching .tocify-subheader,
+.tocify-wrapper .tocify-subheader.visible {
+    display: block;
 }
 
 .tocify-wrapper .tocify-subheader .tocify-item>a {
@@ -621,23 +627,26 @@ html {
     font-weight: 700
 }
 
-.lang-selector a {
+.lang-selector button {
     display: block;
     float: left;
     color: #fff;
     text-decoration: none;
     padding: 0 10px;
     line-height: 30px;
-    outline: 0
+    outline: 0;
+    background: transparent;
+    border: none;
 }
 
-.lang-selector a:active,
-.lang-selector a:focus {
+.lang-selector button:active,
+.lang-selector button:hover,
+.lang-selector button:focus {
     background-color: #111;
     color: #fff
 }
 
-.lang-selector a.active {
+.lang-selector button.active {
     background-color: #393939;
     color: #fff
 }
