@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.17.0 (Sunday, 28 November 2021)
+### Modified
+- Refactored sidebar and external JS to improve usability and performance ([354](https://github.com/knuckleswtf/scribe/pull/354))
+
 ## 3.16.0 (Tuesday, 16 November 2021)
 ### Added
 - Support for nested relations in factories ([364](https://github.com/knuckleswtf/scribe/pull/364))
