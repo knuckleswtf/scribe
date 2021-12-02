@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         throttledUpdateHash(entries[0].target.id);
     }, {
-        rootMargin: '-8% 0px -8% 0px', // shrink the intersection viewport
+        rootMargin: '0px 0px -12% 0px', // shrink the intersection viewport
         threshold: 1.0, // trigger at 100% visibility
     });
 
@@ -22,8 +22,13 @@ document.addEventListener('DOMContentLoaded', function() {
         return observer.observe(elem);
     }
 
-    const titles = document.querySelectorAll('.content h1, .content h2');
-    Array.from(titles).forEach(makeObserver);
+    // find all links in the menu
+    const menuItems = document.querySelectorAll('#toc a[href]');
+    // make observers for those links
+    Array.from(menuItems).forEach((aTag) => {
+        const title = document.querySelector(aTag.getAttribute('href'));
+        makeObserver(title);
+    });
 
     const navButton = document.getElementById('nav-button');
     const menuWrapper = document.querySelector('.tocify-wrapper');
