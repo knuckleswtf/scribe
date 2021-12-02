@@ -111,9 +111,9 @@
             @endif
 
             @if($loop->last)
-                    @if($inSubHeading)
+                @if($inSubHeading)
                     </ul>
-                    @endif
+                @endif
                 </ul>
             @endif
         @endforeach
