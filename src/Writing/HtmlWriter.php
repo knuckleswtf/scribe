@@ -4,10 +4,9 @@ namespace Knuckles\Scribe\Writing;
 
 use Illuminate\Support\Facades\View;
 use Knuckles\Scribe\Tools\DocumentationConfig;
-use Knuckles\Scribe\Tools\Globals;
+use Knuckles\Scribe\Tools\MarkdownParser;
 use Knuckles\Scribe\Tools\Utils;
 use Knuckles\Scribe\Tools\WritingUtils;
-use Parsedown;
 
 /**
  * Transforms the extracted data (endpoints YAML, API details Markdown) into a HTML site
@@ -17,12 +16,12 @@ class HtmlWriter
     protected DocumentationConfig $config;
     protected string $baseUrl;
     protected string $assetPathPrefix;
-    protected Parsedown $markdownParser;
+    protected MarkdownParser $markdownParser;
 
     public function __construct(DocumentationConfig $config = null)
     {
         $this->config = $config ?: new DocumentationConfig(config('scribe', []));
-        $this->markdownParser = new Parsedown();
+        $this->markdownParser = new MarkdownParser();
         $this->baseUrl = $this->config->get('base_url') ?? config('app.url');
         // If they're using the default static path,
         // then use '../docs/{asset}', so assets can work via Laravel app or via index.html
@@ -38,9 +37,12 @@ class HtmlWriter
     {
         $intro = $this->transformMarkdownFileToHTML($sourceFolder . '/intro.md');
         $auth = $this->transformMarkdownFileToHTML($sourceFolder . '/auth.md');
+        $headingsBeforeEndpoints = $this->markdownParser->headings;
 
+        $this->markdownParser->headings = [];
         $appendFile = rtrim($sourceFolder, '/') . '/' . 'append.md';
         $append = file_exists($appendFile) ? $this->transformMarkdownFileToHTML($appendFile) : '';
+        $headingsAfterEndpoints = $this->markdownParser->headings;
 
         $theme = $this->config->get('theme') ?? 'default';
         $output = View::make("scribe::themes.$theme.index", [
@@ -52,6 +54,8 @@ class HtmlWriter
             'groupedEndpoints' => $groupedEndpoints,
             'append' => $append,
             'assetPathPrefix' => $this->assetPathPrefix,
+            'headingsBeforeEndpoints' => $headingsBeforeEndpoints,
+            'headingsAfterEndpoints' => $headingsAfterEndpoints,
         ])->render();
 
         if (!is_dir($destinationFolder)) {

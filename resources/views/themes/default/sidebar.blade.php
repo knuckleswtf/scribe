@@ -22,8 +22,47 @@
     </div>
 
     <div id="toc">
+        @php
+            $previousH1 = null;
+            $inSubHeading = false;
+            $headingsCount = 0;
+        @endphp
+        @foreach($headingsBeforeEndpoints as $heading)
+            @if($heading['level'] === 1)
+                @if($previousH1)
+                    </ul>
+                @endif
+                @if($inSubHeading)
+                    @php($inSubHeading = false)
+                    </ul>
+                @endif
+                <ul id="tocify-header-{{ $headingsCount }}" class="tocify-header">
+                    <li class="tocify-item level-1" data-unique="{!! $heading['slug'] !!}">
+                        <a href="#{!! $heading['slug'] !!}">{!! $heading['text'] !!}</a>
+                    </li>
+                @php($previousH1 = $heading)
+                @php($headingsCount += 1)
+            @elseif ($heading['level'] === 2 && $previousH1)
+                @if(!$inSubHeading)
+                    <ul id="tocify-subheader-{!! $previousH1['slug'] !!}" class="tocify-subheader">
+                    @php($inSubHeading = true)
+                @endif
+                    <li class="tocify-item level-2"
+                        data-unique="{!! $previousH1['slug'] !!}-{!! $heading['slug'] !!}">
+                        <a href="#{!! $heading['slug'] !!}">{{ $heading['text'] }}</a>
+                    </li>
+            @endif
+
+            @if($loop->last)
+                    @if($inSubHeading)
+                    </ul>
+                    @endif
+                </ul>
+            @endif
+        @endforeach
+
         @foreach($groupedEndpoints as $group)
-            <ul id="tocify-header-{{ $loop->index }}" class="tocify-header">
+            <ul id="tocify-header-{{ $loop->index + $headingsCount }}" class="tocify-header">
                 <li class="tocify-item level-1" data-unique="{!! Str::slug($group['name']) !!}">
                     <a href="#{!! Str::slug($group['name']) !!}">{!! $group['name'] !!}</a>
                 </li>
@@ -39,6 +78,44 @@
                     </ul>
                 @endif
             </ul>
+        @endforeach
+
+        @php($previousH1 = null)
+        @php($inSubHeading = false)
+        @php($headingsCount += count($groupedEndpoints))
+
+        @foreach($headingsAfterEndpoints as $heading)
+            @if($heading['level'] === 1)
+                @if($previousH1)
+                    </ul>
+                @endif
+                @if($inSubHeading)
+                    @php($inSubHeading = false)
+                    </ul>
+                @endif
+                <ul id="tocify-header-{{ $headingsCount }}" class="tocify-header">
+                    <li class="tocify-item level-1" data-unique="{!! $heading['slug'] !!}">
+                        <a href="#{!! $heading['slug'] !!}">{!! $heading['text'] !!}</a>
+                    </li>
+                @php($previousH1 = $heading)
+                @php($headingsCount += 1)
+            @elseif ($heading['level'] === 2 && $previousH1)
+                @if(!$inSubHeading)
+                    <ul id="tocify-subheader-{!! $previousH1['slug'] !!}" class="tocify-subheader">
+                    @php($inSubHeading = true)
+                @endif
+                    <li class="tocify-item level-2"
+                        data-unique="{!! $previousH1['slug'] !!}-{!! $heading['slug'] !!}">
+                        <a href="#{!! $heading['slug'] !!}">{{ $heading['text'] }}</a>
+                    </li>
+            @endif
+
+            @if($loop->last)
+                    @if($inSubHeading)
+                    </ul>
+                    @endif
+                </ul>
+            @endif
         @endforeach
     </div>
 
