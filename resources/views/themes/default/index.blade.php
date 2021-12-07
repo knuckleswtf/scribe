@@ -62,8 +62,9 @@
     <div class="dark-box">
         @if(isset($metadata['example_languages']))
             <div class="lang-selector">
-                @foreach($metadata['example_languages'] as $lang)
-                    <button type="button" class="lang-button" data-language-name="{{$lang}}">{{$lang}}</button>
+                @foreach($metadata['example_languages'] as $name => $lang)
+                    @php if (is_numeric($name)) $name = $lang; @endphp
+                    <button type="button" class="lang-button" data-language-name="{{$lang}}">{{$name}}</button>
                 @endforeach
             </div>
         @endif
