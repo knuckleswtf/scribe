@@ -105,7 +105,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    const languages = JSON.parse(document.body.getAttribute('data-languages'));
+    let languages = JSON.parse(document.body.getAttribute('data-languages'));
+    // Support a key => value object where the key is the name, or an array of strings where the value is the name
+    if (!Array.isArray(languages)) {
+        languages = Object.values(languages);
+    }
     // if there is no language use the first one
     const currentLanguage = window.localStorage.getItem('language') || languages[0];
     const languageStyle = document.getElementById('language-style');
