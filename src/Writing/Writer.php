@@ -194,8 +194,8 @@ class Writer
             $this->generatedFiles['blade'] = realpath("{$outputPath}index.blade.php");
             $assetsOutputPath = app()->get('path.public')."/vendor/scribe/";
         }
-        $this->generatedFiles['assets']['js'] = realpath("{$assetsOutputPath}css");
-        $this->generatedFiles['assets']['css'] = realpath("{$assetsOutputPath}js");
+        $this->generatedFiles['assets']['js'] = realpath("{$assetsOutputPath}js");
+        $this->generatedFiles['assets']['css'] = realpath("{$assetsOutputPath}css");
         $this->generatedFiles['assets']['images'] = realpath("{$assetsOutputPath}images");
     }
 
