@@ -12,6 +12,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.19.0 (Sunday, 28 November 2021)
+### Added
+- Custom names for example languages, using the array key ([382](https://github.com/knuckleswtf/scribe/pull/382))
+- Custom endpoint metadata attributes ([381](https://github.com/knuckleswtf/scribe/pull/381))
+
+### Fixed
+- Corrected paths in `afterGenerating` hook ([385](https://github.com/knuckleswtf/scribe/pull/385))
+- Fix missing headings in sidebar ([376](https://github.com/knuckleswtf/scribe/pull/376))
+
+## 3.18.0
+Reverted changes in 3.17.0, which broke the display of headings in the sidebar.
+
 ## 3.17.0 (Sunday, 28 November 2021)
 ### Modified
 - Refactored sidebar and external JS to improve usability and performance ([354](https://github.com/knuckleswtf/scribe/pull/354))
