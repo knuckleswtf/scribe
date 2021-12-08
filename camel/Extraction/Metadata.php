@@ -2,7 +2,6 @@
 
 namespace Knuckles\Camel\Extraction;
 
-
 use Knuckles\Camel\BaseDTO;
 
 class Metadata extends BaseDTO
@@ -28,4 +27,6 @@ class Metadata extends BaseDTO
     public ?string $description;
 
     public bool $authenticated = false;
+
+    public array $custom = [];
 }

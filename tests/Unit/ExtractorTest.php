@@ -23,6 +23,7 @@ class ExtractorTest extends TestCase
         'strategies' => [
             'metadata' => [
                 \Knuckles\Scribe\Extracting\Strategies\Metadata\GetFromDocBlocks::class,
+                \Knuckles\Scribe\Tests\Fixtures\TestCustomEndpointMetadata::class,
             ],
             'urlParameters' => [
                 \Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromLaravelAPI::class,
@@ -262,6 +263,14 @@ class ExtractorTest extends TestCase
         $this->assertCount(1, $parsed->bodyParameters);
         $this->assertSame('The id of the location.', $parsed->queryParameters['location_id']->description);
         $this->assertSame('Name of the location', $parsed->bodyParameters['name']->description);
+    }
+
+    /** @test */
+    public function endpoint_metadata_supports_custom_declarations()
+    {
+        $route = $this->createRoute('POST', '/api/test', 'dummy');
+        $parsed = $this->generator->processRoute($route);
+        $this->assertSame('some custom metadata', $parsed->metadata->custom['myProperty']);
     }
 
     public function createRoute(string $httpMethod, string $path, string $controllerMethod, $register = false, $class = TestController::class)
