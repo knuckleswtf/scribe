@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.19.1 (Sunday, 28 November 2021)
+### Fixed
+- Use HTTPS for external assets so they load on file:// URLs ([388](https://github.com/knuckleswtf/scribe/pull/388))
+
 ## 3.19.0 (Sunday, 28 November 2021)
 ### Added
 - Custom names for example languages, using the array key ([382](https://github.com/knuckleswtf/scribe/pull/382))
