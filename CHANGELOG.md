@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
-## 3.19.1 (Sunday, 28 November 2021)
+## 3.19.1 (Thursday, 9 December 2021)
 ### Fixed
 - Use HTTPS for external assets so they load on file:// URLs ([388](https://github.com/knuckleswtf/scribe/pull/388))
 
