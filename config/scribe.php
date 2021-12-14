@@ -280,6 +280,15 @@ INTRO
         'overrides' => [
             // 'info.version' => '2.0.0',
         ],
+
+        /*
+         * Generate baseUrl variable contain protocol (http/https).
+         *
+         * Example :
+         * `true` -> baseUrl = http://localhost
+         * `false` -> baseUrl = localhost
+         */
+        'is_base_url_contain_protocol' => false,
     ],
 
     /*

@@ -34,6 +34,10 @@ class PostmanCollectionWriter
      */
     public function generatePostmanCollection(array $groupedEndpoints): array
     {
+        $baseUrl = !$this->config->get('postman.is_base_url_contain_protocol')
+            ? (parse_url($this->baseUrl, PHP_URL_HOST) ?: $this->baseUrl) // if there's no protocol, parse_url might fail
+            : $this->baseUrl;
+
         $collection = [
             'variable' => [
                 [
@@ -41,7 +45,7 @@ class PostmanCollectionWriter
                     'key' => 'baseUrl',
                     'type' => 'string',
                     'name' => 'string',
-                    'value' => parse_url($this->baseUrl, PHP_URL_HOST) ?: $this->baseUrl, // if there's no protocol, parse_url might fail
+                    'value' => $baseUrl,
                 ],
             ],
             'info' => [
@@ -59,6 +63,7 @@ class PostmanCollectionWriter
             }, $groupedEndpoints),
             'auth' => $this->generateAuthObject(),
         ];
+
         return $collection;
     }
 
@@ -222,13 +227,16 @@ class PostmanCollectionWriter
     protected function generateUrlObject(OutputEndpointData $endpointData): array
     {
         $base = [
-            'protocol' => Str::startsWith($this->baseUrl, 'https') ? 'https' : 'http',
             'host' => '{{baseUrl}}',
             // Change laravel/symfony URL params ({example}) to Postman style, prefixed with a colon
             'path' => preg_replace_callback('/\{(\w+)\??}/', function ($matches) {
                 return ':' . $matches[1];
             }, $endpointData->uri),
         ];
+
+        if (!$this->config->get('postman.is_base_url_contain_protocol')) {
+            $base['protocol'] = Str::startsWith($this->baseUrl, 'https') ? 'https' : 'http';
+        }
 
         $query = [];
         [$where, $authParam] = $this->getAuthParamToExclude();
@@ -272,9 +280,10 @@ class PostmanCollectionWriter
         $queryString = collect($base['query'] ?? [])->map(function ($queryParamData) {
             return $queryParamData['key'] . '=' . $queryParamData['value'];
         })->implode('&');
-        $base['raw'] = sprintf('%s://%s/%s%s',
-            $base['protocol'], $base['host'], $base['path'], $queryString ? "?{$queryString}" : null
-        );
+        $baseHost = !$this->config->get('postman.is_base_url_contain_protocol')
+            ? sprintf('%s://%s', $base['protocol'], $base['host'])
+            : $base['host'];
+        $base['raw'] = sprintf('%s/%s%s', $baseHost, $base['path'], $queryString ? "?{$queryString}" : null);
 
         $urlParams = collect($endpointData->urlParameters);
         if ($urlParams->isEmpty()) {
