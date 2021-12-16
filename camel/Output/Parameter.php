@@ -19,6 +19,9 @@ class Parameter extends \Knuckles\Camel\Extraction\Parameter
     /** @var string */
     public string $type = 'string';
 
+    /** @var string|null */
+    public ?string $format = null;
+
     /** @var array */
     public $__fields = [];
 

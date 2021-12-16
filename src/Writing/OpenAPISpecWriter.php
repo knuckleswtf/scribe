@@ -541,11 +541,15 @@ class OpenAPISpecWriter
                 })->all(),
             ];
         } else {
-            return [
+            $optionalSchema =  [];
+            if (!is_null($field->format)) {
+                $optionalSchema['format'] = $field->format;
+            }
+            return array_merge([
                 'type' => $this->normalizeTypeName($field->type),
                 'description' => $field->description ?: '',
                 'example' => $field->example,
-            ];
+            ], $optionalSchema);
         }
     }
 }
