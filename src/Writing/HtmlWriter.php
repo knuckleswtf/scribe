@@ -76,10 +76,14 @@ class HtmlWriter
         Utils::copyDirectory("{$assetsFolder}/images/", "{$destinationFolder}/images");
 
         $assets = [
-            "{$assetsFolder}/css/theme-$theme.style.css" => ["$destinationFolder/css/", "theme-$theme.style.css"],
-            "{$assetsFolder}/css/theme-$theme.print.css" => ["$destinationFolder/css/", "theme-$theme.print.css"],
-            "{$assetsFolder}/js/theme-$theme.js" => ["$destinationFolder/js/", WritingUtils::getVersionedAsset("theme-$theme.js")],
+            "{$assetsFolder}/css/theme-default.style.css" => ["$destinationFolder/css/", "theme-$theme.style.css"],
+            "{$assetsFolder}/css/theme-default.print.css" => ["$destinationFolder/css/", "theme-$theme.print.css"],
+            "{$assetsFolder}/js/theme-default.js" => ["$destinationFolder/js/", WritingUtils::getVersionedAsset("theme-$theme.js")],
         ];
+
+        if ($this->config->get('try_it_out.enabled', true)) {
+            $assets["{$assetsFolder}/js/tryitout.js"] = ["$destinationFolder/js/", WritingUtils::getVersionedAsset('tryitout.js')];
+        }
 
         foreach ($assets as $path => [$destination, $fileName]) {
             if (file_exists($path)) {
@@ -88,10 +92,6 @@ class HtmlWriter
                 }
                 copy($path, $destination.$fileName);
             }
-        }
-
-        if ($this->config->get('try_it_out.enabled', true)) {
-            copy("{$assetsFolder}/js/tryitout.js", $destinationFolder . WritingUtils::getVersionedAsset('/js/tryitout.js'));
         }
     }
 
