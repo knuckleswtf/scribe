@@ -12,6 +12,7 @@ class Parameter extends BaseDTO
     public bool $required = false;
     public $example = null;
     public string $type = 'string';
+    public array $custom = [];
 
     public function __construct(array $parameters = [])
     {
