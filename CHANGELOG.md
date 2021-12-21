@@ -12,6 +12,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.20.0 (Tuesday, 21 December 2021)
+## Added
+- `custom` field for `Parameter` class ([2abd751d64a2a38648b41d2b97054a16f156a3e0](https://github.com/knuckleswtf/scribe/commit/2abd751d64a2a38648b41d2b97054a16f156a3e0))
+
+### Fixed
+- Try It Out: Use correct input names for lists ([375](https://github.com/knuckleswtf/scribe/pull/375))
+- Fixed error when copying custom theme assets files ([379](https://github.com/knuckleswtf/scribe/pull/379))
+- Fix sidebar navigation bug ([2abd751d64a2a38648b41d2b97054a16f156a3e0](https://github.com/knuckleswtf/scribe/commit/2abd751d64a2a38648b41d2b97054a16f156a3e0))
+
 ## 3.19.1 (Thursday, 9 December 2021)
 ### Fixed
 - Use HTTPS for external assets so they load on file:// URLs ([388](https://github.com/knuckleswtf/scribe/pull/388))
