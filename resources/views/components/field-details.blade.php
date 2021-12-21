@@ -43,11 +43,11 @@
         </label>
     @elseif($isList)
         <input type="{{ $inputType }}"
-               name="{{ $fullName.".0" }}"
+               name="{{ $fullName."[0]" }}"
                data-endpoint="{{ $endpointId }}"
                data-component="{{ $component }}" hidden>
         <input type="{{ $inputType }}"
-               name="{{ $fullName.".1" }}"
+               name="{{ $fullName."[1]" }}"
                data-endpoint="{{ $endpointId }}"
                data-component="{{ $component }}" hidden>
     @else
