@@ -336,6 +336,7 @@ class GenerateDocumentationTest extends BaseLaravelTest
             'required' => true,
             'example' => 6,
             'type' => 'integer',
+            'custom' => [],
         ];
         $group['endpoints'][0]['urlParameters']['a_param'] = $extraParam;
         file_put_contents($group1FilePath, Yaml::dump(
