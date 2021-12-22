@@ -34,10 +34,6 @@ class PostmanCollectionWriter
      */
     public function generatePostmanCollection(array $groupedEndpoints): array
     {
-        $baseUrl = !$this->config->get('postman.is_base_url_contain_protocol')
-            ? (parse_url($this->baseUrl, PHP_URL_HOST) ?: $this->baseUrl) // if there's no protocol, parse_url might fail
-            : $this->baseUrl;
-
         $collection = [
             'variable' => [
                 [
@@ -45,7 +41,7 @@ class PostmanCollectionWriter
                     'key' => 'baseUrl',
                     'type' => 'string',
                     'name' => 'string',
-                    'value' => $baseUrl,
+                    'value' => $this->baseUrl,
                 ],
             ],
             'info' => [
@@ -234,10 +230,6 @@ class PostmanCollectionWriter
             }, $endpointData->uri),
         ];
 
-        if (!$this->config->get('postman.is_base_url_contain_protocol')) {
-            $base['protocol'] = Str::startsWith($this->baseUrl, 'https') ? 'https' : 'http';
-        }
-
         $query = [];
         [$where, $authParam] = $this->getAuthParamToExclude();
         /**
@@ -280,10 +272,7 @@ class PostmanCollectionWriter
         $queryString = collect($base['query'] ?? [])->map(function ($queryParamData) {
             return $queryParamData['key'] . '=' . $queryParamData['value'];
         })->implode('&');
-        $baseHost = !$this->config->get('postman.is_base_url_contain_protocol')
-            ? sprintf('%s://%s', $base['protocol'], $base['host'])
-            : $base['host'];
-        $base['raw'] = sprintf('%s/%s%s', $baseHost, $base['path'], $queryString ? "?{$queryString}" : null);
+        $base['raw'] = sprintf('%s/%s%s', $base['host'], $base['path'], $queryString ? "?{$queryString}" : null);
 
         $urlParams = collect($endpointData->urlParameters);
         if ($urlParams->isEmpty()) {
