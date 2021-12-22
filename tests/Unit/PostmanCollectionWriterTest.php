@@ -42,7 +42,6 @@ class PostmanCollectionWriterTest extends TestCase
 
         $item = data_get($collection, 'item.0.item.0');
         $this->assertSame('some/path', $item['name'], 'Name defaults to path');
-        $this->assertSame('http', data_get($item, 'request.url.protocol'), 'Protocol defaults to http');
         $this->assertSame('fake.localhost', data_get($collection, 'variable.0.value'));
         $this->assertSame('{{baseUrl}}', data_get($item, 'request.url.host'));
         $this->assertSame('some/path', data_get($item, 'request.url.path'), 'Path is set correctly');
@@ -265,39 +264,6 @@ class PostmanCollectionWriterTest extends TestCase
         ], $collection['auth']);
         $this->assertArrayNotHasKey('auth', $collection['item'][0]['item'][0]['request']);
         $this->assertEquals(['type' => 'noauth'], $collection['item'][0]['item'][1]['request']['auth']);
-    }
-
-    /** @test */
-    public function base_url_contain_protocol()
-    {
-        $endpointData = $this->createMockEndpointData('some/path');
-        $endpoints = $this->createMockEndpointGroup([$endpointData], 'Group');
-
-        $config = [
-            'base_url' => 'http://localhost',
-            'title' => 'Test API',
-            'postman' => [
-                'enabled' => true,
-                'is_base_url_contain_protocol' => true,
-            ],
-        ];
-        $writer = new PostmanCollectionWriter(new DocumentationConfig($config));
-        $collection = $writer->generatePostmanCollection([$endpoints]);
-
-        $this->assertSame('Group', data_get($collection, 'item.0.name'), 'Group name exists');
-        
-        $item = data_get($collection, 'item.0.item.0');
-        $this->assertSame('some/path', $item['name'], 'Name defaults to path');
-        $this->assertArrayNotHasKey('protocol', data_get($item, 'request.url'), 'Protocol not exists when base url contain protocol');
-        $this->assertSame('http://localhost', data_get($collection, 'variable.0.value'));
-        $this->assertSame('{{baseUrl}}', data_get($item, 'request.url.host'));
-        $this->assertSame('some/path', data_get($item, 'request.url.path'), 'Path is set correctly');
-        $this->assertEmpty(data_get($item, 'request.url.query'), 'Query parameters are empty');
-        $this->assertSame('GET', data_get($item, 'request.method'), 'Method is correctly resolved');
-        $this->assertContains([
-            'key' => 'Accept',
-            'value' => 'application/json',
-        ], data_get($item, 'request.header'), 'JSON Accept header is added');
     }
 
     protected function createMockEndpointData(string $path, string $title = ''): OutputEndpointData
