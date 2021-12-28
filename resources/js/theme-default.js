@@ -5,13 +5,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const navButton = document.getElementById('nav-button');
     const menuWrapper = document.querySelector('.tocify-wrapper');
-    function toggleSidebar() {
+    function toggleSidebar(event) {
+        event.preventDefault();
         if (menuWrapper) {
             menuWrapper.classList.toggle('open');
             navButton.classList.toggle('open');
         }
     }
-    function closeSidebar() {
+    function closeSidebar(event) {
+        event.preventDefault();
         if (menuWrapper) {
             menuWrapper.classList.remove('open');
             navButton.classList.remove('open');
