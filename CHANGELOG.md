@@ -12,6 +12,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.21.0 (Sunday, 2 January 2022)
+## Modified
+- Include protocol in baseUrl for Postman collections ([391](https://github.com/knuckleswtf/scribe/pull/391))
+
+### Fixed
+- Fix bug where toggling the menu on mobile would jump to the top of the page ([400](https://github.com/knuckleswtf/scribe/pull/400))
+
 ## 3.20.0 (Tuesday, 21 December 2021)
 ## Added
 - `custom` field for `Parameter` class ([2abd751d64a2a38648b41d2b97054a16f156a3e0](https://github.com/knuckleswtf/scribe/commit/2abd751d64a2a38648b41d2b97054a16f156a3e0))
