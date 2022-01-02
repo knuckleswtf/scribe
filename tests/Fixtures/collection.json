@@ -5,14 +5,14 @@
       "key": "baseUrl",
       "type": "string",
       "name": "string",
-      "value": "localhost"
+      "value": "http://localhost"
     }
   ],
   "info": {
     "name": "GREAT API!",
     "_postman_id": "",
     "description": "",
-    "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "version": "3.9.9"
   },
   "item": [
@@ -24,11 +24,10 @@
           "name": "Endpoint with body parameters as array.",
           "request": {
             "url": {
-              "protocol": "http",
               "host": "{{baseUrl}}",
               "path": "api/withBodyParametersAsArray",
               "query": [],
-              "raw": "http://{{baseUrl}}/api/withBodyParametersAsArray"
+              "raw": "{{baseUrl}}/api/withBodyParametersAsArray"
             },
             "method": "POST",
             "header": [
@@ -60,11 +59,10 @@
           "name": "Endpoint with body form data parameters.",
           "request": {
             "url": {
-              "protocol": "http",
               "host": "{{baseUrl}}",
-              "path": "api\/withFormDataParams",
+              "path": "api/withFormDataParams",
               "query": [],
-              "raw": "http:\/\/{{baseUrl}}\/api\/withFormDataParams"
+              "raw": "{{baseUrl}}/api/withFormDataParams"
             },
             "method": "POST",
             "header": [
@@ -74,11 +72,11 @@
               },
               {
                 "key": "Content-Type",
-                "value": "multipart\/form-data"
+                "value": "multipart/form-data"
               },
               {
                 "key": "Accept",
-                "value": "application\/json"
+                "value": "application/json"
               }
             ],
             "body": {
@@ -107,11 +105,10 @@
           "name": "Endpoint with body parameters.",
           "request": {
             "url": {
-              "protocol": "http",
               "host": "{{baseUrl}}",
-              "path": "api\/withBodyParameters",
+              "path": "api/withBodyParameters",
               "query": [],
-              "raw": "http:\/\/{{baseUrl}}\/api\/withBodyParameters"
+              "raw": "{{baseUrl}}/api/withBodyParameters"
             },
             "method": "POST",
             "header": [
@@ -121,11 +118,11 @@
               },
               {
                 "key": "Content-Type",
-                "value": "application\/json"
+                "value": "application/json"
               },
               {
                 "key": "Accept",
-                "value": "application\/json"
+                "value": "application/json"
               }
             ],
             "body": {
@@ -140,12 +137,11 @@
           "response": []
         },
         {
-          "name": "api\/withQueryParameters",
+          "name": "api/withQueryParameters",
           "request": {
             "url": {
-              "protocol": "http",
               "host": "{{baseUrl}}",
-              "path": "api\/withQueryParameters",
+              "path": "api/withQueryParameters",
               "query": [
                 {
                   "key": "location_id",
@@ -178,7 +174,7 @@
                   "disabled": false
                 }
               ],
-              "raw": "http:\/\/{{baseUrl}}\/api\/withQueryParameters?location_id=consequatur&user_id=me&page=4&filters=consequatur&url_encoded=%2B+%5B%5D%26%3D"
+              "raw": "{{baseUrl}}/api/withQueryParameters?location_id=consequatur&user_id=me&page=4&filters=consequatur&url_encoded=%2B+%5B%5D%26%3D"
             },
             "method": "GET",
             "header": [
@@ -188,7 +184,7 @@
               },
               {
                 "key": "Accept",
-                "value": "application\/json"
+                "value": "application/json"
               }
             ],
             "body": null,
@@ -216,14 +212,13 @@
           ]
         },
         {
-          "name": "api\/withAuthTag",
+          "name": "api/withAuthTag",
           "request": {
             "url": {
-              "protocol": "http",
               "host": "{{baseUrl}}",
-              "path": "api\/withAuthTag",
+              "path": "api/withAuthTag",
               "query": [],
-              "raw": "http:\/\/{{baseUrl}}\/api\/withAuthTag"
+              "raw": "{{baseUrl}}/api/withAuthTag"
             },
             "method": "GET",
             "header": [
@@ -233,7 +228,7 @@
               },
               {
                 "key": "Accept",
-                "value": "application\/json"
+                "value": "application/json"
               }
             ],
             "body": null,
@@ -264,12 +259,11 @@
       "description": "",
       "item": [
         {
-          "name": "api\/echoesUrlParameters\/{param}\/{param2}\/{param3?}\/{param4?}",
+          "name": "api/echoesUrlParameters/{param}/{param2}/{param3?}/{param4?}",
           "request": {
             "url": {
-              "protocol": "http",
               "host": "{{baseUrl}}",
-              "path": "api\/echoesUrlParameters\/:param\/:param2\/:param3\/:param4",
+              "path": "api/echoesUrlParameters/:param/:param2/:param3/:param4",
               "query": [
                 {
                   "key": "something",
@@ -278,7 +272,7 @@
                   "disabled": false
                 }
               ],
-              "raw": "http:\/\/{{baseUrl}}\/api\/echoesUrlParameters\/:param\/:param2\/:param3\/:param4?something=consequatur",
+              "raw": "{{baseUrl}}/api/echoesUrlParameters/:param/:param2/:param3/:param4?something=consequatur",
               "variable": [
                 {
                   "id": "param",
@@ -314,7 +308,7 @@
               },
               {
                 "key": "Accept",
-                "value": "application\/json"
+                "value": "application/json"
               }
             ],
             "body": null,

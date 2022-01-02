@@ -42,7 +42,6 @@ class PostmanCollectionWriterTest extends TestCase
 
         $item = data_get($collection, 'item.0.item.0');
         $this->assertSame('some/path', $item['name'], 'Name defaults to path');
-        $this->assertSame('http', data_get($item, 'request.url.protocol'), 'Protocol defaults to http');
         $this->assertSame('fake.localhost', data_get($collection, 'variable.0.value'));
         $this->assertSame('{{baseUrl}}', data_get($item, 'request.url.host'));
         $this->assertSame('some/path', data_get($item, 'request.url.path'), 'Path is set correctly');
