@@ -17,8 +17,8 @@ jobs:
         deps:
         - highest
         include:
-          - {php: '7.4', deps: dingo}
           - {php: '7.4', deps: lowest}
+          - {php: '7.4', deps: dingo}
 
     name: Tests (PHP ${{ matrix.php }} - ${{ matrix.deps }})
 
