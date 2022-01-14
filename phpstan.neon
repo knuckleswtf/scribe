@@ -9,7 +9,6 @@ parameters:
         - '#Call to an undefined method ReflectionType::getName\(\).#'
         - '#(.*)NunoMaduro\\Collision(.*)#'
         - '#.+Dingo.+#'
-        - '#Function factory invoked with 1 parameter, 0 required.#'
         - '#Call to an undefined method Illuminate\\Contracts\\Filesystem\\Filesystem::path\(\)#'
         - '#Access to an undefined property Illuminate\\Support\\HigherOrderCollectionProxy#'
         - '#Access to an undefined property Illuminate\\Contracts\\Foundation\\Application::\$view#'
