@@ -11,18 +11,14 @@ jobs:
     strategy:
       matrix:
         php:
-        - '7.4'
-        - '8.0'
         - '8.1'
+        - '8.0'
+        - '7.4'
         deps:
-        - stable
-        - lowest
-        - dingo
-        exclude:
-          - {php: '8.0', deps: dingo}
-          - {php: '8.0', deps: lowest}
-          - {php: '8.1', deps: dingo}
-          - {php: '8.1', deps: lowest}
+        - highest
+        include:
+          - {php: '7.4', deps: lowest}
+          - {php: '7.4', deps: dingo}
 
     name: Tests (PHP ${{ matrix.php }} - ${{ matrix.deps }})
 
@@ -37,16 +33,16 @@ jobs:
 
 
       - name: Install dependencies
-        if: ${{ matrix.deps == 'stable' }}
-        run: composer update --prefer-stable;
+        if: ${{ matrix.deps == 'highest' }}
+        run: composer update
 
       - name: Install dependencies (Dingo)
         if: ${{ matrix.deps == 'dingo' }}
-        run: COMPOSER=composer.dingo.json composer update --prefer-stable;
+        run: COMPOSER=composer.dingo.json composer update --prefer-stable
 
       - name: Install dependencies (lowest)
         if: ${{ matrix.deps == 'lowest' }}
-        run: COMPOSER=composer.lowest.json composer update --prefer-stable;
+        run: COMPOSER=composer.lowest.json composer update --prefer-stable
 
 
       - name: Execute tests (Laravel/Lumen)

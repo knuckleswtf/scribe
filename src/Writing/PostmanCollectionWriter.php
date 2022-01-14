@@ -269,7 +269,7 @@ class PostmanCollectionWriter
         $base['query'] = $query;
 
         // Create raw url-parameter (Insomnia uses this on import)
-        $queryString = collect($base['query'] ?? [])->map(function ($queryParamData) {
+        $queryString = collect($base['query'])->map(function ($queryParamData) {
             return $queryParamData['key'] . '=' . $queryParamData['value'];
         })->implode('&');
         $base['raw'] = sprintf('%s/%s%s', $base['host'], $base['path'], $queryString ? "?{$queryString}" : null);
