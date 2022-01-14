@@ -7,13 +7,12 @@ use DirectoryIterator;
 use Exception;
 use FastRoute\RouteParser\Std;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Str;
 use Knuckles\Scribe\Exceptions\CouldntFindFactory;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
-use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionFunction;
@@ -100,10 +99,36 @@ class Utils
 
     public static function deleteDirectoryAndContents(string $dir, ?string $workingDir = null): void
     {
-        $adapter = new Local($workingDir ?: getcwd());
-        $fs = new Filesystem($adapter);
-        $dir = str_replace($adapter->getPathPrefix(), '', $dir);
-        $fs->deleteDir($dir);
+        if (class_exists(LocalFilesystemAdapter::class)) {
+            // Flysystem 2+
+            $workingDir ??= getcwd();
+            $adapter = new LocalFilesystemAdapter($workingDir);
+            $fs = new Filesystem($adapter);
+            $dir = str_replace($workingDir, '', $dir);
+            $fs->deleteDirectory($dir);
+        } else {
+            // v1
+            $adapter = new \League\Flysystem\Adapter\Local($workingDir ?: getcwd()); // @phpstan-ignore-line
+            $fs = new Filesystem($adapter); // @phpstan-ignore-line
+            $dir = str_replace($adapter->getPathPrefix(), '', $dir); // @phpstan-ignore-line
+            $fs->deleteDir($dir); // @phpstan-ignore-line
+        }
+    }
+
+    public static function listDirectoryContents(string $dir)
+    {
+        if (class_exists(LocalFilesystemAdapter::class)) {
+            // Flysystem 2+
+            $adapter = new LocalFilesystemAdapter(getcwd());
+            $fs = new Filesystem($adapter);
+            return $fs->listContents($dir);
+        } else {
+            // v1
+            $adapter = new \League\Flysystem\Adapter\Local(getcwd()); // @phpstan-ignore-line
+            $fs = new Filesystem($adapter); // @phpstan-ignore-line
+            $dir = str_replace($adapter->getPathPrefix(), '', $dir); // @phpstan-ignore-line
+            return $fs->listContents($dir);
+        }
     }
 
     public static function copyDirectory(string $src, string $dest): void
@@ -131,11 +156,21 @@ class Utils
 
     public static function deleteFilesMatching(string $dir, callable $condition): void
     {
-        $adapter = new Local(getcwd());
-        $fs = new Filesystem($adapter);
-        $dir = ltrim($dir, '/');
-        $contents = $fs->listContents($dir);
+        if (class_exists(LocalFilesystemAdapter::class)) {
+            // Flysystem 2+
+            $adapter = new LocalFilesystemAdapter(getcwd());
+            $fs = new Filesystem($adapter);
+            $contents = $fs->listContents(ltrim($dir, '/'));
+        } else {
+            // v1
+            $adapter = new \League\Flysystem\Adapter\Local(getcwd()); // @phpstan-ignore-line
+            $fs = new Filesystem($adapter); // @phpstan-ignore-line
+            $dir = str_replace($adapter->getPathPrefix(), '', $dir); // @phpstan-ignore-line
+            $contents = $fs->listContents(ltrim($dir, '/'));
+        }
         foreach ($contents as $file) {
+            // Flysystem v1 had items as arrays; v2 has objects.
+            // v2 allows ArrayAccess, but when we drop v1 support (Laravel <9), we should switch to methods
             if ($file['type'] == 'file' && $condition($file) === true) {
                 $fs->delete($file['path']);
             }
