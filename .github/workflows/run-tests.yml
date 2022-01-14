@@ -15,7 +15,7 @@ jobs:
         - '8.0'
         - '8.1'
         deps:
-        - stable
+        - highest
         - lowest
         - dingo
         exclude:
@@ -38,7 +38,7 @@ jobs:
 
       - name: Install dependencies
         if: ${{ matrix.deps == 'stable' }}
-        run: composer update --prefer-stable;
+        run: composer update;
 
       - name: Install dependencies (Dingo)
         if: ${{ matrix.deps == 'dingo' }}
