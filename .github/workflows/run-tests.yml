@@ -16,7 +16,7 @@ jobs:
         - '7.4'
         deps:
         - highest
-        exclude:
+        include:
           - {php: '7.4', deps: dingo}
           - {php: '7.4', deps: lowest}
 
