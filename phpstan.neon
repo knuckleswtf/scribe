@@ -1,6 +1,6 @@
 parameters:
     level: 5
-    reportUnmatchedIgnoredErrors: false
+    reportUnmatchedIgnoredErrors: true
     inferPrivatePropertyTypeFromConstructor: true
     ignoreErrors:
         - '#Call to an undefined static method Illuminate\\Support\\Facades\\Route::getRoutes\(\).#'
