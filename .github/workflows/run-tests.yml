@@ -35,8 +35,8 @@ jobs:
       - name: Install dependencies
         if: ${{ matrix.deps == 'highest' }}
         run: |
-            composer why-not laravel/framework 9.0 -t
-            composer update;
+          composer update;
+          composer why-not laravel/framework 9.0 -t;
 
       - name: Install dependencies (Dingo)
         if: ${{ matrix.deps == 'dingo' }}
