@@ -3,22 +3,15 @@ parameters:
     reportUnmatchedIgnoredErrors: true
     inferPrivatePropertyTypeFromConstructor: true
     ignoreErrors:
-        - '#Call to an undefined static method Illuminate\\Support\\Facades\\Route::getRoutes\(\).#'
         - '#Call to an undefined static method Illuminate\\Support\\Facades\\URL::forceRootUrl\(\)#'
-        - '#Call to an undefined static method Illuminate\\Support\\Facades\\URL::formatRoot\(\)#'
-        - '#Call to an undefined static method Illuminate\\Support\\Facades\\Storage::path\(\)#'
-        - '#Cannot access offset .+ on Illuminate\\Contracts\\Foundation\\Application.#'
         - '#Call to an undefined method Illuminate\\Routing\\Route::versions\(\).#'
         - '#Call to an undefined method Illuminate\\Contracts\\Validation\\Validator::getRules\(\).#'
         - '#Call to an undefined method ReflectionType::getName\(\).#'
         - '#(.*)NunoMaduro\\Collision(.*)#'
-        - '#Instantiated class Whoops\\Exception\\Inspector not found\.#'
         - '#.+Dingo.+#'
-        - '#Right side of && is always false.#'
         - '#Function factory invoked with 1 parameter, 0 required.#'
         - '#Call to an undefined method Illuminate\\Contracts\\Filesystem\\Filesystem::path\(\)#'
         - '#Access to an undefined property Illuminate\\Support\\HigherOrderCollectionProxy#'
         - '#Access to an undefined property Illuminate\\Contracts\\Foundation\\Application::\$view#'
-        - '#Call to an undefined method Faker\\Generator::uuid#'
         - '#Unsafe usage of new static#'
         - '#Dead catch#'
