@@ -34,15 +34,15 @@ jobs:
 
       - name: Install dependencies
         if: ${{ matrix.deps == 'highest' }}
-        run: composer update;
+        run: composer update
 
       - name: Install dependencies (Dingo)
         if: ${{ matrix.deps == 'dingo' }}
-        run: COMPOSER=composer.dingo.json composer update --prefer-stable;
+        run: COMPOSER=composer.dingo.json composer update --prefer-stable
 
       - name: Install dependencies (lowest)
         if: ${{ matrix.deps == 'lowest' }}
-        run: COMPOSER=composer.lowest.json composer update --prefer-stable;
+        run: COMPOSER=composer.lowest.json composer update --prefer-stable
 
 
       - name: Execute tests (Laravel/Lumen)
