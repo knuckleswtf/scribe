@@ -270,9 +270,9 @@ class TestController extends Controller
 
     /**
      * @authenticated
-     * @urlparam $id Example: 3
+     * @urlparam id Example: 3
      */
-    public function shouldFetchRouteResponseWithEchoedSettings($id)
+    public function echoesRequestValues($id)
     {
         return [
             '{id}' => $id,

@@ -3,6 +3,7 @@
 namespace Knuckles\Scribe\Tests;
 
 use Illuminate\Support\Facades\Route as RouteFacade;
+use Knuckles\Scribe\Scribe;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tests\Fixtures\TestGroupController;
 use Knuckles\Scribe\Tests\Fixtures\TestIgnoreThisController;
@@ -112,6 +113,34 @@ class GenerateDocumentationTest extends BaseLaravelTest
         $output = $this->artisan('scribe:generate');
 
         $this->assertStringContainsString('Processed route: [GET] api/array/test', $output);
+    }
+
+    /** @test */
+    public function calls_afterGenerating_hook()
+    {
+        Scribe::afterGenerating(function (array $paths) {
+            $this->assertEquals(
+                [
+                    'html' => realpath('public/docs/index.html'),
+                    'blade' => null,
+                    'postman' => realpath('public/docs/collection.json') ?: null,
+                    'openapi' => realpath('public/docs/openapi.yaml') ?: null,
+                    'assets' => [
+                        'js' => realpath('public/docs/js'),
+                        'css' => realpath('public/docs/css'),
+                        'images' => realpath('public/docs/images'),
+                    ]
+                ], $paths);
+        });
+
+        RouteFacade::get('/api/array/test', [TestController::class, 'withEndpointDescription']);
+
+        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
+        $output = $this->artisan('scribe:generate');
+
+        $this->assertStringContainsString('Processed route: [GET] api/array/test', $output);
+
+        Scribe::afterGenerating(fn() => null);
     }
 
     /** @test */

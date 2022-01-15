@@ -14,10 +14,10 @@
     <coverage>
         <include>
             <directory suffix=".php">src/</directory>
+            <directory suffix=".php">camel/</directory>
         </include>
         <exclude>
             <file>src/ScribeServiceProvider.php</file>
-            <directory>resources/views/</directory>
         </exclude>
     </coverage>
     <testsuites>
