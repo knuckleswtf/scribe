@@ -31,7 +31,6 @@ jobs:
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick
           coverage: xdebug
 
-
       - name: Install dependencies
         if: ${{ matrix.deps == 'highest' }}
         run: composer update
@@ -47,7 +46,11 @@ jobs:
 
       - name: Execute tests (Laravel/Lumen)
         run: composer test-ci
-        if: ${{ matrix.deps != 'dingo' }}
+        if: ${{ matrix.deps == 'highest' }}
+
+      - name: Execute tests (Lowest)
+        run: COMPOSER=composer.lowest.json composer test-ci
+        if: ${{ matrix.deps == 'lowest' }}
 
       - name: Execute tests (Dingo)
         run: COMPOSER=composer.dingo.json composer test-ci
