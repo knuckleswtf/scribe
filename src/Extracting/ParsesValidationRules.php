@@ -410,7 +410,7 @@ trait ParsesValidationRules
                     break;
                 case 'required_if':
                     $parameterData['description'] .= ' ' . $this->getDescription(
-                            $rule, [':other' => "<code>{$arguments[0]}</code>", ':value' => "<code>{$arguments[1]}</code>"]
+                            $rule, [':other' => "<code>{$arguments[0]}</code>", ':value' => w::getListOfValuesAsFriendlyHtmlString(array_slice($arguments, 1))]
                         ) . ' ';
                     break;
                 case 'required_unless':
