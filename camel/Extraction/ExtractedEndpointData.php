@@ -149,12 +149,12 @@ class ExtractedEndpointData extends BaseDTO
             foreach (array_reverse($pluralResources) as $pluralResource) {
                 $singularResource = Str::singular($pluralResource);
                 $singularResourceParam = str_replace('-', '_', $singularResource);
-                
+
                 $search = ["{$pluralResource}/{{$singularResourceParam}}", "{$pluralResource}/{{$singularResource}?}"];
 
                 // We'll replace with {id} by default, but if the user is using a different key,
                 // like /users/{user:uuid}, use that instead
-                $binding = static::getFieldBindingForUrlParam($route, $singularResource, 'id');
+                $binding = static::getFieldBindingForUrlParam($route, $singularResource, $singularResourceParam);
 
                 if (!$foundResourceParam) {
                     // Only the last resource param should be {id}
@@ -186,7 +186,7 @@ class ExtractedEndpointData extends BaseDTO
     public function forSerialisation()
     {
         $copy = $this->except(
-            // Get rid of all duplicate data
+        // Get rid of all duplicate data
             'cleanQueryParameters', 'cleanUrlParameters', 'fileParameters', 'cleanBodyParameters',
             // and objects used only in extraction
             'route', 'controller', 'method', 'auth',
@@ -203,6 +203,7 @@ class ExtractedEndpointData extends BaseDTO
         if (method_exists($route, 'bindingFieldFor')) {
             $binding = $route->bindingFieldFor($paramName);
         }
+
         return $binding ?: $default;
     }
 }
