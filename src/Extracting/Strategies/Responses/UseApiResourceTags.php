@@ -183,11 +183,9 @@ class UseApiResourceTags extends Strategy
      */
     private function getAdditionalData(?Tag $tag): array
     {
-        if (!$tag) {
-            return [];
-        }
-
-        return a::parseIntoAttributes($tag->getContent());
+        return $tag
+            ? a::parseIntoAttributes($tag->getContent())
+            : [];
     }
 
     /**
