@@ -9,7 +9,7 @@ class AnnotationParserTest extends TestCase
 {
     /**
      * @test
-     * @dataProvider annotations
+     * @dataProvider contentAttributesAnnotations
      */
     public function can_parse_annotation_into_content_and_attributes(string $annotation, array $expected)
     {
@@ -18,7 +18,7 @@ class AnnotationParserTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function annotations()
+    public function contentAttributesAnnotations()
     {
         return [
             "when attributes come first" => [
@@ -49,6 +49,42 @@ class AnnotationParserTest extends TestCase
                     'content' => '{"message": "failed"}',
                 ],
             ],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider attributesAnnotations
+     */
+    public function can_parse_annotation_into_attributes(string $annotation, array $expected)
+    {
+        $result = AnnotationParser::parseIntoAttributes($annotation);
+
+        $this->assertEquals($expected, $result);
+    }
+
+    public function attributesAnnotations()
+    {
+        return [
+            "when attributes filled" => [
+                'status=400 scenario="things go wrong" "dummy field"="dummy data", "snaked_data"=value',
+                [
+                    'status' => '400',
+                    'scenario' => 'things go wrong',
+                    'dummy field' => 'dummy data',
+                    'snaked_data' => 'value'
+                ]
+            ],
+            "when attributes not filled" => [
+                '{"message": "failed"}',
+                []
+            ],
+            "when attributes wrong" => [
+                'status= scenario="things go wrong"',
+                [
+                    'scenario' => 'things go wrong'
+                ]
+            ]
         ];
     }
 }

@@ -562,4 +562,83 @@ class UseApiResourceTagsTest extends BaseLaravelTest
             ],
         ];
     }
+
+    /** @test */
+    public function can_parse_apiresourceadditional_tags()
+    {
+        $config = new DocumentationConfig([]);
+
+        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+
+        $strategy = new UseApiResourceTags($config);
+        $tags = [
+            new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
+            new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser'),
+            new Tag('apiResourceAdditional', 'a=b "custom field"=c e="custom value" "another field"="true value"')
+        ];
+        $results = $strategy->getApiResourceResponse($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+
+        $this->assertArraySubset([
+            [
+                'status' => 200,
+                'content' => json_encode([
+                    'data' => [
+                        'id' => 4,
+                        'name' => 'Tested Again',
+                        'email' => 'a@b.com',
+                    ],
+                    'a' => 'b',
+                    'custom field' => 'c',
+                    'e' => 'custom value',
+                    'another field' => 'true value',
+                ]),
+            ],
+        ], $results);
+    }
+
+    /** @test */
+    public function can_parse_apiresourcecollection_tags_with_collection_class_pagination_and_apiresourceadditional_tag()
+    {
+        $config = new DocumentationConfig([]);
+
+        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+
+        $strategy = new UseApiResourceTags($config);
+        $tags = [
+            new Tag('apiResourceCollection', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResourceCollection'),
+            new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser paginate=1,simple'),
+            new Tag('apiResourceAdditional', 'a=b'),
+        ];
+        $results = $strategy->getApiResourceResponse($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+
+        $this->assertArraySubset([
+            [
+                'status' => 200,
+                'content' => json_encode([
+                    'data' => [
+                        [
+                            'id' => 4,
+                            'name' => 'Tested Again',
+                            'email' => 'a@b.com',
+                        ],
+                    ],
+                    'links' => [
+                        'self' => 'link-value',
+                        "first" => '/?page=1',
+                        "last" => null,
+                        "prev" => null,
+                        "next" => '/?page=2',
+                    ],
+                    'meta' => [
+                        "current_page" => 1,
+                        "from" => 1,
+                        "path" => '/',
+                        "per_page" => "1",
+                        "to" => 1,
+                    ],
+                    'a' => 'b',
+                ]),
+            ],
+        ], $results);
+    }
 }
