@@ -30,4 +30,29 @@ class AnnotationParser
             'attributes' => $parsedAttributes
         ];
     }
+
+    /**
+     * Parse an annotation like 'status=400 when="things go wrong"' to key-value array
+     * All non key-value fields will be ignored
+     *
+     * @param string $annotationContent
+     * @return array
+     */
+    public static function parseIntoAttributes(string $annotationContent): array
+    {
+        $attributes = $matches = [];
+
+        preg_match_all(
+            '/([^\s\'"]+|".+?"|\'.+?\')=([^\s\'"]+|".+?"|\'.+?\')/',
+            $annotationContent,
+            $matches,
+            PREG_SET_ORDER,
+        );
+
+        foreach ($matches as $match) {
+            $attributes[trim($match[1], '"\' ')] = trim($match[2], '"\' ');
+        }
+
+        return $attributes;
+    }
 }
