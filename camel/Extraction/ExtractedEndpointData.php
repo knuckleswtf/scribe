@@ -150,7 +150,12 @@ class ExtractedEndpointData extends BaseDTO
                 $singularResource = Str::singular($pluralResource);
                 $singularResourceParam = str_replace('-', '_', $singularResource);
 
-                $search = ["{$pluralResource}/{{$singularResourceParam}}", "{$pluralResource}/{{$singularResource}?}"];
+                $search = [
+                    "{$pluralResource}/{{$singularResourceParam}}",
+                    "{$pluralResource}/{{$singularResource}}",
+                    "{$pluralResource}/{{$singularResourceParam}?}",
+                    "{$pluralResource}/{{$singularResource}?}"
+                ];
 
                 // We'll replace with {id} by default, but if the user is using a different key,
                 // like /users/{user:uuid}, use that instead
@@ -162,7 +167,12 @@ class ExtractedEndpointData extends BaseDTO
                     $foundResourceParam = true;
                 } else {
                     // Earlier ones should be {<param>_id}
-                    $replace = ["{$pluralResource}/{{$singularResource}_{$binding}}", "{$pluralResource}/{{$singularResourceParam}_{$binding}?}"];
+                    $replace = [
+                        "{$pluralResource}/{{$singularResource}_{$binding}}",
+                        "{$pluralResource}/{{$singularResourceParam}_{$binding}}",
+                        "{$pluralResource}/{{$singularResource}_{$binding}?}",
+                        "{$pluralResource}/{{$singularResourceParam}_{$binding}?}"
+                    ];
                 }
                 $uri = str_replace($search, $replace, $uri);
             }
