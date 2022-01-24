@@ -154,7 +154,7 @@ class ExtractedEndpointData extends BaseDTO
 
                 // We'll replace with {id} by default, but if the user is using a different key,
                 // like /users/{user:uuid}, use that instead
-                $binding = static::getFieldBindingForUrlParam($route, $singularResource, $singularResourceParam);
+                $binding = static::getFieldBindingForUrlParam($route, $singularResource, 'id');
 
                 if (!$foundResourceParam) {
                     // Only the last resource param should be {id}
