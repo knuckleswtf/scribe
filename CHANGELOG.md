@@ -12,6 +12,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
+## 3.22.0 ( January 2022)
+## Added
+- `@apiResourceAdditional` tag for setting extra attributes on API Resources ([414](https://github.com/knuckleswtf/scribe/pull/414))
+
+## Modified
+- Print multiple fields in `required_if` ([406](https://github.com/knuckleswtf/scribe/pull/406))
+
 ## 3.21.0 (Sunday, 2 January 2022)
 ## Modified
 - Include protocol in baseUrl for Postman collections ([391](https://github.com/knuckleswtf/scribe/pull/391))

@@ -32,8 +32,9 @@ class AnnotationParser
     }
 
     /**
-     * Parse an annotation like 'status=400 when="things go wrong"' to key-value array
-     * All non key-value fields will be ignored
+     * Parse an annotation like 'title=This message="everything good"' into a key-value array.
+     * All non key-value fields will be ignored. Useful for `@apiResourceAdditional`,
+     * where users may specify arbitrary attributes.
      *
      * @param string $annotationContent
      * @return array

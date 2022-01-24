@@ -108,10 +108,10 @@ class Utils
             $fs->deleteDirectory($dir);
         } else {
             // v1
-            $adapter = new \League\Flysystem\Adapter\Local($workingDir ?: getcwd()); // @phpstan-ignore-line
-            $fs = new Filesystem($adapter); // @phpstan-ignore-line
-            $dir = str_replace($adapter->getPathPrefix(), '', $dir); // @phpstan-ignore-line
-            $fs->deleteDir($dir); // @phpstan-ignore-line
+            $adapter = new \League\Flysystem\Adapter\Local($workingDir ?: getcwd());
+            $fs = new Filesystem($adapter);
+            $dir = str_replace($adapter->getPathPrefix(), '', $dir);
+            $fs->deleteDir($dir);
         }
     }
 

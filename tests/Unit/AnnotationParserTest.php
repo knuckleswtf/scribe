@@ -66,23 +66,23 @@ class AnnotationParserTest extends TestCase
     public function attributesAnnotations()
     {
         return [
-            "when attributes filled" => [
-                'status=400 scenario="things go wrong" "dummy field"="dummy data", "snaked_data"=value',
+            "with or without quotes" => [
+                'title=This message="everything good" "dummy field"="dummy data", "snaked_data"=value',
                 [
-                    'status' => '400',
-                    'scenario' => 'things go wrong',
+                    'title' => 'This',
+                    'message' => "everything good",
                     'dummy field' => 'dummy data',
                     'snaked_data' => 'value'
                 ]
             ],
-            "when attributes not filled" => [
+            "no attributes" => [
                 '{"message": "failed"}',
                 []
             ],
-            "when attributes wrong" => [
-                'status= scenario="things go wrong"',
+            "attributes with empty values" => [
+                'title= message="everything good"',
                 [
-                    'scenario' => 'things go wrong'
+                    'message' => 'everything good'
                 ]
             ]
         ];
