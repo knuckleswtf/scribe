@@ -12,12 +12,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
-## 3.22.0 ( January 2022)
-## Added
+## 3.22.0 (26 January 2022)
+### Added
 - `@apiResourceAdditional` tag for setting extra attributes on API Resources ([414](https://github.com/knuckleswtf/scribe/pull/414))
 
-## Modified
+### Modified
 - Print multiple fields in `required_if` ([406](https://github.com/knuckleswtf/scribe/pull/406))
+
+### Fixed
+- JS theme error ([ce94c03966ebf97a20442b2a92dda3db9c6c52d5](https://github.com/knuckleswtf/scribe/commit/ce94c03966ebf97a20442b2a92dda3db9c6c52d5))
 
 ## 3.21.0 (Sunday, 2 January 2022)
 ## Modified
