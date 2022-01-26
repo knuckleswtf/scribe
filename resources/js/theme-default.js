@@ -12,8 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
             navButton.classList.toggle('open');
         }
     }
-    function closeSidebar(event) {
-        event.preventDefault();
+    function closeSidebar() {
         if (menuWrapper) {
             menuWrapper.classList.remove('open');
             navButton.classList.remove('open');
