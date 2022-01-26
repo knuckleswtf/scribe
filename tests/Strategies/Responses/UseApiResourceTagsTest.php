@@ -436,6 +436,8 @@ class UseApiResourceTagsTest extends BaseLaravelTest
                 ]),
             ],
         ], $results);
+
+        $this->afterTestCleanup();
     }
 
     /** @test */
@@ -709,7 +711,6 @@ class UseApiResourceTagsTest extends BaseLaravelTest
             'driver' => 'sqlite',
             'database' => ':memory:',
         ]]]);
-        Globals::$shouldBeVerbose = true;
 
         (new class extends Migration {
             function up() {
@@ -746,5 +747,10 @@ class UseApiResourceTagsTest extends BaseLaravelTest
                 });
             }
         })->up();
+    }
+
+    protected function afterTestCleanup()
+    {
+        config(['scribe.database_connections_to_transact' => []]);
     }
 }
