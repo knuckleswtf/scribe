@@ -6,6 +6,7 @@ use Closure;
 use DirectoryIterator;
 use Exception;
 use FastRoute\RouteParser\Std;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Str;
@@ -251,6 +252,8 @@ class Utils
                         : [];
 
                     $factory = $factory->hasAttached($factoryChain, $pivot, $relationVector);
+                } else if ($relationType === BelongsTo::class) {
+                    $factory = $factory->for($factoryChain, $relationVector);
                 } else {
                     $factory = $factory->has($factoryChain, $relationVector);
                 }
