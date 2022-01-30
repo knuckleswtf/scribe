@@ -641,4 +641,9 @@ class UseApiResourceTagsTest extends BaseLaravelTest
             ],
         ], $results);
     }
+
+    protected function afterTestCleanup()
+    {
+        config(['scribe.database_connections_to_transact' => []]);
+    }
 }

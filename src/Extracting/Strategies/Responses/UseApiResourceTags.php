@@ -205,6 +205,9 @@ class UseApiResourceTags extends Strategy
             try {
                 return $factory->create();
             } catch (Throwable $e) {
+                c::warn("Eloquent model factory failed to create {$type}; trying to make it.");
+                e::dumpExceptionIfVerbose($e, true);
+
                 // If there was no working database, ->create() would fail. Try ->make() instead
                 return $factory->make();
             }
