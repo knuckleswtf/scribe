@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## <Version> (<Release date>)
 ### Fixes
+- Load BelongsTo relations correctly. ([#417](https://github.com/knuckleswtf/scribe/pull/#417)))
 
 ### Changes
 
