@@ -2,22 +2,15 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\Responses;
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Routing\Route;
-use Illuminate\Support\Facades\Schema;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Extracting\Strategies\Responses\UseApiResourceTags;
 use Knuckles\Scribe\ScribeServiceProvider;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
-use Knuckles\Scribe\Tests\Fixtures\inmemory\TestWork as InMemoryTestWork;
-use Knuckles\Scribe\Tests\Fixtures\inmemory\TestPet as InMemoryTestPet;
-use Knuckles\Scribe\Tests\Fixtures\inmemory\TestUser as InmemoryTestUser;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tests\Fixtures\TestPet;
 use Knuckles\Scribe\Tests\Fixtures\TestUser;
 use Knuckles\Scribe\Tools\DocumentationConfig;
-use Knuckles\Scribe\Tools\Globals;
 use Knuckles\Scribe\Tools\Utils;
 use Mpociot\Reflection\DocBlock\Tag;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
@@ -385,62 +378,6 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function loads_specified_many_to_many_and_nested_relations_for_generated_model_with_inmemory_db()
-    {
-        $this->setUpInmemory();
-
-        $config = new DocumentationConfig([]);
-
-        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
-
-        $strategy = new UseApiResourceTags($config);
-        $tags = [
-            new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\inmemory\TestUserApiResource'),
-            new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\inmemory\TestUser with=work.departments,children.pets'),
-        ];
-        $results = $strategy->getApiResourceResponse($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
-
-        $this->assertArraySubset([
-            [
-                'status' => 200,
-                'content' => json_encode([
-                    'data' => [
-                        'id' => 1,
-                        'name' => 'Tested Again',
-                        'email' => 'a@b.com',
-                        'children' => [
-                            [
-                                'id' => 2,
-                                'name' => 'Tested Again',
-                                'email' => 'a@b.com',
-                                'pets' => [
-                                    [
-                                        'id' => 1,
-                                        'name' => 'Mephistopheles',
-                                        'species' => 'dog'
-                                    ],
-                                ],
-                            ]
-                        ],
-                        'work' => [
-                            'id' => 1,
-                            'name' => 'My best work',
-                            'departments' => [
-                                [
-                                    'id' => 1,
-                                    'name' => 'My best department',
-                                ]
-                            ],
-                        ]
-                    ],
-                ]),
-            ],
-        ], $results);
-
-        $this->afterTestCleanup();
-    }
-
-    /** @test */
     public function loads_specified_many_to_many_relations_for_generated_model_with_pivot()
     {
         $factory = app(\Illuminate\Database\Eloquent\Factory::class);
@@ -703,50 +640,6 @@ class UseApiResourceTagsTest extends BaseLaravelTest
                 ]),
             ],
         ], $results);
-    }
-
-    protected function setUpInmemory()
-    {
-        config(['scribe.database_connections_to_transact' => [[
-            'driver' => 'sqlite',
-            'database' => ':memory:',
-        ]]]);
-
-        (new class extends Migration {
-            function up() {
-                Schema::create('test_users', function (Blueprint $table) {
-                    $table->id();
-                    $table->string('first_name')->nullable();
-                    $table->string('last_name')->nullable();
-                    $table->string('email')->nullable();
-                    $table->foreignIdFor(InMemoryTestWork::class);
-                    $table->foreignIdFor(InMemoryTestUser::class, 'parent_id')->nullable();
-                    $table->timestamps();
-                });
-                Schema::create('test_pets', function (Blueprint $table) {
-                    $table->id();
-                    $table->string('name')->nullable();
-                    $table->string('species')->nullable();
-                    $table->timestamps();
-                });
-                Schema::create('test_pet_test_user', function (Blueprint $table) {
-                    $table->foreignIdFor(InMemoryTestUser::class);
-                    $table->foreignIdFor(InMemoryTestPet::class);
-                    $table->integer('duration')->nullable();
-                });
-                Schema::create('test_works', function (Blueprint $table) {
-                    $table->id();
-                    $table->string('name')->nullable();
-                    $table->timestamps();
-                });
-                Schema::create('test_departments', function (Blueprint $table) {
-                    $table->id();
-                    $table->string('name')->nullable();
-                    $table->foreignIdFor(InMemoryTestWork::class);
-                    $table->timestamps();
-                });
-            }
-        })->up();
     }
 
     protected function afterTestCleanup()
