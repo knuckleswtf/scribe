@@ -203,7 +203,7 @@ class UseApiResourceTags extends Strategy
             $factory = Utils::getModelFactory($type, $factoryStates, $relations);
 
             try {
-                return $factory->create();
+                return $factory->create()->load($relations);
             } catch (Throwable $e) {
                 c::warn("Eloquent model factory failed to create {$type}; trying to make it.");
                 e::dumpExceptionIfVerbose($e, true);
