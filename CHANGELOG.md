@@ -4,14 +4,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project aims to adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## <Version> (<Release date>)
-### Fixes
-- Load BelongsTo relations correctly. ([#417](https://github.com/knuckleswtf/scribe/pull/#417)))
+### Fixed
 
-### Changes
+### Modified
 
-### Additions
+### Added
 
-### Removals
+### Removed
+
+## 3.23.0 (31 January 2022)
+### Added
+- Try loading an example URL parameter from the database ([409](https://github.com/knuckleswtf/scribe/pull/409))
+
+### Fixed
+- Load `BelongsTo` relations correctly. ([#417](https://github.com/knuckleswtf/scribe/pull/417))
+- Load relations correctly on factory-generated models. ([#419](https://github.com/knuckleswtf/scribe/pull/419))
+
+## 3.22.0 (26 January 2022)
+### Added
+- `@apiResourceAdditional` tag for setting extra attributes on API Resources ([414](https://github.com/knuckleswtf/scribe/pull/414))
+
+### Modified
+- Print multiple fields in `required_if` ([406](https://github.com/knuckleswtf/scribe/pull/406))
+
+### Fixed
+- JS theme error ([ce94c03966ebf97a20442b2a92dda3db9c6c52d5](https://github.com/knuckleswtf/scribe/commit/ce94c03966ebf97a20442b2a92dda3db9c6c52d5))
 
 ## 3.22.0 (26 January 2022)
 ### Added

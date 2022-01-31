@@ -71,6 +71,7 @@ class GetFromLaravelAPI extends Strategy
 
                     // Try to fetch an example ID from the database
                     try {
+                        // todo: add some database tests
                         $example = $argumentInstance::first()->id ?? null;
                     } catch (\Throwable $e) {
                         $example = null;
