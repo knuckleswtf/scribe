@@ -69,9 +69,14 @@ class GetFromLaravelAPI extends Strategy
                     $type = $this->normalizeTypeName($typeName);
                     $parameters[$paramName]['type'] = $type;
 
-                    $example  = $argumentInstance::first()->id ?? null;
+                    // Try to fetch an example ID from the database
+                    try {
+                        $example = $argumentInstance::first()->id ?? null;
+                    } catch (\Throwable $e) {
+                        $example = null;
+                    }
 
-                    if($example === null) {
+                    if ($example === null) {
                         // If the user explicitly set a `where()` constraint, use that to refine examples
                         $parameterRegex = $endpointData->route->wheres[$paramName] ?? null;
                         $example = $parameterRegex
