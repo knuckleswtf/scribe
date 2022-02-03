@@ -541,11 +541,11 @@ class GenerateDocumentationTest extends BaseLaravelTest
         $this->artisan('scribe:generate');
 
         $group = Yaml::parseFile('.scribe/endpoints/00.yaml');
-        $this->assertEquals('no-file', $group['endpoints'][0]['uri']);
-        $this->assertEquals('application/json', $group['endpoints'][0]['headers']['Content-Type']);
-        $this->assertEquals('top-level-file', $group['endpoints'][1]['uri']);
-        $this->assertEquals('multipart/form-data', $group['endpoints'][1]['headers']['Content-Type']);
-        $this->assertEquals('nested-file', $group['endpoints'][2]['uri']);
+        $this->assertEquals('nested-file', $group['endpoints'][0]['uri']);
+        $this->assertEquals('multipart/form-data', $group['endpoints'][0]['headers']['Content-Type']);
+        $this->assertEquals('no-file', $group['endpoints'][1]['uri']);
+        $this->assertEquals('application/json', $group['endpoints'][1]['headers']['Content-Type']);
+        $this->assertEquals('top-level-file', $group['endpoints'][2]['uri']);
         $this->assertEquals('multipart/form-data', $group['endpoints'][2]['headers']['Content-Type']);
 
     }

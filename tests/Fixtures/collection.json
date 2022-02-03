@@ -21,6 +21,82 @@
       "description": "",
       "item": [
         {
+          "name": "api/withAuthTag",
+          "request": {
+            "url": {
+              "host": "{{baseUrl}}",
+              "path": "api/withAuthTag",
+              "query": [],
+              "raw": "{{baseUrl}}/api/withAuthTag"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Custom-Header",
+                "value": "NotSoCustom"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": null,
+            "description": ""
+          },
+          "response": [
+            {
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "text/html; charset=UTF-8"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "no-cache, private"
+                }
+              ],
+              "code": 200,
+              "body": "",
+              "name": null
+            }
+          ]
+        },
+        {
+          "name": "Endpoint with body parameters.",
+          "request": {
+            "url": {
+              "host": "{{baseUrl}}",
+              "path": "api/withBodyParameters",
+              "query": [],
+              "raw": "{{baseUrl}}/api/withBodyParameters"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Custom-Header",
+                "value": "NotSoCustom"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"user_id\":9,\"room_id\":\"consequatur\",\"forever\":false,\"another_one\":11613.31890586,\"yet_another_param\":{\"name\":\"consequatur\"},\"even_more_param\":[11613.31890586],\"book\":{\"name\":\"consequatur\",\"author_id\":17,\"pages_count\":17},\"ids\":[17],\"users\":[{\"first_name\":\"John\",\"last_name\":\"Doe\"}]}"
+            },
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Endpoint with body parameters as array.",
           "request": {
             "url": {
@@ -102,41 +178,6 @@
           "response": []
         },
         {
-          "name": "Endpoint with body parameters.",
-          "request": {
-            "url": {
-              "host": "{{baseUrl}}",
-              "path": "api/withBodyParameters",
-              "query": [],
-              "raw": "{{baseUrl}}/api/withBodyParameters"
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Custom-Header",
-                "value": "NotSoCustom"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\"user_id\":9,\"room_id\":\"consequatur\",\"forever\":false,\"another_one\":11613.31890586,\"yet_another_param\":{\"name\":\"consequatur\"},\"even_more_param\":[11613.31890586],\"book\":{\"name\":\"consequatur\",\"author_id\":17,\"pages_count\":17},\"ids\":[17],\"users\":[{\"first_name\":\"John\",\"last_name\":\"Doe\"}]}"
-            },
-            "description": "",
-            "auth": {
-              "type": "noauth"
-            }
-          },
-          "response": []
-        },
-        {
           "name": "api/withQueryParameters",
           "request": {
             "url": {
@@ -192,47 +233,6 @@
             "auth": {
               "type": "noauth"
             }
-          },
-          "response": [
-            {
-              "header": [
-                {
-                  "key": "content-type",
-                  "value": "text/html; charset=UTF-8"
-                },
-                {
-                  "key": "cache-control",
-                  "value": "no-cache, private"
-                }
-              ],
-              "code": 200,
-              "body": "",
-              "name": null
-            }
-          ]
-        },
-        {
-          "name": "api/withAuthTag",
-          "request": {
-            "url": {
-              "host": "{{baseUrl}}",
-              "path": "api/withAuthTag",
-              "query": [],
-              "raw": "{{baseUrl}}/api/withAuthTag"
-            },
-            "method": "GET",
-            "header": [
-              {
-                "key": "Custom-Header",
-                "value": "NotSoCustom"
-              },
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
-            "body": null,
-            "description": ""
           },
           "response": [
             {
