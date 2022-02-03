@@ -2,7 +2,7 @@
     /** @var  Knuckles\Camel\Output\OutputEndpointData $endpoint */
 @endphp
 
-<h2 id="{!! Str::slug($group['name']) !!}-{!! $endpoint->endpointId() !!}">{{ $endpoint->metadata->title ?: ($endpoint->httpMethods[0]." ".$endpoint->uri)}}</h2>
+<h2 id="{!! Str::slug($group['name']) !!}:{!! $endpoint->endpointId() !!}">{{ $endpoint->metadata->title ?: ($endpoint->httpMethods[0]." ".$endpoint->uri)}}</h2>
 
 <p>
 @component('scribe::components.badges.auth', ['authenticated' => $endpoint->metadata->authenticated])
@@ -11,7 +11,7 @@
 
 {!! Parsedown::instance()->text($endpoint->metadata->description ?: '') !!}
 
-<span id="example-requests-{!! $endpoint->endpointId() !!}">
+<span id="example-requests-{!! $endpoint->cssEscapedEndpointId() !!}">
 <blockquote>Example request:</blockquote>
 
 @foreach($metadata['example_languages'] as $language)
@@ -23,7 +23,7 @@
 @endforeach
 </span>
 
-<span id="example-responses-{!! $endpoint->endpointId() !!}">
+<span id="example-responses-{!! $endpoint->cssEscapedEndpointId() !!}">
 @if($endpoint->isGet() || $endpoint->hasResponses())
     @foreach($endpoint->responses as $response)
         <blockquote>
@@ -51,40 +51,40 @@
     @endforeach
 @endif
 </span>
-<span id="execution-results-{{ $endpoint->endpointId() }}" hidden>
+<span id="execution-results-{{ $endpoint->cssEscapedEndpointId() }}" hidden>
     <blockquote>Received response<span
-                id="execution-response-status-{{ $endpoint->endpointId() }}"></span>:
+                id="execution-response-status-{{ $endpoint->cssEscapedEndpointId() }}"></span>:
     </blockquote>
-    <pre class="json"><code id="execution-response-content-{{ $endpoint->endpointId() }}"></code></pre>
+    <pre class="json"><code id="execution-response-content-{{ $endpoint->cssEscapedEndpointId() }}"></code></pre>
 </span>
-<span id="execution-error-{{ $endpoint->endpointId() }}" hidden>
+<span id="execution-error-{{ $endpoint->cssEscapedEndpointId() }}" hidden>
     <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-{{ $endpoint->endpointId() }}"></code></pre>
+    <pre><code id="execution-error-message-{{ $endpoint->cssEscapedEndpointId() }}"></code></pre>
 </span>
-<form id="form-{{ $endpoint->endpointId() }}" data-method="{{ $endpoint->httpMethods[0] }}"
+<form id="form-{{ $endpoint->cssEscapedEndpointId() }}" data-method="{{ $endpoint->httpMethods[0] }}"
       data-path="{{ $endpoint->uri }}"
       data-authed="{{ $endpoint->metadata->authenticated ? 1 : 0 }}"
       data-hasfiles="{{ $endpoint->hasFiles() ? 1 : 0 }}"
       data-isarraybody="{{ $endpoint->isArrayBody() ? 1 : 0 }}"
       data-headers='@json($endpoint->headers)'
       autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('{{ $endpoint->endpointId() }}', this);">
+      onsubmit="event.preventDefault(); executeTryOut('{{ $endpoint->cssEscapedEndpointId() }}', this);">
     <h3>
         Request&nbsp;&nbsp;&nbsp;
         @if($metadata['try_it_out']['enabled'] ?? false)
             <button type="button"
                     style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-{{ $endpoint->endpointId() }}"
-                    onclick="tryItOut('{{ $endpoint->endpointId() }}');">Try it out ⚡
+                    id="btn-tryout-{{ $endpoint->cssEscapedEndpointId() }}"
+                    onclick="tryItOut('{{ $endpoint->cssEscapedEndpointId() }}');">Try it out ⚡
             </button>
             <button type="button"
                     style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-{{ $endpoint->endpointId() }}"
-                    onclick="cancelTryOut('{{ $endpoint->endpointId() }}');" hidden>Cancel 🛑
+                    id="btn-canceltryout-{{ $endpoint->cssEscapedEndpointId() }}"
+                    onclick="cancelTryOut('{{ $endpoint->cssEscapedEndpointId() }}');" hidden>Cancel 🛑
             </button>&nbsp;&nbsp;
             <button type="submit"
                     style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-{{ $endpoint->endpointId() }}" hidden>Send Request 💥
+                    id="btn-executetryout-{{ $endpoint->cssEscapedEndpointId() }}" hidden>Send Request 💥
             </button>
         @endif
     </h3>
@@ -96,11 +96,11 @@
     @endforeach
     @if($endpoint->metadata->authenticated && $metadata['auth']['location'] === 'header')
         <p>
-            <label id="auth-{{ $endpoint->endpointId() }}" hidden>{{ $metadata['auth']['name'] }} header:
+            <label id="auth-{{ $endpoint->cssEscapedEndpointId() }}" hidden>{{ $metadata['auth']['name'] }} header:
                 <b><code>{{ $metadata['auth']['prefix'] }}</code></b><input type="text"
                                                                 name="{{ $metadata['auth']['name'] }}"
                                                                 data-prefix="{{ $metadata['auth']['prefix'] }}"
-                                                                data-endpoint="{{ $endpoint->endpointId() }}"
+                                                                data-endpoint="{{ $endpoint->cssEscapedEndpointId() }}"
                                                                 data-component="header"></label>
         </p>
     @endif
@@ -114,7 +114,7 @@
                   'required' => $parameter->required,
                   'description' => $parameter->description,
                   'example' => $parameter->example ?? '',
-                  'endpointId' => $endpoint->endpointId(),
+                  'endpointId' => $endpoint->cssEscapedEndpointId(),
                   'component' => 'url',
                 ])
                 @endcomponent
@@ -131,7 +131,7 @@
                   'required' => $parameter->required,
                   'description' => $parameter->description,
                   'example' => $parameter->example ?? '',
-                  'endpointId' => $endpoint->endpointId(),
+                  'endpointId' => $endpoint->cssEscapedEndpointId(),
                   'component' => 'query',
                 ])
                 @endcomponent
@@ -140,7 +140,7 @@
     @endif
     @if(count($endpoint->nestedBodyParameters))
         <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
-        @component('scribe::components.body-parameters', ['parameters' => $endpoint->nestedBodyParameters, 'endpointId' => $endpoint->endpointId(),])
+        @component('scribe::components.body-parameters', ['parameters' => $endpoint->nestedBodyParameters, 'endpointId' => $endpoint->cssEscapedEndpointId(),])
         @endcomponent
     @endif
 </form>

@@ -71,8 +71,8 @@
                     <ul id="tocify-subheader-{!! Str::slug($group['name']) !!}" class="tocify-subheader">
                 @endif
                 @foreach($group['endpoints'] as $endpoint)
-                    <li class="tocify-item level-2" data-unique="{!! Str::slug($group['name']) !!}-{!! $endpoint->endpointId() !!}">
-                        <a href="#{!! Str::slug($group['name']) !!}-{!! $endpoint->endpointId() !!}">{{ $endpoint->metadata->title ?: ($endpoint->httpMethods[0]." ".$endpoint->uri)}}</a>
+                    <li class="tocify-item level-2" data-unique="{!! Str::slug($group['name']) !!}:{!! $endpoint->endpointId() !!}">
+                        <a href="#{!! Str::slug($group['name']) !!}:{!! $endpoint->endpointId() !!}">{{ $endpoint->metadata->title ?: ($endpoint->httpMethods[0]." ".$endpoint->uri)}}</a>
                     </li>
                 @endforeach
                 @if (count($group['endpoints']) > 0)

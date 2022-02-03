@@ -33,8 +33,6 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
     public static string $camelDir;
     public static string $cacheDir;
 
-    private array $endpointGroupIndexes = [];
-
     public function __construct(GenerateDocumentation $command, RouteMatcherInterface $routeMatcher, $preserveUserChanges)
     {
         $this->command = $command;
@@ -73,7 +71,7 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
 
         $routes = $routeMatcher->getRoutes($this->docConfig->get('routes'), $this->docConfig->get('router'));
         $endpoints = $this->extractEndpointsInfoFromLaravelApp($routes, $cachedEndpoints, $latestEndpointsData, $groups);
-        $groupedEndpoints = Camel::groupEndpoints($endpoints, $this->endpointGroupIndexes);
+        $groupedEndpoints = Camel::groupEndpoints($endpoints);
         $this->writeEndpointsToDisk($groupedEndpoints);
         $groupedEndpoints = Camel::prepareGroupedEndpointsForOutput($groupedEndpoints);
         return $groupedEndpoints;
@@ -120,9 +118,6 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
 
                 // We need to preserve order of endpoints, in case user did custom sorting
                 $parsedEndpoints[] = $currentEndpointData;
-                if ($index !== null) {
-                    $this->endpointGroupIndexes[$currentEndpointData->endpointId()] = $index;
-                }
                 c::success('Processed route: ' . c::getRouteRepresentation($route));
             } catch (\Exception $exception) {
                 $this->encounteredErrors = true;

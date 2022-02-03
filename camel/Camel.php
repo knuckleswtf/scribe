@@ -45,7 +45,7 @@ class Camel
      * Load endpoints from the Camel files into a flat list of endpoint arrays.
      *
      * @param string $folder
-     *
+     * @param bool $isFromCache
      * @return array[]
      */
     public static function loadEndpointsToFlatPrimitivesArray(string $folder, bool $isFromCache = false): array
@@ -126,24 +126,18 @@ class Camel
 
     /**
      * @param array[] $endpoints
-     * @param array $endpointGroupIndexes Mapping of endpoint IDs to their index within their group
      *
      * @return array[]
      */
-    public static function groupEndpoints(array $endpoints, array $endpointGroupIndexes): array
+    public static function groupEndpoints(array $endpoints): array
     {
         $groupedEndpoints = collect($endpoints)
             ->groupBy('metadata.groupName')
             ->sortKeys(SORT_NATURAL);
 
-        return $groupedEndpoints->map(function (Collection $endpointsInGroup) use ($endpointGroupIndexes) {
+        return $groupedEndpoints->map(function (Collection $endpointsInGroup) {
             /** @var Collection<(int|string),ExtractedEndpointData> $endpointsInGroup */
-            $sortedEndpoints = $endpointsInGroup;
-            if (!empty($endpointGroupIndexes)) {
-                $sortedEndpoints = $endpointsInGroup->sortBy(
-                    fn(ExtractedEndpointData $e) => $endpointGroupIndexes[$e->endpointId()] ?? INF,
-                );
-            }
+            $sortedEndpoints = $endpointsInGroup->sortBy(fn(ExtractedEndpointData $e) => $e->uri);
 
             return [
                 'name' => Arr::first($endpointsInGroup, function (ExtractedEndpointData $endpointData) {

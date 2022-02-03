@@ -137,7 +137,18 @@ class OutputEndpointData extends BaseDTO
 
     public function endpointId(): string
     {
-        return $this->httpMethods[0] . str_replace(['/', '?', '{', '}', ':', '\\', '+', '|'], '-', $this->uri);
+        return sprintf('%s@%s', $this->httpMethods[0], $this->uri);
+    }
+
+    public function cssEscapedEndpointId(): string
+    {
+        $escapedWithoutBrackets = str_replace(['{', '}'], '', $this->endpointId());
+
+        return str_replace(
+            ['@', '/', '?', ':', '\\', '+', '|'],
+            '-',
+            $escapedWithoutBrackets,
+        );
     }
 
     public function hasResponses(): bool
