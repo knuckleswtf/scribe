@@ -514,8 +514,8 @@ class GenerateDocumentationTest extends BaseLaravelTest
         $this->assertEquals('1. Group 1', trim($h1s->getNode(3)->textContent));
         $expectedEndpoints = $crawler->filter('h2');
         $this->assertEquals("GET api/action2", $expectedEndpoints->getNode(0)->textContent);
-        $this->assertEquals("Some endpoint.", $expectedEndpoints->getNode(1)->textContent);
-        $this->assertEquals("Another endpoint.", $expectedEndpoints->getNode(2)->textContent);
+        $this->assertEquals("Another endpoint.", $expectedEndpoints->getNode(1)->textContent);
+        $this->assertEquals("Some endpoint.", $expectedEndpoints->getNode(2)->textContent);
     }
 
     /** @test */

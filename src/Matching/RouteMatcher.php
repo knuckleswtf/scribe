@@ -20,6 +20,10 @@ class RouteMatcher implements RouteMatcherInterface
     {
         $allRoutes = $this->getAllRoutes($usingDingoRouter);
 
+        $allRoutes = collect($allRoutes)->sortBy(function ($route) {
+            return $route->uri;
+        })->toArray();
+
         $matchedRoutes = [];
 
         foreach ($routeRules as $routeRule) {

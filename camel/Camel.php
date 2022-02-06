@@ -126,18 +126,24 @@ class Camel
 
     /**
      * @param array[] $endpoints
+     * @param array $endpointGroupIndexes Mapping of endpoint IDs to their index within their group
      *
      * @return array[]
      */
-    public static function groupEndpoints(array $endpoints): array
+    public static function groupEndpoints(array $endpoints, array $endpointGroupIndexes): array
     {
         $groupedEndpoints = collect($endpoints)
             ->groupBy('metadata.groupName')
             ->sortKeys(SORT_NATURAL);
 
-        return $groupedEndpoints->map(function (Collection $endpointsInGroup) {
+        return $groupedEndpoints->map(function (Collection $endpointsInGroup) use ($endpointGroupIndexes) {
             /** @var Collection<(int|string),ExtractedEndpointData> $endpointsInGroup */
-            $sortedEndpoints = $endpointsInGroup->sortBy(fn(ExtractedEndpointData $e) => $e->uri);
+            $sortedEndpoints = $endpointsInGroup;
+            if (!empty($endpointGroupIndexes)) {
+                $sortedEndpoints = $endpointsInGroup->sortBy(
+                    fn(ExtractedEndpointData $e) => $endpointGroupIndexes[$e->endpointId()] ?? INF,
+                );
+            }
 
             return [
                 'name' => Arr::first($endpointsInGroup, function (ExtractedEndpointData $endpointData) {
