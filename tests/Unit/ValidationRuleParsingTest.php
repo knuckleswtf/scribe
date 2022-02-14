@@ -367,5 +367,21 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             [],
             ['description' => "Must be a file. Must not be greater than 6 kilobytes."],
         ];
+        yield 'accepted' => [
+            ['accepted_param' => 'accepted'],
+            [],
+            [
+                'type' => 'boolean',
+                'description' => 'Must be accepted.',
+            ]
+        ];
+        yield 'accepted_if' => [
+            ['accepted_if_param' => 'accepted_if:another_field,a_value'],
+            [],
+            [
+                'type' => 'boolean',
+                'description' => "Must be accepted when <code>another_field</code> is <code>a_value</code>.",
+            ]
+        ];
     }
 }
