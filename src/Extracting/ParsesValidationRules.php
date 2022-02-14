@@ -188,6 +188,12 @@ trait ParsesValidationRules
                 case 'required':
                     $parameterData['required'] = true;
                     break;
+                case 'accepted':
+                    $parameterData['required'] = true;
+                    $parameterData['type'] = 'boolean';
+                    $parameterData['description'] .= ' Must be accepted.';
+                    $parameterData['setter'] = fn() => true;
+                    break;
 
                 /*
                  * Primitive types. No description should be added
@@ -434,6 +440,13 @@ trait ParsesValidationRules
                     $parameterData['description'] .= ' ' . $this->getDescription(
                             $rule, [':values' => w::getListOfValuesAsFriendlyHtmlString($arguments, "and")]
                         ) . ' ';
+                    break;
+                case 'accepted_if':
+                    $parameterData['type'] = 'boolean';
+                    $parameterData['description'] .= ' ' . $this->getDescription(
+                            $rule, [':other' => "<code>{$arguments[0]}</code>", ':value' => w::getListOfValuesAsFriendlyHtmlString(array_slice($arguments, 1))]
+                        ) . ' ';
+                    $parameterData['setter'] = fn() => true;
                     break;
                 case 'same':
                 case 'different':
