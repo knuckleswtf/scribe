@@ -81,7 +81,10 @@
     "config": {
         "preferred-install": "dist",
         "sort-packages": true,
-        "process-timeout": 600
+        "process-timeout": 600,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
     },
     "replace": {
         "mpociot/laravel-apidoc-generator": "*"

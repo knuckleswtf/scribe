@@ -55,7 +55,7 @@ class UseApiResourceTags extends Strategy
     }
 
     /**
-     * Get a response from the @apiResource/@apiResourceCollection and @apiResourceModel tags.
+     * Get a response from the @apiResource/@apiResourceCollection, @apiResourceModel and @apiResourceAdditional tags.
      *
      * @param Tag $apiResourceTag
      * @param Tag[] $allTags
@@ -68,6 +68,7 @@ class UseApiResourceTags extends Strategy
     {
         [$statusCode, $apiResourceClass] = $this->getStatusCodeAndApiResourceClass($apiResourceTag);
         [$model, $factoryStates, $relations, $pagination] = $this->getClassToBeTransformedAndAttributes($allTags);
+        $additionalData = $this->getAdditionalData($this->getApiResourceAdditionalTag($allTags));
         $modelInstance = $this->instantiateApiResourceModel($model, $factoryStates, $relations);
 
         try {
@@ -106,6 +107,9 @@ class UseApiResourceTags extends Strategy
                 ? new $apiResourceClass($list)
                 : $apiResourceClass::collection($list);
         }
+
+        // Adding additional meta information for our resource response
+        $resource = $resource->additional($additionalData);
 
         $uri = Utils::getUrlWithBoundParameters($endpointData->route->uri(), $endpointData->cleanUrlParameters);
         $method = $endpointData->route->methods()[0];
@@ -172,6 +176,19 @@ class UseApiResourceTags extends Strategy
     }
 
     /**
+     * Returns data for simulating JsonResource additional() function
+     *
+     * @param Tag|null $tag
+     * @return array
+     */
+    private function getAdditionalData(?Tag $tag): array
+    {
+        return $tag
+            ? a::parseIntoAttributes($tag->getContent())
+            : [];
+    }
+
+    /**
      * @param string $type
      *
      * @param array $relations
@@ -186,8 +203,11 @@ class UseApiResourceTags extends Strategy
             $factory = Utils::getModelFactory($type, $factoryStates, $relations);
 
             try {
-                return $factory->create();
+                return $factory->create()->load($relations);
             } catch (Throwable $e) {
+                c::warn("Eloquent model factory failed to create {$type}; trying to make it.");
+                e::dumpExceptionIfVerbose($e, true);
+
                 // If there was no working database, ->create() would fail. Try ->make() instead
                 return $factory->make();
             }
@@ -228,5 +248,12 @@ class UseApiResourceTags extends Strategy
         );
 
         return Arr::first($apiResourceTags);
+    }
+
+    public function getApiResourceAdditionalTag(array $tags): ?Tag
+    {
+        return Arr::first($tags, function ($tag) {
+            return ($tag instanceof Tag) && strtolower($tag->getName()) == 'apiresourceadditional';
+        });
     }
 }

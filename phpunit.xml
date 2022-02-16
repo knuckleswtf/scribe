@@ -14,10 +14,10 @@
     <coverage>
         <include>
             <directory suffix=".php">src/</directory>
+            <directory suffix=".php">camel/</directory>
         </include>
         <exclude>
             <file>src/ScribeServiceProvider.php</file>
-            <directory>resources/views/</directory>
         </exclude>
     </coverage>
     <testsuites>
@@ -36,6 +36,7 @@
             <file>tests/Unit/ExtractorPluginSystemTest.php</file>
         </testsuite>
         <testsuite name="Unit Tests 2">
+            <file>tests/Unit/ExtractedEndpointDataTest.php</file>
             <file>tests/Unit/AnnotationParserTest.php</file>
         </testsuite>
         <testsuite name="Unit Tests 3">

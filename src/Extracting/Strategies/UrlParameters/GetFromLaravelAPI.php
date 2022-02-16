@@ -69,11 +69,21 @@ class GetFromLaravelAPI extends Strategy
                     $type = $this->normalizeTypeName($typeName);
                     $parameters[$paramName]['type'] = $type;
 
-                    // If the user explicitly set a `where()` constraint, use that to refine examples
-                    $parameterRegex = $endpointData->route->wheres[$paramName] ?? null;
-                    $example = $parameterRegex
-                        ? $this->castToType($this->getFaker()->regexify($parameterRegex), $type)
-                        : $this->generateDummyValue($type);
+                    // Try to fetch an example ID from the database
+                    try {
+                        // todo: add some database tests
+                        $example = $argumentInstance::first()->id ?? null;
+                    } catch (\Throwable $e) {
+                        $example = null;
+                    }
+
+                    if ($example === null) {
+                        // If the user explicitly set a `where()` constraint, use that to refine examples
+                        $parameterRegex = $endpointData->route->wheres[$paramName] ?? null;
+                        $example = $parameterRegex
+                            ? $this->castToType($this->getFaker()->regexify($parameterRegex), $type)
+                            : $this->generateDummyValue($type);
+                    }
                     $parameters[$paramName]['example'] = $example;
                 }
             } catch (\Throwable $e) {

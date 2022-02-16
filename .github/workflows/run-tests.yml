@@ -11,17 +11,14 @@ jobs:
     strategy:
       matrix:
         php:
-        - '7.4'
+        - '8.1'
         - '8.0'
+        - '7.4'
         deps:
-        - stable
-        - lowest
-        - dingo
-        exclude:
-          - php: '8.0'
-            deps: dingo
-          - php: '8.0'
-            deps: lowest
+        - highest
+        include:
+          - {php: '7.4', deps: lowest}
+          - {php: '7.4', deps: dingo}
 
     name: Tests (PHP ${{ matrix.php }} - ${{ matrix.deps }})
 
@@ -32,25 +29,28 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick
-          coverage: none
-
+          coverage: xdebug
 
       - name: Install dependencies
-        if: ${{ matrix.deps == 'stable' }}
-        run: composer update --prefer-stable;
+        if: ${{ matrix.deps == 'highest' }}
+        run: composer update
 
       - name: Install dependencies (Dingo)
         if: ${{ matrix.deps == 'dingo' }}
-        run: COMPOSER=composer.dingo.json composer update --prefer-stable;
+        run: COMPOSER=composer.dingo.json composer update --prefer-stable
 
       - name: Install dependencies (lowest)
         if: ${{ matrix.deps == 'lowest' }}
-        run: COMPOSER=composer.lowest.json composer update --prefer-stable;
+        run: COMPOSER=composer.lowest.json composer update --prefer-stable
 
 
       - name: Execute tests (Laravel/Lumen)
         run: composer test-ci
-        if: ${{ matrix.deps != 'dingo' }}
+        if: ${{ matrix.deps == 'highest' }}
+
+      - name: Execute tests (Lowest)
+        run: COMPOSER=composer.lowest.json composer test-ci
+        if: ${{ matrix.deps == 'lowest' }}
 
       - name: Execute tests (Dingo)
         run: COMPOSER=composer.dingo.json composer test-ci

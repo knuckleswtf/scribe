@@ -9,7 +9,7 @@ class AnnotationParserTest extends TestCase
 {
     /**
      * @test
-     * @dataProvider annotations
+     * @dataProvider contentAttributesAnnotations
      */
     public function can_parse_annotation_into_content_and_attributes(string $annotation, array $expected)
     {
@@ -18,7 +18,7 @@ class AnnotationParserTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function annotations()
+    public function contentAttributesAnnotations()
     {
         return [
             "when attributes come first" => [
@@ -49,6 +49,42 @@ class AnnotationParserTest extends TestCase
                     'content' => '{"message": "failed"}',
                 ],
             ],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider attributesAnnotations
+     */
+    public function can_parse_annotation_into_attributes(string $annotation, array $expected)
+    {
+        $result = AnnotationParser::parseIntoAttributes($annotation);
+
+        $this->assertEquals($expected, $result);
+    }
+
+    public function attributesAnnotations()
+    {
+        return [
+            "with or without quotes" => [
+                'title=This message="everything good" "dummy field"="dummy data", "snaked_data"=value',
+                [
+                    'title' => 'This',
+                    'message' => "everything good",
+                    'dummy field' => 'dummy data',
+                    'snaked_data' => 'value'
+                ]
+            ],
+            "no attributes" => [
+                '{"message": "failed"}',
+                []
+            ],
+            "attributes with empty values" => [
+                'title= message="everything good"',
+                [
+                    'message' => 'everything good'
+                ]
+            ]
         ];
     }
 }

@@ -44,7 +44,29 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
                 'uri' => $route->uri,
                 'httpMethods' => $route->methods,
             ]);
-            $this->assertEquals('things/{id}/otherthings/{otherthing_id}', $endpoint->uri);
+            $this->assertEquals('things/{thing_id}/otherthings/{id}', $endpoint->uri);
+        }
+    }
+
+    /** @test */
+    public function will_normalize_resource_url_params_with_hyphens()
+    {
+        Route::apiResource('audio-things', TestController::class)
+            ->only('show');
+        $routeRules[0]['match'] = ['prefixes' => '*', 'domains' => '*'];
+
+        $matcher = new RouteMatcher();
+        $matchedRoutes = $matcher->getRoutes($routeRules);
+
+        foreach ($matchedRoutes as $matchedRoute) {
+            $route = $matchedRoute->getRoute();
+            $this->assertEquals('audio-things/{audio_thing}', $route->uri);
+            $endpoint = new ExtractedEndpointData([
+                'route' => $route,
+                'uri' => $route->uri,
+                'httpMethods' => $route->methods,
+            ]);
+            $this->assertEquals('audio-things/{id}', $endpoint->uri);
         }
     }
 }

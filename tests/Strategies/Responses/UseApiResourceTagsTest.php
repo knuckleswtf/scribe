@@ -8,6 +8,7 @@ use Knuckles\Scribe\Extracting\Strategies\Responses\UseApiResourceTags;
 use Knuckles\Scribe\ScribeServiceProvider;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
+use Knuckles\Scribe\Tests\Fixtures\TestPet;
 use Knuckles\Scribe\Tests\Fixtures\TestUser;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\Utils;
@@ -49,6 +50,13 @@ class UseApiResourceTagsTest extends BaseLaravelTest
         });
         $factory->state(TestUser::class, 'state1', ["state1" => true]);
         $factory->state(TestUser::class, 'random-state', ["random-state" => true]);
+        $factory->define(TestPet::class, function () {
+            return [
+                'id' => 1,
+                'name' => 'Mephistopheles',
+                'species' => 'dog',
+            ];
+        });
     }
 
     /** @test */
@@ -222,6 +230,209 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
+    public function loads_specified_nested_relations_for_generated_model()
+    {
+        $factory = app(\Illuminate\Database\Eloquent\Factory::class);
+        $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
+            if ($user->id === 4) {
+                $child = Utils::getModelFactory(TestUser::class)->make(['id' => 5, 'parent_id' => 4]);
+                $user->setRelation('children', collect([$child]));
+
+                $grandchild = Utils::getModelFactory(TestUser::class)->make(['id' => 6, 'parent_id' => 5]);
+                $child->setRelation('children', collect([$grandchild]));
+            }
+        });
+
+        $config = new DocumentationConfig([]);
+
+        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+
+        $strategy = new UseApiResourceTags($config);
+        $tags = [
+            new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
+            new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser with=children.children'),
+        ];
+        $results = $strategy->getApiResourceResponse($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+
+        $this->assertArraySubset([
+            [
+                'status' => 200,
+                'content' => json_encode([
+                    'data' => [
+                        'id' => 4,
+                        'name' => 'Tested Again',
+                        'email' => 'a@b.com',
+                        'children' => [
+                            [
+                                'id' => 5,
+                                'name' => 'Tested Again',
+                                'email' => 'a@b.com',
+                                'children' => [
+                                    [
+                                        'id' => 6,
+                                        'name' => 'Tested Again',
+                                        'email' => 'a@b.com',
+                                    ]
+                                ]
+                            ],
+                        ],
+                    ],
+                ]),
+            ],
+        ], $results);
+    }
+
+    /** @test */
+    public function loads_specified_many_to_many_relations_for_generated_model()
+    {
+        $factory = app(\Illuminate\Database\Eloquent\Factory::class);
+        $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
+            $pet = Utils::getModelFactory(TestPet::class)->make(['id' => 1]);
+            $user->setRelation('pets', collect([$pet]));
+        });
+
+        $config = new DocumentationConfig([]);
+
+        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+
+        $strategy = new UseApiResourceTags($config);
+        $tags = [
+            new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
+            new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser with=pets'),
+        ];
+        $results = $strategy->getApiResourceResponse($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+
+        $this->assertArraySubset([
+            [
+                'status' => 200,
+                'content' => json_encode([
+                    'data' => [
+                        'id' => 4,
+                        'name' => 'Tested Again',
+                        'email' => 'a@b.com',
+                        'pets' => [
+                            [
+                                'id' => 1,
+                                'name' => 'Mephistopheles',
+                                'species' => 'dog'
+                            ],
+                        ],
+                    ],
+                ]),
+            ],
+        ], $results);
+    }
+
+    /** @test */
+    public function loads_specified_many_to_many_and_nested_relations_for_generated_model()
+    {
+        $factory = app(\Illuminate\Database\Eloquent\Factory::class);
+        $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
+            if ($user->id === 4) {
+                $child = Utils::getModelFactory(TestUser::class)->make(['id' => 5, 'parent_id' => 4]);
+                $user->setRelation('children', collect([$child]));
+
+                $pet = Utils::getModelFactory(TestPet::class)->make(['id' => 1]);
+                $child->setRelation('pets', collect([$pet]));
+            }
+        });
+
+        $config = new DocumentationConfig([]);
+
+        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+
+        $strategy = new UseApiResourceTags($config);
+        $tags = [
+            new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
+            new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser with=children.pets'),
+        ];
+        $results = $strategy->getApiResourceResponse($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+
+        $this->assertArraySubset([
+            [
+                'status' => 200,
+                'content' => json_encode([
+                    'data' => [
+                        'id' => 4,
+                        'name' => 'Tested Again',
+                        'email' => 'a@b.com',
+                        'children' => [
+                            [
+                                'id' => 5,
+                                'name' => 'Tested Again',
+                                'email' => 'a@b.com',
+                                'pets' => [
+                                    [
+                                        'id' => 1,
+                                        'name' => 'Mephistopheles',
+                                        'species' => 'dog'
+                                    ],
+                                ],
+                            ]
+                        ]
+
+                    ],
+                ]),
+            ],
+        ], $results);
+    }
+
+    /** @test */
+    public function loads_specified_many_to_many_relations_for_generated_model_with_pivot()
+    {
+        $factory = app(\Illuminate\Database\Eloquent\Factory::class);
+        $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
+            $pet = Utils::getModelFactory(TestPet::class)->make(['id' => 1]);
+
+            $pivot = $pet->newPivot($user, [
+                'pet_id' => $pet->id,
+                'user_id' => $user->id,
+                'duration' => 2
+            ], 'pet_user', true);
+
+            $pet->setRelation('pivot', $pivot);
+
+            $user->setRelation('pets', collect([$pet]));
+        });
+
+        $config = new DocumentationConfig([]);
+
+        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+
+        $strategy = new UseApiResourceTags($config);
+        $tags = [
+            new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
+            new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser with=pets'),
+        ];
+        $results = $strategy->getApiResourceResponse($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+
+        $this->assertArraySubset([
+            [
+                'status' => 200,
+                'content' => json_encode([
+                    'data' => [
+                        'id' => 4,
+                        'name' => 'Tested Again',
+                        'email' => 'a@b.com',
+                        'pets' => [
+                            [
+                                'id' => 1,
+                                'name' => 'Mephistopheles',
+                                'species' => 'dog',
+                                'ownership' => [
+                                    'pet_id' => 1,
+                                    'user_id' => 4,
+                                    'duration' => 2
+                                ]
+                            ],
+                        ],
+                    ],
+                ]),
+            ],
+        ], $results);
+    }
+
+    /** @test */
     public function can_parse_apiresourcecollection_tags()
     {
         $config = new DocumentationConfig([]);
@@ -350,5 +561,84 @@ class UseApiResourceTagsTest extends BaseLaravelTest
                 '{"data":{"type":null,"id":"1","attributes":{"description":"Welcome on this test versions","name":"TestName"}}}',
             ],
         ];
+    }
+
+    /** @test */
+    public function can_parse_apiresourceadditional_tags()
+    {
+        $config = new DocumentationConfig([]);
+
+        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+
+        $strategy = new UseApiResourceTags($config);
+        $tags = [
+            new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
+            new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser'),
+            new Tag('apiResourceAdditional', 'a=b "custom field"=c e="custom value" "another field"="true value"')
+        ];
+        $results = $strategy->getApiResourceResponse($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+
+        $this->assertArraySubset([
+            [
+                'status' => 200,
+                'content' => json_encode([
+                    'data' => [
+                        'id' => 4,
+                        'name' => 'Tested Again',
+                        'email' => 'a@b.com',
+                    ],
+                    'a' => 'b',
+                    'custom field' => 'c',
+                    'e' => 'custom value',
+                    'another field' => 'true value',
+                ]),
+            ],
+        ], $results);
+    }
+
+    /** @test */
+    public function can_parse_apiresourcecollection_tags_with_collection_class_pagination_and_apiresourceadditional_tag()
+    {
+        $config = new DocumentationConfig([]);
+
+        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+
+        $strategy = new UseApiResourceTags($config);
+        $tags = [
+            new Tag('apiResourceCollection', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResourceCollection'),
+            new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser paginate=1,simple'),
+            new Tag('apiResourceAdditional', 'a=b'),
+        ];
+        $results = $strategy->getApiResourceResponse($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+
+        $this->assertArraySubset([
+            [
+                'status' => 200,
+                'content' => json_encode([
+                    'data' => [
+                        [
+                            'id' => 4,
+                            'name' => 'Tested Again',
+                            'email' => 'a@b.com',
+                        ],
+                    ],
+                    'links' => [
+                        'self' => 'link-value',
+                        "first" => '/?page=1',
+                        "last" => null,
+                        "prev" => null,
+                        "next" => '/?page=2',
+                    ],
+                    'meta' => [
+                        "current_page" => 1,
+                        "from" => 1,
+                        "path" => '/',
+                        "per_page" => "1",
+                        "to" => 1,
+                    ],
+                    'a' => 'b',
+                ]),
+            ],
+        ], $results);
     }
 }

@@ -530,7 +530,8 @@ html {
 .tocify-wrapper .tocify-focus {
     box-shadow: 0 1px 0 #000;
     background-color: #71007f;
-    color: #fff
+    color: #fff;
+    font-weight: bold;
 }
 
 .tocify-wrapper .tocify-subheader {
@@ -538,6 +539,11 @@ html {
     background-color: #fff7fb;
     font-weight: 500;
     background: #fff7fb;
+}
+
+.tocify-wrapper .jets-searching .tocify-subheader,
+.tocify-wrapper .tocify-subheader.visible {
+    display: block;
 }
 
 .tocify-wrapper .tocify-subheader .tocify-item>a {
@@ -640,18 +646,21 @@ html {
     font-weight: 700
 }
 
-.lang-selector a {
+.lang-selector button {
     display: block;
     float: left;
     color: #fff;
     text-decoration: none;
     padding: 0 10px;
     line-height: 30px;
-    outline: 0
+    outline: 0;
+    background: transparent;
+    border: none;
 }
 
-.lang-selector a:active,
-.lang-selector a:focus {
+.lang-selector button:active,
+.lang-selector button:hover,
+.lang-selector button:focus {
     background-color: #111;
     color: #fff
 }
@@ -659,6 +668,9 @@ html {
 .lang-selector a.active {
     background-color: #e2e2e2;
     color: #111
+.lang-selector button.active {
+    background-color: #393939;
+    color: #fff
 }
 
 .lang-selector:after {

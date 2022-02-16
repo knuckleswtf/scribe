@@ -22,6 +22,9 @@ class TestUserApiResource extends JsonResource
             'children' => $this->whenLoaded('children', function () {
                 return TestUserApiResource::collection($this->children);
             }),
+            'pets' => $this->whenLoaded('pets', function () {
+                return TestPetApiResource::collection($this->pets);
+            }),
         ];
 
         if($request->route()->named('someone')) {

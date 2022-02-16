@@ -33,7 +33,7 @@ class ErrorHandlingUtils
         $output = new ConsoleOutput(OutputInterface::VERBOSITY_VERBOSE);
         try {
             $handler = new \NunoMaduro\Collision\Handler(new \NunoMaduro\Collision\Writer(null, $output));
-        } catch (\Exception $e) {
+        } catch (\Throwable $error) {
             // Version 3 used a different API
             // todo remove when Laravel 7 is minimum supported
             $handler = new \NunoMaduro\Collision\Handler(new \NunoMaduro\Collision\Writer($output));

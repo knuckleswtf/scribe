@@ -20,37 +20,35 @@
     "ext-fileinfo": "*",
     "ext-json": "*",
     "ext-pdo": "*",
-    "erusev/parsedown": "^1.7",
+    "erusev/parsedown": "1.7.4",
     "fakerphp/faker": "^1.9.1",
-    "illuminate/console": "^6.0|^7.0|^8.0",
-    "illuminate/routing": "^6.0|^7.0|^8.0",
-    "illuminate/support": "^6.0|^7.0|^8.0",
-    "league/flysystem": "^1.0",
+    "illuminate/console": "^6.0|^7.0|^8.0|^9.0",
+    "illuminate/routing": "^6.0|^7.0|^8.0|^9.0",
+    "illuminate/support": "^6.0|^7.0|^8.0|^9.0",
+    "league/flysystem": "^1.1.4|^2.1.1|^3.0",
     "mpociot/reflection-docblock": "^1.0.1",
     "nikic/php-parser": "^4.10",
-    "nunomaduro/collision": "^3.0|^4.0|^5.0",
+    "nunomaduro/collision": "^3.0|^4.0|^5.0|^6.0",
     "ramsey/uuid": "^3.8|^4.0",
-    "shalvah/clara": "^3.0.2",
+    "shalvah/clara": "^3.1.0",
     "shalvah/upgrader": "0.*",
     "spatie/data-transfer-object": "^2.6|^3.0",
-    "symfony/var-exporter": "^4.0|^5.0",
-    "symfony/yaml": "^4.0|^5.0"
+    "symfony/var-exporter": "^4.0|^5.0|^6.0",
+    "symfony/yaml": "^4.0|^5.0|^6.0"
   },
   "require-dev": {
     "brianium/paratest": "^6.0",
     "dms/phpunit-arraysubset-asserts": "^0.2.0",
-    "laravel/legacy-factories": "^1.0.4",
-    "laravel/lumen-framework": "^6.0|^7.0|^8.0",
+    "laravel/legacy-factories": "^1.3.0",
+    "laravel/lumen-framework": "^6.0|^7.0|^8.0|^9.0",
     "league/fractal": "^0.19.0",
     "nikic/fast-route": "^1.3",
-    "orchestra/testbench": "^4.0|^5.0|^6.0",
-    "phpstan/phpstan": "^0.12.90",
-    "phpunit/phpunit": "^9.0",
-    "symfony/css-selector": "^5.3",
-    "symfony/dom-crawler": "^5.3"
-  },
-  "suggest": {
-    "league/fractal": "Required for transformers support"
+    "orchestra/testbench": "^4.0|^5.0|^6.0|^7.0",
+    "pestphp/pest": "^1.21",
+    "phpstan/phpstan": "^1.0",
+    "phpunit/phpunit": "^9.0|^10.0",
+    "symfony/css-selector": "^5.3|^6.0",
+    "symfony/dom-crawler": "^5.3|^6.0"
   },
   "autoload": {
     "psr-4": {
@@ -65,8 +63,8 @@
   },
   "scripts": {
     "lint": "phpstan analyse -c ./phpstan.neon src camel --memory-limit 1G",
-    "test": "phpunit --stop-on-failure --exclude-group dingo",
-    "test-ci": "phpunit --exclude-group dingo",
+    "test": "pest --stop-on-failure --exclude-group dingo --coverage --colors",
+    "test-ci": "pest --exclude-group dingo --coverage --min=80",
     "test-parallel": "paratest -p16 --stop-on-failure --exclude-group dingo",
     "test-parallel-ci": "paratest -p16 --exclude-group dingo"
   },
@@ -80,7 +78,10 @@
   "config": {
     "preferred-install": "dist",
     "sort-packages": true,
-    "process-timeout": 600
+    "process-timeout": 600,
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
   },
   "replace": {
     "mpociot/laravel-apidoc-generator": "*"

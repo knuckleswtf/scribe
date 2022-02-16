@@ -4,13 +4,85 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project aims to adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## <Version> (<Release date>)
-### Fixes
+### Fixed
 
-### Changes
+### Modified
 
-### Additions
+### Added
 
-### Removals
+### Removed
+
+## 3.23.0 (31 January 2022)
+### Added
+- Try loading an example URL parameter from the database ([409](https://github.com/knuckleswtf/scribe/pull/409))
+
+### Fixed
+- Load `BelongsTo` relations correctly. ([#417](https://github.com/knuckleswtf/scribe/pull/417))
+- Load relations correctly on factory-generated models. ([#419](https://github.com/knuckleswtf/scribe/pull/419))
+
+## 3.22.0 (26 January 2022)
+### Added
+- `@apiResourceAdditional` tag for setting extra attributes on API Resources ([414](https://github.com/knuckleswtf/scribe/pull/414))
+
+### Modified
+- Print multiple fields in `required_if` ([406](https://github.com/knuckleswtf/scribe/pull/406))
+
+### Fixed
+- JS theme error ([ce94c03966ebf97a20442b2a92dda3db9c6c52d5](https://github.com/knuckleswtf/scribe/commit/ce94c03966ebf97a20442b2a92dda3db9c6c52d5))
+
+## 3.22.0 (26 January 2022)
+### Added
+- `@apiResourceAdditional` tag for setting extra attributes on API Resources ([414](https://github.com/knuckleswtf/scribe/pull/414))
+
+### Modified
+- Print multiple fields in `required_if` ([406](https://github.com/knuckleswtf/scribe/pull/406))
+
+### Fixed
+- JS theme error ([ce94c03966ebf97a20442b2a92dda3db9c6c52d5](https://github.com/knuckleswtf/scribe/commit/ce94c03966ebf97a20442b2a92dda3db9c6c52d5))
+
+## 3.21.0 (Sunday, 2 January 2022)
+## Modified
+- Include protocol in baseUrl for Postman collections ([391](https://github.com/knuckleswtf/scribe/pull/391))
+
+### Fixed
+- Fix bug where toggling the menu on mobile would jump to the top of the page ([400](https://github.com/knuckleswtf/scribe/pull/400))
+
+## 3.20.0 (Tuesday, 21 December 2021)
+## Added
+- `custom` field for `Parameter` class ([2abd751d64a2a38648b41d2b97054a16f156a3e0](https://github.com/knuckleswtf/scribe/commit/2abd751d64a2a38648b41d2b97054a16f156a3e0))
+
+### Fixed
+- Try It Out: Use correct input names for lists ([375](https://github.com/knuckleswtf/scribe/pull/375))
+- Fixed error when copying custom theme assets files ([379](https://github.com/knuckleswtf/scribe/pull/379))
+- Fix sidebar navigation bug ([2abd751d64a2a38648b41d2b97054a16f156a3e0](https://github.com/knuckleswtf/scribe/commit/2abd751d64a2a38648b41d2b97054a16f156a3e0))
+
+## 3.19.1 (Thursday, 9 December 2021)
+### Fixed
+- Use HTTPS for external assets so they load on file:// URLs ([388](https://github.com/knuckleswtf/scribe/pull/388))
+
+## 3.19.0 (Sunday, 28 November 2021)
+### Added
+- Custom names for example languages, using the array key ([382](https://github.com/knuckleswtf/scribe/pull/382))
+- Custom endpoint metadata attributes ([381](https://github.com/knuckleswtf/scribe/pull/381))
+
+### Fixed
+- Corrected paths in `afterGenerating` hook ([385](https://github.com/knuckleswtf/scribe/pull/385))
+- Fix missing headings in sidebar ([376](https://github.com/knuckleswtf/scribe/pull/376))
+
+## 3.18.0
+Reverted changes in 3.17.0, which broke the display of headings in the sidebar.
+
+## 3.17.0 (Sunday, 28 November 2021)
+### Modified
+- Refactored sidebar and external JS to improve usability and performance ([354](https://github.com/knuckleswtf/scribe/pull/354))
+
+## 3.16.0 (Tuesday, 16 November 2021)
+### Added
+- Support for nested relations in factories ([364](https://github.com/knuckleswtf/scribe/pull/364))
+
+### Fixed
+- Try it Out: show examples for empty array ([4351be8567f98f7779422a3a5beaaf5f3ca53e00](https://github.com/knuckleswtf/scribe/commit/4351be8567f98f7779422a3a5beaaf5f3ca53e00))
+- Route docs properly in Lumen ([b859f9ac7d2bac0b43b5358337565889593af6b7](https://github.com/knuckleswtf/scribe/commit/b859f9ac7d2bac0b43b5358337565889593af6b7))
 
 ## 3.15.0 (Monday, 8 November 2021)
 ### Added

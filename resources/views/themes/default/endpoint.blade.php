@@ -16,7 +16,9 @@
 
 @foreach($metadata['example_languages'] as $language)
 
-@include("scribe::partials.example-requests.$language")
+<div class="{{ $language }}-example">
+    @include("scribe::partials.example-requests.$language")
+</div>
 
 @endforeach
 </span>
@@ -78,7 +80,7 @@
             <button type="button"
                     style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
                     id="btn-canceltryout-{{ $endpoint->endpointId() }}"
-                    onclick="cancelTryOut('{{ $endpoint->endpointId() }}');" hidden>Cancel
+                    onclick="cancelTryOut('{{ $endpoint->endpointId() }}');" hidden>Cancel 🛑
             </button>&nbsp;&nbsp;
             <button type="submit"
                     style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"

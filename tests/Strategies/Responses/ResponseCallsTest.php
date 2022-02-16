@@ -9,12 +9,13 @@ use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Camel\Extraction\ResponseCollection;
 use Knuckles\Scribe\Extracting\Extractor;
 use Knuckles\Scribe\Extracting\Strategies\Responses\ResponseCalls;
-use Knuckles\Scribe\ScribeServiceProvider;
+use Knuckles\Scribe\Scribe;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Illuminate\Support\Facades\Route as LaravelRouteFacade;
+use Symfony\Component\HttpFoundation\Request;
 
 class ResponseCallsTest extends BaseLaravelTest
 {
@@ -42,9 +43,7 @@ class ResponseCallsTest extends BaseLaravelTest
         ];
 
         $strategy = new ResponseCalls(new DocumentationConfig([]));
-        $results = $strategy->makeResponseCallIfConditionsPass(
-            ExtractedEndpointData::fromRoute($route), $rules
-        );
+        $results = $strategy(ExtractedEndpointData::fromRoute($route), $rules);
 
         $this->assertEquals(200, $results[0]['status']);
         $this->assertArraySubset([
@@ -76,7 +75,7 @@ class ResponseCallsTest extends BaseLaravelTest
     /** @test */
     public function uses_configured_settings_when_calling_route()
     {
-        $route = LaravelRouteFacade::post('/echo/{id}', [TestController::class, 'shouldFetchRouteResponseWithEchoedSettings']);
+        $route = LaravelRouteFacade::post('/echo/{id}', [TestController::class, 'echoesRequestValues']);
 
         $rules = [
             'response_calls' => [
@@ -95,19 +94,19 @@ class ResponseCallsTest extends BaseLaravelTest
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
-                'header' => 'value',
+                'header' => 'headerValue',
             ],
         ]);
 
         $strategy = new ResponseCalls(new DocumentationConfig([]));
-        $results = $strategy->makeResponseCallIfConditionsPass($endpointData, $rules);
+        $results = $strategy($endpointData, $rules);
 
         $this->assertEquals(200, $results[0]['status']);
 
         $responseContent = json_decode($results[0]['content'], true);
         $this->assertEquals('queryValue', $responseContent['queryParam']);
         $this->assertEquals('bodyValue', $responseContent['bodyParam']);
-        $this->assertEquals('value', $responseContent['header']);
+        $this->assertEquals('headerValue', $responseContent['header']);
         $this->assertEquals('Bearer bearerToken', $responseContent['auth']);
     }
 
@@ -123,9 +122,7 @@ class ResponseCallsTest extends BaseLaravelTest
         ];
 
         $strategy = new ResponseCalls(new DocumentationConfig([]));
-        $results = $strategy->makeResponseCallIfConditionsPass(
-            ExtractedEndpointData::fromRoute($route), $rules
-        );
+        $results = $strategy(ExtractedEndpointData::fromRoute($route), $rules);
         $originalValue = json_decode($results[0]['content'], true)['app.env'];
 
         $now = time();
@@ -138,12 +135,57 @@ class ResponseCallsTest extends BaseLaravelTest
             ],
         ];
 
-        $results = $strategy->makeResponseCallIfConditionsPass(
-            ExtractedEndpointData::fromRoute($route), $rules
-        );
+        $results = $strategy(ExtractedEndpointData::fromRoute($route), $rules);
         $newValue = json_decode($results[0]['content'], true)['app.env'];
         $this->assertEquals($now, $newValue);
         $this->assertNotEquals($originalValue, $newValue);
+    }
+
+    /** @test */
+    public function calls_beforeResponseCall_hook()
+    {
+        Scribe::beforeResponseCall(function (Request $request, ExtractedEndpointData $endpointData) {
+            $request->headers->set("header", "overridden_".$request->headers->get("header"));
+            $request->headers->set("Authorization", "overridden_".$request->headers->get("Authorization"));
+            $request->query->set("queryParam", "overridden_".$request->query->get("queryParam"));
+            $request->request->set("bodyParam", "overridden_".$endpointData->uri.$request->request->get("bodyParam"));
+        });
+
+        $route = LaravelRouteFacade::post('/echo/{id}', [TestController::class, 'echoesRequestValues']);
+
+        $rules = [
+            'response_calls' => [
+                'methods' => ['*'],
+                'queryParams' => [
+                    'queryParam' => 'queryValue',
+                ],
+                'bodyParams' => [
+                    'bodyParam' => 'bodyValue',
+                ],
+            ],
+        ];
+
+        $endpointData = ExtractedEndpointData::fromRoute($route, [
+            'auth' => ['headers', 'Authorization', 'Bearer bearerToken'],
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+                'header' => 'headerValue',
+            ],
+        ]);
+
+        $strategy = new ResponseCalls(new DocumentationConfig([]));
+        $results = $strategy($endpointData, $rules);
+
+        $this->assertEquals(200, $results[0]['status']);
+
+        $responseContent = json_decode($results[0]['content'], true);
+        $this->assertEquals('overridden_queryValue', $responseContent['queryParam']);
+        $this->assertEquals('overridden_headerValue', $responseContent['header']);
+        $this->assertEquals('overridden_Bearer bearerToken', $responseContent['auth']);
+        $this->assertEquals('overridden_echo/{id}bodyValue', $responseContent['bodyParam']);
+
+        Scribe::beforeResponseCall(fn() => null);
     }
 
     /**
@@ -165,9 +207,7 @@ class ResponseCallsTest extends BaseLaravelTest
         ];
 
         $strategy = new ResponseCalls(new DocumentationConfig());
-        $results = $strategy->makeResponseCallIfConditionsPass(
-            ExtractedEndpointData::fromRoute($route), $rules
-        );
+        $results = $strategy(ExtractedEndpointData::fromRoute($route), $rules);
 
         $this->assertEquals(200, $results[0]['status']);
         $this->assertArraySubset([
@@ -185,7 +225,7 @@ class ResponseCallsTest extends BaseLaravelTest
      */
     public function uses_configured_settings_when_calling_route_with_dingo()
     {
-        $route = $this->registerDingoRoute('post', '/echo/{id}', 'shouldFetchRouteResponseWithEchoedSettings');
+        $route = $this->registerDingoRoute('post', '/echo/{id}', 'echoesRequestValues');
 
         $rules = [
             'response_calls' => [
@@ -203,18 +243,18 @@ class ResponseCallsTest extends BaseLaravelTest
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
-                'header' => 'value',
+                'header' => 'headerValue',
             ],
         ]);
         $strategy = new ResponseCalls(new DocumentationConfig());
-        $results = $strategy->makeResponseCallIfConditionsPass($endpointData, $rules);
+        $results = $strategy($endpointData, $rules);
 
         $this->assertEquals(200, $results[0]['status']);
 
         $responseContent = json_decode($results[0]['content'], true);
         $this->assertEquals('queryValue', $responseContent['queryParam']);
         $this->assertEquals('bodyValue', $responseContent['bodyParam']);
-        $this->assertEquals('value', $responseContent['header']);
+        $this->assertEquals('headerValue', $responseContent['header']);
     }
 
     /**
@@ -232,9 +272,7 @@ class ResponseCallsTest extends BaseLaravelTest
         ];
 
         $strategy = new ResponseCalls(new DocumentationConfig());
-        $results = $strategy->makeResponseCallIfConditionsPass(
-            ExtractedEndpointData::fromRoute($route), $rules
-        );
+        $results = $strategy(ExtractedEndpointData::fromRoute($route), $rules);
         $originalValue = json_decode($results[0]['content'], true)['app.env'];
 
         $now = time();
@@ -247,9 +285,7 @@ class ResponseCallsTest extends BaseLaravelTest
             ],
         ];
 
-        $results = $strategy->makeResponseCallIfConditionsPass(
-            ExtractedEndpointData::fromRoute($route), $rules
-        );
+        $results = $strategy(ExtractedEndpointData::fromRoute($route), $rules);
         $newValue = json_decode($results[0]['content'], true)['app.env'];
         $this->assertEquals($now, $newValue);
         $this->assertNotEquals($originalValue, $newValue);
@@ -279,7 +315,7 @@ class ResponseCallsTest extends BaseLaravelTest
             ]),
         ]);
         $strategy = new ResponseCalls(new DocumentationConfig([]));
-        $results = $strategy->makeResponseCallIfConditionsPass($endpointData, $rules);
+        $results = $strategy($endpointData, $rules);
 
         $this->assertNull($results);
     }
@@ -295,9 +331,7 @@ class ResponseCallsTest extends BaseLaravelTest
             ],
         ];
         $strategy = new ResponseCalls(new DocumentationConfig([]));
-        $results = $strategy->makeResponseCallIfConditionsPass(
-            ExtractedEndpointData::fromRoute($route), $rules
-        );
+        $results = $strategy(ExtractedEndpointData::fromRoute($route), $rules);
 
         $this->assertNull($results);
     }

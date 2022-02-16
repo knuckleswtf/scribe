@@ -175,7 +175,7 @@ class OutputEndpointData extends BaseDTO
         foreach ($parameters as $name => $example) {
             if ($example instanceof UploadedFile) {
                 $files[$name] = $example;
-            } else if (is_array($example)) {
+            } else if (is_array($example) && !empty($example)) {
                 [$subFiles, $subRegulars] = static::getFileParameters($example);
                 foreach ($subFiles as $subName => $subExample) {
                     $files[$name][$subName] = $subExample;

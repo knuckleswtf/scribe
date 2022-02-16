@@ -30,4 +30,30 @@ class AnnotationParser
             'attributes' => $parsedAttributes
         ];
     }
+
+    /**
+     * Parse an annotation like 'title=This message="everything good"' into a key-value array.
+     * All non key-value fields will be ignored. Useful for `@apiResourceAdditional`,
+     * where users may specify arbitrary attributes.
+     *
+     * @param string $annotationContent
+     * @return array
+     */
+    public static function parseIntoAttributes(string $annotationContent): array
+    {
+        $attributes = $matches = [];
+
+        preg_match_all(
+            '/([^\s\'"]+|".+?"|\'.+?\')=([^\s\'"]+|".+?"|\'.+?\')/',
+            $annotationContent,
+            $matches,
+            PREG_SET_ORDER,
+        );
+
+        foreach ($matches as $match) {
+            $attributes[trim($match[1], '"\' ')] = trim($match[2], '"\' ');
+        }
+
+        return $attributes;
+    }
 }

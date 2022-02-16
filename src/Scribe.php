@@ -18,6 +18,7 @@ class Scribe
     {
         Globals::$beforeResponseCall = $callable;
     }
+
     /**
      * Specify a callback that will be executed when Scribe is done generating your docs.
      * This callback will receive a map of all the output paths generated, that looks like this:
@@ -37,7 +38,7 @@ class Scribe
      *
      * If you disabled `postman` or `openapi`, their values will be null.
      *
-     * @param callable $callable
+     * @param callable(array): mixed $callable
      */
     public static function afterGenerating(callable $callable)
     {

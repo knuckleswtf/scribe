@@ -41,7 +41,7 @@ class PostmanCollectionWriter
                     'key' => 'baseUrl',
                     'type' => 'string',
                     'name' => 'string',
-                    'value' => parse_url($this->baseUrl, PHP_URL_HOST) ?: $this->baseUrl, // if there's no protocol, parse_url might fail
+                    'value' => $this->baseUrl,
                 ],
             ],
             'info' => [
@@ -59,6 +59,7 @@ class PostmanCollectionWriter
             }, $groupedEndpoints),
             'auth' => $this->generateAuthObject(),
         ];
+
         return $collection;
     }
 
@@ -222,7 +223,6 @@ class PostmanCollectionWriter
     protected function generateUrlObject(OutputEndpointData $endpointData): array
     {
         $base = [
-            'protocol' => Str::startsWith($this->baseUrl, 'https') ? 'https' : 'http',
             'host' => '{{baseUrl}}',
             // Change laravel/symfony URL params ({example}) to Postman style, prefixed with a colon
             'path' => preg_replace_callback('/\{(\w+)\??}/', function ($matches) {
@@ -269,12 +269,10 @@ class PostmanCollectionWriter
         $base['query'] = $query;
 
         // Create raw url-parameter (Insomnia uses this on import)
-        $queryString = collect($base['query'] ?? [])->map(function ($queryParamData) {
+        $queryString = collect($base['query'])->map(function ($queryParamData) {
             return $queryParamData['key'] . '=' . $queryParamData['value'];
         })->implode('&');
-        $base['raw'] = sprintf('%s://%s/%s%s',
-            $base['protocol'], $base['host'], $base['path'], $queryString ? "?{$queryString}" : null
-        );
+        $base['raw'] = sprintf('%s/%s%s', $base['host'], $base['path'], $queryString ? "?{$queryString}" : null);
 
         $urlParams = collect($endpointData->urlParameters);
         if ($urlParams->isEmpty()) {

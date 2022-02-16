@@ -4,10 +4,9 @@ namespace Knuckles\Scribe\Writing;
 
 use Illuminate\Support\Facades\View;
 use Knuckles\Scribe\Tools\DocumentationConfig;
-use Knuckles\Scribe\Tools\Globals;
+use Knuckles\Scribe\Tools\MarkdownParser;
 use Knuckles\Scribe\Tools\Utils;
 use Knuckles\Scribe\Tools\WritingUtils;
-use Parsedown;
 
 /**
  * Transforms the extracted data (endpoints YAML, API details Markdown) into a HTML site
@@ -17,12 +16,12 @@ class HtmlWriter
     protected DocumentationConfig $config;
     protected string $baseUrl;
     protected string $assetPathPrefix;
-    protected Parsedown $markdownParser;
+    protected MarkdownParser $markdownParser;
 
     public function __construct(DocumentationConfig $config = null)
     {
         $this->config = $config ?: new DocumentationConfig(config('scribe', []));
-        $this->markdownParser = new Parsedown();
+        $this->markdownParser = new MarkdownParser();
         $this->baseUrl = $this->config->get('base_url') ?? config('app.url');
         // If they're using the default static path,
         // then use '../docs/{asset}', so assets can work via Laravel app or via index.html
@@ -38,9 +37,12 @@ class HtmlWriter
     {
         $intro = $this->transformMarkdownFileToHTML($sourceFolder . '/intro.md');
         $auth = $this->transformMarkdownFileToHTML($sourceFolder . '/auth.md');
+        $headingsBeforeEndpoints = $this->markdownParser->headings;
 
+        $this->markdownParser->headings = [];
         $appendFile = rtrim($sourceFolder, '/') . '/' . 'append.md';
         $append = file_exists($appendFile) ? $this->transformMarkdownFileToHTML($appendFile) : '';
+        $headingsAfterEndpoints = $this->markdownParser->headings;
 
         $theme = $this->config->get('theme') ?? 'default';
         $output = View::make("scribe::themes.$theme.index", [
@@ -52,6 +54,8 @@ class HtmlWriter
             'groupedEndpoints' => $groupedEndpoints,
             'append' => $append,
             'assetPathPrefix' => $this->assetPathPrefix,
+            'headingsBeforeEndpoints' => $headingsBeforeEndpoints,
+            'headingsAfterEndpoints' => $headingsAfterEndpoints,
         ])->render();
 
         if (!is_dir($destinationFolder)) {
@@ -72,10 +76,14 @@ class HtmlWriter
         Utils::copyDirectory("{$assetsFolder}/images/", "{$destinationFolder}/images");
 
         $assets = [
-            "{$assetsFolder}/css/theme-$theme.style.css" => ["$destinationFolder/css/", "theme-$theme.style.css"],
-            "{$assetsFolder}/css/theme-$theme.print.css" => ["$destinationFolder/css/", "theme-$theme.print.css"],
-            "{$assetsFolder}/js/theme-$theme.js" => ["$destinationFolder/js/", WritingUtils::getVersionedAsset("theme-$theme.js")],
+            "{$assetsFolder}/css/theme-default.style.css" => ["$destinationFolder/css/", "theme-$theme.style.css"],
+            "{$assetsFolder}/css/theme-default.print.css" => ["$destinationFolder/css/", "theme-$theme.print.css"],
+            "{$assetsFolder}/js/theme-default.js" => ["$destinationFolder/js/", WritingUtils::getVersionedAsset("theme-$theme.js")],
         ];
+
+        if ($this->config->get('try_it_out.enabled', true)) {
+            $assets["{$assetsFolder}/js/tryitout.js"] = ["$destinationFolder/js/", WritingUtils::getVersionedAsset('tryitout.js')];
+        }
 
         foreach ($assets as $path => [$destination, $fileName]) {
             if (file_exists($path)) {
@@ -84,10 +92,6 @@ class HtmlWriter
                 }
                 copy($path, $destination.$fileName);
             }
-        }
-
-        if ($this->config->get('try_it_out.enabled', true)) {
-            copy("{$assetsFolder}/js/tryitout.js", $destinationFolder . WritingUtils::getVersionedAsset('/js/tryitout.js'));
         }
     }
 
