@@ -443,9 +443,7 @@ trait ParsesValidationRules
                     break;
                 case 'accepted_if':
                     $parameterData['type'] = 'boolean';
-                    $parameterData['description'] .= ' ' . $this->getDescription(
-                            $rule, [':other' => "<code>{$arguments[0]}</code>", ':value' => w::getListOfValuesAsFriendlyHtmlString(array_slice($arguments, 1))]
-                        ) . ' ';
+                    $parameterData['description'] .= " Must be accepted when <code>$arguments[0]</code> is " . w::getListOfValuesAsFriendlyHtmlString(array_slice($arguments, 1));
                     $parameterData['setter'] = fn() => true;
                     break;
                 case 'same':
