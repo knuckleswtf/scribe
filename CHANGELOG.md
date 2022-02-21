@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+## 3.24.0 (21 February 2022)
+### Added
+- `Scribe::instantiateFormRequestUsing()` hook to allow customising FormRequest instantiation ([3fb9872fa6fb84b0cfc1fdb6900f4d7008b7389c](https://github.com/knuckleswtf/scribe/commit/3fb9872fa6fb84b0cfc1fdb6900f4d7008b7389c))
+
 ## 3.23.0 (31 January 2022)
 ### Added
 - Try loading an example URL parameter from the database ([409](https://github.com/knuckleswtf/scribe/pull/409))
