@@ -8,6 +8,7 @@ use Illuminate\Foundation\Http\FormRequest as LaravelFormRequest;
 use Knuckles\Scribe\Extracting\FindsFormRequestForMethod;
 use Knuckles\Scribe\Extracting\ParsesValidationRules;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
+use Knuckles\Scribe\Tools\Globals;
 use ReflectionClass;
 use ReflectionFunctionAbstract;
 use Illuminate\Contracts\Validation\Factory as ValidationFactory;
@@ -34,8 +35,13 @@ class GetFromFormRequestBase extends Strategy
         }
 
         $className = $formRequestReflectionClass->getName();
+
+        if (Globals::$__instantiateFormRequestUsing) {
+            $formRequest = call_user_func_array(Globals::$__instantiateFormRequestUsing, [$className, $route, $method]);
+        } else {
+            $formRequest = new $className;
+        }
         /** @var LaravelFormRequest|DingoFormRequest $formRequest */
-        $formRequest = new $className;
         // Set the route properly so it works for users who have code that checks for the route.
         $formRequest->setRouteResolver(function () use ($formRequest, $route) {
             // Also need to bind the request to the route in case their code tries to inspect current request

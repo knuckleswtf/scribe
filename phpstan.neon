@@ -1,6 +1,6 @@
 parameters:
     level: 5
-    reportUnmatchedIgnoredErrors: false
+    reportUnmatchedIgnoredErrors: true
     inferPrivatePropertyTypeFromConstructor: true
     ignoreErrors:
         - '#Call to an undefined static method Illuminate\\Support\\Facades\\URL::forceRootUrl\(\)#'
@@ -14,6 +14,8 @@ parameters:
         - '#Access to an undefined property Illuminate\\Contracts\\Foundation\\Application::\$view#'
         - '#Unsafe usage of new static#'
         - '#Dead catch#'
+        - '/Call to an undefined static method Illuminate\\Database\\Eloquent\\Model::first\(\)/'
         - '/Call to an undefined method League\\Flysystem\\Filesystem::deleteDir\(\)./'
         - '/Instantiated class League\\Flysystem\\Adapter\\Local not found./'
-        - '/Parameter #1 \$adapter of class League\\Flysystem\\Filesystem constructor expects League\\Flysystem\\AdapterInterface, League\\Flysystem\\Adapter\\Local given./'
+        - '/Parameter #1 \$adapter of class League\\Flysystem\\Filesystem constructor expects League\\Flysystem\\FilesystemAdapter, League\\Flysystem\\Adapter\\Local given./'
+        - '/Call to method getPathPrefix\(\) on an unknown class League\\Flysystem\\Adapter\\Local/'

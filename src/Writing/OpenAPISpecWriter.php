@@ -147,7 +147,7 @@ class OpenAPISpecWriter
                     }
                     $parameters[] = $parameterData;
                 }
-                $pathItem['parameters'] = $parameters;
+                $pathItem['parameters'] = $parameters; // @phpstan-ignore-line
             }
 
             return [$path => $pathItem];

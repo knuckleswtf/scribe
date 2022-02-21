@@ -6,8 +6,12 @@ use Knuckles\Scribe\Extracting\Strategies\BodyParameters;
 use Knuckles\Scribe\Extracting\Strategies\QueryParameters;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
+use Knuckles\Scribe\Tests\Fixtures\TestRequest;
+use Knuckles\Scribe\Tests\Fixtures\TestRequestQueryParams;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
+use Knuckles\Scribe\Tools\Globals;
+use PHPUnit\Framework\Assert;
 
 class GetFromFormRequestTest extends BaseLaravelTest
 {
@@ -141,5 +145,23 @@ class GetFromFormRequestTest extends BaseLaravelTest
         $method = new \ReflectionMethod(TestController::class, 'withFormRequestParameterQueryParamsComment');
         $results = $bodyParamsStrategy->getParametersFromFormRequest($method);
         $this->assertEquals([], $results);
+    }
+
+    /** @test */
+    public function allows_customisation_of_form_request_instantiation()
+    {
+        $controllerMethod = new \ReflectionMethod(TestController::class, 'withFormRequestParameter');
+
+        Globals::$__instantiateFormRequestUsing = function ($className, $route, $method) use (&$controllerMethod) {
+            Assert::assertEquals(TestRequest::class, $className);
+            Assert::assertEquals(null, $route);
+            Assert::assertEquals($controllerMethod, $method);
+            return new TestRequestQueryParams;
+        };
+
+        $strategy = new BodyParameters\GetFromFormRequest(new DocumentationConfig([]));
+        $strategy->getParametersFromFormRequest($controllerMethod);
+
+        Globals::$__instantiateFormRequestUsing = null;
     }
 }

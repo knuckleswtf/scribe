@@ -16,7 +16,7 @@ class Scribe
      */
     public static function beforeResponseCall(callable $callable)
     {
-        Globals::$beforeResponseCall = $callable;
+        Globals::$__beforeResponseCall = $callable;
     }
 
     /**
@@ -42,6 +42,18 @@ class Scribe
      */
     public static function afterGenerating(callable $callable)
     {
-        Globals::$afterGenerating = $callable;
+        Globals::$__afterGenerating = $callable;
+    }
+
+    /**
+     * Specify a callback that will be used by all FormRequest strategies
+     * to instantiate Form Requests. his callback takes the name of the form request class,
+     * the current Laravel route being processed, and the controller method.
+     *
+     * @param callable(string,\Illuminate\Routing\Route,\ReflectionFunctionAbstract): mixed $callable
+     */
+    public static function instantiateFormRequestUsing(callable $callable)
+    {
+        Globals::$__instantiateFormRequestUsing = $callable;
     }
 }

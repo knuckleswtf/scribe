@@ -158,8 +158,8 @@ class ResponseCalls extends Strategy
 
     protected function runPreRequestHook(Request $request, ExtractedEndpointData $endpointData): Request
     {
-        if (is_callable(Globals::$beforeResponseCall)) {
-            call_user_func_array(Globals::$beforeResponseCall, [$request, $endpointData]);
+        if (is_callable(Globals::$__beforeResponseCall)) {
+            call_user_func_array(Globals::$__beforeResponseCall, [$request, $endpointData]);
         }
 
         return $request;

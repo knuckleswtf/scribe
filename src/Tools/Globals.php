@@ -8,7 +8,9 @@ class Globals
 
     public static bool $shouldBeVerbose = false;
 
-    public static $beforeResponseCall;
+    public static $__beforeResponseCall;
 
-    public static $afterGenerating;
+    public static $__afterGenerating;
+
+    public static $__instantiateFormRequestUsing;
 }

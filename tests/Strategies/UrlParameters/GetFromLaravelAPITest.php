@@ -81,7 +81,7 @@ class GetFromLaravelAPITest extends BaseLaravelTest
             {
                 $this->method = new \ReflectionMethod(TestController::class, 'dummy');
 
-                $route =  app(Router::class)->addRoute(['GET'], "everything/{cat_id}", ['uses' => [TestController::class, 'dummy']]);
+                $route = app(Router::class)->addRoute(['GET'], "everything/{cat_id}", ['uses' => [TestController::class, 'dummy']]);
                 $this->regex = '/catz\d+-\d/';
                 $this->route = $route->where('cat_id', $this->regex);
                 $this->uri = $this->route->uri;
