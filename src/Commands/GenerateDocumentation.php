@@ -12,6 +12,7 @@ use Knuckles\Scribe\GroupedEndpoints\GroupedEndpointsFactory;
 use Knuckles\Scribe\Matching\RouteMatcherInterface;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\DocumentationConfig;
+use Knuckles\Scribe\Tools\ErrorHandlingUtils as e;
 use Knuckles\Scribe\Tools\Globals;
 use Knuckles\Scribe\Writing\Writer;
 use Shalvah\Upgrader\Upgrader;
@@ -173,31 +174,38 @@ class GenerateDocumentation extends Command
 
     protected function upgradeConfigFileIfNeeded(): void
     {
-        $upgrader = Upgrader::ofConfigFile('config/scribe.php', __DIR__ . '/../../config/scribe.php')
-            ->dontTouch(
-                'routes','example_languages', 'database_connections_to_transact', 'strategies' ,'laravel.middleware',
-                'postman.overrides', 'openapi.overrides'
-            );
-        $changes = $upgrader->dryRun();
-        if (!empty($changes)) {
-            $this->newLine();
+        $this->info("Checking for any pending upgrades to your config file...");
+        try {
+            $upgrader = Upgrader::ofConfigFile('config/scribe.php', __DIR__ . '/../../config/scribe.php')
+                ->dontTouch(
+                    'routes', 'example_languages', 'database_connections_to_transact', 'strategies', 'laravel.middleware',
+                    'postman.overrides', 'openapi.overrides'
+                );
+            $changes = $upgrader->dryRun();
+            if (!empty($changes)) {
+                $this->newLine();
 
-            $this->warn("You're using an updated version of Scribe, which added new items to the config file.");
-            $this->info("Here are the changes:");
-            foreach ($changes as $change) {
-                $this->info($change["description"]);
-            }
+                $this->warn("You're using an updated version of Scribe, which added new items to the config file.");
+                $this->info("Here are the changes:");
+                foreach ($changes as $change) {
+                    $this->info($change["description"]);
+                }
 
-            if (!$this->input->isInteractive()) {
-                $this->info("Run `php artisan scribe:upgrade` from an interactive terminal to update your config file automatically.");
-                $this->info(sprintf("Or see the full changelog at: https://github.com/knuckleswtf/scribe/blob/%s/CHANGELOG.md,", Globals::SCRIBE_VERSION));
-                return;
-            }
+                if (!$this->input->isInteractive()) {
+                    $this->info("Run `php artisan scribe:upgrade` from an interactive terminal to update your config file automatically.");
+                    $this->info(sprintf("Or see the full changelog at: https://github.com/knuckleswtf/scribe/blob/%s/CHANGELOG.md,", Globals::SCRIBE_VERSION));
+                    return;
+                }
 
-            if ($this->confirm("Let's help you update your config file. Accept changes?")) {
-                $upgrader->upgrade();
-                $this->info(sprintf("✔ Updated. See the full changelog: https://github.com/knuckleswtf/scribe/blob/%s/CHANGELOG.md", Globals::SCRIBE_VERSION));
+                if ($this->confirm("Let's help you update your config file. Accept changes?")) {
+                    $upgrader->upgrade();
+                    $this->info(sprintf("✔ Updated. See the full changelog: https://github.com/knuckleswtf/scribe/blob/%s/CHANGELOG.md", Globals::SCRIBE_VERSION));
+                }
             }
+        } catch (\Throwable $e) {
+            $this->warn("Check failed wih error:");
+            e::dumpExceptionIfVerbose($e);
+            $this->warn("This did not affect your docs. Please report this issue in the project repo: https://github.com/knuckleswtf/scribe");
         }
 
     }
