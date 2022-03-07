@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+## 3.24.1 (7 March 2022)
+### Fixed
+- Don't crash on auto upgrade check fail ([c4afdcd59d3fbe300679013877891a45d2e3782e](https://github.com/knuckleswtf/scribe/commit/c4afdcd59d3fbe300679013877891a45d2e3782e))
+
 ## 3.24.0 (21 February 2022)
 ### Added
 - `Scribe::instantiateFormRequestUsing()` hook to allow customising FormRequest instantiation ([3fb9872fa6fb84b0cfc1fdb6900f4d7008b7389c](https://github.com/knuckleswtf/scribe/commit/3fb9872fa6fb84b0cfc1fdb6900f4d7008b7389c))
