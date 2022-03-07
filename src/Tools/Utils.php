@@ -244,7 +244,7 @@ class Utils
 
                 $factoryChain = empty($relationChain)
                     ? call_user_func_array([$relationModel, 'factory'], [])
-                    : Utils::getModelFactory($relationModel, $states, $relationChain);
+                    : Utils::getModelFactory($relationModel, $states, [implode('.', $relationChain)]);
 
                 if ($relationType === BelongsToMany::class) {
                     $pivot = method_exists($factory, 'pivot' . $relationVector)
