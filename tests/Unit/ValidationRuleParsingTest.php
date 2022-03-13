@@ -375,13 +375,15 @@ class ValidationRuleParsingTest extends BaseLaravelTest
                 'description' => 'Must be accepted.',
             ]
         ];
-        yield 'accepted_if' => [
-            ['accepted_if_param' => 'accepted_if:another_field,a_value'],
-            [],
-            [
-                'type' => 'boolean',
-                'description' => "Must be accepted when <code>another_field</code> is <code>a_value</code>.",
-            ]
-        ];
+        if (version_compare(Application::VERSION, '8.53', '>=')) {
+            yield 'accepted_if' => [
+                ['accepted_if_param' => 'accepted_if:another_field,a_value'],
+                [],
+                [
+                    'type' => 'boolean',
+                    'description' => "Must be accepted when <code>another_field</code> is <code>a_value</code>.",
+                ]
+            ];
+        }
     }
 }
