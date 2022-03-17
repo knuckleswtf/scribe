@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     navButton.addEventListener('click', toggleSidebar);
 
-    window.hljs.highlightAll();
+    window.hljs.initHighlighting();
 
     const wrapper = document.getElementById('toc');
     // https://jets.js.org/
