@@ -36,6 +36,8 @@ class GenerateDocumentation extends Command
     {
         // TODO Remove when Laravel 6 is no longer supported
         $this->getOutput()->write(str_repeat("\n", $count));
+
+        return $this;
     }
 
     public function handle(RouteMatcherInterface $routeMatcher, GroupedEndpointsFactory $groupedEndpointsFactory): void
