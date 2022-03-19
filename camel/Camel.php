@@ -154,7 +154,7 @@ class Camel
                     })->metadata->groupDescription ?? '',
                 'endpoints' => $sortedEndpoints->map(
                     fn(ExtractedEndpointData $endpointData) => $endpointData->forSerialisation()->toArray()
-                )->values()->all(),
+                )->sortBy('metadata.title')->values()->all(),
             ];
         })->values()->all();
     }
