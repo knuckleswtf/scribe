@@ -357,7 +357,7 @@ class GenerateDocumentationTest extends BaseLaravelTest
         $group1FilePath = '.scribe/endpoints/00.yaml';
 
         $group = Yaml::parseFile($group1FilePath);
-        $this->assertEquals('api/action1', $group['endpoints'][0]['uri']);
+        $this->assertEquals('api/action1b', $group['endpoints'][0]['uri']);
         $this->assertEquals([], $group['endpoints'][0]['urlParameters']);
         $extraParam = [
             'name' => 'a_param',
@@ -377,14 +377,14 @@ class GenerateDocumentationTest extends BaseLaravelTest
         $this->artisan('scribe:generate');
 
         $group = Yaml::parseFile($group1FilePath);
-        $this->assertEquals('api/action1', $group['endpoints'][0]['uri']);
+        $this->assertEquals('api/action1b', $group['endpoints'][0]['uri']);
         $this->assertEquals(['a_param' => $extraParam], $group['endpoints'][0]['urlParameters']);
         $this->assertStringContainsString('Some other useful stuff.', file_get_contents($authFilePath));
 
         $this->artisan('scribe:generate', ['--force' => true]);
 
         $group = Yaml::parseFile($group1FilePath);
-        $this->assertEquals('api/action1', $group['endpoints'][0]['uri']);
+        $this->assertEquals('api/action1b', $group['endpoints'][0]['uri']);
         $this->assertEquals([], $group['endpoints'][0]['urlParameters']);
         $this->assertStringNotContainsString('Some other useful stuff.', file_get_contents($authFilePath));
     }
@@ -486,14 +486,14 @@ class GenerateDocumentationTest extends BaseLaravelTest
         $this->assertEquals('1. Group 1', trim($h1s->getNode(2)->textContent));
         $this->assertEquals('2. Group 2', trim($h1s->getNode(3)->textContent));
         $expectedEndpoints = $crawler->filter('h2');
-        $this->assertEquals("Some endpoint.", $expectedEndpoints->getNode(0)->textContent);
-        $this->assertEquals("Another endpoint.", $expectedEndpoints->getNode(1)->textContent);
+        $this->assertEquals("Another endpoint.", $expectedEndpoints->getNode(0)->textContent);
+        $this->assertEquals("Some endpoint.", $expectedEndpoints->getNode(1)->textContent);
         $this->assertEquals("GET api/action2", $expectedEndpoints->getNode(2)->textContent);
 
         // Now swap the endpoints
         $group = Yaml::parseFile('.scribe/endpoints/00.yaml');
-        $this->assertEquals('api/action1', $group['endpoints'][0]['uri']);
-        $this->assertEquals('api/action1b', $group['endpoints'][1]['uri']);
+        $this->assertEquals('api/action1b', $group['endpoints'][0]['uri']);
+        $this->assertEquals('api/action1', $group['endpoints'][1]['uri']);
         $action1 = $group['endpoints'][0];
         $group['endpoints'][0] = $group['endpoints'][1];
         $group['endpoints'][1] = $action1;

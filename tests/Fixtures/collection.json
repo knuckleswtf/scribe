@@ -21,122 +21,6 @@
       "description": "",
       "item": [
         {
-          "name": "Endpoint with body parameters as array.",
-          "request": {
-            "url": {
-              "host": "{{baseUrl}}",
-              "path": "api/withBodyParametersAsArray",
-              "query": [],
-              "raw": "{{baseUrl}}/api/withBodyParametersAsArray"
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Custom-Header",
-                "value": "NotSoCustom"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "[{\"first_name\":\"John\",\"last_name\":\"Doe\",\"contacts\":[{\"first_name\":\"Janelle\",\"last_name\":\"Monáe\"}],\"roles\":[\"Admin\"]}]"
-            },
-            "description": "",
-            "auth": {
-              "type": "noauth"
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Endpoint with body form data parameters.",
-          "request": {
-            "url": {
-              "host": "{{baseUrl}}",
-              "path": "api/withFormDataParams",
-              "query": [],
-              "raw": "{{baseUrl}}/api/withFormDataParams"
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Custom-Header",
-                "value": "NotSoCustom"
-              },
-              {
-                "key": "Content-Type",
-                "value": "multipart/form-data"
-              },
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "name",
-                  "value": "cat.jpg",
-                  "type": "text"
-                },
-                {
-                  "key": "image",
-                  "src": [],
-                  "type": "file"
-                }
-              ]
-            },
-            "description": "",
-            "auth": {
-              "type": "noauth"
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Endpoint with body parameters.",
-          "request": {
-            "url": {
-              "host": "{{baseUrl}}",
-              "path": "api/withBodyParameters",
-              "query": [],
-              "raw": "{{baseUrl}}/api/withBodyParameters"
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Custom-Header",
-                "value": "NotSoCustom"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\"user_id\":9,\"room_id\":\"consequatur\",\"forever\":false,\"another_one\":11613.31890586,\"yet_another_param\":{\"name\":\"consequatur\"},\"even_more_param\":[11613.31890586],\"book\":{\"name\":\"consequatur\",\"author_id\":17,\"pages_count\":17},\"ids\":[17],\"users\":[{\"first_name\":\"John\",\"last_name\":\"Doe\"}]}"
-            },
-            "description": "",
-            "auth": {
-              "type": "noauth"
-            }
-          },
-          "response": []
-        },
-        {
           "name": "api/withQueryParameters",
           "request": {
             "url": {
@@ -251,6 +135,122 @@
               "name": null
             }
           ]
+        },
+        {
+          "name": "Endpoint with body form data parameters.",
+          "request": {
+            "url": {
+              "host": "{{baseUrl}}",
+              "path": "api/withFormDataParams",
+              "query": [],
+              "raw": "{{baseUrl}}/api/withFormDataParams"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Custom-Header",
+                "value": "NotSoCustom"
+              },
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "cat.jpg",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "src": [],
+                  "type": "file"
+                }
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Endpoint with body parameters as array.",
+          "request": {
+            "url": {
+              "host": "{{baseUrl}}",
+              "path": "api/withBodyParametersAsArray",
+              "query": [],
+              "raw": "{{baseUrl}}/api/withBodyParametersAsArray"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Custom-Header",
+                "value": "NotSoCustom"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[{\"first_name\":\"John\",\"last_name\":\"Doe\",\"contacts\":[{\"first_name\":\"Janelle\",\"last_name\":\"Monáe\"}],\"roles\":[\"Admin\"]}]"
+            },
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Endpoint with body parameters.",
+          "request": {
+            "url": {
+              "host": "{{baseUrl}}",
+              "path": "api/withBodyParameters",
+              "query": [],
+              "raw": "{{baseUrl}}/api/withBodyParameters"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Custom-Header",
+                "value": "NotSoCustom"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"user_id\":9,\"room_id\":\"consequatur\",\"forever\":false,\"another_one\":11613.31890586,\"yet_another_param\":{\"name\":\"consequatur\"},\"even_more_param\":[11613.31890586],\"book\":{\"name\":\"consequatur\",\"author_id\":17,\"pages_count\":17},\"ids\":[17],\"users\":[{\"first_name\":\"John\",\"last_name\":\"Doe\"}]}"
+            },
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
         }
       ]
     },
