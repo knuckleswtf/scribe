@@ -12,6 +12,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+## 3.25.0 (21 March 2022)
+### Added
+- Support validation rules `accepted` and `accepted_if` ([#438](https://github.com/knuckleswtf/scribe/pull/438))
+
+### Fixed
+- fix(model factory chain): implode relation chains for bigger relations ([#447](https://github.com/knuckleswtf/scribe/pull/447))
+
 ## 3.24.1 (7 March 2022)
 ### Fixed
 - Don't crash on auto upgrade check fail ([c4afdcd59d3fbe300679013877891a45d2e3782e](https://github.com/knuckleswtf/scribe/commit/c4afdcd59d3fbe300679013877891a45d2e3782e))

@@ -218,6 +218,14 @@ class Utils
         return substr($typeName, 0, -2);
     }
 
+    /**
+     * @param string $modelName
+     * @param string[] $states
+     * @param string[] $relations
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     * @throws \Throwable
+     */
     public static function getModelFactory(string $modelName, array $states = [], array $relations = [])
     {
         // Factories are usually defined without the leading \ in the class name,
