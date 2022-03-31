@@ -90,7 +90,8 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
      */
     private function extractEndpointsInfoFromLaravelApp(array $matches, array $cachedEndpoints, array $latestEndpointsData, array $groups): array
     {
-        $generator = new Extractor($this->docConfig);
+        $generator = $this->makeExtractor();
+
         $parsedEndpoints = [];
 
         foreach ($matches as $routeItem) {
@@ -274,7 +275,23 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
 
     protected function extractAndWriteApiDetailsToDisk(): void
     {
-        $apiDetails = new ApiDetails($this->docConfig, !$this->command->option('force'));
+        $apiDetails = $this->makeApiDetails();
+
         $apiDetails->writeMarkdownFiles();
+    }
+
+    protected function makeApiDetails(): ApiDetails
+    {
+        return new ApiDetails($this->docConfig, !$this->command->option('force'));
+    }
+
+    /**
+     * Make a new extractor.
+     *
+     * @return Extractor
+     */
+    protected function makeExtractor(): Extractor
+    {
+        return new Extractor($this->docConfig);
     }
 }
