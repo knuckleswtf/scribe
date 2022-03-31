@@ -11,13 +11,26 @@ class GroupedEndpointsFactory
     public function make(GenerateDocumentation $command, RouteMatcherInterface $routeMatcher): GroupedEndpointsContract
     {
         if ($command->isForcing()) {
-            return new GroupedEndpointsFromApp($command, $routeMatcher, false);
+            return $this->makeGroupedEndpointsFromApp($command, $routeMatcher, false);
         }
 
         if ($command->shouldExtract()) {
-            return new GroupedEndpointsFromApp($command, $routeMatcher, true);
+            return $this->makeGroupedEndpointsFromApp($command, $routeMatcher, true);
         }
 
-        return new GroupedEndpointsFromCamelDir;
+        return $this->makeGroupedEndpointsFromCamelDir();
+    }
+
+    protected function makeGroupedEndpointsFromApp(
+        GenerateDocumentation $command,
+        RouteMatcherInterface $routeMatcher,
+        bool $preserveUserChanges
+    ): GroupedEndpointsFromApp {
+        return new GroupedEndpointsFromApp($command, $routeMatcher, $preserveUserChanges);
+    }
+
+    protected function makeGroupedEndpointsFromCamelDir(): GroupedEndpointsFromCamelDir
+    {
+        return new GroupedEndpointsFromCamelDir();
     }
 }
