@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+## 3.26.0 (3 April 2022)
+### Modified
+- Update `GroupedEndpoint` classes to be easier to extend ([#456](https://github.com/knuckleswtf/scribe/pull/456))
+
 ## 3.25.0 (21 March 2022)
 ### Added
 - Support validation rules `accepted` and `accepted_if` ([#438](https://github.com/knuckleswtf/scribe/pull/438))

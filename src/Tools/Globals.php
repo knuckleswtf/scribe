@@ -4,7 +4,7 @@ namespace Knuckles\Scribe\Tools;
 
 class Globals
 {
-    public const SCRIBE_VERSION = '3.25.0';
+    public const SCRIBE_VERSION = '3.26.0';
 
     public static bool $shouldBeVerbose = false;
 
