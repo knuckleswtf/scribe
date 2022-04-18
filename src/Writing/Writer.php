@@ -32,6 +32,8 @@ class Writer
         ]
     ];
 
+    private string $laravelAssetsPath;
+
     public function __construct(DocumentationConfig $config = null)
     {
         // If no config is injected, pull from global. Makes testing easier.
@@ -39,6 +41,10 @@ class Writer
 
         $this->isStatic = $this->config->get('type') === 'static';
         $this->staticTypeOutputPath = rtrim($this->config->get('static.output_path', 'public/docs'), '/');
+
+        $this->laravelAssetsPath = $this->config->get('laravel.asset_prefix')
+            ? $this->config->get('laravel.asset_prefix') . '/vendor/scribe'
+            : '/vendor/scribe';
     }
 
     /**
@@ -146,8 +152,8 @@ class Writer
             mkdir($this->laravelTypeOutputPath, 0777, true);
         }
         $publicDirectory = app()->get('path.public');
-        if (!is_dir("$publicDirectory/vendor/scribe")) {
-            mkdir("$publicDirectory/vendor/scribe", 0777, true);
+        if (!is_dir($publicDirectory . $this->laravelAssetsPath)) {
+            mkdir($publicDirectory . $this->laravelAssetsPath, 0777, true);
         }
 
 
@@ -156,14 +162,14 @@ class Writer
 
         // Move assets from public/docs to public/vendor/scribe
         // We need to do this delete first, otherwise move won't work if folder exists
-        Utils::deleteDirectoryAndContents("$publicDirectory/vendor/scribe/");
-        rename("{$this->staticTypeOutputPath}/", "$publicDirectory/vendor/scribe/");
+        Utils::deleteDirectoryAndContents($publicDirectory . $this->laravelAssetsPath);
+        rename("{$this->staticTypeOutputPath}/", $publicDirectory . $this->laravelAssetsPath);
 
         $contents = file_get_contents("$this->laravelTypeOutputPath/index.blade.php");
 
         // Rewrite asset links to go through Laravel
-        $contents = preg_replace('#href="\.\./docs/css/(.+?)"#', 'href="{{ asset("vendor/scribe/css/$1") }}"', $contents);
-        $contents = preg_replace('#src="\.\./docs/(js|images)/(.+?)"#', 'src="{{ asset("vendor/scribe/$1/$2") }}"', $contents);
+        $contents = preg_replace('#href="\.\./docs/css/(.+?)"#', 'href="{{ asset("' . $this->laravelAssetsPath . '/css/$1") }}"', $contents);
+        $contents = preg_replace('#src="\.\./docs/(js|images)/(.+?)"#', 'src="{{ asset("' . $this->laravelAssetsPath . '/$1/$2") }}"', $contents);
         $contents = str_replace('href="../docs/collection.json"', 'href="{{ route("scribe.postman") }}"', $contents);
         $contents = str_replace('href="../docs/openapi.yaml"', 'href="{{ route("scribe.openapi") }}"', $contents);
 
@@ -192,7 +198,7 @@ class Writer
             $outputPath = rtrim($this->laravelTypeOutputPath, '/') . '/';
             c::success("Wrote Blade docs to: $outputPath");
             $this->generatedFiles['blade'] = realpath("{$outputPath}index.blade.php");
-            $assetsOutputPath = app()->get('path.public')."/vendor/scribe/";
+            $assetsOutputPath = app()->get('path.public').$this->laravelAssetsPath;
         }
         $this->generatedFiles['assets']['js'] = realpath("{$assetsOutputPath}js");
         $this->generatedFiles['assets']['css'] = realpath("{$assetsOutputPath}css");

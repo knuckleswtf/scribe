@@ -168,6 +168,12 @@ return [
         'docs_url' => '/docs',
 
         /*
+         * Prefix for public assets.
+         * By default, assets are stored in `public/vendor/scribe`.
+         */
+        'asset_prefix' => null,
+
+        /*
          * Middleware to attach to the docs endpoint (if `add_routes` is true).
          */
         'middleware' => [],
