@@ -170,6 +170,7 @@ return [
         /*
          * Prefix for public assets.
          * By default, assets are stored in `public/vendor/scribe`.
+         * If asset_prefix != null, assets will be stored in `public/{{asset_prefix}}/vendor/scribe`
          */
         'asset_prefix' => null,
 
