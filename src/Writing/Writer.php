@@ -42,8 +42,8 @@ class Writer
         $this->isStatic = $this->config->get('type') === 'static';
         $this->staticTypeOutputPath = rtrim($this->config->get('static.output_path', 'public/docs'), '/');
 
-        $this->laravelAssetsPath = $this->config->get('laravel.asset_prefix')
-            ? $this->config->get('laravel.asset_prefix') . '/vendor/scribe'
+        $this->laravelAssetsPath = $this->config->get('laravel.assets_directory')
+            ? '/' . $this->config->get('laravel.assets_directory')
             : '/vendor/scribe';
     }
 
@@ -160,7 +160,7 @@ class Writer
         // Transform output HTML to a Blade view
         rename("{$this->staticTypeOutputPath}/index.html", "$this->laravelTypeOutputPath/index.blade.php");
 
-        // Move assets from public/docs to public/vendor/scribe
+        // Move assets from public/docs to public/vendor/scribe or config('laravel.assets_directory')
         // We need to do this delete first, otherwise move won't work if folder exists
         Utils::deleteDirectoryAndContents($publicDirectory . $this->laravelAssetsPath);
         rename("{$this->staticTypeOutputPath}/", $publicDirectory . $this->laravelAssetsPath);
@@ -199,6 +199,7 @@ class Writer
             c::success("Wrote Blade docs to: $outputPath");
             $this->generatedFiles['blade'] = realpath("{$outputPath}index.blade.php");
             $assetsOutputPath = app()->get('path.public').$this->laravelAssetsPath;
+            c::success("Wrote Laravel assets to: " . realpath($assetsOutputPath));
         }
         $this->generatedFiles['assets']['js'] = realpath("{$assetsOutputPath}js");
         $this->generatedFiles['assets']['css'] = realpath("{$assetsOutputPath}css");

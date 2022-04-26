@@ -168,10 +168,10 @@ return [
         'docs_url' => '/docs',
 
         /*
-         * Prefix for public assets.
+         * Specify directory within `public` in which to store Laravel Scribe assets.
          * By default, assets are stored in `public/vendor/scribe`.
          */
-        'asset_prefix' => null,
+        'assets_directory' => null,
 
         /*
          * Middleware to attach to the docs endpoint (if `add_routes` is true).
