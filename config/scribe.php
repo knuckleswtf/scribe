@@ -170,6 +170,7 @@ return [
         /*
          * Specify directory within `public` in which to store Laravel Scribe assets.
          * By default, assets are stored in `public/vendor/scribe`.
+         * If asset_prefix != null, assets will be stored in `public/{{asset_prefix}}/vendor/scribe`
          */
         'assets_directory' => null,
 
