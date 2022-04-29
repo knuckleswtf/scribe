@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+## 3.27.0 (30 April 2022)
+### Modified
+- Add `assets_directory` config option for `laravel` type ([#462](https://github.com/knuckleswtf/scribe/pull/462))
+
 ## 3.26.0 (3 April 2022)
 ### Modified
 - Update `GroupedEndpoint` classes to be easier to extend ([#456](https://github.com/knuckleswtf/scribe/pull/456))
