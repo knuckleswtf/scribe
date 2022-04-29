@@ -168,9 +168,9 @@ return [
         'docs_url' => '/docs',
 
         /*
-         * Specify directory within `public` in which to store Laravel Scribe assets.
+         * Specify directory within `public` in which to store CSS and JS assets.
          * By default, assets are stored in `public/vendor/scribe`.
-         * If asset_prefix != null, assets will be stored in `public/{{asset_prefix}}/vendor/scribe`
+         * If assets_directory is not null, assets will be stored in `public/{{assets_directory}}`
          */
         'assets_directory' => null,
 
