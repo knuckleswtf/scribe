@@ -168,9 +168,9 @@ return [
         'docs_url' => '/docs',
 
         /*
-         * Specify directory within `public` in which to store CSS and JS assets.
+         * Directory within `public` in which to store CSS and JS assets.
          * By default, assets are stored in `public/vendor/scribe`.
-         * If assets_directory is not null, assets will be stored in `public/{{assets_directory}}`
+         * If set, assets will be stored in `public/{{assets_directory}}`
          */
         'assets_directory' => null,
 
