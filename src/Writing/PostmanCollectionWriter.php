@@ -258,7 +258,7 @@ class PostmanCollectionWriter
             } else {
                 $query[] = [
                     'key' => urlencode($name),
-                    'value' => urlencode($parameterData->example),
+                    'value' => $parameterData->example != null ? urlencode($parameterData->example) : '',
                     'description' => strip_tags($parameterData->description),
                     // Default query params to disabled if they aren't required and have empty values
                     'disabled' => !$parameterData->required && empty($parameterData->example),

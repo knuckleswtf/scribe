@@ -509,7 +509,7 @@ class OpenAPISpecWriterTest extends TestCase
     protected function createMockEndpointData(array $custom = []): OutputEndpointData
     {
         $faker = Factory::create();
-        $path = '/' . $faker->word;
+        $path = '/' . $faker->word();
         $data = [
             'uri' => $path,
             'httpMethods' => $faker->randomElements(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], 1),
@@ -517,9 +517,9 @@ class OpenAPISpecWriterTest extends TestCase
                 'Content-Type' => 'application/json',
             ],
             'metadata' => [
-                'title' => $faker->sentence,
-                'description' => $faker->randomElement([$faker->sentence, '']),
-                'authenticated' => $faker->boolean,
+                'title' => $faker->sentence(),
+                'description' => $faker->randomElement([$faker->sentence(), '']),
+                'authenticated' => $faker->boolean(),
             ],
             'urlParameters' => [], // Should be set by caller (along with custom path)
             'queryParameters' => [],
