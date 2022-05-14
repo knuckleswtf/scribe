@@ -22,6 +22,7 @@ class GenerateDocumentation extends Command
     protected $signature = "scribe:generate
                             {--force : Discard any changes you've made to the YAML or Markdown files}
                             {--no-extraction : Skip extraction of route and API info and just transform the YAML and Markdown files into HTML}
+                            {--no-upgrade-check : Skip checking for config file upgrades. Won't make things faster, but can be helpful if the command is buggy}
     ";
 
     protected $description = 'Generate API documentation from your Laravel/Dingo routes.';
@@ -175,6 +176,8 @@ class GenerateDocumentation extends Command
 
     protected function upgradeConfigFileIfNeeded(): void
     {
+        if ($this->option('no-upgrade-check')) return;
+
         $this->info("Checking for any pending upgrades to your config file...");
         try {
             $upgrader = Upgrader::ofConfigFile('config/scribe.php', __DIR__ . '/../../config/scribe.php')
