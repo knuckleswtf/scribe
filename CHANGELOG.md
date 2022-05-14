@@ -12,6 +12,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+## 3.28.0 (14 May 2022)
+### Added
+- Add `--no-upgrade-check` CLI option ([6950f4b](https://github.com/knuckleswtf/scribe/commit/6950f4bfc8b270f47f0318124a5610f2abd95182))
+
+### Modified
+- [Internal] Fix Faker deprecations ([8093961](https://github.com/knuckleswtf/scribe/commit/8093961c8df008451e2edae0f97c529efb509ac9))
+
 ## 3.27.0 (30 April 2022)
 ### Modified
 - Add `assets_directory` config option for `laravel` type ([#462](https://github.com/knuckleswtf/scribe/pull/462))
