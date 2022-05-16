@@ -148,6 +148,7 @@ class Writer
 
     protected function performFinalTasksForLaravelType(): void
     {
+
         if (!is_dir($this->laravelTypeOutputPath)) {
             mkdir($this->laravelTypeOutputPath, 0777, true);
         }
@@ -172,7 +173,6 @@ class Writer
         $contents = preg_replace('#src="\.\./docs/(js|images)/(.+?)"#', 'src="{{ asset("' . $this->laravelAssetsPath . '/$1/$2") }}"', $contents);
         $contents = str_replace('href="../docs/collection.json"', 'href="{{ route("scribe.postman") }}"', $contents);
         $contents = str_replace('href="../docs/openapi.yaml"', 'href="{{ route("scribe.openapi") }}"', $contents);
-
         file_put_contents("$this->laravelTypeOutputPath/index.blade.php", $contents);
     }
 

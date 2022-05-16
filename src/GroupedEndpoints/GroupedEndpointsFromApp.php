@@ -41,7 +41,6 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
         $this->routeMatcher = $routeMatcher;
         $this->docConfig = $command->getDocConfig();
         $this->preserveUserChanges = $preserveUserChanges;
-
         static::$camelDir = Camel::$camelDir;
         static::$cacheDir = Camel::$cacheDir;
     }
@@ -265,6 +264,14 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
         }
 
         $methodDocBlock = new DocBlock(u::getReflectedRouteMethod($routeControllerAndMethod)->getDocComment() ?: '');
+
+        $routes = $this->docConfig->get('routes');
+        $configs = $routes[0]['apply']['response_calls']['config'];
+
+        if(isset($configs['ignore_hidden']) && $configs['ignore_hidden'] !== true){
+            return collect();
+        }
+
         $shouldIgnoreMethod = collect($methodDocBlock->getTags())
             ->filter(function (Tag $tag) {
                 return Str::lower($tag->getName()) === 'hidefromapidocumentation';
