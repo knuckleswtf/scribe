@@ -268,8 +268,8 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
         $routes = $this->docConfig->get('routes');
         $configs = $routes[0]['apply']['response_calls']['config'];
 
-        if(isset($configs['ignore_hidden']) && $configs['ignore_hidden'] !== true){
-            return collect();
+        if(isset($configs['ignore_hidden']) && $configs['ignore_hidden'] === true){
+            return collect()->isNotEmpty();
         }
 
         $shouldIgnoreMethod = collect($methodDocBlock->getTags())
