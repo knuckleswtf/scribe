@@ -148,7 +148,6 @@ class Writer
 
     protected function performFinalTasksForLaravelType(): void
     {
-
         if (!is_dir($this->laravelTypeOutputPath)) {
             mkdir($this->laravelTypeOutputPath, 0777, true);
         }
