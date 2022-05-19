@@ -172,6 +172,7 @@ class Writer
         $contents = preg_replace('#src="\.\./docs/(js|images)/(.+?)"#', 'src="{{ asset("' . $this->laravelAssetsPath . '/$1/$2") }}"', $contents);
         $contents = str_replace('href="../docs/collection.json"', 'href="{{ route("scribe.postman") }}"', $contents);
         $contents = str_replace('href="../docs/openapi.yaml"', 'href="{{ route("scribe.openapi") }}"', $contents);
+
         file_put_contents("$this->laravelTypeOutputPath/index.blade.php", $contents);
     }
 
