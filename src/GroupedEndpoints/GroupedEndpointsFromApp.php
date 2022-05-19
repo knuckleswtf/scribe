@@ -265,13 +265,6 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
 
         $methodDocBlock = new DocBlock(u::getReflectedRouteMethod($routeControllerAndMethod)->getDocComment() ?: '');
 
-        $routes = $this->docConfig->get('routes');
-        $configs = $routes[0]['apply']['response_calls']['config'];
-
-        if(isset($configs['ignore_hidden']) && $configs['ignore_hidden'] === true){
-            return collect()->isNotEmpty();
-        }
-
         $shouldIgnoreMethod = collect($methodDocBlock->getTags())
             ->filter(function (Tag $tag) {
                 return Str::lower($tag->getName()) === 'hidefromapidocumentation';
