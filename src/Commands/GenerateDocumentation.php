@@ -23,6 +23,7 @@ class GenerateDocumentation extends Command
                             {--force : Discard any changes you've made to the YAML or Markdown files}
                             {--no-extraction : Skip extraction of route and API info and just transform the YAML and Markdown files into HTML}
                             {--no-upgrade-check : Skip checking for config file upgrades. Won't make things faster, but can be helpful if the command is buggy}
+                            {--config= : choose which config file to use}
     ";
 
     protected $description = 'Generate API documentation from your Laravel/Dingo routes.';
@@ -91,6 +92,14 @@ class GenerateDocumentation extends Command
         c::bootstrapOutput($this->output);
 
         $this->docConfig = new DocumentationConfig(config('scribe'));
+
+        if($this->option('config')){
+            $config = config_path($this->option('config')).".php";
+            if(!file_exists($config)){
+                die("There is no suitable config found at {$config}\n");
+            }
+            $this->docConfig = new DocumentationConfig(config($this->option('config')));
+        }
 
         // Force root URL so it works in Postman collection
         $baseUrl = $this->docConfig->get('base_url') ?? config('app.url');
