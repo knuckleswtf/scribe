@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+## 3.29.1 (22 May 2022)
+### Fixed
+- Make output path for `laravel` type configurable ([48b2b90](https://github.com/knuckleswtf/scribe/commit/48b2b90580f92dbe2fa5ebdad207fa082c875532)))
+
 ## 3.29.0 (22 May 2022)
 ### Added
 - 🎉🎉 Support multiple docs with the `--config` flag ([#472](https://github.com/knuckleswtf/scribe/pull/472), [cc6c95e](https://github.com/knuckleswtf/scribe/commit/cc6c95eed2a999a640666eab8b7dad1b417c9aca)))
