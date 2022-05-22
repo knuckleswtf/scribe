@@ -19,7 +19,7 @@ class Writer
 
     private string $staticTypeOutputPath;
 
-    private string $laravelTypeOutputPath = 'resources/views/scribe';
+    private string $laravelTypeOutputPath;
     protected array $generatedFiles = [
         'postman' => null,
         'openapi' => null,
@@ -37,6 +37,7 @@ class Writer
     public function __construct(DocumentationConfig $config = null, $docsName = 'scribe')
     {
         $this->markdownOutputPath = ".{$docsName}"; //.scribe by default
+        $this->laravelTypeOutputPath = "resources/views/$docsName";
         // If no config is injected, pull from global. Makes testing easier.
         $this->config = $config ?: new DocumentationConfig(config($docsName));
 
