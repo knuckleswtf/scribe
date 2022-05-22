@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+## 3.29.0 (22 May 2022)
+### Added
+- 🎉🎉 Support multiple docs with the `--config` flag ([#472](https://github.com/knuckleswtf/scribe/pull/472), [cc6c95e](https://github.com/knuckleswtf/scribe/commit/cc6c95eed2a999a640666eab8b7dad1b417c9aca)))
+
 ## 3.28.0 (14 May 2022)
 ### Added
 - Add `--no-upgrade-check` CLI option ([6950f4b](https://github.com/knuckleswtf/scribe/commit/6950f4bfc8b270f47f0318124a5610f2abd95182))
