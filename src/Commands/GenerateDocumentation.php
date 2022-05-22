@@ -5,6 +5,7 @@ namespace Knuckles\Scribe\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
 use Knuckles\Camel\Camel;
 use Knuckles\Camel\Output\OutputEndpointData;
 use Knuckles\Scribe\Exceptions\GroupNotFound;
@@ -23,7 +24,7 @@ class GenerateDocumentation extends Command
                             {--force : Discard any changes you've made to the YAML or Markdown files}
                             {--no-extraction : Skip extraction of route and API info and just transform the YAML and Markdown files into HTML}
                             {--no-upgrade-check : Skip checking for config file upgrades. Won't make things faster, but can be helpful if the command is buggy}
-                            {--config= : choose which config file to use}
+                            {--config=scribe : choose which config file to use}
     ";
 
     protected $description = 'Generate API documentation from your Laravel/Dingo routes.';
@@ -33,6 +34,8 @@ class GenerateDocumentation extends Command
     private bool $shouldExtract;
 
     private bool $forcing;
+
+    protected string $configName;
 
     public function newLine($count = 1)
     {
@@ -45,9 +48,9 @@ class GenerateDocumentation extends Command
     {
         $this->bootstrap();
 
-        $groupedEndpointsInstance = $groupedEndpointsFactory->make($this, $routeMatcher);
+        $groupedEndpointsInstance = $groupedEndpointsFactory->make($this, $routeMatcher, $this->configName);
 
-        $userDefinedEndpoints = Camel::loadUserDefinedEndpoints(Camel::$camelDir);
+        $userDefinedEndpoints = Camel::loadUserDefinedEndpoints(Camel::camelDir($this->configName));
         $groupedEndpoints = $this->mergeUserDefinedEndpoints(
             $groupedEndpointsInstance->get(),
             $userDefinedEndpoints
@@ -58,7 +61,7 @@ class GenerateDocumentation extends Command
             $this->writeExampleCustomEndpoint();
         }
 
-        $writer = new Writer($this->docConfig);
+        $writer = new Writer($this->docConfig, $this->configName);
         $writer->writeDocs($groupedEndpoints);
 
         if ($groupedEndpointsInstance->hasEncounteredErrors()) {
@@ -67,6 +70,8 @@ class GenerateDocumentation extends Command
         }
 
         $this->upgradeConfigFileIfNeeded();
+
+        $this->sayGoodbye();
     }
 
     public function isForcing(): bool
@@ -91,15 +96,16 @@ class GenerateDocumentation extends Command
 
         c::bootstrapOutput($this->output);
 
-        $this->docConfig = new DocumentationConfig(config('scribe'));
-
-        if($this->option('config')){
-            $config = config_path($this->option('config')).".php";
-            if(!file_exists($config)){
-                die("There is no suitable config found at {$config}\n");
+        $this->configName = $this->option('config');
+        if ($this->configName !== 'scribe') {
+            $configPath = config_path($this->configName) . ".php";
+            if (!file_exists($configPath)) {
+                c::error("The specified config file doesn't exist: {$configPath}.\n");
+                exit(1);
             }
-            $this->docConfig = new DocumentationConfig(config($this->option('config')));
         }
+
+        $this->docConfig = new DocumentationConfig(config($this->configName));
 
         // Force root URL so it works in Postman collection
         $baseUrl = $this->docConfig->get('base_url') ?? config('app.url');
@@ -109,7 +115,8 @@ class GenerateDocumentation extends Command
         $this->shouldExtract = !$this->option('no-extraction');
 
         if ($this->forcing && !$this->shouldExtract) {
-            throw new \Exception("Can't use --force and --no-extraction together.");
+            c::error("Can't use --force and --no-extraction together.\n");
+            exit(1);
         }
 
         // Reset this map (useful for tests)
@@ -180,7 +187,7 @@ class GenerateDocumentation extends Command
     protected function writeExampleCustomEndpoint(): void
     {
         // We add an example to guide users in case they need to add a custom endpoint.
-        copy(__DIR__ . '/../../resources/example_custom_endpoint.yaml', Camel::$camelDir . '/custom.0.yaml');
+        copy(__DIR__ . '/../../resources/example_custom_endpoint.yaml', Camel::camelDir($this->configName) . '/custom.0.yaml');
     }
 
     protected function upgradeConfigFileIfNeeded(): void
@@ -189,7 +196,7 @@ class GenerateDocumentation extends Command
 
         $this->info("Checking for any pending upgrades to your config file...");
         try {
-            $upgrader = Upgrader::ofConfigFile('config/scribe.php', __DIR__ . '/../../config/scribe.php')
+            $upgrader = Upgrader::ofConfigFile("config/{$this->configName}.php", __DIR__ . '/../../config/scribe.php')
                 ->dontTouch(
                     'routes', 'example_languages', 'database_connections_to_transact', 'strategies', 'laravel.middleware',
                     'postman.overrides', 'openapi.overrides'
@@ -221,5 +228,20 @@ class GenerateDocumentation extends Command
             $this->warn("This did not affect your docs. Please report this issue in the project repo: https://github.com/knuckleswtf/scribe");
         }
 
+    }
+
+    protected function sayGoodbye(): void
+    {
+        $message = 'All done. ';
+        if ($this->docConfig->get('type') == 'laravel') {
+            if ($this->docConfig->get('laravel.add_routes')) {
+                $message .= 'Visit your docs at ' . url($this->docConfig->get('laravel.docs_url'));
+            }
+        } else if (Str::endsWith(public_path(), 'public') && Str::startsWith($this->docConfig->get('static.output_path'), 'public/')) {
+            $message = 'Visit your docs at ' . url(str_replace('public/', '', $this->docConfig->get('static.output_path')));
+        }
+
+        $this->newLine();
+        c::success($message);
     }
 }

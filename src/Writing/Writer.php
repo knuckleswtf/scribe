@@ -15,7 +15,7 @@ class Writer
 
     private bool $isStatic;
 
-    private string $markdownOutputPath = '.scribe';
+    private string $markdownOutputPath;
 
     private string $staticTypeOutputPath;
 
@@ -29,15 +29,16 @@ class Writer
             'js' => null,
             'css' => null,
             'images' => null,
-        ]
+        ],
     ];
 
     private string $laravelAssetsPath;
 
-    public function __construct(DocumentationConfig $config = null)
+    public function __construct(DocumentationConfig $config = null, $docsName = 'scribe')
     {
+        $this->markdownOutputPath = ".{$docsName}"; //.scribe by default
         // If no config is injected, pull from global. Makes testing easier.
-        $this->config = $config ?: new DocumentationConfig(config('scribe'));
+        $this->config = $config ?: new DocumentationConfig(config($docsName));
 
         $this->isStatic = $this->config->get('type') === 'static';
         $this->staticTypeOutputPath = rtrim($this->config->get('static.output_path', 'public/docs'), '/');
@@ -178,7 +179,7 @@ class Writer
 
     public function writeHtmlDocs(array $groupedEndpoints): void
     {
-        c::info('Writing HTML docs...');
+        c::info('Writing ' . ($this->isStatic ? 'HTML' : 'Blade') . ' docs...');
 
         // Then we convert them to HTML, and throw in the endpoints as well.
         /** @var HtmlWriter $writer */
@@ -191,14 +192,14 @@ class Writer
 
         if ($this->isStatic) {
             $outputPath = rtrim($this->staticTypeOutputPath, '/') . '/';
-            c::success("Wrote HTML docs to: $outputPath");
+            c::success("Wrote HTML docs and assets to: $outputPath");
             $this->generatedFiles['html'] = realpath("{$outputPath}index.html");
             $assetsOutputPath = $outputPath;
         } else {
             $outputPath = rtrim($this->laravelTypeOutputPath, '/') . '/';
             c::success("Wrote Blade docs to: $outputPath");
             $this->generatedFiles['blade'] = realpath("{$outputPath}index.blade.php");
-            $assetsOutputPath = app()->get('path.public').$this->laravelAssetsPath;
+            $assetsOutputPath = app()->get('path.public') . $this->laravelAssetsPath;
             c::success("Wrote Laravel assets to: " . realpath($assetsOutputPath));
         }
         $this->generatedFiles['assets']['js'] = realpath("{$assetsOutputPath}js");

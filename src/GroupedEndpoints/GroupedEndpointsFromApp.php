@@ -24,6 +24,7 @@ use Symfony\Component\Yaml\Yaml;
 
 class GroupedEndpointsFromApp implements GroupedEndpointsContract
 {
+    protected string $docsName;
     private GenerateDocumentation $command;
     private RouteMatcherInterface $routeMatcher;
     private DocumentationConfig $docConfig;
@@ -35,15 +36,19 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
 
     private array $endpointGroupIndexes = [];
 
-    public function __construct(GenerateDocumentation $command, RouteMatcherInterface $routeMatcher, $preserveUserChanges)
+    public function __construct(
+        GenerateDocumentation $command, RouteMatcherInterface $routeMatcher,
+        bool $preserveUserChanges, string $docsName = 'scribe'
+    )
     {
         $this->command = $command;
         $this->routeMatcher = $routeMatcher;
         $this->docConfig = $command->getDocConfig();
         $this->preserveUserChanges = $preserveUserChanges;
+        $this->docsName = $docsName;
 
-        static::$camelDir = Camel::$camelDir;
-        static::$cacheDir = Camel::$cacheDir;
+        static::$camelDir = Camel::camelDir($this->docsName);
+        static::$cacheDir = Camel::cacheDir($this->docsName);
     }
 
     public function get(): array
@@ -282,7 +287,7 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
 
     protected function makeApiDetails(): ApiDetails
     {
-        return new ApiDetails($this->docConfig, !$this->command->option('force'));
+        return new ApiDetails($this->docConfig, !$this->command->option('force'), $this->docsName);
     }
 
     /**

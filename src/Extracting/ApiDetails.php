@@ -17,16 +17,17 @@ class ApiDetails
 
     private bool $preserveUserChanges;
 
-    private string $markdownOutputPath = '.scribe';
+    private string $markdownOutputPath;
 
     private string $fileHashesTrackingFile;
 
     private array $lastKnownFileContentHashes = [];
 
-    public function __construct(DocumentationConfig $config = null, bool $preserveUserChanges = true)
+    public function __construct(DocumentationConfig $config = null, bool $preserveUserChanges = true, string $docsName = 'scribe')
     {
+        $this->markdownOutputPath = ".{$docsName}"; //.scribe by default
         // If no config is injected, pull from global. Makes testing easier.
-        $this->config = $config ?: new DocumentationConfig(config('scribe'));
+        $this->config = $config ?: new DocumentationConfig(config($docsName));
         $this->baseUrl = $this->config->get('base_url') ?? config('app.url');
         $this->preserveUserChanges = $preserveUserChanges;
 

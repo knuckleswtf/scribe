@@ -19,8 +19,25 @@ class Camel
      * @var array<string, string>
      */
     public static array $groupFileNames = [];
+
+    /**
+     * @deprecated Use the cacheDir() method instead
+     */
     public static string $cacheDir = ".scribe/endpoints.cache";
+    /**
+     * @deprecated Use the camelDir() method instead
+     */
     public static string $camelDir = ".scribe/endpoints";
+
+    public static function cacheDir(string $docsName = 'scribe')
+    {
+        return ".$docsName/endpoints.cache";
+    }
+
+    public static function camelDir(string $docsName = 'scribe')
+    {
+        return ".$docsName/endpoints";
+    }
 
     /**
      * Load endpoints from the Camel files into groups (arrays).
