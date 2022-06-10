@@ -5,6 +5,10 @@ namespace Knuckles\Scribe\Extracting\Strategies;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Extracting\MethodAstParser;
 use Knuckles\Scribe\Extracting\ParsesValidationRules;
+use Knuckles\Scribe\Extracting\ValidationRulesFinders\RequestValidate;
+use Knuckles\Scribe\Extracting\ValidationRulesFinders\ThisValidate;
+use Knuckles\Scribe\Extracting\ValidationRulesFinders\ValidatorMake;
+use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 
@@ -27,44 +31,26 @@ class GetFromInlineValidatorBase extends Strategy
 
     public function lookForInlineValidationRules(ClassMethod $methodAst): array
     {
-        // Validation usually happens early on, so let's assume it's in the first 6 statements
-        $statements = array_slice($methodAst->stmts, 0, 6);
+        // Validation usually happens early on, so let's assume it's in the first 10 statements
+        $statements = array_slice($methodAst->stmts, 0, 10);
 
-        $validationRules = null;
-        $validationAssignmentExpression = null;
-        $index = null;
-        foreach ($statements as $index => $node) {
-            // Filter to only assignment expressions
-            if (!($node instanceof Node\Stmt\Expression) || !($node->expr instanceof Node\Expr\Assign)) {
-                continue;
-            }
-
-            $validationAssignmentExpression = $node->expr;
-            $rvalue = $validationAssignmentExpression->expr;
-
-            // Look for $validated = $request->validate(...)
-            if (
-                $rvalue instanceof Node\Expr\MethodCall && $rvalue->var instanceof Node\Expr\Variable
-                && in_array($rvalue->var->name, ["request", "req"]) && $rvalue->name->name == "validate"
-            ) {
-                $validationRules = $rvalue->args[0]->value;
-                break;
-            } else if (
-                // Try $validator = Validator::make(...)
-                $rvalue instanceof Node\Expr\StaticCall && !empty($rvalue->class->parts) && end($rvalue->class->parts) == "Validator"
-                && $rvalue->name->name == "make"
-            ) {
-                $validationRules = $rvalue->args[1]->value;
-                break;
-            }
+        // Todo remove in future
+        if (method_exists($this, 'isAssignmentMeantForThisStrategy')) {
+            c::error("A custom strategy of yours is using a removed method isAssignmentMeantForThisStrategy().\n");
+            c::error("Fix this by changing the method name to isValidationStatementMeantForThisStrategy()\n");
+            c::error("and changing the type of its argument to Node.\n");
+            exit(1);
         }
 
-        if ($validationAssignmentExpression && !$this->isAssignmentMeantForThisStrategy($validationAssignmentExpression)) {
+        [$index, $validationStatement, $validationRules] = $this->findValidationExpression($statements);
+
+        if ($validationStatement &&
+            !$this->isValidationStatementMeantForThisStrategy($validationStatement)) {
             return [[], []];
         }
 
         // If validation rules were saved in a variable (like $rules),
-        // find the var and expand the value
+        // try to find the var and expand the value
         if ($validationRules instanceof Node\Expr\Variable) {
             foreach (array_reverse(array_slice($statements, 0, $index)) as $earlierStatement) {
                 if (
@@ -144,8 +130,27 @@ class GetFromInlineValidatorBase extends Strategy
         return true;
     }
 
-    protected function isAssignmentMeantForThisStrategy(Node\Expr\Assign $validationAssignmentExpression): bool
+    protected function isValidationStatementMeantForThisStrategy(Node $validationStatement): bool
     {
         return true;
+    }
+
+    protected function findValidationExpression($statements): ?array
+    {
+        $strategies = [
+            RequestValidate::class, // $request->validate(...);
+            ValidatorMake::class, // Validator::make($request, ...)
+            ThisValidate::class, // $this->validate(...);
+        ];
+
+        foreach ($statements as $index => $node) {
+            foreach ($strategies as $strategy) {
+                if ($validationRules = $strategy::find($node)) {
+                    return [$index, $node, $validationRules];
+                }
+            }
+        }
+
+        return [null, null, null];
     }
 }

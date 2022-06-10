@@ -89,12 +89,63 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
     ];
 
     /** @test */
-    public function can_fetch_from_request_validate()
+    public function can_fetch_from_request_validate_assignment()
     {
         $endpoint = new class extends ExtractedEndpointData {
             public function __construct(array $parameters = [])
             {
                 $this->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidate');
+            }
+        };
+
+        $strategy = new BodyParameters\GetFromInlineValidator(new DocumentationConfig([]));
+        $results = $strategy($endpoint, []);
+
+        $this->assertArraySubset(self::$expected, $results);
+        $this->assertIsArray($results['ids']['example']);
+    }
+
+    /** @test */
+    public function can_fetch_from_request_validate_expression()
+    {
+        $endpoint = new class extends ExtractedEndpointData {
+            public function __construct(array $parameters = [])
+            {
+                $this->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidateNoAssignment');
+            }
+        };
+
+        $strategy = new BodyParameters\GetFromInlineValidator(new DocumentationConfig([]));
+        $results = $strategy($endpoint, []);
+
+        $this->assertArraySubset(self::$expected, $results);
+        $this->assertIsArray($results['ids']['example']);
+    }
+
+    /** @test */
+    public function can_fetch_from_request_validatewithbag()
+    {
+        $endpoint = new class extends ExtractedEndpointData {
+            public function __construct(array $parameters = [])
+            {
+                $this->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidateWithBag');
+            }
+        };
+
+        $strategy = new BodyParameters\GetFromInlineValidator(new DocumentationConfig([]));
+        $results = $strategy($endpoint, []);
+
+        $this->assertArraySubset(self::$expected, $results);
+        $this->assertIsArray($results['ids']['example']);
+    }
+
+    /** @test */
+    public function can_fetch_from_this_validate()
+    {
+        $endpoint = new class extends ExtractedEndpointData {
+            public function __construct(array $parameters = [])
+            {
+                $this->method = new \ReflectionMethod(TestController::class, 'withInlineThisValidate');
             }
         };
 
