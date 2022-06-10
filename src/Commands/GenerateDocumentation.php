@@ -237,7 +237,7 @@ class GenerateDocumentation extends Command
             if ($this->docConfig->get('laravel.add_routes')) {
                 $message .= 'Visit your docs at ' . url($this->docConfig->get('laravel.docs_url'));
             }
-        } else if (Str::endsWith(public_path(), 'public') && Str::startsWith($this->docConfig->get('static.output_path'), 'public/')) {
+        } else if (Str::endsWith(base_path('public'), 'public') && Str::startsWith($this->docConfig->get('static.output_path'), 'public/')) {
             $message = 'Visit your docs at ' . url(str_replace('public/', '', $this->docConfig->get('static.output_path')));
         }
 
