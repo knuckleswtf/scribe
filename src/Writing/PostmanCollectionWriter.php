@@ -101,13 +101,27 @@ class PostmanCollectionWriter
 
     protected function generateEndpointItem(OutputEndpointData $endpoint): array
     {
+        $method = $endpoint->httpMethods[0];
+
+        $bodyParameters = empty($endpoint->bodyParameters) ? null : $this->getBodyData($endpoint);
+
+        if ((in_array('PUT', $endpoint->httpMethods) || in_array('PATCH', $endpoint->httpMethods))
+            && isset($bodyParameters['formdata'])) {
+            $method = 'POST';
+            $bodyParameters['formdata'][] = [
+                'key' => '_method',
+                'value' => $endpoint->httpMethods[0],
+                'type' => 'text',
+            ];
+        }
+
         $endpointItem = [
             'name' => $endpoint->metadata->title !== '' ? $endpoint->metadata->title : $endpoint->uri,
             'request' => [
                 'url' => $this->generateUrlObject($endpoint),
-                'method' => $endpoint->httpMethods[0],
+                'method' => $method,
                 'header' => $this->resolveHeadersForEndpoint($endpoint),
-                'body' => empty($endpoint->bodyParameters) ? null : $this->getBodyData($endpoint),
+                'body' => $bodyParameters,
                 'description' => $endpoint->metadata->description,
             ],
             'response' => $this->getResponses($endpoint),
