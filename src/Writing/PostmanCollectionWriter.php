@@ -129,6 +129,9 @@ class PostmanCollectionWriter
             case 'multipart/form-data':
                 $inputMode = 'formdata';
                 break;
+            case 'application/x-www-form-urlencoded':
+                $inputMode = 'urlencoded';
+                break;
             case 'application/json':
             default:
                 $inputMode = 'raw';
@@ -138,6 +141,7 @@ class PostmanCollectionWriter
 
         switch ($inputMode) {
             case 'formdata':
+            case 'urlencoded':
                 $body[$inputMode] = $this->getFormDataParams($endpoint->cleanBodyParameters);
                 foreach ($endpoint->fileParameters as $key => $value) {
                     while (is_array($value)) {
