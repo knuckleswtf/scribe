@@ -12,6 +12,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+## 3.31.0 (16 June 2022)
+### Modified
+- Postman collection: replace multipart PUT/PATCH requests with POST & `_method` ([#480](https://github.com/knuckleswtf/scribe/pull/480)))
+
+### Fixed
+- Fix logo image partially covered by sidebar ([#481](https://github.com/knuckleswtf/scribe/pull/481)))
+
+
 ## 3.30.0 (11 June 2022)
 ### Added
 - Support for more inline validator forms (`$request->validate(...)` without assignment, and `$this->validate($request, ...)`) ([29940c2e](https://github.com/knuckleswtf/scribe/commit/29940c2e05c8035a1ab85d9482c2335e1747ab41)))
