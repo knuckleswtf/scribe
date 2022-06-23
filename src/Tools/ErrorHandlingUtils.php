@@ -31,13 +31,7 @@ class ErrorHandlingUtils
     public static function dumpException(\Throwable $e): void
     {
         $output = new ConsoleOutput(OutputInterface::VERBOSITY_VERBOSE);
-        try {
-            $handler = new \NunoMaduro\Collision\Handler(new \NunoMaduro\Collision\Writer(null, $output));
-        } catch (\Throwable $error) {
-            // Version 3 used a different API
-            // todo remove when Laravel 7 is minimum supported
-            $handler = new \NunoMaduro\Collision\Handler(new \NunoMaduro\Collision\Writer($output));
-        }
+        $handler = new \NunoMaduro\Collision\Handler(new \NunoMaduro\Collision\Writer(null, $output));
         $handler->setInspector(new \Whoops\Exception\Inspector($e));
         $handler->setException($e);
         $handler->handle();

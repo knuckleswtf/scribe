@@ -37,13 +37,6 @@ class GenerateDocumentation extends Command
 
     protected string $configName;
 
-    public function newLine($count = 1)
-    {
-        // TODO Remove when Laravel 6 is no longer supported
-        $this->getOutput()->write(str_repeat("\n", $count));
-        return $this;
-    }
-
     public function handle(RouteMatcherInterface $routeMatcher, GroupedEndpointsFactory $groupedEndpointsFactory): void
     {
         $this->bootstrap();

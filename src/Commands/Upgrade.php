@@ -11,13 +11,6 @@ class Upgrade extends Command
 
     protected $description = '';
 
-    public function newLine($count = 1)
-    {
-        // TODO Remove when Laravel 6 is no longer supported
-        $this->getOutput()->write(str_repeat("\n", $count));
-        return $this;
-    }
-
     public function handle(): void
     {
         $oldConfig = config('scribe');
