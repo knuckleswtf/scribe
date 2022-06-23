@@ -263,19 +263,19 @@ trait ParsesValidationRules
                     // Laravel's message merely says "The value must be a valid zone"
                     $parameterData['description'] .= " Must be a valid time zone, such as <code>Africa/Accra</code>.";
                     $parameterData['setter'] = function () {
-                        return $this->getFaker()->timezone;
+                        return $this->getFaker()->timezone();
                     };
                     break;
                 case 'email':
                     $parameterData['description'] .= ' ' . $this->getDescription($rule);
                     $parameterData['setter'] = function () {
-                        return $this->getFaker()->safeEmail;
+                        return $this->getFaker()->safeEmail();
                     };
                     $parameterData['type'] = 'string';
                     break;
                 case 'url':
                     $parameterData['setter'] = function () {
-                        return $this->getFaker()->url;
+                        return $this->getFaker()->url();
                     };
                     $parameterData['type'] = 'string';
                     // Laravel's message is "The value format is invalid". Ugh.🤮
@@ -285,14 +285,14 @@ trait ParsesValidationRules
                     $parameterData['description'] .= ' ' . $this->getDescription($rule);
                     $parameterData['type'] = 'string';
                     $parameterData['setter'] = function () {
-                        return $this->getFaker()->ipv4;
+                        return $this->getFaker()->ipv4();
                     };
                     break;
                 case 'json':
                     $parameterData['type'] = 'string';
                     $parameterData['description'] .= ' ' . $this->getDescription($rule);
                     $parameterData['setter'] = function () {
-                        return json_encode([$this->getFaker()->word, $this->getFaker()->word,]);
+                        return json_encode([$this->getFaker()->word(), $this->getFaker()->word(),]);
                     };
                     break;
                 case 'date':
