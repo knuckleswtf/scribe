@@ -12,6 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+## 3.32.0 (23 June 2022)
+### Modified
+- Improved code blocks hiding ([#486](https://github.com/knuckleswtf/scribe/pull/486)))
+
+
 ## 3.31.0 (16 June 2022)
 ### Modified
 - Postman collection: replace multipart PUT/PATCH requests with POST & `_method` ([#480](https://github.com/knuckleswtf/scribe/pull/480)))
