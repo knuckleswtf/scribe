@@ -103,9 +103,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const newStyle = languages.map((language) => {
             return language === newLanguage
                 // the current one should be visible
-                ? `body .content .${language}-example code { display: block; }`
+                ? `body .content .${language}-example pre { display: block; }`
                 // the inactive one should be hidden
-                : `body .content .${language}-example code { display: none; }`;
+                : `body .content .${language}-example pre { display: none; }`;
         }).join(`\n`);
 
         Array.from(langSelector).forEach((elem) => {
