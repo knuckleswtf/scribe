@@ -4,7 +4,7 @@ namespace Knuckles\Scribe\Tests\GenerateDocumentation;
 
 use Illuminate\Support\Facades\Route as RouteFacade;
 use Illuminate\Support\Facades\Storage;
-use Knuckles\Scribe\Scribe;
+use Illuminate\Support\Facades\View;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tests\Fixtures\TestGroupController;
@@ -58,17 +58,20 @@ class OutputTest extends BaseLaravelTest
         ]);
     }
 
-    /** @test */
+    protected function usesLaravelTypeDocs($app)
+    {
+        $app['config']->set('scribe.type', 'laravel');
+        $app['config']->set('scribe.laravel.add_routes', true);
+        $app['config']->set('scribe.laravel.docs_url', '/apidocs');
+    }
+
+    /**
+     * @test
+     * @define-env usesLaravelTypeDocs
+     */
     public function generates_laravel_type_output()
     {
-        RouteFacade::post('/api/withBodyParametersAsArray', [TestController::class, 'withBodyParametersAsArray']);
-        RouteFacade::post('/api/withFormDataParams', [TestController::class, 'withFormDataParams']);
-        RouteFacade::post('/api/withBodyParameters', [TestController::class, 'withBodyParameters']);
-        RouteFacade::get('/api/withQueryParameters', [TestController::class, 'withQueryParameters']);
-        RouteFacade::get('/api/withAuthTag', [TestController::class, 'withAuthenticatedTag']);
-        RouteFacade::get('/api/echoesUrlParameters/{param}/{param2}/{param3?}/{param4?}', [TestController::class, 'echoesUrlParameters']);
-        config(['scribe.title' => 'GREAT API!']);
-        config(['scribe.auth.enabled' => true]);
+        RouteFacade::post('/api/withQueryParameters', [TestController::class, 'withQueryParameters']);
         config(['scribe.type' => 'laravel']);
         config(['scribe.postman.enabled' => true]);
         config(['scribe.openapi.enabled' => true]);
@@ -78,6 +81,16 @@ class OutputTest extends BaseLaravelTest
         $this->assertFileExists($this->postmanOutputPath(true));
         $this->assertFileExists($this->openapiOutputPath(true));
         $this->assertFileExists($this->bladeOutputPath());
+
+        $response = $this->get('/apidocs/');
+        $response->assertStatus(200);
+        $response = $this->get('/apidocs.postman');
+        $response->assertStatus(200);
+        $response = $this->get('/apidocs.openapi');
+        $response->assertStatus(200);
+
+        config(['scribe.laravel.add_routes' => false]);
+        config(['scribe.laravel.docs_url' => '/apidocs']);
 
         unlink($this->postmanOutputPath(true));
         unlink($this->openapiOutputPath(true));
@@ -402,6 +415,6 @@ class OutputTest extends BaseLaravelTest
 
     protected function bladeOutputPath(): string
     {
-        return 'resources/views/scribe/index.blade.php';
+        return View::getFinder()->find('scribe/index');
     }
 }

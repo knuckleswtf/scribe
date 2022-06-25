@@ -17,9 +17,9 @@ class Writer
 
     private string $markdownOutputPath;
 
-    private string $staticTypeOutputPath;
+    private ?string $staticTypeOutputPath;
 
-    private string $laravelTypeOutputPath;
+    private ?string $laravelTypeOutputPath;
     protected array $generatedFiles = [
         'postman' => null,
         'openapi' => null,
@@ -36,12 +36,12 @@ class Writer
 
     public function __construct(DocumentationConfig $config = null, $docsName = 'scribe')
     {
-        $this->markdownOutputPath = ".{$docsName}"; //.scribe by default
-        $this->laravelTypeOutputPath = "resources/views/$docsName";
         // If no config is injected, pull from global. Makes testing easier.
         $this->config = $config ?: new DocumentationConfig(config($docsName));
 
         $this->isStatic = $this->config->get('type') === 'static';
+        $this->markdownOutputPath = ".{$docsName}"; //.scribe by default
+        $this->laravelTypeOutputPath = $this->getLaravelTypeOutputPath($docsName);
         $this->staticTypeOutputPath = rtrim($this->config->get('static.output_path', 'public/docs'), '/');
 
         $this->laravelAssetsPath = $this->config->get('laravel.assets_directory')
@@ -216,6 +216,13 @@ class Writer
             c::info("Running `afterGenerating()` hook...");
             call_user_func_array(Globals::$__afterGenerating, [$this->generatedFiles]);
         }
+    }
+
+    protected function getLaravelTypeOutputPath(string $docsName): ?string
+    {
+        if ($this->isStatic) return null;
+
+        return config('view.paths.0', "resources/views")."/$docsName";
     }
 
 }

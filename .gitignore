@@ -6,6 +6,7 @@ composer.dingo.lock
 public/
 resources/docs/
 resources/views/scribe/
+.scribe/
 tests/public/
 .idea/
 coverage.xml
