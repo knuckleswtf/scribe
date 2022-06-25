@@ -20,4 +20,9 @@ trait TestHelpers
 
         return $kernel->output();
     }
+
+    protected function generate(array $flags = []): mixed
+    {
+        return $this->artisan('scribe:generate', $flags);
+    }
 }

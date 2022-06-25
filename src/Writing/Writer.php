@@ -83,7 +83,8 @@ class Writer
             }
 
             c::success("Wrote Postman collection to: {$collectionPath}");
-            $this->generatedFiles['postman'] = realpath($collectionPath);
+            $this->generatedFiles['postman'] = realpath($collectionPath)
+                ?: Storage::disk('local')->path('scribe/collection.json');
         }
     }
 
@@ -102,7 +103,8 @@ class Writer
             }
 
             c::success("Wrote OpenAPI specification to: {$specPath}");
-            $this->generatedFiles['openapi'] = realpath($specPath);
+            $this->generatedFiles['openapi'] = realpath($specPath)
+                ?: Storage::disk('local')->path('scribe/openapi.yaml');
         }
     }
 
@@ -200,7 +202,7 @@ class Writer
             $outputPath = rtrim($this->laravelTypeOutputPath, '/') . '/';
             c::success("Wrote Blade docs to: $outputPath");
             $this->generatedFiles['blade'] = realpath("{$outputPath}index.blade.php");
-            $assetsOutputPath = app()->get('path.public') . $this->laravelAssetsPath;
+            $assetsOutputPath = app()->get('path.public') . $this->laravelAssetsPath . '/';
             c::success("Wrote Laravel assets to: " . realpath($assetsOutputPath));
         }
         $this->generatedFiles['assets']['js'] = realpath("{$assetsOutputPath}js");

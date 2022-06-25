@@ -22,7 +22,8 @@
     </coverage>
     <testsuites>
         <testsuite name="Full Test">
-            <file>tests/GenerateDocumentationTest.php</file>
+            <file>tests/GenerateDocumentation/OutputTest.php</file>
+            <file>tests/GenerateDocumentation/BehavioursTest.php</file>
         </testsuite>
         <testsuite name="Strategies">
             <directory>tests/Strategies</directory>

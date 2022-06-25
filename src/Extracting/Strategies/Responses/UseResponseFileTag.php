@@ -52,15 +52,7 @@ class UseResponseFileTag extends Strategy
             $status = $attributes['status'] ?: ($status ?: 200);
             $description = $attributes['scenario'] ? "$status, {$attributes['scenario']}" : "$status";
 
-            if (!file_exists($filePath)) {
-                // Try Laravel storage folder
-                if (!file_exists(storage_path($filePath))) {
-                    throw new \InvalidArgumentException("@responseFile {$filePath} does not exist");
-                }
-
-                $filePath = storage_path($filePath);
-            }
-            $content = file_get_contents($filePath, true);
+            $content = $this->getFileContents($filePath);
             if ($json) {
                 $json = str_replace("'", '"', $json);
                 $content = json_encode(array_merge(json_decode($content, true), json_decode($json, true)));
@@ -75,5 +67,18 @@ class UseResponseFileTag extends Strategy
         }, $responseFileTags);
 
         return $responses;
+    }
+
+    protected function getFileContents($filePath): string|false
+    {
+        if (!file_exists($filePath)) {
+            // Try Laravel storage folder
+            if (!file_exists(storage_path($filePath))) {
+                throw new \InvalidArgumentException("@responseFile {$filePath} does not exist");
+            }
+
+            $filePath = storage_path($filePath);
+        }
+        return file_get_contents($filePath, true);
     }
 }

@@ -216,7 +216,7 @@ class GenerateDocumentation extends Command
                 }
             }
         } catch (\Throwable $e) {
-            $this->warn("Check failed wih error:");
+            $this->warn("Check failed with error:");
             e::dumpExceptionIfVerbose($e);
             $this->warn("This did not affect your docs. Please report this issue in the project repo: https://github.com/knuckleswtf/scribe");
         }
