@@ -4,6 +4,7 @@ namespace Knuckles\Scribe\Tests\Unit;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Knuckles\Scribe\Extracting\ParsesValidationRules;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
@@ -53,6 +54,18 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             dump($e->errors());
             $this->fail("Generated example data from validation rule failed to match actual.");
         }
+    }
+
+    /** @test */
+    public function can_parse_rule_objects()
+    {
+        $results = $this->strategy->parse([
+            'in_param' => ['numeric', Rule::in([3,5,6])]
+        ]);
+        $this->assertEquals(
+            'Must be one of <code>3</code>, <code>5</code>, or <code>6</code>.',
+            $results['in_param']['description']
+        );
     }
 
 
@@ -147,6 +160,14 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['file_param' => ['description' => $description]],
             [
                 'description' => "$description. Must be a file.",
+                'type' => 'file',
+            ],
+        ];
+        yield 'image' => [
+            ['image_param' => 'image|required'],
+            [],
+            [
+                'description' => "Must be an image.",
                 'type' => 'file',
             ],
         ];
@@ -365,6 +386,41 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             [],
             ['description' => "Must be a file. Must not be greater than 6 kilobytes."],
         ];
+        yield 'min (number)' => [
+            ['min_param' => 'numeric|min:6'],
+            [],
+            ['description' => "Must be at least 6."],
+        ];
+        yield 'min (string)' => [
+            ['min_param' => 'string|min:6'],
+            [],
+            ['description' => "Must be at least 6 characters."],
+        ];
+        yield 'min (file)' => [
+            ['min_param' => 'file|min:6'],
+            [],
+            ['description' => "Must be a file. Must be at least 6 kilobytes."],
+        ];
+        yield 'between (number)' => [
+            ['between_param' => 'numeric|between:1,2'],
+            [],
+            ['description' => "Must be between 1 and 2."],
+        ];
+        yield 'between (string)' => [
+            ['between_param' => 'string|between:1,2'],
+            [],
+            ['description' => "Must be between 1 and 2 characters."],
+        ];
+        yield 'between (file)' => [
+            ['between_param' => 'file|between:1,2'],
+            [],
+            ['description' => "Must be a file. Must be between 1 and 2 kilobytes."],
+        ];
+        yield 'regex' => [
+            ['regex_param' => 'regex:/\d/'],
+            [],
+            ['description' => 'Must match the regex /\d/.'],
+        ];
         yield 'accepted' => [
             ['accepted_param' => 'accepted'],
             [],
@@ -372,6 +428,11 @@ class ValidationRuleParsingTest extends BaseLaravelTest
                 'type' => 'boolean',
                 'description' => 'Must be accepted.',
             ],
+        ];
+        yield 'unsupported' => [
+            ['unsupported_param' => [new DummyValidationRule, 'bail']],
+            ['unsupported_param' => ['description' => $description]],
+            ['description' => "$description."],
         ];
         if (version_compare(Application::VERSION, '8.53', '>=')) {
             yield 'accepted_if' => [
@@ -383,5 +444,18 @@ class ValidationRuleParsingTest extends BaseLaravelTest
                 ],
             ];
         }
+    }
+}
+
+class DummyValidationRule implements \Illuminate\Contracts\Validation\Rule
+{
+    public function passes($attribute, $value)
+    {
+        return true;
+    }
+
+    public function message()
+    {
+        return '.';
     }
 }

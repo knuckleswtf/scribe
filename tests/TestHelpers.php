@@ -23,6 +23,8 @@ trait TestHelpers
 
     protected function generate(array $flags = []): mixed
     {
-        return $this->artisan('scribe:generate', array_merge(['--no-upgrade-check' => true], $flags));
+        return $this->artisan(
+            'scribe:generate', array_merge(['--no-upgrade-check' => true], $flags)
+        );
     }
 }

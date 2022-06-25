@@ -370,19 +370,20 @@ trait ParsesValidationRules
                     $parameterData['description'] .= ' ' . $this->getDescription(
                             $rule, [':min' => $arguments[0]], $this->getLaravelValidationBaseTypeMapping($parameterData['type'])
                         );
-                    $parameterData['setter'] = $this->getDummyDataGeneratorBetween($parameterData['type'], $arguments[0]);
+                    $parameterData['setter'] = $this->getDummyDataGeneratorBetween($parameterData['type'], floatval($arguments[0]));
                     break;
                 case 'max':
                     $parameterData['description'] .= ' ' . $this->getDescription(
                             $rule, [':max' => $arguments[0]], $this->getLaravelValidationBaseTypeMapping($parameterData['type'])
                         );
-                    $parameterData['setter'] = $this->getDummyDataGeneratorBetween($parameterData['type'], 0, $arguments[0]);
+                    $parameterData['setter'] = $this->getDummyDataGeneratorBetween($parameterData['type'], 0, floatval($arguments[0]));
                     break;
                 case 'between':
                     $parameterData['description'] .= ' ' . $this->getDescription(
                             $rule, [':min' => $arguments[0], ':max' => $arguments[1]], $this->getLaravelValidationBaseTypeMapping($parameterData['type'])
                         );
-                    $parameterData['setter'] = $this->getDummyDataGeneratorBetween($parameterData['type'], $arguments[0], $arguments[1]);
+                    // Avoid exponentially complex operations by using the minimum length
+                    $parameterData['setter'] = $this->getDummyDataGeneratorBetween($parameterData['type'], floatval($arguments[0]), floatval($arguments[0]) + 1);
                     break;
 
                 /**
@@ -478,7 +479,7 @@ trait ParsesValidationRules
     {
         $ruleArguments = [];
 
-        // Convert any Rule objects to strings
+        // Convert any custom Rule objects to strings
         if ($rule instanceof Rule) {
             $className = substr(strrchr(get_class($rule), "\\"), 1);
             return [$className, []];
@@ -650,6 +651,10 @@ trait ParsesValidationRules
 
     protected function getDescription(string $rule, array $arguments = [], $baseType = 'string'): string
     {
+        if ($rule == 'regex') {
+            return "Must match the regex {$arguments[':regex']}.";
+        }
+
         $description = trans("validation.{$rule}");
         // For rules that can apply to multiple types (eg 'max' rule), Laravel returns an array of possible messages
         // 'numeric' => 'The :attribute must not be greater than :max'
