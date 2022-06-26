@@ -43,8 +43,16 @@ class GetFromLaravelAPI extends Strategy
         // and (User $user) model is typehinted on method
         // If User model has an int primary key, {user} param should be an int
 
+        // Also, bind url parameters for any bound models
+        // Eg Suppose route is /posts/{post},
+        // and (Post $post) model is typehinted on method
+        // If Post model has a slug routeKeyName, use {post_slug} parameter instead of {post}
+
         $methodArguments = $endpointData->method->getParameters();
-        foreach ($methodArguments as $argument) {
+        $currentArgumentPosition = 0; // to check if we are processing the last argument
+        foreach (array_reverse($methodArguments) as $argument) {
+            ++$currentArgumentPosition;
+
             $argumentType = $argument->getType();
             // If there's no typehint, continue
             if (!$argumentType) {
@@ -54,10 +62,31 @@ class GetFromLaravelAPI extends Strategy
                 $argumentClassName = $argumentType->getName();
                 $argumentInstance = new $argumentClassName;
                 if ($argumentInstance instanceof Model) {
+                    $routeKeyName = $argumentInstance->getRouteKeyName();
+
                     if (isset($parameters[$argument->getName()])) {
-                        $paramName = $argument->getName();
-                    } else if (isset($parameters['id'])) {
-                        $paramName = 'id';
+                        $oldParamName = $argument->getName();
+
+                        $isLastResource = ($currentArgumentPosition === 1);
+                        $endpointData->uri = $endpointData->bindUrlParam($oldParamName, $routeKeyName, $isLastResource, $endpointData->uri);
+
+                        // Find the new paramName
+                        if ($isLastResource === true) {
+                            // We are processing the last argument, use {routeKeyName} as field binding
+                            $paramName = $routeKeyName;
+                        } else {
+                            // We are processing an earlier argument, use {argumentName_routeKeyName} as field binding
+                            $paramName = $argument->getName() . '_' . $routeKeyName;
+                        }
+
+                        // Rename the parameter from oldParamName to paramName
+                        $parameters[$paramName] = $parameters[$oldParamName];
+                        $parameters[$paramName]['name'] = $paramName;
+                        unset($parameters[$oldParamName]);
+
+                        $parameters[$paramName]['description'] = $this->inferUrlParamDescription($endpointData->uri, $paramName, $oldParamName);
+                    } else if (isset($parameters[$routeKeyName])) {
+                        $paramName = $routeKeyName;
                     } else {
                         continue;
                     }
@@ -131,6 +160,14 @@ class GetFromLaravelAPI extends Strategy
             // If $url is sth like /something/{user_id}, return "The ID of the user."
             $parts = explode("_", $paramName);
             return "The ID of the $parts[0].";
+        } else if (Str::contains($paramName, '_')) {
+            $parts = explode("_", $paramName);
+
+            $field = $parts;
+            unset($field[0]);
+            $field = implode('_', $field);
+
+            return "The $field of the $parts[0].";
         } else if ($paramName && $originalBindingName) {
             // A case like /posts/{post:slug} -> The slug of the post
             return "The $paramName of the $originalBindingName.";

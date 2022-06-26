@@ -14,7 +14,10 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
     public function will_normalize_resource_url_params()
     {
         Route::apiResource('things', TestController::class)
-            ->only('show');
+            ->only('show')
+            ->parameters([
+                'things' => 'thing:id',
+            ]);
         $routeRules[0]['match'] = ['prefixes' => '*', 'domains' => '*'];
 
         $matcher = new RouteMatcher();
@@ -32,7 +35,11 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
         }
 
         Route::apiResource('things.otherthings', TestController::class)
-            ->only( 'destroy');
+            ->only( 'destroy')
+            ->parameters([
+                'things' => 'thing:id',
+                'otherthings' => 'otherthing:id',
+            ]);
 
         $routeRules[0]['match'] = ['prefixes' => '*/otherthings/*', 'domains' => '*'];
         $matchedRoutes = $matcher->getRoutes($routeRules);
@@ -52,7 +59,10 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
     public function will_normalize_resource_url_params_with_hyphens()
     {
         Route::apiResource('audio-things', TestController::class)
-            ->only('show');
+            ->only('show')
+            ->parameters([
+                'audio-things' => 'audio_thing:id',
+            ]);
         $routeRules[0]['match'] = ['prefixes' => '*', 'domains' => '*'];
 
         $matcher = new RouteMatcher();

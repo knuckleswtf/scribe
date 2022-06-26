@@ -145,10 +145,10 @@ class GetFromLaravelAPITest extends BaseLaravelTest
         $results = $strategy($endpoint, []);
 
         $this->assertArraySubset([
-            "name" => "user",
+            "name" => "id",
             "description" => "The ID of the user.",
             "required" => true,
             "type" => "integer",
-        ], $results['user']);
+        ], $results['id']);
     }
 }

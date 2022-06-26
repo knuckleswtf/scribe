@@ -409,9 +409,9 @@ class GenerateDocumentationTest extends BaseLaravelTest
         $this->artisan('scribe:generate');
 
         $groupA = Yaml::parseFile('.scribe/endpoints/00.yaml');
-        $this->assertEquals('providers/{provider_slug}/users/{user_id}/addresses', $groupA['endpoints'][0]['uri']);
+        $this->assertEquals('providers/{provider_slug}/users/{user}/addresses', $groupA['endpoints'][0]['uri']);
         $groupB = Yaml::parseFile('.scribe/endpoints/01.yaml');
-        $this->assertEquals('providers/{provider_slug}/users/{user_id}/addresses/{uuid}', $groupB['endpoints'][0]['uri']);
+        $this->assertEquals('providers/{provider_slug}/users/{user}/addresses/{uuid}', $groupB['endpoints'][0]['uri']);
     }
 
     /** @test */

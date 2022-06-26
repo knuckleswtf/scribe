@@ -137,7 +137,7 @@ class ExtractedEndpointData extends BaseDTO
         preg_match_all('#\{(\w+?)}#', $uri, $params);
 
         $resourceRouteNames = [
-            ".index", ".show", ".update", ".destroy",
+            ".index", ".store", ".show", ".update", ".destroy",
         ];
 
         if (Str::endsWith($route->action['as'] ?? '', $resourceRouteNames)) {
@@ -145,36 +145,21 @@ class ExtractedEndpointData extends BaseDTO
             $pluralResources = explode('.', $route->action['as']);
             array_pop($pluralResources);
 
-            $foundResourceParam = false;
+            $isLastResource = true;
             foreach (array_reverse($pluralResources) as $pluralResource) {
                 $singularResource = Str::singular($pluralResource);
                 $singularResourceParam = str_replace('-', '_', $singularResource);
 
-                $search = [
-                    "{$pluralResource}/{{$singularResourceParam}}",
-                    "{$pluralResource}/{{$singularResource}}",
-                    "{$pluralResource}/{{$singularResourceParam}?}",
-                    "{$pluralResource}/{{$singularResource}?}"
-                ];
+                $binding = static::getFieldBindingForUrlParam($route, $singularResourceParam);
 
-                // We'll replace with {id} by default, but if the user is using a different key,
-                // like /users/{user:uuid}, use that instead
-                $binding = static::getFieldBindingForUrlParam($route, $singularResource, 'id');
-
-                if (!$foundResourceParam) {
-                    // Only the last resource param should be {id}
-                    $replace = ["$pluralResource/{{$binding}}", "$pluralResource/{{$binding}?}"];
-                    $foundResourceParam = true;
-                } else {
-                    // Earlier ones should be {<param>_id}
-                    $replace = [
-                        "{$pluralResource}/{{$singularResource}_{$binding}}",
-                        "{$pluralResource}/{{$singularResourceParam}_{$binding}}",
-                        "{$pluralResource}/{{$singularResource}_{$binding}?}",
-                        "{$pluralResource}/{{$singularResourceParam}_{$binding}?}"
-                    ];
+                // If there is a field binding, like /users/{user:uuid}
+                if (!is_null($binding)) {
+                    // If the resource was the last, replace {singularResourceParam} with {binding}
+                    // otherwise, replace {singularResourceParam} with {singularResourceParam_binding}
+                    $uri = self::bindUrlParam($singularResourceParam, $binding, $isLastResource, $uri);
                 }
-                $uri = str_replace($search, $replace, $uri);
+
+                $isLastResource = false;
             }
         }
 
@@ -215,5 +200,31 @@ class ExtractedEndpointData extends BaseDTO
         }
 
         return $binding ?: $default;
+    }
+
+    public static function bindUrlParam(string $singularResourceParam, string $binding, bool $isLastResource, string $uri): string
+    {
+        $singularResource = str_replace('_', '-', $singularResourceParam);
+        $pluralResource = Str::plural($singularResource);
+
+        $search = [
+            "{$pluralResource}/{{$singularResourceParam}}",
+            "{$pluralResource}/{{$singularResource}}",
+            "{$pluralResource}/{{$singularResourceParam}?}",
+            "{$pluralResource}/{{$singularResource}?}"
+        ];
+
+        if ($isLastResource === true) {
+            $replace = ["$pluralResource/{{$binding}}", "$pluralResource/{{$binding}?}"];
+        } else {
+            $replace = [
+                "{$pluralResource}/{{$singularResource}_{$binding}}",
+                "{$pluralResource}/{{$singularResourceParam}_{$binding}}",
+                "{$pluralResource}/{{$singularResource}_{$binding}?}",
+                "{$pluralResource}/{{$singularResourceParam}_{$binding}?}"
+            ];
+        }
+
+        return str_replace($search, $replace, $uri);
     }
 }
