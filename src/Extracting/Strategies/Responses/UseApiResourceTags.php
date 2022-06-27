@@ -66,7 +66,7 @@ class UseApiResourceTags extends Strategy
      */
     public function getApiResourceResponse(Tag $apiResourceTag, array $allTags, ExtractedEndpointData $endpointData): ?array
     {
-        [$statusCode, $apiResourceClass] = $this->getStatusCodeAndApiResourceClass($apiResourceTag);
+        [$statusCode, $apiResourceClass, $description] = $this->getStatusCodeAndApiResourceClass($apiResourceTag);
         [$model, $factoryStates, $relations, $pagination] = $this->getClassToBeTransformedAndAttributes($allTags);
         $additionalData = $this->getAdditionalData($this->getApiResourceAdditionalTag($allTags));
         $modelInstance = $this->instantiateApiResourceModel($model, $factoryStates, $relations);
@@ -132,6 +132,7 @@ class UseApiResourceTags extends Strategy
             [
                 'status' => $statusCode ?: 200,
                 'content' => $response->getContent(),
+                'description' => $description,
             ],
         ];
     }
@@ -143,12 +144,19 @@ class UseApiResourceTags extends Strategy
      */
     private function getStatusCodeAndApiResourceClass($tag): array
     {
-        $content = $tag->getContent();
-        preg_match('/^(\d{3})?\s?([\s\S]*)$/', $content, $result);
-        $status = (int)($result[1] ?: 0);
-        $apiResourceClass = $result[2];
+        preg_match('/^(\d{3})?\s?([\s\S]*)$/', $tag->getContent(), $result);
 
-        return [$status, $apiResourceClass];
+        $status = $result[1] ?: 0;
+        $content = $result[2];
+
+        ['attributes' => $attributes, 'content' => $content] = a::parseIntoContentAndAttributes($content, ['status', 'scenario']);
+
+        $status = $attributes['status'] ?: $status;
+        $apiResourceClass = $content;
+        $description = $attributes['scenario'] ? "$status, {$attributes['scenario']}" : "$status";
+
+
+        return [(int)$status, $apiResourceClass, $description];
     }
 
     private function getClassToBeTransformedAndAttributes(array $tags): array
