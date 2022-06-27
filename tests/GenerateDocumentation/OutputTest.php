@@ -58,7 +58,7 @@ class OutputTest extends BaseLaravelTest
         ]);
     }
 
-    protected function usesLaravelTypeDocs($app)
+    protected function usingLaravelTypeDocs($app)
     {
         $app['config']->set('scribe.type', 'laravel');
         $app['config']->set('scribe.laravel.add_routes', true);
@@ -67,7 +67,7 @@ class OutputTest extends BaseLaravelTest
 
     /**
      * @test
-     * @define-env usesLaravelTypeDocs
+     * @define-env usingLaravelTypeDocs
      */
     public function generates_laravel_type_output()
     {
