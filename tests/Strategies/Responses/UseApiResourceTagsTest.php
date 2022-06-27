@@ -87,6 +87,38 @@ class UseApiResourceTagsTest extends BaseLaravelTest
         ], $results);
     }
 
+
+    /** @test */
+    public function can_parse_apiresource_tags_with_scenario_and_status_attributes()
+    {
+        $config = new DocumentationConfig([]);
+
+        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+
+        $strategy = new UseApiResourceTags($config);
+        $tags = [
+            new Tag('apiResource', 'status=202 scenario="Success" \Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
+            new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser'),
+        ];
+        $results = $strategy->getApiResourceResponse(
+            $strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route)
+        );
+
+        $this->assertArraySubset([
+            [
+                'status' => 202,
+                'description' => '202, Success',
+                'content' => json_encode([
+                    'data' => [
+                        'id' => 4,
+                        'name' => 'Tested Again',
+                        'email' => 'a@b.com',
+                    ],
+                ]),
+            ],
+        ], $results);
+    }
+
     /** @test */
     public function properly_binds_route_and_request_when_fetching_apiresource_response()
     {

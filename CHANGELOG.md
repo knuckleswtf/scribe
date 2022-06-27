@@ -12,6 +12,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+## 3.33.0 (27 June 2022)
+### Added
+- Include description in Postman collection for formdata body parameters ([10faa500](https://github.com/knuckleswtf/scribe/commit/10faa500e36e02d4efcecf8ad5e1d91ba1c7728d)))
+- Support for attributes in `@apiResource` ([8b8bc6b0](https://github.com/knuckleswtf/scribe/commit/8b8bc6b04242ea5d35916db84e2a7cbe73e0cef5)))
+
+
 ## 3.32.0 (23 June 2022)
 ### Modified
 - Improved code blocks hiding ([#486](https://github.com/knuckleswtf/scribe/pull/486)))

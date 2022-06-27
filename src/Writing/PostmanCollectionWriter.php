@@ -156,7 +156,9 @@ class PostmanCollectionWriter
         switch ($inputMode) {
             case 'formdata':
             case 'urlencoded':
-                $body[$inputMode] = $this->getFormDataParams($endpoint->cleanBodyParameters);
+                $body[$inputMode] = $this->getFormDataParams(
+                    $endpoint->cleanBodyParameters, null, $endpoint->bodyParameters
+                );
                 foreach ($endpoint->fileParameters as $key => $value) {
                     while (is_array($value)) {
                         $keys = array_keys($value);
@@ -187,11 +189,11 @@ class PostmanCollectionWriter
     /**
      * Format form-data parameters correctly for arrays eg. data[item][index] = value
      */
-    protected function getFormDataParams(array $array, ?string $key = null): array
+    protected function getFormDataParams(array $paramsKeyValue, ?string $key = null, array $paramsFullDetails = []): array
     {
         $body = [];
 
-        foreach ($array as $index => $value) {
+        foreach ($paramsKeyValue as $index => $value) {
             $index = $key ? ($key . '[' . $index . ']') : $index;
 
             if (!is_array($value)) {
@@ -199,6 +201,7 @@ class PostmanCollectionWriter
                     'key' => $index,
                     'value' => $value,
                     'type' => 'text',
+                    'description' => $paramsFullDetails[$index]->description ?? '',
                 ];
 
                 continue;
@@ -329,8 +332,7 @@ class PostmanCollectionWriter
             foreach ($response->headers as $header => $value) {
                 $headers[] = [
                     'key' => $header,
-                    // Todo remove array support in future
-                    'value' => is_array($value) ? implode('; ', $value) : $value
+                    'value' => $value
                 ];
             }
 
