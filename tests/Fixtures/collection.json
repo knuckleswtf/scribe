@@ -85,7 +85,8 @@
                 {
                   "key": "name",
                   "value": "cat.jpg",
-                  "type": "text"
+                  "type": "text",
+                  "description": "Name of image."
                 },
                 {
                   "key": "image",
