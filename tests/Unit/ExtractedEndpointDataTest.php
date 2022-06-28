@@ -13,6 +13,12 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
     /** @test */
     public function will_normalize_resource_url_params()
     {
+        if (version_compare($this->app->version(), '7.0.0', '<')) {
+            $this->markTestSkipped("Laravel < 7.x doesn't support field binding syntax.");
+
+            return;
+        }
+
         Route::apiResource('things', TestController::class)
             ->only('show')
             ->parameters([
@@ -58,6 +64,12 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
     /** @test */
     public function will_normalize_resource_url_params_with_hyphens()
     {
+        if (version_compare($this->app->version(), '7.0.0', '<')) {
+            $this->markTestSkipped("Laravel < 7.x doesn't support field binding syntax.");
+
+            return;
+        }
+
         Route::apiResource('audio-things', TestController::class)
             ->only('show')
             ->parameters([
