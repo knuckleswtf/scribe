@@ -415,6 +415,19 @@ class GenerateDocumentationTest extends BaseLaravelTest
     }
 
     /** @test */
+    public function generates_correct_url_params_using_bound_models()
+    {
+        RouteFacade::get('users/{user}', [TestController::class, 'withInjectedModel']);
+        config(['scribe.routes.0.match.prefixes' => ['*']]);
+        config(['scribe.routes.0.apply.response_calls.methods' => []]);
+
+        $this->artisan('scribe:generate');
+
+        $group = Yaml::parseFile('.scribe/endpoints/00.yaml');
+        $this->assertEquals('users/{id}', $group['endpoints'][0]['uri']);
+    }
+
+    /** @test */
     public function will_generate_without_extracting_if_noExtraction_flag_is_set()
     {
         config(['scribe.routes.0.exclude' => ['*']]);
