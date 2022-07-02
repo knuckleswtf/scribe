@@ -78,7 +78,7 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
 
         $routes = $routeMatcher->getRoutes($this->docConfig->get('routes'), $this->docConfig->get('router'));
         $endpoints = $this->extractEndpointsInfoFromLaravelApp($routes, $cachedEndpoints, $latestEndpointsData, $groups);
-        $groupedEndpoints = Camel::groupEndpoints($endpoints, $this->endpointGroupIndexes);
+        $groupedEndpoints = Camel::groupEndpoints($endpoints, $this->endpointGroupIndexes, $this->docConfig->get('groups.order', []));
         $this->writeEndpointsToDisk($groupedEndpoints);
         $groupedEndpoints = Camel::prepareGroupedEndpointsForOutput($groupedEndpoints);
         return $groupedEndpoints;

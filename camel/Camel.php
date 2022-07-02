@@ -144,19 +144,36 @@ class Camel
     /**
      * @param array[] $endpoints
      * @param array $endpointGroupIndexes Mapping of endpoint IDs to their index within their group
+     * @param array $defaultGroupsOrder The order for groups that users specified in their config file.
      *
      * @return array[]
      */
-    public static function groupEndpoints(array $endpoints, array $endpointGroupIndexes): array
+    public static function groupEndpoints(array $endpoints, array $endpointGroupIndexes, array $defaultGroupsOrder = []): array
     {
-        $groupedEndpoints = collect($endpoints)
-            ->groupBy('metadata.groupName')
-            ->sortKeys(SORT_NATURAL);
+        $groupedEndpoints = collect($endpoints)->groupBy('metadata.groupName');
 
-        return $groupedEndpoints->map(function (Collection $endpointsInGroup) use ($endpointGroupIndexes) {
+        if ($defaultGroupsOrder) {
+            $groupsOrder = Utils::getTopLevelItemsFromMixedConfigList($defaultGroupsOrder);
+            $groupedEndpoints = $groupedEndpoints->sortKeysUsing(self::getOrderListComparator($groupsOrder));
+        } else {
+            $groupedEndpoints = $groupedEndpoints->sortKeys(SORT_NATURAL);
+        }
+
+        return $groupedEndpoints->map(function (Collection $endpointsInGroup) use ($defaultGroupsOrder, $endpointGroupIndexes) {
             /** @var Collection<(int|string),ExtractedEndpointData> $endpointsInGroup */
             $sortedEndpoints = $endpointsInGroup;
-            if (!empty($endpointGroupIndexes)) {
+            if (empty($endpointGroupIndexes)) {
+                $groupName = data_get($endpointsInGroup[0], 'metadata.groupName');
+                if ($defaultGroupsOrder && isset($defaultGroupsOrder[$groupName])) {
+                    $endpointsOrder = Utils::getTopLevelItemsFromMixedConfigList($defaultGroupsOrder[$groupName]);
+                    $sortedEndpoints = $endpointsInGroup->sortBy(
+                        function (ExtractedEndpointData $e) use ($endpointsOrder) {
+                            $index = array_search($e->httpMethods[0].' '.$e->uri, $endpointsOrder);
+                            return $index === false ? INF : $index;
+                        },
+                    );
+                }
+            } else {
                 $sortedEndpoints = $endpointsInGroup->sortBy(
                     fn(ExtractedEndpointData $e) => $endpointGroupIndexes[$e->endpointId()] ?? INF,
                 );
@@ -189,5 +206,36 @@ class Camel
             ];
         }, $groupedEndpoints);
         return array_values(Arr::sort($groups, 'fileName'));
+    }
+
+    /**
+     * Given an $order list like ['first', 'second', ...], return a compare function that can be used to sort
+     * a list of strings based on the $order list. Any strings not in the list are sorted with natural sort.
+     *
+     * @param array $order
+     */
+    public static function getOrderListComparator(array $order): \Closure
+    {
+        return function ($a, $b) use ($order) {
+            $indexOfA = array_search($a, $order);
+            $indexOfB = array_search($b, $order);
+
+            if ($indexOfA !== false && $indexOfB !== false) {
+                return $indexOfA <=> $indexOfB;
+            }
+
+            // If only the first is in the default order, then it must come before the second.
+            if ($indexOfA !== false) {
+                return -1;
+            }
+
+            // If only the second is in the default order, then first must come after it.
+            if ($indexOfB !== false) {
+                return 1;
+            }
+
+            // If neither is present, fall back to natural sort
+            return strnatcmp($a, $b);
+        };
     }
 }

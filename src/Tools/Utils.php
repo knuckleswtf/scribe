@@ -22,6 +22,31 @@ use Throwable;
 
 class Utils
 {
+    /**
+     * Sometimes you have a config array that can have items as keys or values, like this:
+     *
+     * [
+     *   'a',
+     *   'b' => [ (options for b) ]
+     * ]
+     *
+     * This method extracts the top-level options (['a', 'b'])
+     *
+     * @param array $mixedList
+     */
+    public static function getTopLevelItemsFromMixedConfigList(array $mixedList): array
+    {
+        $topLevels = [];
+        foreach ($mixedList as $item => $value) {
+            if (is_int($item)) {
+                $topLevels[] = $value;
+            } else {
+                $topLevels[] = $item;
+            }
+        }
+        return $topLevels;
+    }
+
     public static function getUrlWithBoundParameters(string $uri, array $urlParameters = []): string
     {
         return self::replaceUrlParameterPlaceholdersWithValues($uri, $urlParameters);

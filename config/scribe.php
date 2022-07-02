@@ -306,10 +306,27 @@ INTRO
         ],
     ],
 
-    /*
-     * Endpoints which don't have a @group will be placed in this default group.
-     */
-    'default_group' => 'Endpoints',
+    'groups' => [
+        /*
+         * Endpoints which don't have a @group will be placed in this default group.
+         */
+        'default' => 'Endpoints',
+
+        /*
+         * By default, Scribe will sort groups alphabetically, and endpoints in the order their routes are defined.
+         * You can customise that by listing the groups and endpoints here in the order you want them.
+         *
+         * Any groups or endpoints you don't list here will be added as usual after the ones here.
+         * If an endpoint is listed under a group it doesn't belong in, it will be ignored.
+         */
+        'order' => [
+            // 'Group 1',
+            // 'Group 2' => [
+            //    'POST /this-endpoint-comes-first',
+            //    'GET /this-endpoint-comes-next',
+            // ]
+        ],
+    ],
 
     /*
      * Custom logo path. This will be used as the value of the src attribute for the <img> tag,

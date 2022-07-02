@@ -199,6 +199,36 @@ class OutputTest extends BaseLaravelTest
     }
 
     /** @test */
+    public function sorts_groups_and_endpoints_in_the_specified_order()
+    {
+        $order = [
+            '10. Group 10',
+            '1. Group 1' => [
+                'GET api/action1b',
+                'GET api/action1',
+            ],
+        ];
+        config(['scribe.groups.order' => $order]);
+
+        RouteFacade::get('/api/action1', TestGroupController::class . '@action1');
+        RouteFacade::get('/api/action1b', TestGroupController::class . '@action1b');
+        RouteFacade::get('/api/action2', TestGroupController::class . '@action2');
+        RouteFacade::get('/api/action10', TestGroupController::class . '@action10');
+
+        $this->generate();
+
+        $this->assertEquals('10. Group 10', Yaml::parseFile('.scribe/endpoints/00.yaml')['name']);
+        $secondGroup = Yaml::parseFile('.scribe/endpoints/01.yaml');
+        $this->assertEquals('1. Group 1', $secondGroup['name']);
+        $this->assertEquals('2. Group 2', Yaml::parseFile('.scribe/endpoints/02.yaml')['name']);
+
+        $this->assertEquals('api/action1b', $secondGroup['endpoints'][0]['uri']);
+        $this->assertEquals('GET', $secondGroup['endpoints'][0]['httpMethods'][0]);
+        $this->assertEquals('api/action1', $secondGroup['endpoints'][1]['uri']);
+        $this->assertEquals('GET', $secondGroup['endpoints'][1]['httpMethods'][0]);
+    }
+
+    /** @test */
     public function will_not_overwrite_manually_modified_content_unless_force_flag_is_set()
     {
         RouteFacade::get('/api/action1', [TestGroupController::class, 'action1']);

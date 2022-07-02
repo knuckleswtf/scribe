@@ -5,7 +5,6 @@ namespace Knuckles\Scribe;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Tools\Globals;
 use Symfony\Component\HttpFoundation\Request;
-use Illuminate\Support\Collection;
 
 class Scribe
 {
@@ -56,28 +55,5 @@ class Scribe
     public static function instantiateFormRequestUsing(callable $callable)
     {
         Globals::$__instantiateFormRequestUsing = $callable;
-    }
-
-    /**
-     * Customise how Scribe orders your endpoint groups.
-     * Your callback will be given
-     *
-     * @param callable(string,\Illuminate\Routing\Route,\ReflectionFunctionAbstract): mixed $callable
-     */
-    public static function orderGroupsUsing(callable $callable)
-    {
-        Globals::$__orderGroupsUsing = $callable;
-    }
-
-    /**
-     * Customise how Scribe orders endpoints within a group.
-     * Your callback will be given a Laravel Collection of ExtractedEndpointData objects,
-     * and should return the sorted collection.
-     *
-     * @param callable(Collection<ExtractedEndpointData>): Collection<ExtractedEndpointData> $callable
-     */
-    public static function orderEndpointsInGroupUsing(callable $callable)
-    {
-        Globals::$__orderEndpointsInGroupUsing = $callable;
     }
 }
