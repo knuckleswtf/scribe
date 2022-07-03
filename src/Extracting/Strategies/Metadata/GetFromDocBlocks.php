@@ -99,6 +99,6 @@ class GetFromDocBlocks extends Strategy
             }
         }
 
-        return [$this->config->get('default_group'), '', $methodDocBlock->getShortDescription()];
+        return [$this->config->get('groups.default'), '', $methodDocBlock->getShortDescription()];
     }
 }

@@ -121,14 +121,14 @@ class GenerateDocumentation extends Command
         foreach ($userDefinedEndpoints as $endpoint) {
             $indexOfGroupWhereThisEndpointShouldBeAdded = Arr::first(array_keys($groupedEndpoints), function ($key) use ($groupedEndpoints, $endpoint) {
                 $group = $groupedEndpoints[$key];
-                return $group['name'] === ($endpoint['metadata']['groupName'] ?? $this->docConfig->get('default_group', ''));
+                return $group['name'] === ($endpoint['metadata']['groupName'] ?? $this->docConfig->get('groups.default', ''));
             });
 
             if ($indexOfGroupWhereThisEndpointShouldBeAdded !== null) {
                 $groupedEndpoints[$indexOfGroupWhereThisEndpointShouldBeAdded]['endpoints'][] = OutputEndpointData::fromExtractedEndpointArray($endpoint);
             } else {
                 $newGroup = [
-                    'name' => $endpoint['metadata']['groupName'] ?? $this->docConfig->get('default_group', ''),
+                    'name' => $endpoint['metadata']['groupName'] ?? $this->docConfig->get('groups.default', ''),
                     'description' => $endpoint['metadata']['groupDescription'] ?? null,
                     'endpoints' => [OutputEndpointData::fromExtractedEndpointArray($endpoint)],
                 ];

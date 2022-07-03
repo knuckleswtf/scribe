@@ -48,7 +48,7 @@ class ExtractorTest extends TestCase
                 \Knuckles\Scribe\Extracting\Strategies\ResponseFields\GetFromResponseFieldTag::class,
             ],
         ],
-        'default_group' => 'general',
+        'groups.default' => 'general',
     ];
 
     public static $globalValue = null;

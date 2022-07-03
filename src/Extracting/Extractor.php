@@ -125,7 +125,7 @@ class Extractor
     protected function fetchMetadata(ExtractedEndpointData $endpointData, array $rulesToApply): void
     {
         $endpointData->metadata = new Metadata([
-            'groupName' => $this->config->get('default_group', ''),
+            'groupName' => $this->config->get('groups.default', ''),
         ]);
 
         $this->iterateThroughStrategies('metadata', $endpointData, $rulesToApply, function ($results) use ($endpointData) {

@@ -318,12 +318,13 @@ INTRO
          *
          * Any groups or endpoints you don't list here will be added as usual after the ones here.
          * If an endpoint is listed under a group it doesn't belong in, it will be ignored.
+         * Note: omit the initial '/' when writing an endpoint.
          */
         'order' => [
-            // 'Group 1',
-            // 'Group 2' => [
-            //    'POST /this-endpoint-comes-first',
-            //    'GET /this-endpoint-comes-next',
+            // 'This group comes first',
+            // 'This group comes next' => [
+            //    'POST this-endpoint-comes-first',
+            //    'GET this-endpoint-comes-next',
             // ]
         ],
     ],
