@@ -48,7 +48,6 @@ class ExtractorTest extends TestCase
                 \Knuckles\Scribe\Extracting\Strategies\ResponseFields\GetFromResponseFieldTag::class,
             ],
         ],
-        'groups.default' => 'general',
     ];
 
     public static $globalValue = null;
@@ -216,16 +215,16 @@ class ExtractorTest extends TestCase
         $results[$this->generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
         $results[$this->generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
         // Examples should have different values
-        $this->assertNotEquals(count($results), 1);
+        $this->assertNotEquals(1, count($results));
 
-        $generator = new Extractor(new DocumentationConfig($this->config + ['faker_seed' => 12345]));
+        $generator = new Extractor(new DocumentationConfig($this->config + ['examples' => ['faker_seed' => 12345]]));
         $results = [];
         $results[$generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
         $results[$generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
         $results[$generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
         $results[$generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
         // Examples should have same values
-        $this->assertEquals(count($results), 1);
+        $this->assertEquals(1, count($results));
     }
 
     /** @test */

@@ -4,23 +4,21 @@ namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Exception;
-use Illuminate\Database\Eloquent\Model as IlluminateModel;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Knuckles\Scribe\Extracting\DatabaseTransactionHelpers;
+use Knuckles\Scribe\Extracting\InstantiatesExampleModels;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\AnnotationParser as a;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\ErrorHandlingUtils as e;
-use Knuckles\Scribe\Tools\Utils;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
 use Mpociot\Reflection\DocBlock\Tag;
 use ReflectionClass;
 use ReflectionFunctionAbstract;
-use Throwable;
 
 /**
  * Parse a transformer response from the docblock ( @transformer || @transformercollection ).
@@ -28,6 +26,7 @@ use Throwable;
 class UseTransformerTags extends Strategy
 {
     use DatabaseTransactionHelpers;
+    use InstantiatesExampleModels;
 
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): ?array
     {
@@ -63,7 +62,7 @@ class UseTransformerTags extends Strategy
 
         [$statusCode, $transformer] = $this->getStatusCodeAndTransformerClass($transformerTag);
         [$model, $factoryStates, $relations, $resourceKey] = $this->getClassToBeTransformed($tags, (new ReflectionClass($transformer))->getMethod('transform'));
-        $modelInstance = $this->instantiateTransformerModel($model, $factoryStates, $relations);
+        $modelInstance = $this->instantiateExampleModel($model, $factoryStates, $relations);
 
         $fractal = new Manager();
 
@@ -72,7 +71,7 @@ class UseTransformerTags extends Strategy
         }
 
         if ((strtolower($transformerTag->getName()) == 'transformercollection')) {
-            $models = [$modelInstance, $this->instantiateTransformerModel($model, $factoryStates, $relations)];
+            $models = [$modelInstance, $this->instantiateExampleModel($model, $factoryStates, $relations)];
             $resource = new Collection($models, new $transformer());
 
             ['adapter' => $paginatorAdapter, 'perPage' => $perPage] = $this->getTransformerPaginatorData($tags);
@@ -148,43 +147,6 @@ class UseTransformerTags extends Strategy
         }
 
         return [$type, $states, $relations, $resourceKey];
-    }
-
-    protected function instantiateTransformerModel(string $type, array $factoryStates = [], array $relations = [])
-    {
-        try {
-            // try Eloquent model factory
-
-            /** @var \Illuminate\Database\Eloquent\Factories\Factory $factory */
-            $factory = Utils::getModelFactory($type, $factoryStates, $relations);
-
-            try {
-                return $factory->create();
-            } catch (Throwable $e) {
-                // If there was no working database, ->create() would fail. Try ->make() instead
-                return $factory->make();
-            }
-        } catch (Throwable $e) {
-            c::warn("Eloquent model factory failed to instantiate {$type}; trying to fetch from database.");
-            e::dumpExceptionIfVerbose($e, true);
-
-            $instance = new $type();
-            if ($instance instanceof IlluminateModel) {
-                try {
-                    // We can't use a factory but can try to get one from the database
-                    $firstInstance = $type::with($relations)->first();
-                    if ($firstInstance) {
-                        return $firstInstance;
-                    }
-                } catch (Throwable $e) {
-                    // okay, we'll stick with `new`
-                    c::warn("Failed to fetch first {$type} from database; using `new` to instantiate.");
-                    e::dumpExceptionIfVerbose($e);
-                }
-            }
-        }
-
-        return $instance;
     }
 
     /**

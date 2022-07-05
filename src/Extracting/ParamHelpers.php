@@ -12,8 +12,8 @@ trait ParamHelpers
     protected function getFaker(): \Faker\Generator
     {
         $faker = Factory::create();
-        if ($this->config->get('faker_seed')) {
-            $faker->seed($this->config->get('faker_seed'));
+        if ($seed = $this->config->get('examples.faker_seed')) {
+            $faker->seed($seed);
         }
         return $faker;
     }

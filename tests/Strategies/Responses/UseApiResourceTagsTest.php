@@ -2,7 +2,9 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\Responses;
 
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Routing\Route;
+use Illuminate\Support\Facades\Schema;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Extracting\Strategies\Responses\UseApiResourceTags;
 use Knuckles\Scribe\ScribeServiceProvider;
@@ -59,6 +61,16 @@ class UseApiResourceTagsTest extends BaseLaravelTest
         });
     }
 
+    protected function usingDatabase($app)
+    {
+        $app['config']->set('database.default', 'sqlite');
+        $app['config']->set('database.connections.sqlite', [
+            'driver'   => 'sqlite',
+            'database' => ':memory:',
+            'prefix'   => '',
+        ]);
+    }
+
     /** @test */
     public function can_parse_apiresource_tags()
     {
@@ -87,6 +99,44 @@ class UseApiResourceTagsTest extends BaseLaravelTest
         ], $results);
     }
 
+    /**
+     * @test
+     * @define-env usingDatabase
+     */
+    public function respects_models_source_settings()
+    {
+        $config = new DocumentationConfig(['examples' => ['models_source' => ['database', 'factoryMake']]]);
+        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+
+        $strategy = new UseApiResourceTags($config);
+        $tags = [
+            new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
+            new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser'),
+        ];
+
+        Schema::create('test_users', function (Blueprint $table) {
+            $table->id();
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('email');
+        });
+        TestUser::create(['first_name' => 'Testy', 'last_name' => 'Testes', 'email' => 'um']);
+
+        $results = $strategy->getApiResourceResponse($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+
+        $this->assertArraySubset([
+            [
+                'status' => 200,
+                'content' => json_encode([
+                    'data' => [
+                        'id' => 1,
+                        'name' => 'Testy Testes',
+                        'email' => 'um'
+                    ],
+                ]),
+            ],
+        ], $results);
+    }
 
     /** @test */
     public function can_parse_apiresource_tags_with_scenario_and_status_attributes()

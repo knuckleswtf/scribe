@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class TestPet extends Model
 {
+    protected $guarded = [];
+
+    public $timestamps = false;
 
     public function owners()
     {

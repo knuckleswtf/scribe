@@ -2,10 +2,8 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 
-use Illuminate\Support\Str;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Exception;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
@@ -14,6 +12,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Arr;
 use Knuckles\Scribe\Extracting\DatabaseTransactionHelpers;
+use Knuckles\Scribe\Extracting\InstantiatesExampleModels;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\AnnotationParser as a;
@@ -29,6 +28,7 @@ use Throwable;
 class UseApiResourceTags extends Strategy
 {
     use DatabaseTransactionHelpers;
+    use InstantiatesExampleModels;
 
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): ?array
     {
@@ -69,7 +69,7 @@ class UseApiResourceTags extends Strategy
         [$statusCode, $apiResourceClass, $description] = $this->getStatusCodeAndApiResourceClass($apiResourceTag);
         [$model, $factoryStates, $relations, $pagination] = $this->getClassToBeTransformedAndAttributes($allTags);
         $additionalData = $this->getAdditionalData($this->getApiResourceAdditionalTag($allTags));
-        $modelInstance = $this->instantiateApiResourceModel($model, $factoryStates, $relations);
+        $modelInstance = $this->instantiateExampleModel($model, $factoryStates, $relations);
 
         try {
             $resource = new $apiResourceClass($modelInstance);
@@ -82,7 +82,7 @@ class UseApiResourceTags extends Strategy
             // Collections can either use the regular JsonResource class (via `::collection()`,
             // or a ResourceCollection (via `new`)
             // See https://laravel.com/docs/5.8/eloquent-resources
-            $models = [$modelInstance, $this->instantiateApiResourceModel($model, $factoryStates, $relations)];
+            $models = [$modelInstance, $this->instantiateExampleModel($model, $factoryStates, $relations)];
             // Pagination can be in two forms:
             // [15] : means ::paginate(15)
             // [15, 'simple'] : means ::simplePaginate(15)
@@ -122,7 +122,7 @@ class UseApiResourceTags extends Strategy
         $route = $endpointData->route;
         /** @var Response $response */
         $response = $resource->toResponse(
-            // Set the route properly so it works for users who have code that checks for the route.
+        // Set the route properly so it works for users who have code that checks for the route.
             $request->setRouteResolver(function () use ($route) {
                 return $route;
             })
@@ -187,6 +187,7 @@ class UseApiResourceTags extends Strategy
      * Returns data for simulating JsonResource additional() function
      *
      * @param Tag|null $tag
+     *
      * @return array
      */
     private function getAdditionalData(?Tag $tag): array
@@ -194,52 +195,6 @@ class UseApiResourceTags extends Strategy
         return $tag
             ? a::parseIntoAttributes($tag->getContent())
             : [];
-    }
-
-    /**
-     * @param string $type
-     *
-     * @param array $relations
-     * @param array $factoryStates
-     *
-     * @return Model|object
-     */
-    protected function instantiateApiResourceModel(string $type, array $factoryStates = [], array $relations = [])
-    {
-        try {
-            // Try Eloquent model factory
-            $factory = Utils::getModelFactory($type, $factoryStates, $relations);
-
-            try {
-                return $factory->create()->load($relations);
-            } catch (Throwable $e) {
-                c::warn("Eloquent model factory failed to create {$type}; trying to make it.");
-                e::dumpExceptionIfVerbose($e, true);
-
-                // If there was no working database, ->create() would fail. Try ->make() instead
-                return $factory->make();
-            }
-        } catch (Throwable $e) {
-            c::warn("Eloquent model factory failed to instantiate {$type}; trying to fetch from database.");
-            e::dumpExceptionIfVerbose($e, true);
-
-            $instance = new $type();
-            if ($instance instanceof \Illuminate\Database\Eloquent\Model) {
-                try {
-                    // We can't use a factory but can try to get one from the database
-                    $firstInstance = $type::with($relations)->first();
-                    if ($firstInstance) {
-                        return $firstInstance;
-                    }
-                } catch (Throwable $e) {
-                    // okay, we'll stick with `new`
-                    c::warn("Failed to fetch first {$type} from database; using `new` to instantiate.");
-                    e::dumpExceptionIfVerbose($e);
-                }
-            }
-        }
-
-        return $instance;
     }
 
     /**

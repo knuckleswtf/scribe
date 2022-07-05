@@ -340,11 +340,20 @@ INTRO
      */
     'logo' => false,
 
-    /*
-     * If you would like the package to generate the same example values for parameters on each run,
-     * set this to any number (eg. 1234)
-     */
-    'faker_seed' => null,
+    'examples' => [
+        /*
+         * If you would like the package to generate the same example values for parameters on each run,
+         * set this to any number (eg. 1234)
+         */
+        'faker_seed' => null,
+
+        /*
+         * With API resources and transformers, Scribe tries to generate example models to use in your API responses.
+         * By default, Scribe will try the model's factory, and if that fails, try fetching the first from the database.
+         * You can reorder or remove strategies here.
+         */
+        'models_source' => ['factoryCreate', 'factoryMake', 'database'],
+    ],
 
     /**
      * The strategies Scribe will use to extract information about your routes at each stage.

@@ -29,7 +29,7 @@ class OutputTest extends BaseLaravelTest
         config(['scribe.openapi.enabled' => false]);
         config(['scribe.postman.enabled' => false]);
         // We want to have the same values for params each time
-        config(['scribe.faker_seed' => 1234]);
+        config(['scribe.examples.faker_seed' => 1234]);
 
         $factory = app(\Illuminate\Database\Eloquent\Factory::class);
         $factory->define(TestUser::class, function () {
@@ -46,16 +46,6 @@ class OutputTest extends BaseLaravelTest
     {
         Utils::deleteDirectoryAndContents('public/docs');
         Utils::deleteDirectoryAndContents('.scribe');
-    }
-
-    protected function defineEnvironment($app)
-    {
-        $app['config']->set('database.default', 'testbench');
-        $app['config']->set('database.connections.testbench', [
-            'driver'   => 'sqlite',
-            'database' => ':memory:',
-            'prefix'   => '',
-        ]);
     }
 
     protected function usingLaravelTypeDocs($app)

@@ -362,8 +362,8 @@ class Extractor
         $parameterName = $this->config->get('auth.name');
 
         $faker = Factory::create();
-        if ($this->config->get('faker_seed')) {
-            $faker->seed($this->config->get('faker_seed'));
+        if ($seed = $this->config->get('examples.faker_seed')) {
+            $faker->seed($seed);
         }
         $token = $faker->shuffleString('abcdefghkvaZVDPE1864563');
         $valueToUse = $this->config->get('auth.use_value');
