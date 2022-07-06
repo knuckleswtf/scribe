@@ -8,6 +8,9 @@ use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tests\Fixtures\TestGroupController;
 use Knuckles\Scribe\Tests\Fixtures\TestIgnoreThisController;
 use Knuckles\Scribe\Tests\Fixtures\TestPartialResourceController;
+use Knuckles\Scribe\Tests\Fixtures\TestPost;
+use Knuckles\Scribe\Tests\Fixtures\TestPostController;
+use Knuckles\Scribe\Tests\Fixtures\TestPostUserController;
 use Knuckles\Scribe\Tests\Fixtures\TestResourceController;
 use Knuckles\Scribe\Tests\Fixtures\TestUser;
 use Knuckles\Scribe\Tools\Utils;
@@ -412,6 +415,36 @@ class GenerateDocumentationTest extends BaseLaravelTest
         $this->assertEquals('providers/{provider_slug}/users/{user_id}/addresses', $groupA['endpoints'][0]['uri']);
         $groupB = Yaml::parseFile('.scribe/endpoints/01.yaml');
         $this->assertEquals('providers/{provider_slug}/users/{user_id}/addresses/{uuid}', $groupB['endpoints'][0]['uri']);
+    }
+
+    /** @test */
+    public function generates_correct_url_params_from_resource_routes_and_model_binding()
+    {
+        RouteFacade::resource('posts', TestPostController::class)->only('update');
+        RouteFacade::resource('posts.users', TestPostUserController::class)->only('update');
+
+        config(['scribe.routes.0.match.prefixes' => ['*']]);
+        config(['scribe.routes.0.apply.response_calls.methods' => []]);
+
+        $this->artisan('scribe:generate');
+
+        $group = Yaml::parseFile('.scribe/endpoints/00.yaml');
+        $this->assertEquals('posts/{slug}', $group['endpoints'][0]['uri']);
+        $this->assertEquals('posts/{post_slug}/users/{id}', $group['endpoints'][1]['uri']);
+    }
+
+    /** @test */
+    public function generates_correct_url_params_from_non_resource_routes_and_model_binding()
+    {
+        RouteFacade::get('posts/{post}/users', function(TestPost $post) {});
+
+        config(['scribe.routes.0.match.prefixes' => ['*']]);
+        config(['scribe.routes.0.apply.response_calls.methods' => []]);
+
+        $this->artisan('scribe:generate');
+
+        $group = Yaml::parseFile('.scribe/endpoints/00.yaml');
+        $this->assertEquals('posts/{post_slug}/users', $group['endpoints'][0]['uri']);
     }
 
     /** @test */
