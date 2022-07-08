@@ -40,7 +40,7 @@ jobs:
 
       - name: Install dependencies (lowest)
         if: ${{ matrix.deps == 'lowest' }}
-        run: COMPOSER=composer.lowest.json composer update --prefer-stable
+        run: COMPOSER=composer.lowest.json composer update --prefer-stable; composer config --no-plugins allow-plugins.pestphp/pest-plugin
 
 
       - name: Execute tests (Laravel/Lumen)
