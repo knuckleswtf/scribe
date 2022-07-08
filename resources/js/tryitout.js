@@ -219,6 +219,11 @@ async function executeTryOut(endpointId, form) {
     const queryParameters = form.querySelectorAll('input[data-component=query]');
     queryParameters.forEach(el => {
         if (el.type !== 'radio' || (el.type === 'radio' && el.checked)) {
+            if (el.value === '' && el.required === false) {
+                // Don't include empty optional values in the request
+                return;
+            }
+
             _.set(query, el.name, el.value);
         }
     });
