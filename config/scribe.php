@@ -314,17 +314,23 @@ INTRO
 
         /*
          * By default, Scribe will sort groups alphabetically, and endpoints in the order their routes are defined.
-         * You can customise that by listing the groups and endpoints here in the order you want them.
+         * You can customise that by listing the groups, subgroups and endpoints here in the order you want them.
          *
-         * Any groups or endpoints you don't list here will be added as usual after the ones here.
-         * If an endpoint is listed under a group it doesn't belong in, it will be ignored.
-         * Note: omit the initial '/' when writing an endpoint.
+         * Any groups, subgroups or endpoints you don't list here will be added as usual after the ones here.
+         * If an endpoint/subgroups is listed under a group it doesn't belong in, it will be ignored.
+         * Note: you must include the initial '/' when writing an endpoint.
          */
         'order' => [
             // 'This group comes first',
             // 'This group comes next' => [
-            //    'POST this-endpoint-comes-first',
-            //    'GET this-endpoint-comes-next',
+            //     'POST /this-endpoint-comes-first',
+            //     'GET /this-endpoint-comes-next',
+            // ],
+            // 'This group comes third' => [
+            //     'This subgroup comes first' => [
+            //         'GET /this-other-endpoint-comes-first',
+            //         'GET /this-other-endpoint-comes-next',
+            //     ]
             // ]
         ],
     ],

@@ -165,10 +165,23 @@ class Camel
             if (empty($endpointGroupIndexes)) {
                 $groupName = data_get($endpointsInGroup[0], 'metadata.groupName');
                 if ($defaultGroupsOrder && isset($defaultGroupsOrder[$groupName])) {
-                    $endpointsOrder = Utils::getTopLevelItemsFromMixedConfigList($defaultGroupsOrder[$groupName]);
+                    $subGroupOrEndpointsOrder = Utils::getTopLevelItemsFromMixedConfigList($defaultGroupsOrder[$groupName]);
                     $sortedEndpoints = $endpointsInGroup->sortBy(
-                        function (ExtractedEndpointData $e) use ($endpointsOrder) {
-                            $index = array_search($e->httpMethods[0].' '.$e->uri, $endpointsOrder);
+                        function (ExtractedEndpointData $e) use ($defaultGroupsOrder, $subGroupOrEndpointsOrder) {
+                            $endpointIdentifier = $e->httpMethods[0].' /'.$e->uri;
+                            $index = array_search($e->metadata->subgroup, $subGroupOrEndpointsOrder);
+
+                            if ($index !== false) {
+                                // This is a subgroup
+                                $endpointsOrderInSubgroup = $defaultGroupsOrder[$e->metadata->groupName][$e->metadata->subgroup] ?? null;
+                                if ($endpointsOrderInSubgroup) {
+                                    $indexInSubGroup = array_search($endpointIdentifier, $endpointsOrderInSubgroup);
+                                    $index = ($indexInSubGroup === false) ? $index : ($index + ($indexInSubGroup * 0.1));
+                                }
+                            } else {
+                                // This is an endpoint
+                                $index = array_search($endpointIdentifier, $subGroupOrEndpointsOrder);
+                            }
                             return $index === false ? INF : $index;
                         },
                     );

@@ -15,8 +15,11 @@ class Upgrade extends Command
     {
         $oldConfig = config('scribe');
         $upgrader = Upgrader::ofConfigFile('config/scribe.php', __DIR__ . '/../../config/scribe.php')
-            ->dontTouch('routes', 'laravel.middleware', 'postman.overrides', 'openapi.overrides')
-            ->move('interactive', 'try_it_out.enabled');
+            ->dontTouch('routes', 'laravel.middleware', 'postman.overrides', 'openapi.overrides',
+                'example_languages', 'database_connections_to_transact', 'strategies')
+            ->move('interactive', 'try_it_out.enabled')
+            ->move('default_group', 'groups.default')
+            ->move('faker_seed', 'examples.faker_seed');
 
         $changes = $upgrader->dryRun();
         if (empty($changes)) {

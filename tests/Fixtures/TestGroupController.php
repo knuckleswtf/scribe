@@ -40,4 +40,43 @@ class TestGroupController
     public function action10()
     {
     }
+
+    /**
+     * @group 13. Group 13
+     * @subgroup SG B
+     */
+    public function action13a()
+    {
+    }
+
+    /**
+     * @group 13. Group 13
+     * @subgroup SG C
+     */
+    public function action13b()
+    {
+    }
+
+    /**
+     * @group 13. Group 13
+     */
+    public function action13c()
+    {
+    }
+
+    /**
+     * @group 13. Group 13
+     * @subgroup SG B
+     */
+    public function action13d()
+    {
+    }
+
+    /**
+     * @group 13. Group 13
+     * @subgroup SG A
+     */
+    public function action13e()
+    {
+    }
 }

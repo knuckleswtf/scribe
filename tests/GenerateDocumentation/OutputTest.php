@@ -191,31 +191,57 @@ class OutputTest extends BaseLaravelTest
     /** @test */
     public function sorts_groups_and_endpoints_in_the_specified_order()
     {
-        $order = [
+        config(['scribe.groups.order' => [
             '10. Group 10',
             '1. Group 1' => [
-                'GET api/action1b',
-                'GET api/action1',
+                'GET /api/action1b',
+                'GET /api/action1',
             ],
-        ];
-        config(['scribe.groups.order' => $order]);
+            '13. Group 13' => [
+                'SG B' => [
+                    'POST /api/action13d',
+                    'GET /api/action13a',
+                ],
+                'SG A',
+                'PUT /api/action13c',
+                'POST /api/action13b',
+            ],
+        ]]);
 
-        RouteFacade::get('/api/action1', TestGroupController::class . '@action1');
-        RouteFacade::get('/api/action1b', TestGroupController::class . '@action1b');
-        RouteFacade::get('/api/action2', TestGroupController::class . '@action2');
-        RouteFacade::get('/api/action10', TestGroupController::class . '@action10');
+        RouteFacade::get('/api/action1', [TestGroupController::class, 'action1']);
+        RouteFacade::get('/api/action1b', [TestGroupController::class, 'action1b']);
+        RouteFacade::get('/api/action2', [TestGroupController::class, 'action2']);
+        RouteFacade::get('/api/action10', [TestGroupController::class, 'action10']);
+        RouteFacade::get('/api/action13a', [TestGroupController::class, 'action13a']);
+        RouteFacade::post('/api/action13b', [TestGroupController::class, 'action13b']);
+        RouteFacade::put('/api/action13c', [TestGroupController::class, 'action13c']);
+        RouteFacade::post('/api/action13d', [TestGroupController::class, 'action13d']);
+        RouteFacade::get('/api/action13e', [TestGroupController::class, 'action13e']);
 
         $this->generate();
 
         $this->assertEquals('10. Group 10', Yaml::parseFile('.scribe/endpoints/00.yaml')['name']);
         $secondGroup = Yaml::parseFile('.scribe/endpoints/01.yaml');
         $this->assertEquals('1. Group 1', $secondGroup['name']);
-        $this->assertEquals('2. Group 2', Yaml::parseFile('.scribe/endpoints/02.yaml')['name']);
+        $thirdGroup = Yaml::parseFile('.scribe/endpoints/02.yaml');
+        $this->assertEquals('13. Group 13', $thirdGroup['name']);
+        $this->assertEquals('2. Group 2', Yaml::parseFile('.scribe/endpoints/03.yaml')['name']);
 
         $this->assertEquals('api/action1b', $secondGroup['endpoints'][0]['uri']);
         $this->assertEquals('GET', $secondGroup['endpoints'][0]['httpMethods'][0]);
         $this->assertEquals('api/action1', $secondGroup['endpoints'][1]['uri']);
         $this->assertEquals('GET', $secondGroup['endpoints'][1]['httpMethods'][0]);
+
+        $this->assertEquals('api/action13d', $thirdGroup['endpoints'][0]['uri']);
+        $this->assertEquals('POST', $thirdGroup['endpoints'][0]['httpMethods'][0]);
+        $this->assertEquals('api/action13a', $thirdGroup['endpoints'][1]['uri']);
+        $this->assertEquals('GET', $thirdGroup['endpoints'][1]['httpMethods'][0]);
+        $this->assertEquals('api/action13e', $thirdGroup['endpoints'][2]['uri']);
+        $this->assertEquals('GET', $thirdGroup['endpoints'][2]['httpMethods'][0]);
+        $this->assertEquals('api/action13c', $thirdGroup['endpoints'][3]['uri']);
+        $this->assertEquals('PUT', $thirdGroup['endpoints'][3]['httpMethods'][0]);
+        $this->assertEquals('api/action13b', $thirdGroup['endpoints'][4]['uri']);
+        $this->assertEquals('POST', $thirdGroup['endpoints'][4]['httpMethods'][0]);
     }
 
     /** @test */

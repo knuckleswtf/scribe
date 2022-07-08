@@ -12,6 +12,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.0.0
+### Added
+- Support for specifying groups and endpoints order in config file ([29ddcfc](https://github.com/knuckleswtf/scribe/commit/29ddcfcf284a06da0ae6cb399d09ee5cf1f9ffa7)))
+- Support for specifying example model sources ([39ff208](https://github.com/knuckleswtf/scribe/commit/39ff208085d68eed4c459768ac5a1120934f021a)))
+- Support for subgroups ([39ff208](https://github.com/knuckleswtf/scribe/commit/39ff208085d68eed4c459768ac5a1120934f021a)))
+
 ## 3.33.0 (27 June 2022)
 ### Added
 - Include description in Postman collection for formdata body parameters ([10faa500](https://github.com/knuckleswtf/scribe/commit/10faa500e36e02d4efcecf8ad5e1d91ba1c7728d)))

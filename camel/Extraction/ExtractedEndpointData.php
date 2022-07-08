@@ -196,11 +196,12 @@ class ExtractedEndpointData extends BaseDTO
     public function forSerialisation()
     {
         $copy = $this->except(
-        // Get rid of all duplicate data
+            // Get rid of all duplicate data
             'cleanQueryParameters', 'cleanUrlParameters', 'fileParameters', 'cleanBodyParameters',
             // and objects used only in extraction
             'route', 'controller', 'method', 'auth',
         );
+        // Remove these, since they're on the parent group object
         $copy->metadata = $copy->metadata->except('groupName', 'groupDescription', 'beforeGroup', 'afterGroup');
 
         return $copy;

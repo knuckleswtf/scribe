@@ -13,6 +13,26 @@ class GetFromDocBlocksTest extends TestCase
     use ArraySubsetAsserts;
 
     /** @test */
+    public function can_fetch_metadata_from_method_docblock()
+    {
+        $strategy = new GetFromDocBlocks(new DocumentationConfig([]));
+        $methodDocblock = <<<DOCBLOCK
+/**
+  * Endpoint title.
+  * Endpoint description.
+  * Multiline.
+  */
+DOCBLOCK;
+        $classDocblock = '';
+        $results = $strategy->getMetadataFromDocBlock(new DocBlock($methodDocblock), new DocBlock($classDocblock));
+
+        $this->assertFalse($results['authenticated']);
+        $this->assertNull($results['subgroup']);
+        $this->assertSame('Endpoint title.', $results['title']);
+        $this->assertSame("Endpoint description.\nMultiline.", $results['description']);
+    }
+
+    /** @test */
     public function can_fetch_metadata_from_method_and_class()
     {
         $strategy = new GetFromDocBlocks(new DocumentationConfig([]));
@@ -32,6 +52,7 @@ DOCBLOCK;
         $results = $strategy->getMetadataFromDocBlock(new DocBlock($methodDocblock), new DocBlock($classDocblock));
 
         $this->assertFalse($results['authenticated']);
+        $this->assertNull($results['subgroup']);
         $this->assertSame('Group A', $results['groupName']);
         $this->assertSame('Group description.', $results['groupDescription']);
         $this->assertSame('Endpoint title.', $results['title']);
@@ -46,12 +67,14 @@ DOCBLOCK;
         $classDocblock = <<<DOCBLOCK
 /**
   * @authenticated
+  * @subgroup Scheiße
   */
 DOCBLOCK;
         $results = $strategy->getMetadataFromDocBlock(new DocBlock($methodDocblock), new DocBlock($classDocblock));
 
         $this->assertTrue($results['authenticated']);
         $this->assertSame(null, $results['groupName']);
+        $this->assertSame('Scheiße', $results['subgroup']);
         $this->assertSame('', $results['groupDescription']);
         $this->assertSame('Endpoint title.', $results['title']);
         $this->assertSame("", $results['description']);
