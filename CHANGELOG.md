@@ -16,7 +16,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - Support for specifying groups and endpoints order in config file ([29ddcfc](https://github.com/knuckleswtf/scribe/commit/29ddcfcf284a06da0ae6cb399d09ee5cf1f9ffa7)))
 - Support for specifying example model sources ([39ff208](https://github.com/knuckleswtf/scribe/commit/39ff208085d68eed4c459768ac5a1120934f021a)))
-- Support for subgroups ([39ff208](https://github.com/knuckleswtf/scribe/commit/39ff208085d68eed4c459768ac5a1120934f021a)))
+- Support for subgroups ([7cf07738](https://github.com/knuckleswtf/scribe/commit/7cf0773864fbdd1772fea9a5ff9e7ffd3360d7d2)))
+- Nested response fields are now collapsed ([00b09bb](https://github.com/knuckleswtf/scribe/commit/00b09bbea8ec64006db864bf807004d48926c6d3)))
 
 ## 3.33.0 (27 June 2022)
 ### Added
