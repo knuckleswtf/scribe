@@ -116,6 +116,7 @@
                   'example' => $parameter->example ?? '',
                   'endpointId' => $endpoint->endpointId(),
                   'component' => 'url',
+                  'isInput' => true,
                 ])
                 @endcomponent
             </p>
@@ -133,6 +134,7 @@
                   'example' => $parameter->example ?? '',
                   'endpointId' => $endpoint->endpointId(),
                   'component' => 'query',
+                  'isInput' => true,
                 ])
                 @endcomponent
             </p>
@@ -140,24 +142,17 @@
     @endif
     @if(count($endpoint->nestedBodyParameters))
         <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
-        @component('scribe::components.body-parameters', ['parameters' => $endpoint->nestedBodyParameters, 'endpointId' => $endpoint->endpointId(),])
-        @endcomponent
+        <x-scribe::nested-fields
+                :fields="$endpoint->nestedBodyParameters" :endpointId="$endpoint->endpointId()"
+        />
     @endif
 </form>
 
 @if(count($endpoint->responseFields))
     <h3>Response</h3>
     <h4 class="fancy-heading-panel"><b>Response Fields</b></h4>
-    @foreach($endpoint->responseFields as $name => $field)
-        <p>
-            @component('scribe::components.field-details', [
-              'name' => $field->name,
-              'type' => $field->type,
-              'required' => true,
-              'description' => $field->description,
-              'isInput' => false,
-            ])
-            @endcomponent
-        </p>
-    @endforeach
+    <x-scribe::nested-fields
+            :fields="$endpoint->nestedResponseFields" :endpointId="$endpoint->endpointId()"
+            :isInput="false"
+    />
 @endif

@@ -71,9 +71,17 @@ class OutputEndpointData extends BaseDTO
     public array $responseFields = [];
 
     /**
+     * The same as bodyParameters, but organized in a hierarchy.
+     * So, top-level items first, with a __fields property containing their children, and so on.
+     * Useful so we can easily render and nest on the frontend.
      * @var array<string, array>
      */
     public array $nestedBodyParameters = [];
+
+    /**
+     * @var array<string, array>
+     */
+    public array $nestedResponseFields = [];
 
     public ?string $boundUri;
 
@@ -100,6 +108,7 @@ class OutputEndpointData extends BaseDTO
         $this->cleanQueryParameters = Extractor::cleanParams($this->queryParameters);
         $this->cleanUrlParameters = Extractor::cleanParams($this->urlParameters);
         $this->nestedBodyParameters = Extractor::nestArrayAndObjectFields($this->bodyParameters, $this->cleanBodyParameters);
+        $this->nestedResponseFields = Extractor::nestArrayAndObjectFields($this->responseFields);
 
         $this->boundUri = u::getUrlWithBoundParameters($this->uri, $this->cleanUrlParameters);
 

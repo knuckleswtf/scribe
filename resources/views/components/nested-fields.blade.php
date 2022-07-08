@@ -1,17 +1,20 @@
-
-@foreach($parameters as $name => $parameter)
+@php
+    $isInput ??= true
+@endphp
+@foreach($fields as $name => $field)
     @if($name === '[]')
         @php
-            $description = "The request body is an array (<code>{$parameter['type']}</code>`)";
-            $description .= !empty($parameter['description']) ? ", representing ".lcfirst($parameter['description'])."." : '.';
+            $description = "The request body is an array (<code>{$field['type']}</code>`)";
+            $description .= !empty($field['description']) ? ", representing ".lcfirst($field['description'])."." : '.';
         @endphp
         <p>
             {!! Parsedown::instance()->text($description) !!}
         </p>
-        @foreach($parameter['__fields'] as $subfieldName => $subfield)
+        @foreach($field['__fields'] as $subfieldName => $subfield)
                 @if(!empty($subfield['__fields']))
-                    @component('scribe::components.body-parameters', ['parameters' => [$subfieldName => $subfield], 'endpointId' => $endpointId,])
-                    @endcomponent
+                    <x-scribe::nested-fields
+                            :fields="[$subfieldName => $subfield]" :endpointId="$endpointId" :isInput="$isInput"
+                    />
                 @else
                     <p>
                         @component('scribe::components.field-details', [
@@ -23,31 +26,34 @@
                           'endpointId' => $endpointId,
                           'hasChildren' => false,
                           'component' => 'body',
+                          'isInput' => $isInput,
                         ])
                         @endcomponent
                     </p>
                 @endif
             @endforeach
-    @elseif(!empty($parameter['__fields']))
+    @elseif(!empty($field['__fields']))
         <p>
         <details>
             <summary style="padding-bottom: 10px;">
                 @component('scribe::components.field-details', [
-                  'name' => $parameter['name'],
-                  'type' => $parameter['type'] ?? 'string',
-                  'required' => $parameter['required'] ?? false,
-                  'description' => $parameter['description'] ?? '',
-                  'example' => $parameter['example'] ?? '',
+                  'name' => $field['name'],
+                  'type' => $field['type'] ?? 'string',
+                  'required' => $field['required'] ?? false,
+                  'description' => $field['description'] ?? '',
+                  'example' => $field['example'] ?? '',
                   'endpointId' => $endpointId,
                   'hasChildren' => true,
                   'component' => 'body',
+                  'isInput' => $isInput,
                 ])
                 @endcomponent
             </summary>
-            @foreach($parameter['__fields'] as $subfieldName => $subfield)
+            @foreach($field['__fields'] as $subfieldName => $subfield)
                 @if(!empty($subfield['__fields']))
-                    @component('scribe::components.body-parameters', ['parameters' => [$subfieldName => $subfield], 'endpointId' => $endpointId,])
-                    @endcomponent
+                    <x-scribe::nested-fields
+                            :fields="[$subfieldName => $subfield]" :endpointId="$endpointId" :isInput="$isInput"
+                    />
                 @else
                     <p>
                         @component('scribe::components.field-details', [
@@ -59,6 +65,7 @@
                           'endpointId' => $endpointId,
                           'hasChildren' => false,
                           'component' => 'body',
+                          'isInput' => $isInput,
                         ])
                         @endcomponent
                     </p>
@@ -69,14 +76,15 @@
     @else
         <p>
             @component('scribe::components.field-details', [
-              'name' => $parameter['name'],
-              'type' => $parameter['type'] ?? 'string',
-              'required' => $parameter['required'] ?? false,
-              'description' => $parameter['description'] ?? '',
-              'example' => $parameter['example'] ?? '',
+              'name' => $field['name'],
+              'type' => $field['type'] ?? 'string',
+              'required' => $field['required'] ?? false,
+              'description' => $field['description'] ?? '',
+              'example' => $field['example'] ?? '',
               'endpointId' => $endpointId,
               'hasChildren' => false,
               'component' => 'body',
+              'isInput' => $isInput,
             ])
             @endcomponent
         </p>

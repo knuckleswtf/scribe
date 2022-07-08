@@ -1,6 +1,7 @@
-<b><code>{{ $name }}</code></b>&nbsp;&nbsp;@if($type)<small>{{ $type }}</small>@endif @if(!$required)
-    <i>optional</i>@endif &nbsp;
-@if(($isInput ?? true) && empty($hasChildren))
+<b><code>{{ $name }}</code></b>&nbsp;&nbsp;
+@if($type)<small>{{ $type }}</small>@endif&nbsp;
+@if($isInput && !$required)<i>optional</i>@endif &nbsp;
+@if($isInput && empty($hasChildren))
     @php
         $isList = Str::endsWith($type, '[]');
         $fullName =str_replace('[]', '.0', $name);
