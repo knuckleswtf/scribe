@@ -19,6 +19,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Support for subgroups ([7cf07738](https://github.com/knuckleswtf/scribe/commit/7cf0773864fbdd1772fea9a5ff9e7ffd3360d7d2)))
 - Nested response fields are now collapsed ([00b09bb](https://github.com/knuckleswtf/scribe/commit/00b09bbea8ec64006db864bf807004d48926c6d3)))
 
+
+## 3.33.1 (8 July 2022)
+### Fixed
+- Don't send empty query parameter field if it's optional ([#493](https://github.com/knuckleswtf/scribe/commit/493)))
+- Infer URL parameter name correctly when `getRouteKeyName()` is set ([#492](https://github.com/knuckleswtf/scribe/commit/492)))
+
+
 ## 3.33.0 (27 June 2022)
 ### Added
 - Include description in Postman collection for formdata body parameters ([10faa500](https://github.com/knuckleswtf/scribe/commit/10faa500e36e02d4efcecf8ad5e1d91ba1c7728d)))
