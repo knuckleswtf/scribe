@@ -12,6 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+## 3.34.0 (July 2022)
+### Fixed
+- Don't send empty query parameter field if it's optional ([#493](https://github.com/knuckleswtf/scribe/commit/493)))
+
+
 ## 3.33.0 (27 June 2022)
 ### Added
 - Include description in Postman collection for formdata body parameters ([10faa500](https://github.com/knuckleswtf/scribe/commit/10faa500e36e02d4efcecf8ad5e1d91ba1c7728d)))
