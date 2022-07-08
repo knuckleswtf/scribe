@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
-## 3.33.1 (July 2022)
+## 3.33.1 (8 July 2022)
 ### Fixed
 - Don't send empty query parameter field if it's optional ([#493](https://github.com/knuckleswtf/scribe/commit/493)))
 - Infer URL parameter name correctly when `getRouteKeyName()` is set ([#492](https://github.com/knuckleswtf/scribe/commit/492)))
