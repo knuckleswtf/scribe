@@ -267,7 +267,7 @@ class ExtractedEndpointData extends BaseDTO
     protected function argumentHasModelType(\ReflectionParameter $argument): bool
     {
         $argumentType = $argument->getType();
-        if (!$argumentType) {
+        if (!$argumentType instanceof \ReflectionNamedType) {
             // The argument does not have a type-hint
             return false;
         } else {
