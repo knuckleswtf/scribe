@@ -211,8 +211,24 @@ class ExtractedEndpointData extends BaseDTO
         return $copy;
     }
 
-    public static function getFieldBindingForUrlParam(Route $route, string $paramName, array $typeHintedArguments = [],
-                                                      string $default = null): ?string
+    protected static function instantiateTypedArgument(\ReflectionNamedType $argumentType): ?object
+    {
+        $argumentClassName = $argumentType->getName();
+
+        if (class_exists($argumentClassName)) {
+            return new $argumentClassName;
+        }
+
+        if (interface_exists($argumentClassName)) {
+            return app($argumentClassName);
+        }
+
+        return null;
+    }
+
+    public static function getFieldBindingForUrlParam(
+        Route $route, string $paramName, array $typeHintedArguments = [], string $default = null
+    ): ?string
     {
         $binding = null;
         // Was added in Laravel 7.x
@@ -223,9 +239,8 @@ class ExtractedEndpointData extends BaseDTO
         // Search for a type-hinted variable whose name matches the route segment name
         if (is_null($binding) && array_key_exists($paramName, $typeHintedArguments)) {
             $argumentType = $typeHintedArguments[$paramName]->getType();
-            $argumentClassName = $argumentType->getName();
-            $argumentInstance = new $argumentClassName;
-            $binding = $argumentInstance->getRouteKeyName();
+            $argumentInstance = self::instantiateTypedArgument($argumentType);
+            $binding = $argumentInstance instanceof Model ? $argumentInstance->getRouteKeyName() : null;
         }
 
         return $binding ?: $default;
@@ -255,13 +270,12 @@ class ExtractedEndpointData extends BaseDTO
     protected function argumentHasModelType(\ReflectionParameter $argument): bool
     {
         $argumentType = $argument->getType();
-        if (!$argumentType) {
-            // The argument does not have a type-hint
+        if (!($argumentType instanceof \ReflectionNamedType)) {
+            // The argument does not have a type-hint, or is a primitive type (`string`, ..)
             return false;
-        } else {
-            $argumentClassName = $argumentType->getName();
-            $argumentInstance = new $argumentClassName;
-            return ($argumentInstance instanceof Model);
         }
+
+        $argumentInstance = self::instantiateTypedArgument($argumentType);
+        return ($argumentInstance instanceof Model);
     }
 }

@@ -10,7 +10,9 @@ use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tests\Fixtures\TestGroupController;
 use Knuckles\Scribe\Tests\Fixtures\TestPartialResourceController;
 use Knuckles\Scribe\Tests\Fixtures\TestPost;
+use Knuckles\Scribe\Tests\Fixtures\TestPostBindedInterface;
 use Knuckles\Scribe\Tests\Fixtures\TestPostController;
+use Knuckles\Scribe\Tests\Fixtures\TestPostBindedInterfaceController;
 use Knuckles\Scribe\Tests\Fixtures\TestPostUserController;
 use Knuckles\Scribe\Tests\Fixtures\TestUser;
 use Knuckles\Scribe\Tests\TestHelpers;
@@ -325,6 +327,24 @@ class OutputTest extends BaseLaravelTest
         $group = Yaml::parseFile('.scribe/endpoints/00.yaml');
         $this->assertEquals('posts/{slug}', $group['endpoints'][0]['uri']);
         $this->assertEquals('posts/{post_slug}/users/{id}', $group['endpoints'][1]['uri']);
+    }
+
+    /** @test */
+    public function generates_correct_url_params_from_resource_routes_and_model_binding_with_binded_interfaces()
+    {
+        $this->app->bind(TestPostBindedInterface::class, function(){
+            return new TestPost();
+        });
+
+        RouteFacade::resource('posts', TestPostBindedInterfaceController::class)->only('update');
+
+        config(['scribe.routes.0.match.prefixes' => ['*']]);
+        config(['scribe.routes.0.apply.response_calls.methods' => []]);
+
+        $this->artisan('scribe:generate');
+
+        $group = Yaml::parseFile('.scribe/endpoints/00.yaml');
+        $this->assertEquals('posts/{slug}', $group['endpoints'][0]['uri']);
     }
 
     /** @test */
