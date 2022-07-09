@@ -2,7 +2,7 @@
     /** @var  Knuckles\Camel\Output\OutputEndpointData $endpoint */
 @endphp
 
-<h2 id="{!! Str::slug($group['name']) !!}-{!! $endpoint->endpointId() !!}">{{ $endpoint->metadata->title ?: ($endpoint->httpMethods[0]." ".$endpoint->uri)}}</h2>
+<h2 id="{!! $endpoint->fullSlug() !!}">{{ $endpoint->name() }}</h2>
 
 <p>
 @component('scribe::components.badges.auth', ['authenticated' => $endpoint->metadata->authenticated])
@@ -97,11 +97,12 @@
     @if($endpoint->metadata->authenticated && $metadata['auth']['location'] === 'header')
         <p>
             <label id="auth-{{ $endpoint->endpointId() }}" hidden>{{ $metadata['auth']['name'] }} header:
-                <b><code>{{ $metadata['auth']['prefix'] }}</code></b><input type="text"
-                                                                name="{{ $metadata['auth']['name'] }}"
-                                                                data-prefix="{{ $metadata['auth']['prefix'] }}"
-                                                                data-endpoint="{{ $endpoint->endpointId() }}"
-                                                                data-component="header"></label>
+                <b><code>{{ $metadata['auth']['prefix'] }}</code></b>
+                <input type="text"
+                       name="{{ $metadata['auth']['name'] }}"
+                       data-prefix="{{ $metadata['auth']['prefix'] }}"
+                       data-endpoint="{{ $endpoint->endpointId() }}"
+                       data-component="header"></label>
         </p>
     @endif
     @if(count($endpoint->urlParameters))

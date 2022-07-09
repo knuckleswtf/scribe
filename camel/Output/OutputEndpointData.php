@@ -4,6 +4,7 @@ namespace Knuckles\Camel\Output;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Routing\Route;
+use Illuminate\Support\Str;
 use Knuckles\Camel\BaseDTO;
 use Knuckles\Camel\Extraction\Metadata;
 use Knuckles\Camel\Extraction\ResponseCollection;
@@ -147,6 +148,18 @@ class OutputEndpointData extends BaseDTO
     public function endpointId(): string
     {
         return $this->httpMethods[0] . str_replace(['/', '?', '{', '}', ':', '\\', '+', '|'], '-', $this->uri);
+    }
+
+    public function name(): string
+    {
+        return $this->metadata->title ?: ($this->httpMethods[0] . " " . $this->uri);
+    }
+
+    public function fullSlug(): string
+    {
+        $groupSlug = Str::slug($this->metadata->groupName);
+        $endpointId = $this->endpointId();
+        return "$groupSlug-$endpointId";
     }
 
     public function hasResponses(): bool

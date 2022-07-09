@@ -3,6 +3,8 @@
 namespace Knuckles\Scribe\Writing;
 
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Str;
+use Knuckles\Camel\Output\OutputEndpointData;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\MarkdownParser;
 use Knuckles\Scribe\Tools\Utils;
@@ -44,6 +46,9 @@ class HtmlWriter
         $append = file_exists($appendFile) ? $this->transformMarkdownFileToHTML($appendFile) : '';
         $headingsAfterEndpoints = $this->markdownParser->headings;
 
+        foreach ($groupedEndpoints as &$group) {
+                $group['subgroups'] = collect($group['endpoints'])->groupBy('metadata.subgroup')->all();
+        }
         $theme = $this->config->get('theme') ?? 'default';
         $output = View::make("scribe::themes.$theme.index", [
             'metadata' => $this->getMetadata(),
@@ -52,10 +57,9 @@ class HtmlWriter
             'intro' => $intro,
             'auth' => $auth,
             'groupedEndpoints' => $groupedEndpoints,
+            'headings' => $this->getHeadings($headingsBeforeEndpoints, $groupedEndpoints, $headingsAfterEndpoints),
             'append' => $append,
             'assetPathPrefix' => $this->assetPathPrefix,
-            'headingsBeforeEndpoints' => $headingsBeforeEndpoints,
-            'headingsAfterEndpoints' => $headingsAfterEndpoints,
         ])->render();
 
         if (!is_dir($destinationFolder)) {
@@ -67,11 +71,11 @@ class HtmlWriter
         // Copy assets
         $assetsFolder = __DIR__ . '/../../resources';
         // Prune older versioned assets
-        if (is_dir($destinationFolder.'/css')) {
-            Utils::deleteDirectoryAndContents($destinationFolder.'/css');
+        if (is_dir($destinationFolder . '/css')) {
+            Utils::deleteDirectoryAndContents($destinationFolder . '/css');
         }
-        if (is_dir($destinationFolder.'/js')) {
-            Utils::deleteDirectoryAndContents($destinationFolder.'/js');
+        if (is_dir($destinationFolder . '/js')) {
+            Utils::deleteDirectoryAndContents($destinationFolder . '/js');
         }
         Utils::copyDirectory("{$assetsFolder}/images/", "{$destinationFolder}/images");
 
@@ -90,7 +94,7 @@ class HtmlWriter
                 if (!is_dir($destination)) {
                     mkdir($destination, 0777, true);
                 }
-                copy($path, $destination.$fileName);
+                copy($path, $destination . $fileName);
             }
         }
     }
@@ -116,7 +120,7 @@ class HtmlWriter
         if ($auth['in'] === 'bearer' || $auth['in'] === 'basic') {
             $auth['name'] = 'Authorization';
             $auth['location'] = 'header';
-            $auth['prefix'] = ucfirst($auth['in']).' ';
+            $auth['prefix'] = ucfirst($auth['in']) . ' ';
         } else {
             $auth['location'] = $auth['in'];
             $auth['prefix'] = '';
@@ -131,5 +135,72 @@ class HtmlWriter
             'try_it_out' => $this->config->get('try_it_out'),
             'links' => array_merge($links, ['<a href="http://github.com/knuckleswtf/scribe">Documentation powered by Scribe ✍</a>']),
         ];
+    }
+
+    protected function getHeadings(array $headingsBeforeEndpoints, array $endpointsByGroupAndSubgroup, array $headingsAfterEndpoints)
+    {
+        $headings = [];
+
+        $lastL1ElementIndex = null;
+        foreach ($headingsBeforeEndpoints as $heading) {
+            $element = [
+                'slug' => $heading['slug'],
+                'name' => $heading['text'],
+                'subheadings' => [],
+            ];;
+            if ($heading['level'] === 1) {
+                $headings[] = $element;
+                $lastL1ElementIndex = count($headings) - 1;
+            } elseif ($heading['level'] === 2 && !is_null($lastL1ElementIndex)) {
+                $headings[$lastL1ElementIndex]['subheadings'][] = $element;
+            }
+        }
+
+        $headings = array_merge($headings, array_map(function ($group) {
+            $groupSlug = Str::slug($group['name']);
+
+            return [
+                'slug' => $groupSlug,
+                'name' => $group['name'],
+                'subheadings' => collect($group['subgroups'])->flatMap(function ($endpoints, $subgroupName) use ($groupSlug) {
+                    if ($subgroupName === "") {
+                        return $endpoints->map(fn(OutputEndpointData $endpoint) => [
+                            'slug' => $endpoint->fullSlug(),
+                            'name' => $endpoint->name(),
+                            'subheadings' => []
+                        ])->all();
+                    }
+
+                    return [
+                        [
+                            'slug' => "$groupSlug-" . Str::slug($subgroupName),
+                            'name' => $subgroupName,
+                            'subheadings' => $endpoints->map(fn($endpoint) => [
+                                'slug' => $endpoint->fullSlug(),
+                                'name' => $endpoint->name(),
+                                'subheadings' => []
+                            ])->all(),
+                        ],
+                    ];
+                })->all(),
+            ];
+        }, $endpointsByGroupAndSubgroup));
+
+        $lastL1ElementIndex = null;
+        foreach ($headingsAfterEndpoints as $heading) {
+            $element = [
+                'slug' => $heading['slug'],
+                'name' => $heading['text'],
+                'subheadings' => [],
+            ];;
+            if ($heading['level'] === 1) {
+                $headings[] = $element;
+                $lastL1ElementIndex = count($headings) - 1;
+            } elseif ($heading['level'] === 2 && !is_null($lastL1ElementIndex)) {
+                $headings[$lastL1ElementIndex]['subheadings'][] = $element;
+            }
+        }
+
+        return $headings;
     }
 }

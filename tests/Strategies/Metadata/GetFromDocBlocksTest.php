@@ -68,6 +68,7 @@ DOCBLOCK;
 /**
   * @authenticated
   * @subgroup Scheiße
+  * @subgroupDescription Heilige Scheiße
   */
 DOCBLOCK;
         $results = $strategy->getMetadataFromDocBlock(new DocBlock($methodDocblock), new DocBlock($classDocblock));
@@ -75,6 +76,7 @@ DOCBLOCK;
         $this->assertTrue($results['authenticated']);
         $this->assertSame(null, $results['groupName']);
         $this->assertSame('Scheiße', $results['subgroup']);
+        $this->assertSame('Heilige Scheiße', $results['subgroupDescription']);
         $this->assertSame('', $results['groupDescription']);
         $this->assertSame('Endpoint title.', $results['title']);
         $this->assertSame("", $results['description']);

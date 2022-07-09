@@ -26,6 +26,7 @@ class GetFromDocBlocks extends Strategy
             'groupName' => $routeGroupName,
             'groupDescription' => $routeGroupDescription,
             'subgroup' => $this->getEndpointSubGroup($methodDocBlock, $classDocBlock),
+            'subgroupDescription' => $this->getEndpointSubGroupDescription($methodDocBlock, $classDocBlock),
             'title' => $routeTitle ?: $methodDocBlock->getShortDescription(),
             'description' => $methodDocBlock->getLongDescription()->getContents(),
             'authenticated' => $this->getAuthStatusFromDocBlock($methodDocBlock, $classDocBlock),
@@ -101,13 +102,30 @@ class GetFromDocBlocks extends Strategy
     protected function getEndpointSubGroup(DocBlock $methodDocBlock, DocBlock $controllerDocBlock): ?string
     {
         foreach ($methodDocBlock->getTags() as $tag) {
-            if ($tag->getName() === 'subgroup') {
+            if (strtolower($tag->getName()) === 'subgroup') {
                 return trim($tag->getContent());
             }
         }
 
         foreach ($controllerDocBlock->getTags() as $tag) {
-            if ($tag->getName() === 'subgroup') {
+            if (strtolower($tag->getName()) === 'subgroup') {
+                return trim($tag->getContent());
+            }
+        }
+
+        return null;
+    }
+
+    protected function getEndpointSubGroupDescription(DocBlock $methodDocBlock, DocBlock $controllerDocBlock): ?string
+    {
+        foreach ($methodDocBlock->getTags() as $tag) {
+            if (strtolower($tag->getName()) === 'subgroupdescription') {
+                return trim($tag->getContent());
+            }
+        }
+
+        foreach ($controllerDocBlock->getTags() as $tag) {
+            if (strtolower($tag->getName()) === 'subgroupdescription') {
                 return trim($tag->getContent());
             }
         }

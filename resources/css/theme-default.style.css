@@ -492,6 +492,9 @@ html {
     white-space: nowrap;
     text-overflow: ellipsis
 }
+.tocify-wrapper .tocify-item.level-3>a {
+    padding: 0 25px;
+}
 
 .tocify-wrapper li,
 .tocify-wrapper ul {
@@ -530,6 +533,10 @@ html {
 .tocify-wrapper .tocify-subheader .tocify-item>a {
     padding-left: 25px;
     font-size: 12px
+}
+
+.tocify-wrapper .tocify-subheader .tocify-item.level-3>a {
+    padding-left: 35px;
 }
 
 .tocify-wrapper .tocify-subheader>li:last-child {

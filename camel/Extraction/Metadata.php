@@ -8,6 +8,7 @@ class Metadata extends BaseDTO
 {
     public ?string $groupName;
     public ?string $subgroup;
+    public ?string $subgroupDescription;
 
     /**
      * Name of the group that this group should be placed just before.
