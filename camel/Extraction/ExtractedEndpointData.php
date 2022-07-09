@@ -212,20 +212,22 @@ class ExtractedEndpointData extends BaseDTO
 
     protected static function instantiateTypedArgument(\ReflectionNamedType $argumentType): ?object
     {
-        $argumentInstance = null;
         $argumentClassName = $argumentType->getName();
 
         if (class_exists($argumentClassName)) {
-            $argumentInstance = new $argumentClassName;
-        } else if (interface_exists($argumentClassName)) {
-            $argumentInstance = app($argumentClassName);
+            return new $argumentClassName;
         }
 
-        return $argumentInstance;
+        if (interface_exists($argumentClassName)) {
+            return app($argumentClassName);
+        }
+
+        return null;
     }
 
-    public static function getFieldBindingForUrlParam(Route  $route, string $paramName, array $typeHintedArguments = [],
-                                                      string $default = null): ?string
+    public static function getFieldBindingForUrlParam(
+        Route $route, string $paramName, array $typeHintedArguments = [], string $default = null
+    ): ?string
     {
         $binding = null;
         // Was added in Laravel 7.x
@@ -268,11 +270,11 @@ class ExtractedEndpointData extends BaseDTO
     {
         $argumentType = $argument->getType();
         if (!($argumentType instanceof \ReflectionNamedType)) {
-            // The argument does not have a type-hint
+            // The argument does not have a type-hint, or is a primitive type (`string`, ..)
             return false;
-        } else {
-            $argumentInstance = self::instantiateTypedArgument($argumentType);
-            return ($argumentInstance instanceof Model);
         }
+
+        $argumentInstance = self::instantiateTypedArgument($argumentType);
+        return ($argumentInstance instanceof Model);
     }
 }
