@@ -9,7 +9,7 @@
 
 > [v3 is out now](https://scribe.knuckles.wtf/blog/2021/06/08/laravel-v3)!
 
-Scribe helps you generate API documentation for humans from your Laravel/Lumen/[Dingo](https://github.com/dingo/api) codebase. See a live example at [demo.scribe.knuckles.wtf](https://demo.scribe.knuckles.wtf). There's a [Node.js version](https://github.com/knuckleswtf/scribe-js), too!
+Scribe helps you generate API documentation for humans from your Laravel/Lumen/[Dingo](https://github.com/dingo/api) codebase. See a live example at [demo.scribe.knuckles.wtf](https://demo.scribe.knuckles.wtf).
 
 ## Features
 - Pretty single-page HTML doc, with human-friendly text, code samples, and included in-browser API tester ("Try It Out")
