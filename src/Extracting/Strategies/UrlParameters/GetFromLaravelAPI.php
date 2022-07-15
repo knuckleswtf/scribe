@@ -101,11 +101,14 @@ class GetFromLaravelAPI extends Strategy
             $urlThing = $this->getNameOfUrlThing($endpointData->uri, $name);
             if ($urlThing) {
                 $rootNamespace = app()->getNamespace();
-                if (class_exists($class = "{$rootNamespace}Models\\" . Str::title($urlThing))
+                $className = $this->urlThingToClassName($urlThing);
+                if (class_exists($class = "{$rootNamespace}Models\\" . $className)
                     // For the heathens that don't use a Models\ directory
-                    || class_exists($class = $rootNamespace . Str::title($urlThing))) {
+                    || class_exists($class = $rootNamespace . $className)) {
                     $argumentInstance = new $class;
-                    $type = $this->normalizeTypeName($argumentInstance->getKeyType());
+                    if ($argumentInstance->getKeyName() === $argumentInstance->getRouteKeyName()) {
+                        $type = $this->normalizeTypeName($argumentInstance->getKeyType());
+                    }
                 }
             }
 
@@ -157,5 +160,12 @@ class GetFromLaravelAPI extends Strategy
         } catch (\Throwable $e) {
             return null;
         }
+    }
+
+    protected function urlThingToClassName(string $urlThing): string
+    {
+        $className = Str::title($urlThing);
+        $className = str_replace(['-', '_'], '', $className);
+        return $className;
     }
 }
