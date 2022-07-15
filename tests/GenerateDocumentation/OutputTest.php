@@ -10,9 +10,9 @@ use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tests\Fixtures\TestGroupController;
 use Knuckles\Scribe\Tests\Fixtures\TestPartialResourceController;
 use Knuckles\Scribe\Tests\Fixtures\TestPost;
-use Knuckles\Scribe\Tests\Fixtures\TestPostBindedInterface;
+use Knuckles\Scribe\Tests\Fixtures\TestPostBoundInterface;
 use Knuckles\Scribe\Tests\Fixtures\TestPostController;
-use Knuckles\Scribe\Tests\Fixtures\TestPostBindedInterfaceController;
+use Knuckles\Scribe\Tests\Fixtures\TestPostBoundInterfaceController;
 use Knuckles\Scribe\Tests\Fixtures\TestPostUserController;
 use Knuckles\Scribe\Tests\Fixtures\TestUser;
 use Knuckles\Scribe\Tests\TestHelpers;
@@ -330,11 +330,11 @@ class OutputTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function generates_correct_url_params_from_resource_routes_and_model_binding_with_binded_interfaces()
+    public function generates_correct_url_params_from_resource_routes_and_model_binding_with_bound_interfaces()
     {
-        $this->app->bind(TestPostBindedInterface::class, fn() => new TestPost());
+        $this->app->bind(TestPostBoundInterface::class, fn() => new TestPost());
 
-        RouteFacade::resource('posts', TestPostBindedInterfaceController::class)->only('update');
+        RouteFacade::resource('posts', TestPostBoundInterfaceController::class)->only('update');
 
         config(['scribe.routes.0.match.prefixes' => ['*']]);
         config(['scribe.routes.0.apply.response_calls.methods' => []]);
