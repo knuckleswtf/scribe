@@ -22,12 +22,7 @@ class GetFromHeaderTag extends Strategy
     {
         foreach ($endpointData->method->getParameters() as $param) {
             $paramType = $param->getType();
-            if ($paramType === null) {
-                continue;
-            }
-
-            if (class_exists(ReflectionUnionType::class)
-                && $paramType instanceof ReflectionUnionType) {
+            if ($paramType === null || $paramType instanceof ReflectionUnionType) {
                 continue;
             }
 

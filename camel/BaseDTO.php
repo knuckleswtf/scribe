@@ -9,6 +9,12 @@ use Spatie\DataTransferObject\DataTransferObject;
 class BaseDTO extends DataTransferObject implements Arrayable
 {
     /**
+     * @var array $custom
+     * Added so end-users can dynamically add additional properties for their own use.
+     */
+    public array $custom = [];
+
+    /**
      * @param array|self $data
      *
      * @return static

@@ -20,14 +20,14 @@ class GetFromDocBlocks extends Strategy
 
     public function getMetadataFromDocBlock(DocBlock $methodDocBlock, DocBlock $classDocBlock): array
     {
-        [$routeGroupName, $routeGroupDescription, $routeTitle] = $this->getEndpointGroupDetails($methodDocBlock, $classDocBlock);
+        [$groupName, $groupDescription, $title] = $this->getEndpointGroupAndTitleDetails($methodDocBlock, $classDocBlock);
 
         return [
-            'groupName' => $routeGroupName,
-            'groupDescription' => $routeGroupDescription,
+            'groupName' => $groupName,
+            'groupDescription' => $groupDescription,
             'subgroup' => $this->getEndpointSubGroup($methodDocBlock, $classDocBlock),
             'subgroupDescription' => $this->getEndpointSubGroupDescription($methodDocBlock, $classDocBlock),
-            'title' => $routeTitle ?: $methodDocBlock->getShortDescription(),
+            'title' => $title ?: $methodDocBlock->getShortDescription(),
             'description' => $methodDocBlock->getLongDescription()->getContents(),
             'authenticated' => $this->getAuthStatusFromDocBlock($methodDocBlock, $classDocBlock),
         ];
@@ -51,9 +51,9 @@ class GetFromDocBlocks extends Strategy
     }
 
     /**
-     * @return array The route group name, the group description, and the route title
+     * @return array The endpoint's group name, the group description, and the endpoint title
      */
-    protected function getEndpointGroupDetails(DocBlock $methodDocBlock, DocBlock $controllerDocBlock)
+    protected function getEndpointGroupAndTitleDetails(DocBlock $methodDocBlock, DocBlock $controllerDocBlock)
     {
         foreach ($methodDocBlock->getTags() as $tag) {
             if ($tag->getName() === 'group') {

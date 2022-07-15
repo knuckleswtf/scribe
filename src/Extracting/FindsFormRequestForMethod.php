@@ -15,12 +15,7 @@ trait FindsFormRequestForMethod
     {
         foreach ($method->getParameters() as $argument) {
             $argType = $argument->getType();
-            if ($argType === null) {
-                continue;
-            }
-
-            if (class_exists(ReflectionUnionType::class)
-                && $argType instanceof ReflectionUnionType) {
+            if ($argType === null || $argType instanceof ReflectionUnionType) {
                 continue;
             }
 
