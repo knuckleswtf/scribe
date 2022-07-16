@@ -61,16 +61,6 @@ class UseApiResourceTagsTest extends BaseLaravelTest
         });
     }
 
-    protected function usingDatabase($app)
-    {
-        $app['config']->set('database.default', 'sqlite');
-        $app['config']->set('database.connections.sqlite', [
-            'driver'   => 'sqlite',
-            'database' => ':memory:',
-            'prefix'   => '',
-        ]);
-    }
-
     /** @test */
     public function can_parse_apiresource_tags()
     {
@@ -99,10 +89,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
         ], $results);
     }
 
-    /**
-     * @test
-     * @define-env usingDatabase
-     */
+    /** @test */
     public function respects_models_source_settings()
     {
         $config = new DocumentationConfig(['examples' => ['models_source' => ['database', 'factoryMake']]]);

@@ -3,12 +3,15 @@
 namespace Knuckles\Scribe\Tests\Strategies\UrlParameters;
 
 use Closure;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\Schema;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromLaravelAPI;
 use Knuckles\Scribe\Extracting\UrlParamsNormalizer;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
+use Knuckles\Scribe\Tests\Fixtures\TestUser;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 
@@ -64,7 +67,7 @@ class GetFromLaravelAPITest extends BaseLaravelTest
             $e->method = new \ReflectionMethod(TestController::class, 'dummy');
             $e->route = app(Router::class)->addRoute(['GET'], "everything/{cat_id}", ['uses' => [TestController::class, 'dummy']])
                 ->where('cat_id', $regex);
-            $e->uri = $e->route->uri;
+            $e->uri = UrlParamsNormalizer::normalizeParameterNamesInRouteUri($e->route, $e->method);
         });
         $results = $this->fetch($endpoint);
 
@@ -90,6 +93,12 @@ class GetFromLaravelAPITest extends BaseLaravelTest
             "type" => "string",
         ], $results['audio_slug']);
 
+        Schema::create('test_users', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+        });
+        $user = TestUser::create(['name' => 'Bully Maguire', 'id' => 23]);
+
         $endpoint = $this->endpointForRoute("users/{user:id}", TestController::class, 'withInjectedModel');
         $results = $this->fetch($endpoint);
 
@@ -98,6 +107,7 @@ class GetFromLaravelAPITest extends BaseLaravelTest
             "description" => "The ID of the user.",
             "required" => true,
             "type" => "integer",
+            "example" => $user->id,
         ], $results['user_id']);
     }
 
@@ -106,7 +116,7 @@ class GetFromLaravelAPITest extends BaseLaravelTest
         return $this->endpoint(function (ExtractedEndpointData $e) use ($path, $method, $controller) {
             $e->method = new \ReflectionMethod($controller, $method);
             $e->route = app(Router::class)->addRoute(['GET'], $path, ['uses' => [$controller, $method]]);
-            $e->uri = $e->route->uri;
+            $e->uri = UrlParamsNormalizer::normalizeParameterNamesInRouteUri($e->route, $e->method);
         });
     }
 

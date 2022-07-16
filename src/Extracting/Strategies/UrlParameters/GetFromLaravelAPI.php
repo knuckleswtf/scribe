@@ -9,6 +9,7 @@ use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Extracting\UrlParamsNormalizer;
 use Knuckles\Scribe\Tools\Utils;
+use Throwable;
 
 class GetFromLaravelAPI extends Strategy
 {
@@ -107,9 +108,8 @@ class GetFromLaravelAPI extends Strategy
             $parameters[$paramName]['type'] = $type;
 
             try {
-                // todo: add some database tests
                 $parameters[$paramName]['example'] = $modelInstance::first()->$routeKey ?? null;
-            } catch (\Throwable $e) {
+            } catch (Throwable) {
                 $parameters[$paramName]['example'] = null;
             }
 
