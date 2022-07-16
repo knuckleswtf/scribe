@@ -46,18 +46,35 @@ class GetFromLaravelAPI extends Strategy
         // If $url is sth like /users/{id}, return "The ID of the user."
         // If $url is sth like /anything/{user_id}, return "The ID of the user."
 
-        return collect(["id", "slug"])->flatMap(function ($name) use ($url, $paramName) {
+        $strategies = collect(["id", "slug"])->map(function ($name) {
             $friendlyName = $name === 'id' ? "ID" : $name;
 
-            if ($paramName == $name) {
-                $thing = $this->getNameOfUrlThing($url, $paramName);
-                return ["The $friendlyName of the $thing."];
-            } else if (Str::is("*_$name", $paramName)) {
-                $thing = str_replace(["_", "-"], " ", str_replace("_$name", '', $paramName));
-                return ["The $friendlyName of the $thing."];
+            return function ($url, $paramName) use ($name, $friendlyName) {
+                if ($paramName == $name) {
+                    $thing = $this->getNameOfUrlThing($url, $paramName);
+                    return "The $friendlyName of the $thing.";
+                } else if (Str::is("*_$name", $paramName)) {
+                    $thing = str_replace(["_", "-"], " ", str_replace("_$name", '', $paramName));
+                    return "The $friendlyName of the $thing.";
+                }
+            };
+        })->toArray();
+
+        // If $url is sth like /categories/{category}, return "The category."
+        $strategies[] = function ($url, $paramName) {
+            $thing = $this->getNameOfUrlThing($url, $paramName);
+            if ($thing === $paramName) {
+                return "The $thing.";
             }
-            return [];
-        })->first() ?: '';
+        };
+
+        foreach ($strategies as $strategy) {
+            if ($inferred = $strategy($url, $paramName)) {
+                return $inferred;
+            }
+        }
+
+        return '';
     }
 
     protected function inferBetterTypesAndExamplesForEloquentUrlParameters(array $parameters, ExtractedEndpointData $endpointData): array
