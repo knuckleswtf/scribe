@@ -13,7 +13,6 @@ parameters:
         - '#Access to an undefined property Illuminate\\Contracts\\Foundation\\Application::\$view#'
         - '#Unsafe usage of new static#'
         - '#Dead catch#'
-        - '/Call to an undefined static method Illuminate\\Database\\Eloquent\\Model::first\(\)/'
         - '/Call to an undefined method League\\Flysystem\\Filesystem::deleteDir\(\)./'
         - '/Instantiated class League\\Flysystem\\Adapter\\Local not found./'
         - '/Parameter #1 \$adapter of class League\\Flysystem\\Filesystem constructor expects League\\Flysystem\\FilesystemAdapter, League\\Flysystem\\Adapter\\Local given./'

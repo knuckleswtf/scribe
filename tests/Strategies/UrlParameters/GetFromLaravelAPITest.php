@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Routing\Router;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromLaravelAPI;
+use Knuckles\Scribe\Extracting\UrlParamsNormalizer;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
@@ -83,21 +84,21 @@ class GetFromLaravelAPITest extends BaseLaravelTest
         $results = $this->fetch($endpoint);
 
         $this->assertArraySubset([
-            "name" => "audio",
+            "name" => "audio_slug",
             "description" => "The slug of the audio.",
             "required" => true,
             "type" => "string",
-        ], $results['audio']);
+        ], $results['audio_slug']);
 
         $endpoint = $this->endpointForRoute("users/{user:id}", TestController::class, 'withInjectedModel');
         $results = $this->fetch($endpoint);
 
         $this->assertArraySubset([
-            "name" => "user",
+            "name" => "user_id",
             "description" => "The ID of the user.",
             "required" => true,
             "type" => "integer",
-        ], $results['user']);
+        ], $results['user_id']);
     }
 
     protected function endpointForRoute($path, $controller, $method): ExtractedEndpointData

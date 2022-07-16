@@ -20,6 +20,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Nested response fields are now collapsed ([00b09bb](https://github.com/knuckleswtf/scribe/commit/00b09bbea8ec64006db864bf807004d48926c6d3))
 
 
+## 3.34.0 (16 July 2022)
+### Modified
+- URL parameter inference bugfixes and refactor ([#497](https://github.com/knuckleswtf/scribe/pull/497))
+
 ## 3.33.2 (9 July 2022)
 ### Fixed
 - Infer URL parameter name correctly when an interface is used for binding ([#494](https://github.com/knuckleswtf/scribe/pull/494))
