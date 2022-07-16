@@ -100,7 +100,7 @@ class UrlParamsNormalizer
      *
      * @param \Illuminate\Routing\Route $route
      * @param string $paramName The name of the URL parameter
-     * @param array $typeHintedArguments Arguments to the method that have typehints
+     * @param array<string, Model> $typeHintedEloquentModels
      * @param string|null $default Default field to use
      *
      * @return string|null

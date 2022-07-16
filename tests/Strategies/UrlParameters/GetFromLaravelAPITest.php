@@ -105,8 +105,7 @@ class GetFromLaravelAPITest extends BaseLaravelTest
     public function can_infer_data_from_field_bindings()
     {
         if (version_compare($this->app->version(), '7.0.0', '<')) {
-            $this->markTestSkipped("Laravel < 7.x doesn't support field binding syntax.");
-
+            $this->markTestSkipped("Field binding syntax was introduced in Laravel 7.");
             return;
         }
 

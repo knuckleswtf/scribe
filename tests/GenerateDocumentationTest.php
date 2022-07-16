@@ -398,8 +398,7 @@ class GenerateDocumentationTest extends BaseLaravelTest
     public function generates_correct_url_params_from_resource_routes_and_field_bindings()
     {
         if (version_compare($this->app->version(), '7.0.0', '<')) {
-            $this->markTestSkipped("Laravel < 7.x doesn't support field binding syntax.");
-
+            $this->markTestSkipped("Field binding syntax was introduced in Laravel 7.");
             return;
         }
 
