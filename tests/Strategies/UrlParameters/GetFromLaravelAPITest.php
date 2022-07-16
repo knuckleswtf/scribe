@@ -119,6 +119,54 @@ class GetFromLaravelAPITest extends BaseLaravelTest
         ], $results['user_id']);
     }
 
+    /** @test */
+    public function can_infer_from_model_even_if_not_bound()
+    {
+        $oldNamespace = $this->app->getNamespace();
+        $reflectedApp = new \ReflectionClass($this->app);
+        $property = $reflectedApp->getProperty('namespace');
+        $property->setAccessible(true);
+        $property->setValue($this->app, "Knuckles\\Scribe\\Tests\\Fixtures\\");
+
+        $endpoint = $this->endpointForRoute("test-users/{id}", TestController::class, 'dummy');
+        $results = $this->fetch($endpoint);
+
+        $this->assertArraySubset([
+            "name" => "id",
+            "description" => "The ID of the test user.",
+            "required" => true,
+            "type" => "integer",
+        ], $results['id']);
+
+        $property->setValue($this->app, $oldNamespace);
+    }
+
+    protected function endpointForRoute($path, $controller, $method): ExtractedEndpointData
+    {
+        return $this->endpoint(function (ExtractedEndpointData $e) use ($path, $method, $controller) {
+            $e->method = new \ReflectionMethod($controller, $method);
+            $e->route = app(Router::class)->addRoute(['GET'], $path, ['uses' => [$controller, $method]]);
+            $e->uri = UrlParamsNormalizer::normalizeParameterNamesInRouteUri($e->route, $e->method);
+        });
+    }
+
+    protected function endpoint(Closure $configure): ExtractedEndpointData
+    {
+        $endpoint = new class extends ExtractedEndpointData {
+            public function __construct(array $parameters = [])
+            {
+            }
+        };
+        $configure($endpoint);
+        return $endpoint;
+    }
+
+    protected function fetch($endpoint): array
+    {
+        $strategy = new GetFromLaravelAPI(new DocumentationConfig([]));
+        return $strategy($endpoint, []);
+    }
+
     protected function endpointForRoute($path, $controller, $method): ExtractedEndpointData
     {
         return $this->endpoint(function (ExtractedEndpointData $e) use ($path, $method, $controller) {
