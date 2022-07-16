@@ -7,6 +7,7 @@ use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Illuminate\Support\Str;
 use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
+use Knuckles\Scribe\Extracting\UrlParamsNormalizer;
 use Knuckles\Scribe\Tools\Utils;
 
 class GetFromLaravelAPI extends Strategy
@@ -15,9 +16,7 @@ class GetFromLaravelAPI extends Strategy
 
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): ?array
     {
-        if (Utils::isLumen()) {
-            return null;
-        }
+        if (Utils::isLumen()) return null;
 
         $parameters = [];
 
@@ -25,147 +24,164 @@ class GetFromLaravelAPI extends Strategy
         preg_match_all('/\{(.*?)\}/', $path, $matches);
 
         foreach ($matches[1] as $match) {
-            $optional = Str::endsWith($match, '?');
+            $isOptional = Str::endsWith($match, '?');
             $name = rtrim($match, '?');
 
-            // In case of /users/{user:id}, make the param {user_id}
-            $binding = ExtractedEndpointData::getFieldBindingForUrlParam($endpointData->route, $name);
             $parameters[$name] = [
                 'name' => $name,
-                'description' => $this->inferUrlParamDescription($endpointData->uri, $binding ?: $name, $binding ? $name : null),
-                'required' => !$optional,
+                'description' => $this->inferUrlParamDescription($endpointData->uri, $name),
+                'required' => !$isOptional,
             ];
         }
 
+        $parameters = $this->inferBetterTypesAndExamplesForEloquentUrlParameters($parameters, $endpointData);
 
-        // Infer proper types for any bound models
-        // Eg Suppose route is /users/{user},
-        // and (User $user) model is typehinted on method
-        // If User model has an int primary key, {user} param should be an int
-
-        $methodArguments = $endpointData->method->getParameters();
-        foreach ($methodArguments as $argument) {
-            $argumentType = $argument->getType();
-            // If there's no typehint, continue
-            if (!$argumentType) {
-                continue;
-            }
-            try {
-                $argumentClassName = $argumentType->getName();
-                $argumentInstance = new $argumentClassName;
-                if ($argumentInstance instanceof Model) {
-                    if (isset($parameters[$argument->getName()])) {
-                        $paramName = $argument->getName();
-                    } else if (isset($parameters['id'])) {
-                        $paramName = 'id';
-                    } else {
-                        continue;
-                    }
-
-                    // If a user customized their routeKeyName,
-                    // we can't guarantee that it's the same type as the PK
-                    $typeName = $argumentInstance->getKeyName() === $argumentInstance->getRouteKeyName()
-                        ? $argumentInstance->getKeyType() : 'string';
-                    $type = $this->normalizeTypeName($typeName);
-                    $parameters[$paramName]['type'] = $type;
-
-                    // Try to fetch an example ID from the database
-                    try {
-                        // todo: add some database tests
-                        $example = $argumentInstance::first()->id ?? null;
-                    } catch (\Throwable $e) {
-                        $example = null;
-                    }
-
-                    if ($example === null) {
-                        // If the user explicitly set a `where()` constraint, use that to refine examples
-                        $parameterRegex = $endpointData->route->wheres[$paramName] ?? null;
-                        $example = $parameterRegex
-                            ? $this->castToType($this->getFaker()->regexify($parameterRegex), $type)
-                            : $this->generateDummyValue($type);
-                    }
-                    $parameters[$paramName]['example'] = $example;
-                }
-            } catch (\Throwable $e) {
-                continue;
-            }
-        }
-
-        // Try to infer correct types for URL parameters.
-        foreach ($parameters as $name => $data) {
-            if (isset($data['type'])) continue;
-
-            $type = 'string'; // The default type
-
-            // If the url is /things/{id}, try looking for a Thing model ourselves
-            $urlThing = $this->getNameOfUrlThing($endpointData->uri, $name);
-            if ($urlThing) {
-                $rootNamespace = app()->getNamespace();
-                $className = $this->urlThingToClassName($urlThing);
-                if (class_exists($class = "{$rootNamespace}Models\\" . $className)
-                    // For the heathens that don't use a Models\ directory
-                    || class_exists($class = $rootNamespace . $className)) {
-                    $argumentInstance = new $class;
-                    if ($argumentInstance->getKeyName() === $argumentInstance->getRouteKeyName()) {
-                        $type = $this->normalizeTypeName($argumentInstance->getKeyType());
-                    }
-                }
-            }
-
-            $parameterRegex = $endpointData->route->wheres[$name] ?? null;
-            $example = $parameterRegex
-                ? $this->castToType($this->getFaker()->regexify($parameterRegex), $type)
-                : $this->generateDummyValue($type);
-            $parameters[$name]['example'] =$example;
-            $parameters[$name]['type'] = $type;
-        }
+        $parameters = $this->setTypesAndExamplesForOthers($parameters, $endpointData);
 
         return $parameters;
     }
 
-    protected function inferUrlParamDescription(string $url, string $paramName, string $originalBindingName = null): string
+    protected function inferUrlParamDescription(string $url, string $paramName): string
     {
-        if ($paramName == "id") {
-            // If $url is sth like /users/{id} or /users/{user}, return "The ID of the user."
-            // Make sure to replace underscores, so "side_projects" becomes "side project"
-            $thing = str_replace(["_", "-"], " ",$this->getNameOfUrlThing($url, $paramName, $originalBindingName));
-            return "The ID of the $thing.";
-        } else if (Str::is("*_id", $paramName)) {
-            // If $url is sth like /something/{user_id}, return "The ID of the user."
-            $parts = explode("_", $paramName);
-            return "The ID of the $parts[0].";
-        } else if ($paramName && $originalBindingName) {
-            // A case like /posts/{post:slug} -> The slug of the post
-            return "The $paramName of the $originalBindingName.";
+        // If $url is sth like /users/{id}, return "The ID of the user."
+        // If $url is sth like /anything/{user_id}, return "The ID of the user."
+
+        return collect(["id", "slug"])->flatMap(function ($name) use ($url, $paramName) {
+            $friendlyName = $name === 'id' ? "ID" : $name;
+
+            if ($paramName == $name) {
+                $thing = $this->getNameOfUrlThing($url, $paramName);
+                return ["The $friendlyName of the $thing."];
+            } else if (Str::is("*_$name", $paramName)) {
+                $thing = str_replace(["_", "-"], " ", str_replace("_$name", '', $paramName));
+                return ["The $friendlyName of the $thing."];
+            }
+            return [];
+        })->first() ?: '';
+    }
+
+    protected function inferBetterTypesAndExamplesForEloquentUrlParameters(array $parameters, ExtractedEndpointData $endpointData): array
+    {
+        //We'll gather Eloquent model instances that can be linked to a URl parameter
+        $modelInstances = [];
+
+        // First, any bound models
+        // Eg if route is /users/{id}, and (User $user) model is typehinted on method
+        // If User model has `id` as an integer, then {id} param should be an integer
+        $typeHintedEloquentModels = UrlParamsNormalizer::getTypeHintedEloquentModels($endpointData->method);
+        foreach ($typeHintedEloquentModels as $argumentName => $modelInstance) {
+            $routeKey = $modelInstance->getRouteKeyName();
+
+            // Find the param name. In our normalized URL, argument $user might be param {user}, or {user_id}, or {id},
+            if (isset($parameters[$argumentName])) {
+                $paramName = $argumentName;
+            } else if (isset($parameters["{$argumentName}_$routeKey"])) {
+                $paramName = "{$argumentName}_$routeKey";
+            } else if (isset($parameters[$routeKey])) {
+                $paramName = $routeKey;
+            } else {
+                continue;
+            }
+
+            $modelInstances[$paramName] = $modelInstance;
         }
 
-        return '';
+        // Next, non-Eloquent-bound parameters. They might still be Eloquent models, but model binding wasn't used.
+        foreach ($parameters as $name => $data) {
+            if (isset($data['type'])) continue;
+
+            // If the url is /things/{id}, try to find a Thing model
+            $urlThing = $this->getNameOfUrlThing($endpointData->uri, $name);
+            if ($urlThing && ($modelInstance = $this->findModelFromUrlThing($urlThing))) {
+                $modelInstances[$name] = $modelInstance;
+            }
+        }
+
+        // Now infer.
+        foreach ($modelInstances as $paramName => $modelInstance) {
+            // If the routeKey is the same as the primary key in the database, use the PK's type.
+            $routeKey = $modelInstance->getRouteKeyName();
+            $type = $modelInstance->getKeyName() === $routeKey
+                ? $this->normalizeTypeName($modelInstance->getKeyType()) : 'string';
+
+            $parameters[$paramName]['type'] = $type;
+
+            try {
+                // todo: add some database tests
+                $parameters[$paramName]['example'] = $modelInstance::first()->$routeKey ?? null;
+            } catch (\Throwable $e) {
+                $parameters[$paramName]['example'] = null;
+            }
+
+        }
+        return $parameters;
+    }
+
+    protected function setTypesAndExamplesForOthers(array $parameters, ExtractedEndpointData $endpointData): array
+    {
+        foreach ($parameters as $name => $parameter) {
+            if (empty($parameter['type'])) {
+                $parameters[$name]['type'] = "string";
+            }
+
+            if (($parameter['example'] ?? null) === null) {
+                // If the user explicitly set a `where()` constraint, use that to refine examples
+                $parameterRegex = $endpointData->route->wheres[$name] ?? null;
+                $parameters[$name]['example'] = $parameterRegex
+                    ? $this->castToType($this->getFaker()->regexify($parameterRegex), $parameters[$name]['type'])
+                    : $this->generateDummyValue($parameters[$name]['type']);
+            }
+        }
+        return $parameters;
     }
 
     /**
-     * Extract "thing" in the URL /<whatever>/things/{paramName}
+     * Given a URL parameter $paramName, extract the "thing" that comes before it. eg::
+     * - /<whatever>/things/{paramName} -> "thing"
+     * - animals/cats/{id} -> "cat"
+     * - users/{user_id}/contracts -> "user"
+     *
+     * @param string $url
+     * @param string $paramName
+     * @param string|null $alternateParamName A second paramName to try, if the original paramName isn't in the URL.
+     *
+     * @return string|null
      */
     protected function getNameOfUrlThing(string $url, string $paramName, string $alternateParamName = null): ?string
     {
-        try {
-            $parts = explode("/", $url);
-            $paramIndex = array_search("{{$paramName}}", $parts);
+        $parts = explode("/", $url);
+        $paramIndex = array_search("{{$paramName}}", $parts);
 
-            if ($paramIndex === false) {
-                // Try with the other param name
-                $paramIndex = array_search("{{$alternateParamName}}", $parts);
-            }
-            $things = $parts[$paramIndex - 1];
-            return Str::singular($things);
-        } catch (\Throwable $e) {
-            return null;
+        if ($paramIndex === false) {
+            $paramIndex = array_search("{{$alternateParamName}}", $parts);
         }
+
+        if ($paramIndex === false) return null;
+
+        $things = $parts[$paramIndex - 1];
+        // Replace underscores/hyphens, so "side_projects" becomes "side project"
+        return str_replace(["_", "-"], " ", Str::singular($things));
     }
 
-    protected function urlThingToClassName(string $urlThing): string
+    /**
+     * Given a URL "thing", like the "cat" in /cats/{id}, try to locate a Cat model.
+     *
+     * @param string $urlThing
+     *
+     * @return Model|null
+     */
+    protected function findModelFromUrlThing(string $urlThing): ?Model
     {
-        $className = Str::title($urlThing);
-        $className = str_replace(['-', '_'], '', $className);
-        return $className;
+        $className = str_replace(['-', '_', ' '], '', Str::title($urlThing));
+        $rootNamespace = app()->getNamespace();
+
+        if (class_exists($class = "{$rootNamespace}Models\\" . $className)
+            // For the heathens that don't use a Models\ directory
+            || class_exists($class = $rootNamespace . $className)) {
+            $instance = new $class;
+            return $instance instanceof Model ? $instance : null;
+        }
+
+        return null;
     }
 }

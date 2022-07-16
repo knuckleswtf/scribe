@@ -6,6 +6,7 @@ use Illuminate\Routing\Route;
 use Illuminate\Routing\Router;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromLaravelAPI;
+use Knuckles\Scribe\Extracting\UrlParamsNormalizer;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
@@ -118,18 +119,18 @@ class GetFromLaravelAPITest extends BaseLaravelTest
 
                 $route = app(Router::class)->addRoute(['GET'], "audio/{audio:slug}", ['uses' => [TestController::class, 'dummy']]);
                 $this->route = $route;
-                $this->uri = $route->uri;
+                $this->uri = UrlParamsNormalizer::normalizeParameterNamesInRouteUri($route, $this->method);
             }
         };
 
         $results = $strategy($endpoint, []);
 
         $this->assertArraySubset([
-            "name" => "audio",
+            "name" => "audio_slug",
             "description" => "The slug of the audio.",
             "required" => true,
             "type" => "string",
-        ], $results['audio']);
+        ], $results['audio_slug']);
 
         $endpoint = new class extends ExtractedEndpointData {
             public function __construct(array $parameters = [])
@@ -138,17 +139,17 @@ class GetFromLaravelAPITest extends BaseLaravelTest
 
                 $route = app(Router::class)->addRoute(['GET'], "users/{user:id}", ['uses' => [TestController::class, 'withInjectedModel']]);
                 $this->route = $route;
-                $this->uri = $route->uri;
+                $this->uri = UrlParamsNormalizer::normalizeParameterNamesInRouteUri($route, $this->method);
             }
         };
 
         $results = $strategy($endpoint, []);
 
         $this->assertArraySubset([
-            "name" => "user",
+            "name" => "user_id",
             "description" => "The ID of the user.",
             "required" => true,
             "type" => "integer",
-        ], $results['user']);
+        ], $results['user_id']);
     }
 }
