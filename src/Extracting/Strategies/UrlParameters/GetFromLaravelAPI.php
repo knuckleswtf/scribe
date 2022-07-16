@@ -37,7 +37,9 @@ class GetFromLaravelAPI extends Strategy
 
         $parameters = $this->inferBetterTypesAndExamplesForEloquentUrlParameters($parameters, $endpointData);
 
-        $parameters = $this->inferBetterTypesAndExamplesForEnumUrlParameters($parameters, $endpointData);
+        if (version_compare(PHP_VERSION, '8.1.0', '>=')) {
+            $parameters = $this->inferBetterTypesAndExamplesForEnumUrlParameters($parameters, $endpointData);
+        }
 
         $parameters = $this->setTypesAndExamplesForOthers($parameters, $endpointData);
 

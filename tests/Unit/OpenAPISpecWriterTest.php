@@ -31,8 +31,7 @@ class OpenAPISpecWriterTest extends TestCase
         $endpointData2 = $this->createMockEndpointData();
         $groups = [$this->createGroup([$endpointData1, $endpointData2])];
 
-        $writer = new OpenAPISpecWriter(new DocumentationConfig($this->config));
-        $results = $writer->generateSpecContent($groups);
+        $results = $this->generate($groups);
 
         $this->assertEquals(OpenAPISpecWriter::VERSION, $results['openapi']);
         $this->assertEquals($this->config['title'], $results['info']['title']);
@@ -51,8 +50,7 @@ class OpenAPISpecWriterTest extends TestCase
         $endpointData3 = $this->createMockEndpointData(['uri' => 'path1/path2']);
         $groups = [$this->createGroup([$endpointData1, $endpointData2, $endpointData3])];
 
-        $writer = new OpenAPISpecWriter(new DocumentationConfig($this->config));
-        $results = $writer->generateSpecContent($groups);
+        $results = $this->generate($groups);
 
         $this->assertIsArray($results['paths']);
         $this->assertCount(2, $results['paths']);
@@ -140,8 +138,7 @@ class OpenAPISpecWriterTest extends TestCase
         $endpointData2 = $this->createMockEndpointData(['uri' => 'path1', 'httpMethods' => ['POST']]);
         $groups = [$this->createGroup([$endpointData1, $endpointData2])];
 
-        $writer = new OpenAPISpecWriter(new DocumentationConfig($this->config));
-        $results = $writer->generateSpecContent($groups);
+        $results = $this->generate($groups);
 
         $this->assertArrayNotHasKey('parameters', $results['paths']['/path1']);
         $this->assertCount(2, $results['paths']['/path1/{param}/{optionalParam}']['parameters']);
@@ -174,8 +171,7 @@ class OpenAPISpecWriterTest extends TestCase
         $endpointData2 = $this->createMockEndpointData(['uri' => 'path1', 'httpMethods' => ['GET'], 'headers' => []]);
         $groups = [$this->createGroup([$endpointData1, $endpointData2])];
 
-        $writer = new OpenAPISpecWriter(new DocumentationConfig($this->config));
-        $results = $writer->generateSpecContent($groups);
+        $results = $this->generate($groups);
 
         $this->assertEquals([], $results['paths']['/path1']['get']['parameters']);
         $this->assertCount(2, $results['paths']['/path1']['post']['parameters']);
@@ -215,8 +211,7 @@ class OpenAPISpecWriterTest extends TestCase
         $endpointData2 = $this->createMockEndpointData(['headers' => [], 'httpMethods' => ['POST'], 'uri' => '/path1',]);
         $groups = [$this->createGroup([$endpointData1, $endpointData2])];
 
-        $writer = new OpenAPISpecWriter(new DocumentationConfig($this->config));
-        $results = $writer->generateSpecContent($groups);
+        $results = $this->generate($groups);
 
         $this->assertEquals([], $results['paths']['/path1']['post']['parameters']);
         $this->assertArrayHasKey('parameters', $results['paths']['/path1']['get']);
@@ -323,8 +318,7 @@ class OpenAPISpecWriterTest extends TestCase
         ]);
         $groups = [$this->createGroup([$endpointData1, $endpointData2, $endpointData3])];
 
-        $writer = new OpenAPISpecWriter(new DocumentationConfig($this->config));
-        $results = $writer->generateSpecContent($groups);
+        $results = $this->generate($groups);
 
         $this->assertArrayNotHasKey('requestBody', $results['paths']['/path1']['get']);
         $this->assertArrayHasKey('requestBody', $results['paths']['/path1']['post']);
@@ -461,8 +455,7 @@ class OpenAPISpecWriterTest extends TestCase
         ]);
         $groups = [$this->createGroup([$endpointData1, $endpointData2])];
 
-        $writer = new OpenAPISpecWriter(new DocumentationConfig($this->config));
-        $results = $writer->generateSpecContent($groups);
+        $results = $this->generate($groups);
 
         $this->assertCount(2, $results['paths']['/path1']['post']['responses']);
         $this->assertArraySubset([
@@ -549,5 +542,11 @@ class OpenAPISpecWriterTest extends TestCase
             'name' => $faker->randomElement(['Endpoints', 'Group A', 'Group B']),
             'endpoints' => $endpoints,
         ];
+    }
+
+    protected function generate(array $groups): array
+    {
+        $writer = new OpenAPISpecWriter(new DocumentationConfig($this->config));
+        return $writer->generateSpecContent($groups);
     }
 }

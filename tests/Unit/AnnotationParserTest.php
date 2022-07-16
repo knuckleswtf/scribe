@@ -9,7 +9,7 @@ class AnnotationParserTest extends TestCase
 {
     /**
      * @test
-     * @dataProvider contentAttributesAnnotations
+     * @dataProvider annotationsWithContentAndAttributes
      */
     public function can_parse_annotation_into_content_and_attributes(string $annotation, array $expected)
     {
@@ -18,7 +18,7 @@ class AnnotationParserTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function contentAttributesAnnotations()
+    public function annotationsWithContentAndAttributes()
     {
         return [
             "when attributes come first" => [
@@ -54,7 +54,7 @@ class AnnotationParserTest extends TestCase
 
     /**
      * @test
-     * @dataProvider attributesAnnotations
+     * @dataProvider annotationsWithAttributes
      */
     public function can_parse_annotation_into_attributes(string $annotation, array $expected)
     {
@@ -63,7 +63,7 @@ class AnnotationParserTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function attributesAnnotations()
+    public function annotationsWithAttributes()
     {
         return [
             "with or without quotes" => [

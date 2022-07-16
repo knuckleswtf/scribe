@@ -312,8 +312,6 @@ class TestController extends Controller
      */
     public function withResponseTag()
     {
-        ExtractorTest::$globalValue = rand();
-
         return '';
     }
 

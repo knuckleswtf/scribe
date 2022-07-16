@@ -21,9 +21,7 @@ class GetFromFormRequestTest extends BaseLaravelTest
     public function can_fetch_bodyparams_from_form_request()
     {
         $method = new \ReflectionMethod(TestController::class, 'withFormRequestParameter');
-
-        $strategy = new BodyParameters\GetFromFormRequest(new DocumentationConfig([]));
-        $results = $strategy->getParametersFromFormRequest($method);
+        $results = $this->fetchViaBodyParams($method);
 
         $this->assertArraySubset([
             'user_id' => [
@@ -105,10 +103,8 @@ class GetFromFormRequestTest extends BaseLaravelTest
     /** @test */
     public function can_fetch_queryparams_from_form_request()
     {
-        $strategy = new QueryParameters\GetFromFormRequest(new DocumentationConfig([]));
-
         $method = new \ReflectionMethod(TestController::class, 'withFormRequestParameterQueryParams');
-        $results = $strategy->getParametersFromFormRequest($method);
+        $results = $this->fetchViaQueryParams($method);
 
         $this->assertArraySubset([
             'q_param' => [
@@ -120,7 +116,7 @@ class GetFromFormRequestTest extends BaseLaravelTest
         ], $results);
 
         $method = new \ReflectionMethod(TestController::class, 'withFormRequestParameterQueryParamsComment');
-        $results = $strategy->getParametersFromFormRequest($method);
+        $results = $this->fetchViaQueryParams($method);
 
         $this->assertArraySubset([
             'type' => 'integer',
@@ -132,19 +128,14 @@ class GetFromFormRequestTest extends BaseLaravelTest
     /** @test */
     public function will_ignore_not_relevant_form_request()
     {
-        $queryParamsStrategy = new QueryParameters\GetFromFormRequest(new DocumentationConfig([]));
         $method = new \ReflectionMethod(TestController::class, 'withFormRequestParameter');
-        $results = $queryParamsStrategy->getParametersFromFormRequest($method);
-        $this->assertEquals([], $results);
+        $this->assertEquals([], $this->fetchViaQueryParams($method));
 
-        $bodyParamsStrategy = new BodyParameters\GetFromFormRequest(new DocumentationConfig([]));
         $method = new \ReflectionMethod(TestController::class, 'withFormRequestParameterQueryParams');
-        $results = $bodyParamsStrategy->getParametersFromFormRequest($method);
-        $this->assertEquals([], $results);
+        $this->assertEquals([], $this->fetchViaBodyParams($method));
 
         $method = new \ReflectionMethod(TestController::class, 'withFormRequestParameterQueryParamsComment');
-        $results = $bodyParamsStrategy->getParametersFromFormRequest($method);
-        $this->assertEquals([], $results);
+        $this->assertEquals([], $this->fetchViaBodyParams($method));
     }
 
     /** @test */
@@ -159,9 +150,20 @@ class GetFromFormRequestTest extends BaseLaravelTest
             return new TestRequestQueryParams;
         };
 
-        $strategy = new BodyParameters\GetFromFormRequest(new DocumentationConfig([]));
-        $strategy->getParametersFromFormRequest($controllerMethod);
+        $this->fetchViaBodyParams($controllerMethod);
 
         Globals::$__instantiateFormRequestUsing = null;
+    }
+
+    protected function fetchViaBodyParams(\ReflectionMethod $method): array
+    {
+        $strategy = new BodyParameters\GetFromFormRequest(new DocumentationConfig([]));
+        return $strategy->getParametersFromFormRequest($method);
+    }
+
+    protected function fetchViaQueryParams(\ReflectionMethod $method): array
+    {
+        $strategy = new QueryParameters\GetFromFormRequest(new DocumentationConfig([]));
+        return $strategy->getParametersFromFormRequest($method);
     }
 }

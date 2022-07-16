@@ -19,7 +19,8 @@ class RouteMatcherDingoTest extends BaseLaravelTest
         ];
     }
 
-    public function testRespectsDomainsRuleForDingoRouter()
+    /** @test */
+    public function respects_domains_rule_for_dingo_router()
     {
         $this->registerDingoRoutes();
         $routeRules[0]['match']['versions'] = ['v1'];
@@ -52,7 +53,8 @@ class RouteMatcherDingoTest extends BaseLaravelTest
         }
     }
 
-    public function testRespectsPrefixesRuleForDingoRouter()
+    /** @test */
+    public function respects_prefixes_rule_for_dingo_router()
     {
         $this->registerDingoRoutes();
         $routeRules[0]['match']['versions'] = ['v1'];
@@ -85,7 +87,8 @@ class RouteMatcherDingoTest extends BaseLaravelTest
         }
     }
 
-    public function testRespectsVersionsRuleForDingoRouter()
+    /** @test */
+    public function respects_versions_rule_for_dingo_router()
     {
         $this->registerDingoRoutes();
 
@@ -107,7 +110,8 @@ class RouteMatcherDingoTest extends BaseLaravelTest
         $this->assertCount(18, $routes);
     }
 
-    public function testWillIncludeRouteIfListedExplicitlyForDingoRouter()
+    /** @test */
+    public function includes_route_if_listed_explicitly_for_dingo_router()
     {
         $this->registerDingoRoutes();
 
@@ -130,7 +134,8 @@ class RouteMatcherDingoTest extends BaseLaravelTest
         $this->assertCount(1, $oddRuleOut);
     }
 
-    public function testWillIncludeRouteIfMatchForAnIncludePatternForDingoRouter()
+    /** @test */
+    public function includes_route_if_match_for_an_include_pattern_for_dingo_router()
     {
         $this->registerDingoRoutes();
 
@@ -154,7 +159,8 @@ class RouteMatcherDingoTest extends BaseLaravelTest
         $this->assertCount(count($mustInclude), $oddRuleOut);
     }
 
-    public function testWillExcludeRouteIfListedExplicitlyForDingoRouter()
+    /** @test */
+    public function excludes_route_if_listed_explicitly_for_dingo_router()
     {
         $this->registerDingoRoutes();
 
@@ -177,7 +183,8 @@ class RouteMatcherDingoTest extends BaseLaravelTest
         $this->assertCount(0, $oddRuleOut);
     }
 
-    public function testWillExcludeRouteIfMatchForAnExcludePatterForDingoRouter()
+    /** @test */
+    public function excludes_route_if_match_for_an_exclude_patter_for_dingo_router()
     {
         $this->registerDingoRoutes();
 
@@ -201,7 +208,8 @@ class RouteMatcherDingoTest extends BaseLaravelTest
         $this->assertCount(0, $oddRuleOut);
     }
 
-    public function testMergesRoutesFromDifferentRuleGroupsForDingoRouter()
+    /** @test */
+    public function merges_routes_from_different_rule_groups_for_dingo_router()
     {
         $this->registerDingoRoutes();
         $routeRules = [

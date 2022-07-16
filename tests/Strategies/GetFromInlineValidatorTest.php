@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Tests\Strategies;
 
+use Closure;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Extracting\Strategies\BodyParameters;
 use Knuckles\Scribe\Extracting\Strategies\QueryParameters;
@@ -91,15 +92,11 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
     /** @test */
     public function can_fetch_from_request_validate_assignment()
     {
-        $endpoint = new class extends ExtractedEndpointData {
-            public function __construct(array $parameters = [])
-            {
-                $this->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidate');
-            }
-        };
+        $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
+            $e->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidate');
+        });
 
-        $strategy = new BodyParameters\GetFromInlineValidator(new DocumentationConfig([]));
-        $results = $strategy($endpoint, []);
+        $results = $this->fetchViaBodyParams($endpoint);
 
         $this->assertArraySubset(self::$expected, $results);
         $this->assertIsArray($results['ids']['example']);
@@ -108,15 +105,11 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
     /** @test */
     public function can_fetch_from_request_validate_expression()
     {
-        $endpoint = new class extends ExtractedEndpointData {
-            public function __construct(array $parameters = [])
-            {
-                $this->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidateNoAssignment');
-            }
-        };
+        $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
+            $e->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidateNoAssignment');
+        });
 
-        $strategy = new BodyParameters\GetFromInlineValidator(new DocumentationConfig([]));
-        $results = $strategy($endpoint, []);
+        $results = $this->fetchViaBodyParams($endpoint);
 
         $this->assertArraySubset(self::$expected, $results);
         $this->assertIsArray($results['ids']['example']);
@@ -125,15 +118,11 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
     /** @test */
     public function can_fetch_from_request_validatewithbag()
     {
-        $endpoint = new class extends ExtractedEndpointData {
-            public function __construct(array $parameters = [])
-            {
-                $this->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidateWithBag');
-            }
-        };
+        $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
+            $e->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidateWithBag');
+        });
 
-        $strategy = new BodyParameters\GetFromInlineValidator(new DocumentationConfig([]));
-        $results = $strategy($endpoint, []);
+        $results = $this->fetchViaBodyParams($endpoint);
 
         $this->assertArraySubset(self::$expected, $results);
         $this->assertIsArray($results['ids']['example']);
@@ -142,15 +131,11 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
     /** @test */
     public function can_fetch_from_this_validate()
     {
-        $endpoint = new class extends ExtractedEndpointData {
-            public function __construct(array $parameters = [])
-            {
-                $this->method = new \ReflectionMethod(TestController::class, 'withInlineThisValidate');
-            }
-        };
+        $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
+            $e->method = new \ReflectionMethod(TestController::class, 'withInlineThisValidate');
+        });
 
-        $strategy = new BodyParameters\GetFromInlineValidator(new DocumentationConfig([]));
-        $results = $strategy($endpoint, []);
+        $results = $this->fetchViaBodyParams($endpoint);
 
         $this->assertArraySubset(self::$expected, $results);
         $this->assertIsArray($results['ids']['example']);
@@ -159,15 +144,11 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
     /** @test */
     public function can_fetch_from_validator_make()
     {
-        $endpoint = new class extends ExtractedEndpointData {
-            public function __construct(array $parameters = [])
-            {
-                $this->method = new \ReflectionMethod(TestController::class, 'withInlineValidatorMake');
-            }
-        };
+        $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
+            $e->method = new \ReflectionMethod(TestController::class, 'withInlineValidatorMake');
+        });
 
-        $strategy = new BodyParameters\GetFromInlineValidator(new DocumentationConfig([]));
-        $results = $strategy($endpoint, []);
+        $results = $this->fetchViaBodyParams($endpoint);
 
         $this->assertArraySubset(self::$expected, $results);
         $this->assertIsArray($results['ids']['example']);
@@ -176,30 +157,44 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
     /** @test */
     public function respects_query_params_comment()
     {
-        $queryParamsEndpoint = new class extends ExtractedEndpointData {
-            public function __construct(array $parameters = [])
-            {
-                $this->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidateQueryParams');
-            }
-        };
+        $queryParamsEndpoint = $this->endpoint(function (ExtractedEndpointData $e) {
+            $e->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidateQueryParams');
+        });
 
-        $strategy = new BodyParameters\GetFromInlineValidator(new DocumentationConfig([]));
-        $results = $strategy($queryParamsEndpoint, []);
+        $results = $this->fetchViaBodyParams($queryParamsEndpoint);
         $this->assertEquals([], $results);
 
-        $queryParamsStrategy = new QueryParameters\GetFromInlineValidator(new DocumentationConfig([]));
-        $results = $queryParamsStrategy($queryParamsEndpoint, []);
+        $results = $this->fetchViaQueryParams($queryParamsEndpoint);
         $this->assertArraySubset(self::$expected, $results);
         $this->assertIsArray($results['ids']['example']);
 
-        $bodyParamsEndpoint = new class extends ExtractedEndpointData {
-            public function __construct(array $parameters = [])
-            {
-                $this->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidate');
-            }
-        };
-        $results = $queryParamsStrategy($bodyParamsEndpoint, []);
+        $bodyParamsEndpoint = $this->endpoint(function (ExtractedEndpointData $e) {
+            $e->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidate');
+        });
+        $results = $this->fetchViaQueryParams($bodyParamsEndpoint);
         $this->assertEquals([], $results);
     }
 
+    protected function endpoint(Closure $configure): ExtractedEndpointData
+    {
+        $endpoint = new class extends ExtractedEndpointData {
+            public function __construct(array $parameters = [])
+            {
+            }
+        };
+        $configure($endpoint);
+        return $endpoint;
+    }
+
+    protected function fetchViaBodyParams(ExtractedEndpointData $endpoint): ?array
+    {
+        $strategy = new BodyParameters\GetFromInlineValidator(new DocumentationConfig([]));
+        return $strategy($endpoint, []);
+    }
+
+    protected function fetchViaQueryParams(ExtractedEndpointData $endpoint): ?array
+    {
+        $strategy = new QueryParameters\GetFromInlineValidator(new DocumentationConfig([]));
+        return $strategy($endpoint, []);
+    }
 }

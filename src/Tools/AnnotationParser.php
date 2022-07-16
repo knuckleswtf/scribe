@@ -6,9 +6,12 @@ class AnnotationParser
 {
     /**
      * Parse an annotation like 'status=400 when="things go wrong" {"message": "failed"}'.
-     * Attributes are always optional and may appear at the start or the end of the string.
+     * Fields are always optional and may appear at the start or the end of the string.
      *
      * @param string $annotationContent
+     * @param array $allowedFields List of fields to look for.
+     *
+     * @return array{content: string, attributes: string[]}
      */
     public static function parseIntoContentAndAttributes(string $annotationContent, array $allowedAttributes): array
     {

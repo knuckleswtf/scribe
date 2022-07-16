@@ -14,10 +14,7 @@ class ExtractorTest extends TestCase
 {
     use ArraySubsetAsserts;
 
-    /**
-     * @var \Knuckles\Scribe\Extracting\Extractor
-     */
-    protected $generator;
+    protected Extractor $extractor;
 
     protected $config = [
         'strategies' => [
@@ -50,8 +47,6 @@ class ExtractorTest extends TestCase
         ],
     ];
 
-    public static $globalValue = null;
-
     /**
      * Setup the test environment.
      */
@@ -59,7 +54,7 @@ class ExtractorTest extends TestCase
     {
         parent::setUp();
 
-        $this->generator = new Extractor(new DocumentationConfig($this->config));
+        $this->extractor = new Extractor(new DocumentationConfig($this->config));
     }
 
     /** @test */
@@ -139,7 +134,7 @@ class ExtractorTest extends TestCase
     public function does_not_generate_values_for_excluded_params_and_excludes_them_from_clean_params()
     {
         $route = $this->createRoute('POST', '/api/test', 'withExcludedExamples');
-        $parsed = $this->generator->processRoute($route)->toArray();
+        $parsed = $this->extractor->processRoute($route)->toArray();
         $cleanBodyParameters = $parsed['cleanBodyParameters'];
         $cleanQueryParameters = $parsed['cleanQueryParameters'];
         $bodyParameters = $parsed['bodyParameters'];
@@ -172,19 +167,19 @@ class ExtractorTest extends TestCase
     public function can_parse_route_methods()
     {
         $route = $this->createRoute('GET', '/get', 'withEndpointDescription');
-        $parsed = $this->generator->processRoute($route);
+        $parsed = $this->extractor->processRoute($route);
         $this->assertEquals(['GET'], $parsed->httpMethods);
 
         $route = $this->createRoute('POST', '/post', 'withEndpointDescription');
-        $parsed = $this->generator->processRoute($route);
+        $parsed = $this->extractor->processRoute($route);
         $this->assertEquals(['POST'], $parsed->httpMethods);
 
         $route = $this->createRoute('PUT', '/put', 'withEndpointDescription');
-        $parsed = $this->generator->processRoute($route);
+        $parsed = $this->extractor->processRoute($route);
         $this->assertEquals(['PUT'], $parsed->httpMethods);
 
         $route = $this->createRoute('DELETE', '/delete', 'withEndpointDescription');
-        $parsed = $this->generator->processRoute($route);
+        $parsed = $this->extractor->processRoute($route);
         $this->assertEquals(['DELETE'], $parsed->httpMethods);
     }
 
@@ -209,11 +204,11 @@ class ExtractorTest extends TestCase
 
         $paramName = 'room_id';
         $results = [];
-        $results[$this->generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
-        $results[$this->generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
-        $results[$this->generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
-        $results[$this->generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
-        $results[$this->generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
+        $results[$this->extractor->processRoute($route)->cleanBodyParameters[$paramName]] = true;
+        $results[$this->extractor->processRoute($route)->cleanBodyParameters[$paramName]] = true;
+        $results[$this->extractor->processRoute($route)->cleanBodyParameters[$paramName]] = true;
+        $results[$this->extractor->processRoute($route)->cleanBodyParameters[$paramName]] = true;
+        $results[$this->extractor->processRoute($route)->cleanBodyParameters[$paramName]] = true;
         // Examples should have different values
         $this->assertNotEquals(1, count($results));
 
@@ -232,7 +227,7 @@ class ExtractorTest extends TestCase
     {
         $route = $this->createRouteUsesArray('GET', '/api/array/test', 'withEndpointDescription');
 
-        $parsed = $this->generator->processRoute($route);
+        $parsed = $this->extractor->processRoute($route);
 
         $this->assertSame('Example title.', $parsed->metadata->title);
         $this->assertSame("This will be the long description.\nIt can also be multiple lines long.", $parsed->metadata->description);
@@ -249,12 +244,10 @@ class ExtractorTest extends TestCase
          * @queryParam location_id required The id of the location.
          * @bodyParam name required Name of the location
          */
-        $handler = function () {
-            return 'hi';
-        };
+        $handler = fn () =>  'hi';
         $route = $this->createRouteUsesCallable('POST', '/api/closure/test', $handler);
 
-        $parsed = $this->generator->processRoute($route);
+        $parsed = $this->extractor->processRoute($route);
 
         $this->assertSame('A short title.', $parsed->metadata->title);
         $this->assertSame("A longer description.\nCan be multiple lines.", $parsed->metadata->description);
@@ -268,7 +261,7 @@ class ExtractorTest extends TestCase
     public function endpoint_metadata_supports_custom_declarations()
     {
         $route = $this->createRoute('POST', '/api/test', 'dummy');
-        $parsed = $this->generator->processRoute($route);
+        $parsed = $this->extractor->processRoute($route);
         $this->assertSame('some custom metadata', $parsed->metadata->custom['myProperty']);
     }
 

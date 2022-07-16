@@ -51,9 +51,7 @@ class ExtractorPluginSystemTest extends TestCase
                 'responses' => [], // Making this empty so the Laravel-dependent strategies are not called
             ],
         ];
-        $route = $this->createRoute('POST', '/api/test', 'dummy', true, TestController::class);
-        $generator = new Extractor(new DocumentationConfig($config));
-        $generator->processRoute($route);
+        $this->processRoute($config);
 
         $this->assertTrue(EmptyStrategy1::$called);
         $this->assertTrue(NotDummyMetadataStrategy::$called);
@@ -69,9 +67,7 @@ class ExtractorPluginSystemTest extends TestCase
                 'responses' => [DummyResponseStrategy200::class, DummyResponseStrategy400::class],
             ],
         ];
-        $route = $this->createRoute('GET', '/api/test', 'dummy', true, TestController::class);
-        $generator = new Extractor(new DocumentationConfig($config));
-        $parsed = $generator->processRoute($route);
+        $parsed = $this->processRoute($config);
 
         $this->assertCount(2, $parsed->responses->toArray());
         $responses = $parsed->responses->toArray();
@@ -99,9 +95,7 @@ class ExtractorPluginSystemTest extends TestCase
                 'responses' => [],
             ],
         ];
-        $route = $this->createRoute('GET', '/api/test', 'dummy', true, TestController::class);
-        $generator = new Extractor(new DocumentationConfig($config));
-        $parsed = $generator->processRoute($route);
+        $parsed = $this->processRoute($config);
 
         $expectedMetadata = [
             'groupName' => 'dummy',
@@ -123,9 +117,7 @@ class ExtractorPluginSystemTest extends TestCase
                 'responses' => [],
             ],
         ];
-        $route = $this->createRoute('GET', '/api/test', 'dummy', true, TestController::class);
-        $generator = new Extractor(new DocumentationConfig($config));
-        $parsed = $generator->processRoute($route);
+        $parsed = $this->processRoute($config);
 
         $expectedMetadata = [
             'groupName' => '',
@@ -147,9 +139,7 @@ class ExtractorPluginSystemTest extends TestCase
                 'responses' => [],
             ],
         ];
-        $route = $this->createRoute('GET', '/api/test', 'dummy', true, TestController::class);
-        $generator = new Extractor(new DocumentationConfig($config));
-        $parsed = $generator->processRoute($route);
+        $parsed = $this->processRoute($config);
 
         $expectedMetadata = [
             'groupName' => 'dummy',
@@ -161,7 +151,14 @@ class ExtractorPluginSystemTest extends TestCase
         $this->assertArraySubset($expectedMetadata, $parsed->metadata->toArray());
     }
 
-    public function createRoute(string $httpMethod, string $path, string $controllerMethod, $register = false, $class = TestController::class)
+    protected function processRoute(array $config): ExtractedEndpointData
+    {
+        $route = $this->createRoute('GET', '/api/test', 'dummy');
+        $extractor = new Extractor(new DocumentationConfig($config));
+        return $extractor->processRoute($route);
+    }
+
+    public function createRoute(string $httpMethod, string $path, string $controllerMethod, $class = TestController::class)
     {
         return new Route([$httpMethod], $path, ['uses' => [$class, $controllerMethod]]);
     }
