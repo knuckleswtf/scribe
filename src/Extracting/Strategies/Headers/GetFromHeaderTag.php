@@ -30,7 +30,7 @@ class GetFromHeaderTag extends Strategy
 
             try {
                 $parameterClass = new ReflectionClass($parameterClassName);
-            } catch (ReflectionException $e) {
+            } catch (ReflectionException) {
                 continue;
             }
 

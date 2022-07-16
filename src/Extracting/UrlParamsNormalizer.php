@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Str;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
+use ReflectionEnum;
+use ReflectionException;
 use ReflectionFunctionAbstract;
 
 /*
@@ -13,9 +15,6 @@ use ReflectionFunctionAbstract;
  */
 class UrlParamsNormalizer
 {
-    // TODO enum binding https://laravel.com/docs/9.x/routing#implicit-enum-binding
-
-
     /**
      * Normalize a URL from Laravel-style to something that's clearer for a non-Laravel user.
      * For instance, `/posts/{post}` would be clearer as `/posts/{id}`,
@@ -97,6 +96,28 @@ class UrlParamsNormalizer
         foreach ($method->getParameters() as $argument) {
             if (($instance = self::instantiateMethodArgument($argument)) && $instance instanceof Model) {
                 $arguments[$argument->getName()] = $instance;
+            }
+        }
+
+        return $arguments;
+    }
+
+
+    /**
+     * Return the type-hinted method arguments in the action that are enums,
+     * The arguments will be returned as an array of the form: [<variable_name> => $instance]
+     */
+    public static function getTypeHintedEnums(ReflectionFunctionAbstract $method): array
+    {
+        $arguments = [];
+        foreach ($method->getParameters() as $argument) {
+            $argumentType = $argument->getType();
+            if (!($argumentType instanceof \ReflectionNamedType)) continue;
+            try {
+                $reflectionEnum = new ReflectionEnum($argumentType->getName());
+                $arguments[$argument->getName()] = $reflectionEnum;
+            } catch (ReflectionException) {
+                continue;
             }
         }
 

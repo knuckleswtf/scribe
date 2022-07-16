@@ -581,4 +581,20 @@ class TestController extends Controller
     {
         return null;
     }
+
+    /**
+     * Can only run on PHP 8.1
+    public function withInjectedEnumAndModel(Category $category, TestUser $user)
+    {
+        return null;
+    }
+     */
 }
+
+/**
+enum Category: string
+{
+    case Fruits = 'fruits';
+    case People = 'people';
+}
+*/

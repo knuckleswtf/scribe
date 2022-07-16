@@ -20,9 +20,10 @@ class GetFromLaravelAPITest extends BaseLaravelTest
     use ArraySubsetAsserts;
 
     /** @test */
-    public function can_fetch_from_url()
+    public function can_infer_type_from_model_binding()
     {
         $endpoint = $this->endpointForRoute("users/{id}", TestController::class, 'withInjectedModel');
+        // $endpoint = $this->endpointForRoute("categories/{category}/users/{id}/", TestController::class, 'withInjectedEnumAndModel');
         $results = $this->fetch($endpoint);
 
         $this->assertArraySubset([
@@ -30,7 +31,14 @@ class GetFromLaravelAPITest extends BaseLaravelTest
             "description" => "The ID of the user.",
             "required" => true,
             "type" => "integer",
-        ], $results['id']);
+        ], $results['id']);/*
+        $this->assertArraySubset([
+            "name" => "category",
+            "description" => "The category.",
+            "required" => true,
+            "type" => "string",
+            "example" => \Knuckles\Scribe\Tests\Fixtures\Category::cases()[0]->value,
+        ], $results['category']);*/
         $this->assertIsInt($results['id']['example']);
     }
 

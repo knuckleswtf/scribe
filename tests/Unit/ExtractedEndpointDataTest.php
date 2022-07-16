@@ -41,11 +41,6 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
     /** @test */
     public function normalizes_nonresource_url_params_with_inline_bindings()
     {
-        if (version_compare($this->app->version(), '7.0.0', '<')) {
-            $this->markTestSkipped("Field binding syntax was introduced in Laravel 7.");
-            return;
-        }
-
         Route::get('things/{thing:slug}', [TestController::class, 'show']);
         $route = $this->getRoute(['prefixes' => '*']);
 
