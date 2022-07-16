@@ -87,6 +87,21 @@ class UrlParamsNormalizer
         return $uri;
     }
 
+    /**
+     * Return the type-hinted method arguments in the action that are Eloquent models,
+     * The arguments will be returned as an array of the form: [<variable_name> => $instance]
+     */
+    public static function getTypeHintedEloquentModels(ReflectionFunctionAbstract $method): array
+    {
+        $arguments = [];
+        foreach ($method->getParameters() as $argument) {
+            if (($instance = self::instantiateMethodArgument($argument)) && $instance instanceof Model) {
+                $arguments[$argument->getName()] = $instance;
+            }
+        }
+
+        return $arguments;
+    }
 
     /**
      * Given a URL that uses Eloquent model binding (for instance `/posts/{post}` -> `public function show(Post
@@ -105,7 +120,7 @@ class UrlParamsNormalizer
      *
      * @return string|null
      */
-    public static function getRouteKeyForUrlParam(
+    protected static function getRouteKeyForUrlParam(
         Route $route, string $paramName, array $typeHintedEloquentModels = [], string $default = null
     ): ?string
     {
@@ -152,22 +167,6 @@ class UrlParamsNormalizer
         }
 
         return null;
-    }
-
-    /**
-     * Return the type-hinted method arguments in the action that are Eloquent models,
-     * The arguments will be returned as an array of the form: [<variable_name> => $instance]
-     */
-    public static function getTypeHintedEloquentModels(ReflectionFunctionAbstract $method): array
-    {
-        $arguments = [];
-        foreach ($method->getParameters() as $argument) {
-            if (($instance = self::instantiateMethodArgument($argument)) && $instance instanceof Model) {
-                $arguments[$argument->getName()] = $instance;
-            }
-        }
-
-        return $arguments;
     }
 
     /**
