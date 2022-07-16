@@ -166,31 +166,4 @@ class GetFromLaravelAPITest extends BaseLaravelTest
         $strategy = new GetFromLaravelAPI(new DocumentationConfig([]));
         return $strategy($endpoint, []);
     }
-
-    protected function endpointForRoute($path, $controller, $method): ExtractedEndpointData
-    {
-        return $this->endpoint(function (ExtractedEndpointData $e) use ($path, $method, $controller) {
-            $e->method = new \ReflectionMethod($controller, $method);
-            $e->route = app(Router::class)->addRoute(['GET'], $path, ['uses' => [$controller, $method]]);
-            $e->uri = UrlParamsNormalizer::normalizeParameterNamesInRouteUri($e->route, $e->method);
-        });
-    }
-
-    protected function endpoint(Closure $configure): ExtractedEndpointData
-    {
-        $endpoint = new class extends ExtractedEndpointData {
-            public function __construct(array $parameters = [])
-            {
-            }
-        };
-        $configure($endpoint);
-        return $endpoint;
-    }
-
-    protected function fetch($endpoint): array
-    {
-        $strategy = new GetFromLaravelAPI(new DocumentationConfig([]));
-        return $strategy($endpoint, []);
-    }
-
 }

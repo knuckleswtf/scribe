@@ -178,7 +178,7 @@ class GetFromBodyParamTagTest extends TestCase
         $method = new \ReflectionMethod(TestController::class, 'withFormRequestParameter');
         $route = new Route(['POST'], "/withFormRequestParameter", ['uses' => [TestController::class, 'withFormRequestParameter']]);
 
-        $results = $this->strategy->getParametersFromTags($route, $method);
+        $results = $this->strategy->getParametersFromDocBlockInFormRequestOrMethod($route, $method);
 
         $this->assertArraySubset([
             'user_id' => [
