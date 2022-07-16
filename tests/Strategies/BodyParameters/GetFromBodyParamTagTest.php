@@ -35,7 +35,7 @@ class GetFromBodyParamTagTest extends TestCase
             new Tag('bodyParam', 'users[].first_name string The first name of the user. Example: John'),
             new Tag('bodyParam', 'users[].last_name string The last name of the user. Example: Doe'),
         ];
-        $results = $strategy->getBodyParametersFromDocBlock($tags);
+        $results = $strategy->getParametersFromTags($tags);
 
         $this->assertArraySubset([
             'user_id' => [
@@ -131,7 +131,7 @@ class GetFromBodyParamTagTest extends TestCase
             new Tag('bodyParam', '[].contacts[].last_name string The last name of the contact. Example: Doe'),
             new Tag('bodyParam', '[].roles string[] The name of the role. Example: ["Admin"]'),
         ];
-        $results = $strategy->getBodyParametersFromDocBlock($tags);
+        $results = $strategy->getParametersFromTags($tags);
 
         $this->assertArraySubset([
             '[].first_name' => [
@@ -174,7 +174,7 @@ class GetFromBodyParamTagTest extends TestCase
         $route = new Route(['POST'], "/withFormRequestParameter", ['uses' => [TestController::class, 'withFormRequestParameter']]);
 
         $strategy = new GetFromBodyParamTag(new DocumentationConfig([]));
-        $results = $strategy->getBodyParametersFromDocBlockInFormRequestOrMethod($route, $method);
+        $results = $strategy->getParametersFromDocBlockInFormRequestOrMethod($route, $method);
 
         $this->assertArraySubset([
             'user_id' => [
@@ -216,7 +216,7 @@ class GetFromBodyParamTagTest extends TestCase
         $route = new Route(['POST'], "/$methodName", ['uses' => [TestController::class, $methodName]]);
 
         $strategy = new GetFromBodyParamTag(new DocumentationConfig([]));
-        $results = $strategy->getBodyParametersFromDocBlockInFormRequestOrMethod($route, $method);
+        $results = $strategy->getParametersFromDocBlockInFormRequestOrMethod($route, $method);
 
         $this->assertArraySubset([
             'direct_one' => [

@@ -163,8 +163,7 @@ class ExtractorPluginSystemTest extends TestCase
 
     public function createRoute(string $httpMethod, string $path, string $controllerMethod, $register = false, $class = TestController::class)
     {
-
-        return new Route([$httpMethod], $path, ['uses' => $class . "@$controllerMethod"]);
+        return new Route([$httpMethod], $path, ['uses' => [$class, $controllerMethod]]);
     }
 }
 

@@ -31,7 +31,7 @@ class GetFromQueryParamTagTest extends TestCase
             new Tag('queryParam', 'noExampleNoDescription No-example.'),
             new Tag('queryParam', 'noExample Something No-example'),
         ];
-        $results = $strategy->getQueryParametersFromDocBlock($tags);
+        $results = $strategy->getParametersFromTags($tags);
 
         $this->assertArraySubset([
             'location_id' => [
@@ -104,10 +104,10 @@ class GetFromQueryParamTagTest extends TestCase
     {
         $methodName = 'withFormRequestParameter';
         $method = new \ReflectionMethod(TestController::class, $methodName);
-        $route = new Route(['POST'], "/$methodName", ['uses' => TestController::class . "@$methodName"]);
+        $route = new Route(['POST'], "/$methodName", ['uses' => [TestController::class, $methodName]]);
 
         $strategy = new GetFromQueryParamTag(new DocumentationConfig([]));
-        $results = $strategy->getQueryParametersFromFormRequestOrMethod($route, $method);
+        $results = $strategy->getParametersFromDocBlockInFormRequestOrMethod($route, $method);
 
         $this->assertArraySubset([
             'location_id' => [
@@ -126,6 +126,5 @@ class GetFromQueryParamTagTest extends TestCase
             ],
         ], $results);
     }
-
 
 }
