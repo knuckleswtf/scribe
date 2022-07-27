@@ -1,6 +1,7 @@
 <?php
 
-use Knuckles\Scribe\Http\Controller;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
 
 $prefix = config('scribe.laravel.docs_url', '/docs');
 $middleware = config('scribe.laravel.middleware', []);
@@ -8,9 +9,15 @@ $middleware = config('scribe.laravel.middleware', []);
 $router = app()->router;
 
 $router->group([
-    'middleware' => $middleware
+    'middleware' => $middleware,
 ], function () use ($router, $prefix) {
-    $router->get($prefix, ['uses' => Controller::class.'@webpage', 'as' => 'scribe']);
-    $router->get("$prefix.postman", ['uses' => Controller::class.'@postman', 'as' => 'scribe.postman']);
-    $router->get("$prefix.openapi", ['uses' => Controller::class.'@openapi', 'as' => 'scribe.openapi']);
+    $router->get($prefix, function () {
+        return view('scribe.index');
+    })->name('scribe');
+    $router->get("$prefix.postman", function () {
+        return new JsonResponse(Storage::disk('local')->get('scribe/collection.json'), json: true);
+    })->name('scribe.postman');
+    $router->get("$prefix.openapi", function () {
+        return response()->file(Storage::disk('local')->path('scribe/openapi.yaml'));
+    })->name('scribe.openapi');
 });
