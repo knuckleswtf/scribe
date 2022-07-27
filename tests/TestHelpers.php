@@ -27,4 +27,11 @@ trait TestHelpers
             'scribe:generate', array_merge(['--no-upgrade-check' => true], $flags)
         );
     }
+
+    protected function assertFileContainsString(string $filePath, string $string)
+    {
+        $this->assertFileExists($filePath);
+        $fileContents = file_get_contents($filePath);
+        $this->assertStringContainsString($string, $fileContents);
+    }
 }

@@ -67,7 +67,6 @@ class OutputTest extends BaseLaravelTest
     public function generates_laravel_type_output()
     {
         RouteFacade::post('/api/withQueryParameters', [TestController::class, 'withQueryParameters']);
-        config(['scribe.type' => 'laravel']);
         config(['scribe.postman.enabled' => true]);
         config(['scribe.openapi.enabled' => true]);
 
@@ -84,12 +83,34 @@ class OutputTest extends BaseLaravelTest
         $response = $this->get('/apidocs.openapi');
         $response->assertStatus(200);
 
-        config(['scribe.laravel.add_routes' => false]);
-        config(['scribe.laravel.docs_url' => '/apidocs']);
-
         unlink($this->postmanOutputPath(true));
         unlink($this->openapiOutputPath(true));
         unlink($this->bladeOutputPath());
+    }
+
+    /** @test */
+    public function supports_multi_docs_in_laravel_type_output()
+    {
+        RouteFacade::post('/api/withQueryParameters', [TestController::class, 'withQueryParameters']);
+        config(['scribe_admin' => config('scribe')]);
+        $title = "The Real Admin API";
+        config(['scribe_admin.title' => $title]);
+        config(['scribe_admin.type' => 'laravel']);
+        config(['scribe_admin.postman.enabled' => true]);
+        config(['scribe_admin.openapi.enabled' => true]);
+
+        $this->generate(["--config" => "scribe_admin"]);
+
+        $paths = collect([
+            Storage::disk('local')->path('scribe_admin/collection.json'),
+            Storage::disk('local')->path('scribe_admin/openapi.yaml'),
+            View::getFinder()->find('scribe_admin/index'),
+        ]);
+        $paths->each(fn($path) => $this->assertFileContainsString($path, $title));
+        $paths->each(fn($path) => unlink($path));
+
+        $this->assertDirectoryExists(".scribe_admin");
+        Utils::deleteDirectoryAndContents(".scribe_admin");
     }
 
     /** @test */
@@ -348,7 +369,8 @@ class OutputTest extends BaseLaravelTest
     /** @test */
     public function generates_correct_url_params_from_non_resource_routes_and_model_binding()
     {
-        RouteFacade::get('posts/{post}/users', function(TestPost $post) {});
+        RouteFacade::get('posts/{post}/users', function (TestPost $post) {
+        });
 
         config(['scribe.routes.0.match.prefixes' => ['*']]);
         config(['scribe.routes.0.apply.response_calls.methods' => []]);
@@ -363,7 +385,7 @@ class OutputTest extends BaseLaravelTest
     public function generates_from_camel_dir_if_noExtraction_flag_is_set()
     {
         config(['scribe.routes.0.exclude' => ['*']]);
-        Utils::copyDirectory(__DIR__.'/../Fixtures/.scribe', '.scribe');
+        Utils::copyDirectory(__DIR__ . '/../Fixtures/.scribe', '.scribe');
 
         $output = $this->generate(['--no-extraction' => true]);
 

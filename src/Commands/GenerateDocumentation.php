@@ -90,12 +90,8 @@ class GenerateDocumentation extends Command
         c::bootstrapOutput($this->output);
 
         $this->configName = $this->option('config');
-        if ($this->configName !== 'scribe') {
-            $configPath = config_path($this->configName) . ".php";
-            if (!file_exists($configPath)) {
-                c::error("The specified config file doesn't exist: {$configPath}.\n");
-                exit(1);
-            }
+        if (!config($this->configName)) {
+            throw new \InvalidArgumentException("The specified config (config/{$this->configName}.php) doesn't exist.");
         }
 
         $this->docConfig = new DocumentationConfig(config($this->configName));
@@ -108,8 +104,7 @@ class GenerateDocumentation extends Command
         $this->shouldExtract = !$this->option('no-extraction');
 
         if ($this->forcing && !$this->shouldExtract) {
-            c::error("Can't use --force and --no-extraction together.\n");
-            exit(1);
+            throw new \InvalidArgumentException("Can't use --force and --no-extraction together.");
         }
 
         // Reset this map (useful for tests)
