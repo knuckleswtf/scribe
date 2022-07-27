@@ -104,7 +104,6 @@ class GetFromQueryParamAttributeTest extends TestCase
         $configure($endpoint);
         return $endpoint;
     }
-
 }
 
 

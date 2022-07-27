@@ -169,7 +169,7 @@ class EmptyStrategy1 extends Strategy
 {
     public static $called = false;
 
-    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): ?array
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules = []): ?array
     {
         static::$called = true;
         return [];
@@ -180,7 +180,7 @@ class EmptyStrategy2 extends Strategy
 {
     public static $called = false;
 
-    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): ?array
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules = []): ?array
     {
         static::$called = true;
         return [];
@@ -191,7 +191,7 @@ class NotDummyMetadataStrategy extends Strategy
 {
     public static $called = false;
 
-    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): ?array
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules = []): ?array
     {
         static::$called = true;
         return [
@@ -206,7 +206,7 @@ class NotDummyMetadataStrategy extends Strategy
 
 class PartialDummyMetadataStrategy1 extends Strategy
 {
-    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): ?array
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules = []): ?array
     {
         return [
             'groupName' => 'dummy',
@@ -219,7 +219,7 @@ class PartialDummyMetadataStrategy1 extends Strategy
 
 class PartialDummyMetadataStrategy2 extends Strategy
 {
-    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): ?array
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules = []): ?array
     {
         return [
             'description' => 'dummy',
@@ -230,7 +230,7 @@ class PartialDummyMetadataStrategy2 extends Strategy
 
 class DummyResponseStrategy200 extends Strategy
 {
-    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): ?array
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules = []): ?array
     {
         return [['status' => 200, 'content' => 'dummy']];
     }
@@ -238,7 +238,7 @@ class DummyResponseStrategy200 extends Strategy
 
 class DummyResponseStrategy400 extends Strategy
 {
-    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): ?array
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules = []): ?array
     {
         return [['status' => 400, 'content' => 'dummy2']];
     }

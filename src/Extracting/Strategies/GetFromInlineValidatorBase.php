@@ -16,7 +16,7 @@ class GetFromInlineValidatorBase extends Strategy
 {
     use ParsesValidationRules;
 
-    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): ?array
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules = []): ?array
     {
         if (!$endpointData->method instanceof \ReflectionMethod) {
             return [];

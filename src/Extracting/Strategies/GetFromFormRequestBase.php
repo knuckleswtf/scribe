@@ -19,7 +19,7 @@ class GetFromFormRequestBase extends Strategy
 
     protected string $customParameterDataMethodName = '';
 
-    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): ?array
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules = []): ?array
     {
         return $this->getParametersFromFormRequest($endpointData->method, $endpointData->route);
     }

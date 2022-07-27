@@ -15,7 +15,7 @@ class GetFromLaravelAPI extends Strategy
 {
     use ParamHelpers;
 
-    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): ?array
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules = []): ?array
     {
         if (Utils::isLumen()) return null;
 

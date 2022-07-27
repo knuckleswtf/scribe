@@ -30,7 +30,7 @@ class ResponseCalls extends Strategy
 
     protected array $previousConfigs = [];
 
-    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): ?array
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules = []): ?array
     {
         return $this->makeResponseCallIfConditionsPass($endpointData, $routeRules);
     }

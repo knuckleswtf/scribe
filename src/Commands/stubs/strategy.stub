@@ -25,7 +25,7 @@ class DummyClass extends Strategy
      *
      * @return array|null
      */
-    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): ?array
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules = []): ?array
     {
         return [];
     }

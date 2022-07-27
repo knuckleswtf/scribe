@@ -33,5 +33,5 @@ abstract class Strategy
      *
      * @return array|null
      */
-    abstract public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): ?array;
+    abstract public function __invoke(ExtractedEndpointData $endpointData, array $routeRules = []): ?array;
 }

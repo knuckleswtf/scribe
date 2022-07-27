@@ -19,7 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Support for subgroups ([7cf07738](https://github.com/knuckleswtf/scribe/commit/7cf0773864fbdd1772fea9a5ff9e7ffd3360d7d2),[2ebf40b](https://github.com/knuckleswtf/scribe/commit/2ebf40b5e5be309bf5e685a0cd58bb70856b033d))
 - Nested response fields are now collapsed ([00b09bb](https://github.com/knuckleswtf/scribe/commit/00b09bbea8ec64006db864bf807004d48926c6d3))
 - Inlined routes (no more Scribe/Controller class)
-
+- Changed signature of Strategy#invoke ($routeRules is now optional)
 
 ## 3.35.0 (27 July 2022)
 ### Modified
