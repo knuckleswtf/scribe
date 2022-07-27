@@ -20,9 +20,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Nested response fields are now collapsed ([00b09bb](https://github.com/knuckleswtf/scribe/commit/00b09bbea8ec64006db864bf807004d48926c6d3))
 - Inlined routes (no more Scribe/Controller class)
 
+
+## 3.35.0 (27 July 2022)
+### Modified
+- Use correct folders when generating in multi-docs ([ac47c67](https://github.com/knuckleswtf/scribe/commit/ac47c67eeb5d47cd30db74302d1cdd97720dd695))
+
+
 ## 3.34.0 (16 July 2022)
 ### Modified
 - URL parameter inference bugfixes and refactor ([#497](https://github.com/knuckleswtf/scribe/pull/497))
+
 
 ## 3.33.2 (9 July 2022)
 ### Fixed
