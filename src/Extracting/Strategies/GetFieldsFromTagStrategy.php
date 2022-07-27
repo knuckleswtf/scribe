@@ -6,7 +6,7 @@ use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\TagStrategyWithFormRequestFallback;
 use Mpociot\Reflection\DocBlock\Tag;
 
-abstract class GetParamsFromTagStrategy extends TagStrategyWithFormRequestFallback
+abstract class GetFieldsFromTagStrategy extends TagStrategyWithFormRequestFallback
 {
     use ParamHelpers;
 
@@ -20,23 +20,23 @@ abstract class GetParamsFromTagStrategy extends TagStrategyWithFormRequestFallba
      */
     public function getFromTags(array $tagsOnMethod, array $tagsOnClass = []): array
     {
-        $parameters = [];
+        $fields = [];
 
         foreach ($tagsOnClass as $tag) {
             if (strtolower($tag->getName()) !== strtolower($this->tagName)) continue;
 
-            $parameterData = $this->parseTag(trim($tag->getContent()));
-            $parameters[$parameterData['name']] = $parameterData;
+            $fieldData = $this->parseTag(trim($tag->getContent()));
+            $fields[$fieldData['name']] = $fieldData;
         }
 
         foreach ($tagsOnMethod as $tag) {
             if (strtolower($tag->getName()) !== strtolower($this->tagName)) continue;
 
-            $parameterData = $this->parseTag(trim($tag->getContent()));
-            $parameters[$parameterData['name']] = $parameterData;
+            $fieldData = $this->parseTag(trim($tag->getContent()));
+            $fields[$fieldData['name']] = $fieldData;
         }
 
-        return $parameters;
+        return $fields;
     }
 
     abstract protected function parseTag(string $tagContent): array;

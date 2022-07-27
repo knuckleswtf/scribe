@@ -5,10 +5,9 @@ namespace Knuckles\Scribe\Extracting\Strategies;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Extracting\MethodAstParser;
 use Knuckles\Scribe\Extracting\ParsesValidationRules;
-use Knuckles\Scribe\Extracting\ValidationRulesFinders\RequestValidate;
-use Knuckles\Scribe\Extracting\ValidationRulesFinders\ThisValidate;
-use Knuckles\Scribe\Extracting\ValidationRulesFinders\ValidatorMake;
-use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
+use Knuckles\Scribe\Extracting\Shared\ValidationRulesFinders\RequestValidate;
+use Knuckles\Scribe\Extracting\Shared\ValidationRulesFinders\ThisValidate;
+use Knuckles\Scribe\Extracting\Shared\ValidationRulesFinders\ValidatorMake;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 

@@ -1,11 +1,10 @@
 <?php
 
-namespace Knuckles\Scribe\Extracting;
+namespace Knuckles\Scribe\Extracting\Shared;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Str;
-use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use ReflectionEnum;
 use ReflectionException;
 use ReflectionFunctionAbstract;

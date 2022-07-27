@@ -3,9 +3,9 @@
 namespace Knuckles\Scribe\Extracting\Strategies\UrlParameters;
 
 use Illuminate\Support\Str;
-use Knuckles\Scribe\Extracting\Strategies\GetParamsFromTagStrategy;
+use Knuckles\Scribe\Extracting\Strategies\GetFieldsFromTagStrategy;
 
-class GetFromUrlParamTag extends GetParamsFromTagStrategy
+class GetFromUrlParamTag extends GetFieldsFromTagStrategy
 {
     protected string $tagName = "urlParam";
 
@@ -43,7 +43,7 @@ class GetFromUrlParamTag extends GetParamsFromTagStrategy
 
             $type = empty($type)
                 ? (Str::contains($description, ['number', 'count', 'page']) ? 'integer' : 'string')
-                : $this->normalizeTypeName($type);
+                : static::normalizeTypeName($type);
         }
 
         [$description, $example] = $this->getDescriptionAndExample($description, $type, $tagContent);

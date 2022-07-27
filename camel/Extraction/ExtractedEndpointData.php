@@ -2,11 +2,9 @@
 
 namespace Knuckles\Camel\Extraction;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Routing\Route;
-use Illuminate\Support\Str;
 use Knuckles\Camel\BaseDTO;
-use Knuckles\Scribe\Extracting\UrlParamsNormalizer;
+use Knuckles\Scribe\Extracting\Shared\UrlParamsNormalizer;
 use Knuckles\Scribe\Tools\Utils as u;
 use ReflectionClass;
 

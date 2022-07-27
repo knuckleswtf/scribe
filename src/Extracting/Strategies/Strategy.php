@@ -12,6 +12,8 @@ abstract class Strategy
      */
     protected DocumentationConfig $config;
 
+    public ?ExtractedEndpointData $endpointData;
+
     public function __construct(DocumentationConfig $config)
     {
         $this->config = $config;

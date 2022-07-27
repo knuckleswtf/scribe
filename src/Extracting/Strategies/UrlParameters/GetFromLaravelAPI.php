@@ -3,11 +3,11 @@
 namespace Knuckles\Scribe\Extracting\Strategies\UrlParameters;
 
 use Illuminate\Database\Eloquent\Model;
-use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Illuminate\Support\Str;
+use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Extracting\ParamHelpers;
+use Knuckles\Scribe\Extracting\Shared\UrlParamsNormalizer;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
-use Knuckles\Scribe\Extracting\UrlParamsNormalizer;
 use Knuckles\Scribe\Tools\Utils;
 use Throwable;
 
@@ -124,7 +124,7 @@ class GetFromLaravelAPI extends Strategy
             // If the routeKey is the same as the primary key in the database, use the PK's type.
             $routeKey = $modelInstance->getRouteKeyName();
             $type = $modelInstance->getKeyName() === $routeKey
-                ? $this->normalizeTypeName($modelInstance->getKeyType()) : 'string';
+                ? static::normalizeTypeName($modelInstance->getKeyType()) : 'string';
 
             $parameters[$paramName]['type'] = $type;
 
@@ -142,7 +142,7 @@ class GetFromLaravelAPI extends Strategy
     {
         $typeHintedEnums = UrlParamsNormalizer::getTypeHintedEnums($endpointData->method);
         foreach ($typeHintedEnums as $argumentName => $enum) {
-            $parameters[$argumentName]['type'] = $this->normalizeTypeName($enum->getBackingType());
+            $parameters[$argumentName]['type'] = static::normalizeTypeName($enum->getBackingType());
 
             try {
                 $parameters[$argumentName]['example'] = $enum->getCases()[0]->getBackingValue();

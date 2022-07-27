@@ -3,17 +3,17 @@
 namespace Knuckles\Scribe\Tests\Strategies\UrlParameters;
 
 use Closure;
+use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Schema;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
+use Knuckles\Scribe\Extracting\Shared\UrlParamsNormalizer;
 use Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromLaravelAPI;
-use Knuckles\Scribe\Extracting\UrlParamsNormalizer;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tests\Fixtures\TestUser;
 use Knuckles\Scribe\Tools\DocumentationConfig;
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 
 class GetFromLaravelAPITest extends BaseLaravelTest
 {

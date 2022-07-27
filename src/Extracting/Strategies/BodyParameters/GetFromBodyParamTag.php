@@ -2,9 +2,9 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\BodyParameters;
 
-use Knuckles\Scribe\Extracting\Strategies\GetParamsFromTagStrategy;
+use Knuckles\Scribe\Extracting\Strategies\GetFieldsFromTagStrategy;
 
-class GetFromBodyParamTag extends GetParamsFromTagStrategy
+class GetFromBodyParamTag extends GetFieldsFromTagStrategy
 {
     protected string $tagName = "bodyParam";
 
@@ -32,7 +32,7 @@ class GetFromBodyParamTag extends GetParamsFromTagStrategy
             $required = trim($required) === 'required';
         }
 
-        $type = $this->normalizeTypeName($type);
+        $type = static::normalizeTypeName($type);
         [$description, $example] = $this->getDescriptionAndExample($description, $type, $tagContent);
 
         return compact('name', 'type', 'description', 'required', 'example');

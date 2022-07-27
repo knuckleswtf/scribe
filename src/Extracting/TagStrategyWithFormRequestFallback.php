@@ -19,6 +19,7 @@ class TagStrategyWithFormRequestFallback extends Strategy
 
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules = []): ?array
     {
+        $this->endpointData = $endpointData;
         return $this->getParametersFromDocBlockInFormRequestOrMethod($endpointData->route, $endpointData->method);
     }
 

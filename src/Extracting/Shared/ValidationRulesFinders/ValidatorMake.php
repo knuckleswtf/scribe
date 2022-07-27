@@ -1,6 +1,6 @@
 <?php
 
-namespace Knuckles\Scribe\Extracting\ValidationRulesFinders;
+namespace Knuckles\Scribe\Extracting\Shared\ValidationRulesFinders;
 
 use PhpParser\Node;
 

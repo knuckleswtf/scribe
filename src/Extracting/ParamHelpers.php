@@ -164,7 +164,7 @@ trait ParamHelpers
      *
      * @return string
      */
-    protected function normalizeTypeName(?string $typeName, $value = null): string
+    public static function normalizeTypeName(?string $typeName, $value = null): string
     {
         if (!$typeName) {
             return 'string';
@@ -181,7 +181,7 @@ trait ParamHelpers
                 return str_replace($base, 'boolean', $typeName);
             case 'array':
                 if (empty($value) || array_keys($value)[0] === 0) {
-                    return $this->normalizeTypeName(gettype($value[0] ?? '')).'[]';
+                    return static::normalizeTypeName(gettype($value[0] ?? '')).'[]';
                 } else {
                     return 'object';
                 }

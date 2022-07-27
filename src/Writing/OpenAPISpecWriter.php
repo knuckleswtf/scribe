@@ -542,7 +542,7 @@ class OpenAPISpecWriter
             ];
         } else {
             return [
-                'type' => $this->normalizeTypeName($field->type),
+                'type' => static::normalizeTypeName($field->type),
                 'description' => $field->description ?: '',
                 'example' => $field->example,
             ];

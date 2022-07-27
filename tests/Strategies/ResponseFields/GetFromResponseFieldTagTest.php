@@ -2,6 +2,8 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\ResponseFields;
 
+use Closure;
+use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Camel\Extraction\ResponseCollection;
 use Knuckles\Scribe\Extracting\Strategies\ResponseFields\GetFromResponseFieldTag;
 use Knuckles\Scribe\Tools\DocumentationConfig;
@@ -16,11 +18,10 @@ class GetFromResponseFieldTagTest extends TestCase
     /** @test */
     public function can_fetch_from_responsefield_tag()
     {
-        $strategy = new GetFromResponseFieldTag(new DocumentationConfig([]));
         $tags = [
             new Tag('responseField', 'id int The id of the newly created user.'),
         ];
-        $results = $strategy->getResponseFieldsFromDocBlock($tags);
+        $results = $this->fetch($tags);
 
         $this->assertArraySubset([
             'id' => [
@@ -33,10 +34,6 @@ class GetFromResponseFieldTagTest extends TestCase
     /** @test */
     public function can_infer_type_from_first_2xx_response()
     {
-        $strategy = new GetFromResponseFieldTag(new DocumentationConfig([]));
-        $tags = [
-            new Tag('responseField', 'id The id of the newly created user.'),
-        ];
         $responses = [
             [
                 'status' => 400,
@@ -51,7 +48,13 @@ class GetFromResponseFieldTagTest extends TestCase
                 'content' => json_encode(['id' => 'haha']),
             ],
         ];
-        $results = $strategy->getResponseFieldsFromDocBlock($tags, new ResponseCollection($responses));
+        $endpoint = $this->endpoint(function (ExtractedEndpointData $e) use ($responses) {
+            $e->responses = new ResponseCollection($responses);
+        });
+        $tags = [
+            new Tag('responseField', 'id The id of the newly created user.'),
+        ];
+        $results = $this->fetch($tags, $endpoint);
 
         $this->assertArraySubset([
             'id' => [
@@ -64,17 +67,19 @@ class GetFromResponseFieldTagTest extends TestCase
     /** @test */
     public function can_infer_type_from_first_2xx_response_for_lists()
     {
-        $strategy = new GetFromResponseFieldTag(new DocumentationConfig([]));
-        $tags = [
-            new Tag('responseField', 'id The id of the newly created user.'),
-        ];
         $responses = [
             [
                 'status' => 200,
                 'content' => json_encode([['id' => 6]]),
             ],
         ];
-        $results = $strategy->getResponseFieldsFromDocBlock($tags, new ResponseCollection($responses));
+        $tags = [
+            new Tag('responseField', 'id The id of the newly created user.'),
+        ];
+        $endpoint = $this->endpoint(function (ExtractedEndpointData $e) use ($responses) {
+            $e->responses = new ResponseCollection($responses);
+        });
+        $results = $this->fetch($tags, $endpoint);
 
         $this->assertArraySubset([
             'id' => [
@@ -87,11 +92,10 @@ class GetFromResponseFieldTagTest extends TestCase
     /** @test */
     public function defaults_to_nothing_when_type_inference_fails()
     {
-        $strategy = new GetFromResponseFieldTag(new DocumentationConfig([]));
         $tags = [
             new Tag('responseField', 'id The id of the newly created user.'),
         ];
-        $results = $strategy->getResponseFieldsFromDocBlock($tags);
+        $results = $this->fetch($tags);
 
         $this->assertArraySubset([
             'id' => [
@@ -101,4 +105,21 @@ class GetFromResponseFieldTagTest extends TestCase
         ], $results);
     }
 
+    protected function fetch($tags, $endpoint = null): array
+    {
+        $strategy = new GetFromResponseFieldTag(new DocumentationConfig([]));
+        $strategy->endpointData = $endpoint ?: $this->endpoint(function (ExtractedEndpointData $e) {
+            $e->responses = new ResponseCollection([]);
+        });
+        return $strategy->getFromTags($tags);
+    }
+
+    protected function endpoint(Closure $configure): ExtractedEndpointData
+    {
+        $endpoint = new class extends ExtractedEndpointData {
+            public function __construct(array $parameters = []) {}
+        };
+        $configure($endpoint);
+        return $endpoint;
+    }
 }

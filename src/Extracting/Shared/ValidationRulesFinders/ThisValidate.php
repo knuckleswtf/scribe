@@ -1,19 +1,18 @@
 <?php
 
-namespace Knuckles\Scribe\Extracting\ValidationRulesFinders;
+namespace Knuckles\Scribe\Extracting\Shared\ValidationRulesFinders;
 
 use PhpParser\Node;
 
 /**
  * This class looks for
- *   $anyVariable = $request->validate(...);
+ *   $anyVariable = $this->validate($request, ...);
  * or just
- *   $request->validate(...);
+ *   $this->validate($request, ...);
  *
  * Also supports `$req` instead of `$request`
- * Also supports `->validateWithBag('', ...)`
  */
-class RequestValidate
+class ThisValidate
 {
     public static function find(Node $node)
     {
@@ -27,13 +26,9 @@ class RequestValidate
         if (
             $expr instanceof Node\Expr\MethodCall
             && $expr->var instanceof Node\Expr\Variable
-            && in_array($expr->var->name, ["request", "req"])
+            && $expr->var->name === "this"
         ) {
             if ($expr->name->name == "validate") {
-                return $expr->args[0]->value;
-            }
-
-            if ($expr->name->name == "validateWithBag") {
                 return $expr->args[1]->value;
             }
         }

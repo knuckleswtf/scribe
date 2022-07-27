@@ -3,9 +3,9 @@
 namespace Knuckles\Scribe\Extracting\Strategies\QueryParameters;
 
 use Illuminate\Support\Str;
-use Knuckles\Scribe\Extracting\Strategies\GetParamsFromTagStrategy;
+use Knuckles\Scribe\Extracting\Strategies\GetFieldsFromTagStrategy;
 
-class GetFromQueryParamTag extends GetParamsFromTagStrategy
+class GetFromQueryParamTag extends GetFieldsFromTagStrategy
 {
     protected string $tagName = "queryParam";
 
@@ -43,7 +43,7 @@ class GetFromQueryParamTag extends GetParamsFromTagStrategy
                     $type = 'string';
                     $required = true;
                 } else {
-                    $type = $this->normalizeTypeName($type);
+                    $type = static::normalizeTypeName($type);
                     // Type in annotation is optional
                     if (!$this->isSupportedTypeInDocBlocks($type)) {
                         // Then that wasn't a type, but part of the description
@@ -59,7 +59,7 @@ class GetFromQueryParamTag extends GetParamsFromTagStrategy
 
             $type = empty($type)
                 ? (Str::contains(strtolower($description), ['number', 'count', 'page']) ? 'integer' : 'string')
-                : $this->normalizeTypeName($type);
+                : static::normalizeTypeName($type);
 
         }
 

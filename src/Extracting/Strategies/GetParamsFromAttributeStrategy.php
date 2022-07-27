@@ -29,7 +29,7 @@ class GetParamsFromAttributeStrategy extends PhpAttributeStrategy
 
     protected function normalizeParameterData(array $data): array
     {
-        $data['type'] = $this->normalizeTypeName($data['type']);
+        $data['type'] = static::normalizeTypeName($data['type']);
         if (is_null($data['example'])) {
             $data['example'] = $this->generateDummyValue($data['type']);
         } else if ($data['example'] == 'No-example' || $data['example'] == 'No-example.') {
