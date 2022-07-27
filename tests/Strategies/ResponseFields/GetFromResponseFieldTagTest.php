@@ -20,6 +20,7 @@ class GetFromResponseFieldTagTest extends TestCase
     {
         $tags = [
             new Tag('responseField', 'id int The id of the newly created user.'),
+            new Tag('responseField', 'other string'),
         ];
         $results = $this->fetch($tags);
 
@@ -27,6 +28,10 @@ class GetFromResponseFieldTagTest extends TestCase
             'id' => [
                 'type' => 'integer',
                 'description' => 'The id of the newly created user.',
+            ],
+            'other' => [
+                'type' => 'string',
+                'description' => '',
             ],
         ], $results);
     }

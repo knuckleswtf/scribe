@@ -1,19 +1,15 @@
 <?php
 
-namespace Knuckles\Scribe\Extracting;
+namespace Knuckles\Scribe\Extracting\Strategies;
 
-use Illuminate\Foundation\Http\FormRequest as LaravelFormRequest;
-use Dingo\Api\Http\FormRequest as DingoFormRequest;
 use Illuminate\Routing\Route;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
-use Knuckles\Scribe\Extracting\Strategies\Strategy;
+use Knuckles\Scribe\Extracting\FindsFormRequestForMethod;
+use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Mpociot\Reflection\DocBlock;
-use ReflectionClass;
-use ReflectionException;
 use ReflectionFunctionAbstract;
-use ReflectionUnionType;
 
-class TagStrategyWithFormRequestFallback extends Strategy
+abstract class TagStrategyWithFormRequestFallback extends Strategy
 {
     use FindsFormRequestForMethod;
 
@@ -39,4 +35,6 @@ class TagStrategyWithFormRequestFallback extends Strategy
         $methodDocBlock = RouteDocBlocker::getDocBlocksFromRoute($route)['method'];
         return $this->getFromTags($methodDocBlock->getTags(), $classTags);
     }
+
+    abstract public function getFromTags(array $tagsOnMethod, array $tagsOnClass = []): array;
 }

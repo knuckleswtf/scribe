@@ -3,6 +3,7 @@
 namespace Knuckles\Scribe\Attributes;
 
 use Attribute;
+use Knuckles\Scribe\Extracting\Shared\ResponseFileTools;
 
 #[Attribute(Attribute::IS_REPEATABLE | Attribute::TARGET_FUNCTION | Attribute::TARGET_METHOD | Attribute::TARGET_CLASS)]
 class ResponseFromFile
@@ -20,24 +21,7 @@ class ResponseFromFile
         return  [
             "status" => $this->status,
             "description" => $this->description,
-            "content" => $this->getFileResponse($this->file, $this->merge)
+            "content" => ResponseFileTools::getResponseContents($this->file, $this->merge)
         ];
-    }
-
-    protected function getFileResponse($filePath, array $merge): string
-    {
-        if (!file_exists($filePath)) {
-            if (!file_exists(storage_path($filePath))) {
-                throw new \InvalidArgumentException("@responseFile {$filePath} does not exist");
-            }
-
-            $filePath = storage_path($filePath);
-        }
-
-        $content = file_get_contents($filePath, true);
-        if (!empty($merge)) {
-            $content = json_encode(array_merge(json_decode($content, true), $merge));
-        }
-        return $content;
     }
 }

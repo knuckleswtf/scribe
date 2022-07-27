@@ -3,7 +3,7 @@
 namespace Knuckles\Scribe\Extracting\Strategies\Headers;
 
 use Knuckles\Scribe\Extracting\ParamHelpers;
-use Knuckles\Scribe\Extracting\TagStrategyWithFormRequestFallback;
+use Knuckles\Scribe\Extracting\Strategies\TagStrategyWithFormRequestFallback;
 use Knuckles\Scribe\Tools\Utils;
 use Mpociot\Reflection\DocBlock\Tag;
 

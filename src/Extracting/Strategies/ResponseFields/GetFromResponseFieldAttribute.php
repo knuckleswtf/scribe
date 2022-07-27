@@ -13,7 +13,7 @@ use Knuckles\Scribe\Extracting\Strategies\PhpAttributeStrategy;
  */
 class GetFromResponseFieldAttribute extends PhpAttributeStrategy
 {
-    protected string $attributeName = ResponseField::class;
+    protected array $attributeNames = [ResponseField::class];
 
     protected function extractFromAttributes(array $attributesOnMethod, array $attributesOnController, ExtractedEndpointData $endpointData): ?array
     {

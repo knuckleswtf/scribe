@@ -3,7 +3,6 @@
 namespace Knuckles\Scribe\Extracting\Strategies;
 
 use Knuckles\Scribe\Extracting\ParamHelpers;
-use Knuckles\Scribe\Extracting\TagStrategyWithFormRequestFallback;
 use Mpociot\Reflection\DocBlock\Tag;
 
 abstract class GetFieldsFromTagStrategy extends TagStrategyWithFormRequestFallback
@@ -12,12 +11,6 @@ abstract class GetFieldsFromTagStrategy extends TagStrategyWithFormRequestFallba
 
     protected string $tagName = "";
 
-    /**
-     * @param Tag[] $tagsOnMethod
-     * @param Tag[] $tagsOnClass
-     *
-     * @return array[]
-     */
     public function getFromTags(array $tagsOnMethod, array $tagsOnClass = []): array
     {
         $fields = [];
