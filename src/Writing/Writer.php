@@ -11,6 +11,12 @@ use Symfony\Component\Yaml\Yaml;
 
 class Writer
 {
+    /**
+     * The "name" of this docs instance. By default, it is "scribe".
+     * Used for multi-docs.
+     */
+    public string $docsName;
+
     private DocumentationConfig $config;
 
     private bool $isStatic;
@@ -36,6 +42,7 @@ class Writer
 
     public function __construct(DocumentationConfig $config = null, $docsName = 'scribe')
     {
+        $this->docsName = $docsName;
         $this->markdownOutputPath = ".{$docsName}"; //.scribe by default
         $this->laravelTypeOutputPath = "resources/views/$docsName";
         // If no config is injected, pull from global. Makes testing easier.
@@ -78,8 +85,8 @@ class Writer
                 $collectionPath = "{$this->staticTypeOutputPath}/collection.json";
                 file_put_contents($collectionPath, $collection);
             } else {
-                Storage::disk('local')->put('scribe/collection.json', $collection);
-                $collectionPath = 'storage/app/scribe/collection.json';
+                Storage::disk('local')->put("{$this->docsName}/collection.json", $collection);
+                $collectionPath = "storage/app/{$this->docsName}/collection.json";
             }
 
             c::success("Wrote Postman collection to: {$collectionPath}");
@@ -97,8 +104,8 @@ class Writer
                 $specPath = "{$this->staticTypeOutputPath}/openapi.yaml";
                 file_put_contents($specPath, $spec);
             } else {
-                Storage::disk('local')->put('scribe/openapi.yaml', $spec);
-                $specPath = 'storage/app/scribe/openapi.yaml';
+                Storage::disk('local')->put("{$this->docsName}/openapi.yaml", $spec);
+                $specPath = "storage/app/{$this->docsName}/openapi.yaml";
             }
 
             c::success("Wrote OpenAPI specification to: {$specPath}");
