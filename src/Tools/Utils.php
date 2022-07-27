@@ -14,6 +14,7 @@ use Knuckles\Scribe\Exceptions\CouldntFindFactory;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Local\LocalFilesystemAdapter;
+use Mpociot\Reflection\DocBlock\Tag;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionFunction;
@@ -321,6 +322,22 @@ class Utils
         }
 
         return false;
+    }
+
+    /**
+     * Filter a list of docblock tags to those matching the specified ones (case-insensitive).
+     *
+     * @param Tag[] $tags
+     * @param string ...$names
+     *
+     * @return Tag[]
+     */
+    public static function filterDocBlockTags(array $tags, string ...$names): array
+    {
+        // Avoid "holes" in the keys of the filtered array by using array_values
+        return array_values(
+            array_filter($tags, fn($tag) => in_array(strtolower($tag->getName()),$names))
+        );
     }
 
 }

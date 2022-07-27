@@ -34,14 +34,6 @@ class GetFromInlineValidatorBase extends Strategy
         // Validation usually happens early on, so let's assume it's in the first 10 statements
         $statements = array_slice($methodAst->stmts, 0, 10);
 
-        // Todo remove in future
-        if (method_exists($this, 'isAssignmentMeantForThisStrategy')) {
-            c::error("A custom strategy of yours is using a removed method isAssignmentMeantForThisStrategy().\n");
-            c::error("Fix this by changing the method name to isValidationStatementMeantForThisStrategy()\n");
-            c::error("and changing the type of its argument to Node.\n");
-            exit(1);
-        }
-
         [$index, $validationStatement, $validationRules] = $this->findValidationExpression($statements);
 
         if ($validationStatement &&

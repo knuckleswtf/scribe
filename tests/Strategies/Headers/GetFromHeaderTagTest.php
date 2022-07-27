@@ -20,7 +20,7 @@ class GetFromHeaderTagTest extends TestCase
             new Tag('header', 'Api-Version v1'),
             new Tag('header', 'Some-Custom'),
         ];
-        $results = $strategy->getHeadersFromDocBlock($tags);
+        $results = $strategy->getFromTags($tags);
 
         $this->assertArraySubset([
             'Api-Version' => 'v1',

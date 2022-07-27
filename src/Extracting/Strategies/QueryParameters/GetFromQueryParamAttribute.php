@@ -5,7 +5,10 @@ namespace Knuckles\Scribe\Extracting\Strategies\QueryParameters;
 use Knuckles\Scribe\Attributes\QueryParam;
 use Knuckles\Scribe\Extracting\Strategies\GetParamsFromAttributeStrategy;
 
+/**
+ * @extends GetParamsFromAttributeStrategy<QueryParam>
+ */
 class GetFromQueryParamAttribute extends GetParamsFromAttributeStrategy
 {
-    protected string $attributeName = QueryParam::class;
+    protected array $attributeNames = [QueryParam::class];
 }

@@ -2,13 +2,19 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies;
 
+use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Extracting\ParamHelpers;
+use Knuckles\Scribe\Attributes\GenericParam;
 
+/**
+ * @template T of GenericParam
+ * @extends PhpAttributeStrategy<T>
+ */
 class GetParamsFromAttributeStrategy extends PhpAttributeStrategy
 {
     use ParamHelpers;
 
-    protected function extractFromAttributes(array $attributesOnMethod, array $attributesOnController): ?array
+    protected function extractFromAttributes(array $attributesOnMethod, array $attributesOnController, ExtractedEndpointData $endpointData): ?array
     {
         $parameters = [];
         foreach ($attributesOnController as $attributeInstance) {

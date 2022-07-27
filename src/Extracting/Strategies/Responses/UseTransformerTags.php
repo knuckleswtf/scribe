@@ -13,6 +13,7 @@ use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\AnnotationParser as a;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\ErrorHandlingUtils as e;
+use Knuckles\Scribe\Tools\Utils;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
@@ -25,8 +26,7 @@ use ReflectionFunctionAbstract;
  */
 class UseTransformerTags extends Strategy
 {
-    use DatabaseTransactionHelpers;
-    use InstantiatesExampleModels;
+    use DatabaseTransactionHelpers, InstantiatesExampleModels;
 
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): ?array
     {
@@ -96,12 +96,7 @@ class UseTransformerTags extends Strategy
         ];
     }
 
-    /**
-     * @param Tag $tag
-     *
-     * @return array
-     */
-    private function getStatusCodeAndTransformerClass($tag): array
+    private function getStatusCodeAndTransformerClass(Tag $tag): array
     {
         $content = $tag->getContent();
         preg_match('/^(\d{3})?\s?([\s\S]*)$/', $content, $result);
@@ -121,9 +116,7 @@ class UseTransformerTags extends Strategy
      */
     private function getClassToBeTransformed(array $tags, ReflectionFunctionAbstract $transformerMethod): array
     {
-        $modelTag = Arr::first(array_filter($tags, function ($tag) {
-            return ($tag instanceof Tag) && strtolower($tag->getName()) == 'transformermodel';
-        }));
+        $modelTag = Arr::first(Utils::filterDocBlockTags($tags, 'transformermodel'));
 
         $type = null;
         $states = [];
@@ -149,20 +142,9 @@ class UseTransformerTags extends Strategy
         return [$type, $states, $relations, $resourceKey];
     }
 
-    /**
-     * @param Tag[] $tags
-     *
-     * @return Tag|null
-     */
     private function getTransformerTag(array $tags): ?Tag
     {
-        $transformerTags = array_values(
-            array_filter($tags, function ($tag) {
-                return ($tag instanceof Tag) && in_array(strtolower($tag->getName()), ['transformer', 'transformercollection']);
-            })
-        );
-
-        return Arr::first($transformerTags);
+        return Arr::first(Utils::filterDocBlockTags($tags, 'transformer', 'transformercollection'));
     }
 
     /**
@@ -175,13 +157,7 @@ class UseTransformerTags extends Strategy
      */
     private function getTransformerPaginatorData(array $tags): array
     {
-        $transformerTags = array_values(
-            array_filter($tags, function ($tag) {
-                return ($tag instanceof Tag) && in_array(strtolower($tag->getName()), ['transformerpaginator']);
-            })
-        );
-
-        $tag = Arr::first($transformerTags);
+        $tag = Arr::first(Utils::filterDocBlockTags($tags, 'transformerpaginator'));
         if (empty($tag)) {
             return ['adapter' => null, 'perPage' => null];
         }

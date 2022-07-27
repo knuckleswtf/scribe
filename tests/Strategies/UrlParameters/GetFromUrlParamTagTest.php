@@ -29,7 +29,7 @@ class GetFromUrlParamTagTest extends TestCase
             new Tag('urlParam', 'noExampleNoDescription No-example.'),
             new Tag('urlParam', 'noExample Something No-example'),
         ];
-        $results = $strategy->getParametersFromTags($tags);
+        $results = $strategy->getFromTags($tags);
 
         $this->assertArraySubset([
             'id' => [

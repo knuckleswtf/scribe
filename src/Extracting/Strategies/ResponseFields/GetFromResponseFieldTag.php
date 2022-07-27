@@ -30,9 +30,7 @@ class GetFromResponseFieldTag extends Strategy
     public function getResponseFieldsFromDocBlock(array $tags, ResponseCollection $responses = null): array
     {
         $parameters = collect($tags)
-            ->filter(function ($tag) {
-                return $tag instanceof Tag && $tag->getName() === 'responseField';
-            })
+            ->filter(fn($tag) => $tag instanceof Tag && $tag->getName() === 'responseField')
             ->mapWithKeys(function (Tag $tag) use ($responses) {
                 // Format:
                 // @responseField <name> <type> <description>

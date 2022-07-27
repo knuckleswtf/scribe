@@ -18,7 +18,7 @@ class RouteDocBlocker
     protected static array $docBlocks = [];
 
     /**
-     * @return array{method: DocBlock, class: DocBlock} Method and class docblocks
+     * @return array{method: DocBlock, class: ?DocBlock} Method and class docblocks
      */
     public static function getDocBlocksFromRoute(Route $route): array
     {
@@ -26,7 +26,7 @@ class RouteDocBlocker
 
         return static::getDocBlocks($route, $className, $methodName);
     }
-    
+
     /**
      * @return array{method: DocBlock, class: DocBlock} Method and class docblocks
      */

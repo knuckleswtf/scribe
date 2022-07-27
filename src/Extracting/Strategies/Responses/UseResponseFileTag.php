@@ -6,41 +6,28 @@ use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\AnnotationParser as a;
-use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
+use Knuckles\Scribe\Tools\Utils;
 use Mpociot\Reflection\DocBlock\Tag;
 
 /**
- * Get a response from from a file in the docblock ( @responseFile ).
+ * Get a response from a file path in the docblock ( @responseFile ).
  */
 class UseResponseFileTag extends Strategy
 {
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): ?array
     {
         $docBlocks = RouteDocBlocker::getDocBlocksFromRoute($endpointData->route);
-        $methodDocBlock = $docBlocks['method'];
-
-        return $this->getFileResponses($methodDocBlock->getTags());
+        return $this->getFileResponses($docBlocks['method']->getTags());
     }
 
     /**
-     * Get the response from the file if available.
-     *
      * @param Tag[] $tags
-     *
-     * @return array|null
      */
     public function getFileResponses(array $tags): ?array
     {
-        // Avoid "holes" in the keys of the filtered array, by using array_values on the filtered array
-        $responseFileTags = array_values(
-            array_filter($tags, function ($tag) {
-                return $tag instanceof Tag && strtolower($tag->getName()) === 'responsefile';
-            })
-        );
+        $responseFileTags = Utils::filterDocBlockTags($tags, 'responsefile');
 
-        if (empty($responseFileTags)) {
-            return null;
-        }
+        if (empty($responseFileTags)) return null;
 
         $responses = array_map(function (Tag $responseFileTag) {
             preg_match('/^(\d{3})?\s*(.*?)({.*})?$/', $responseFileTag->getContent(), $result);
@@ -52,12 +39,7 @@ class UseResponseFileTag extends Strategy
             $status = $attributes['status'] ?: ($status ?: 200);
             $description = $attributes['scenario'] ? "$status, {$attributes['scenario']}" : "$status";
 
-            $content = $this->getFileContents($filePath);
-            if ($json) {
-                $json = str_replace("'", '"', $json);
-                $content = json_encode(array_merge(json_decode($content, true), json_decode($json, true)));
-            }
-
+            $content = $this->getResponseContents($filePath, $json);
 
             return [
                 'content' => $content,
@@ -69,7 +51,17 @@ class UseResponseFileTag extends Strategy
         return $responses;
     }
 
-    protected function getFileContents($filePath): string|false
+    protected function getResponseContents($filePath, ?string $json): string
+    {
+        $content = $this->getFileContents($filePath);
+        if ($json) {
+            $json = str_replace("'", '"', $json);
+            $content = json_encode(array_merge(json_decode($content, true), json_decode($json, true)));
+        }
+        return $content;
+    }
+
+    protected function getFileContents($filePath): string
     {
         if (!file_exists($filePath)) {
             // Try Laravel storage folder
@@ -81,4 +73,5 @@ class UseResponseFileTag extends Strategy
         }
         return file_get_contents($filePath, true);
     }
+
 }

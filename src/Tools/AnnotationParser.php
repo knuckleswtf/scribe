@@ -9,7 +9,7 @@ class AnnotationParser
      * Fields are always optional and may appear at the start or the end of the string.
      *
      * @param string $annotationContent
-     * @param array $allowedFields List of fields to look for.
+     * @param array $allowedAttributes List of attributes to look for.
      *
      * @return array{content: string, attributes: string[]}
      */

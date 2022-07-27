@@ -41,7 +41,7 @@ class GetFromBodyParamTagTest extends TestCase
             new Tag('bodyParam', 'users[].first_name string The first name of the user. Example: John'),
             new Tag('bodyParam', 'users[].last_name string The last name of the user. Example: Doe'),
         ];
-        $results = $this->strategy->getParametersFromTags($tags);
+        $results = $this->strategy->getFromTags($tags);
 
         $this->assertArraySubset([
             'user_id' => [
@@ -136,7 +136,7 @@ class GetFromBodyParamTagTest extends TestCase
             new Tag('bodyParam', '[].contacts[].last_name string The last name of the contact. Example: Doe'),
             new Tag('bodyParam', '[].roles string[] The name of the role. Example: ["Admin"]'),
         ];
-        $results = $this->strategy->getParametersFromTags($tags);
+        $results = $this->strategy->getFromTags($tags);
 
         $this->assertArraySubset([
             '[].first_name' => [

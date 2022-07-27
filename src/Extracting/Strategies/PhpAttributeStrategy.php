@@ -9,23 +9,23 @@ use ReflectionClass;
 use ReflectionFunctionAbstract;
 
 /**
- * @template T of \ReflectionAttribute
+ * @template T
  */
 abstract class PhpAttributeStrategy extends Strategy
 {
     use ParamHelpers;
 
     /**
-     * @var class-string<T>
+     * @var array<class-string<T>>
      */
-    protected string $attributeName;
+    protected array $attributeNames;
 
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): array
     {
         [$attributesOnMethod, $attributesOnController] =
             $this->getAttributes($endpointData->method, $endpointData->controller);
 
-        return $this->extractFromAttributes($attributesOnMethod, $attributesOnController);
+        return $this->extractFromAttributes($attributesOnMethod, $attributesOnController, $endpointData);
     }
 
     /**
@@ -36,14 +36,14 @@ abstract class PhpAttributeStrategy extends Strategy
      */
     protected function getAttributes(ReflectionFunctionAbstract $method, ?ReflectionClass $class = null): array
     {
-        $attributesOnMethod = array_map(
-            fn(ReflectionAttribute $a) => $a->newInstance(), $method->getAttributes($this->attributeName)
-        );
+        $attributesOnMethod = collect($this->attributeNames)
+            ->flatMap(fn(string $name) => $method->getAttributes($name))
+            ->map(fn(ReflectionAttribute $a) => $a->newInstance())->toArray();
 
         if ($class) {
-            $attributesOnController = array_map(
-                fn(ReflectionAttribute $a) => $a->newInstance(), $class->getAttributes($this->attributeName)
-            );
+            $attributesOnController = collect($this->attributeNames)
+                ->flatMap(fn(string $name) => $class->getAttributes($name))
+                ->map(fn(ReflectionAttribute $a) => $a->newInstance())->toArray();
         }
 
         return [$attributesOnMethod, $attributesOnController ?? []];
@@ -52,6 +52,9 @@ abstract class PhpAttributeStrategy extends Strategy
     /**
      * @param array<T> $attributesOnMethod
      * @param array<T> $attributesOnController
+     * @param \Knuckles\Camel\Extraction\ExtractedEndpointData $endpointData
+     *
+     * @return array|null
      */
-    abstract protected function extractFromAttributes(array $attributesOnMethod, array $attributesOnController): ?array;
+    abstract protected function extractFromAttributes(array $attributesOnMethod, array $attributesOnController, ExtractedEndpointData $endpointData): ?array;
 }

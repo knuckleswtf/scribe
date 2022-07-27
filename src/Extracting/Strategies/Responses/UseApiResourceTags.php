@@ -32,8 +32,7 @@ class UseApiResourceTags extends Strategy
 
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): ?array
     {
-        $docBlocks = RouteDocBlocker::getDocBlocksFromRoute($endpointData->route);
-        $methodDocBlock = $docBlocks['method'];
+        $methodDocBlock = RouteDocBlocker::getDocBlocksFromRoute($endpointData->route)['method'];
 
         $tags = $methodDocBlock->getTags();
         if (empty($apiResourceTag = $this->getApiResourceTag($tags))) {
@@ -78,6 +77,7 @@ class UseApiResourceTags extends Strategy
             // when trying to instantiate with something other than a collection
             $resource = new $apiResourceClass(collect([$modelInstance]));
         }
+
         if (strtolower($apiResourceTag->getName()) == 'apiresourcecollection') {
             // Collections can either use the regular JsonResource class (via `::collection()`,
             // or a ResourceCollection (via `new`)
@@ -90,9 +90,7 @@ class UseApiResourceTags extends Strategy
                 $perPage = $pagination[0];
                 $paginator = new LengthAwarePaginator(
                 // For some reason, the LengthAware paginator needs only first page items to work correctly
-                    collect($models)->slice(0, $perPage),
-                    count($models),
-                    $perPage
+                    collect($models)->slice(0, $perPage), count($models), $perPage
                 );
                 $list = $paginator;
             } elseif (count($pagination) == 2 && $pagination[1] == 'simple') {
@@ -115,17 +113,13 @@ class UseApiResourceTags extends Strategy
         $method = $endpointData->route->methods()[0];
         $request = Request::create($uri, $method);
         $request->headers->add(['Accept' => 'application/json']);
-        app()->bind('request', function () use ($request) {
-            return $request;
-        });
+        app()->bind('request', fn() => $request);
 
         $route = $endpointData->route;
+        // Set the route properly so it works for users who have code that checks for the route.
         /** @var Response $response */
         $response = $resource->toResponse(
-        // Set the route properly so it works for users who have code that checks for the route.
-            $request->setRouteResolver(function () use ($route) {
-                return $route;
-            })
+            $request->setRouteResolver(fn() => $route)
         );
 
         return [
@@ -161,9 +155,7 @@ class UseApiResourceTags extends Strategy
 
     private function getClassToBeTransformedAndAttributes(array $tags): array
     {
-        $modelTag = Arr::first(array_filter($tags, function ($tag) {
-            return ($tag instanceof Tag) && strtolower($tag->getName()) == 'apiresourcemodel';
-        }));
+        $modelTag = Arr::first(Utils::filterDocBlockTags($tags, 'apiresourcemodel'));
 
         $type = null;
         $states = [];
@@ -184,7 +176,7 @@ class UseApiResourceTags extends Strategy
     }
 
     /**
-     * Returns data for simulating JsonResource additional() function
+     * Returns data for simulating JsonResource ->additional() function
      *
      * @param Tag|null $tag
      *
@@ -192,31 +184,16 @@ class UseApiResourceTags extends Strategy
      */
     private function getAdditionalData(?Tag $tag): array
     {
-        return $tag
-            ? a::parseIntoAttributes($tag->getContent())
-            : [];
+        return $tag ? a::parseIntoAttributes($tag->getContent()) : [];
     }
 
-    /**
-     * @param Tag[] $tags
-     *
-     * @return Tag|null
-     */
     public function getApiResourceTag(array $tags): ?Tag
     {
-        $apiResourceTags = array_values(
-            array_filter($tags, function ($tag) {
-                return ($tag instanceof Tag) && in_array(strtolower($tag->getName()), ['apiresource', 'apiresourcecollection']);
-            })
-        );
-
-        return Arr::first($apiResourceTags);
+        return Arr::first(Utils::filterDocBlockTags($tags, 'apiresource', 'apiresourcecollection'));
     }
 
     public function getApiResourceAdditionalTag(array $tags): ?Tag
     {
-        return Arr::first($tags, function ($tag) {
-            return ($tag instanceof Tag) && strtolower($tag->getName()) == 'apiresourceadditional';
-        });
+        return Arr::first(Utils::filterDocBlockTags($tags, 'apiresourceadditional'));
     }
 }

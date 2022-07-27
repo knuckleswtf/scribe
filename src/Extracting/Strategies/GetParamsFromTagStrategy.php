@@ -2,43 +2,15 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies;
 
-use Illuminate\Routing\Route;
-use Knuckles\Camel\Extraction\ExtractedEndpointData;
-use Knuckles\Scribe\Extracting\FindsFormRequestForMethod;
 use Knuckles\Scribe\Extracting\ParamHelpers;
-use Knuckles\Scribe\Extracting\RouteDocBlocker;
-use Knuckles\Scribe\Extracting\Strategies\Strategy;
-use Mpociot\Reflection\DocBlock;
+use Knuckles\Scribe\Extracting\TagStrategyWithFormRequestFallback;
 use Mpociot\Reflection\DocBlock\Tag;
-use ReflectionFunctionAbstract;
 
-abstract class GetParamsFromTagStrategy extends Strategy
+abstract class GetParamsFromTagStrategy extends TagStrategyWithFormRequestFallback
 {
-    use ParamHelpers, FindsFormRequestForMethod;
+    use ParamHelpers;
 
     protected string $tagName = "";
-
-    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules): ?array
-    {
-        return $this->getParametersFromDocBlockInFormRequestOrMethod($endpointData->route, $endpointData->method);
-    }
-
-    public function getParametersFromDocBlockInFormRequestOrMethod(Route $route, ReflectionFunctionAbstract $method): array
-    {
-        $classTags = RouteDocBlocker::getDocBlocksFromRoute($route)['class']?->getTags() ?: [];
-        // If there's a FormRequest, we check there for tags.
-        if ($formRequestClass = $this->getFormRequestReflectionClass($method)) {
-            $formRequestDocBlock = new DocBlock($formRequestClass->getDocComment());
-            $bodyParametersFromDocBlock = $this->getParametersFromTags($formRequestDocBlock->getTags(), $classTags);
-
-            if (count($bodyParametersFromDocBlock)) {
-                return $bodyParametersFromDocBlock;
-            }
-        }
-
-        $methodDocBlock = RouteDocBlocker::getDocBlocksFromRoute($route)['method'];
-        return $this->getParametersFromTags($methodDocBlock->getTags(), $classTags);
-    }
 
     /**
      * @param Tag[] $tagsOnMethod
@@ -46,7 +18,7 @@ abstract class GetParamsFromTagStrategy extends Strategy
      *
      * @return array[]
      */
-    public function getParametersFromTags(array $tagsOnMethod, array $tagsOnClass = []): array
+    public function getFromTags(array $tagsOnMethod, array $tagsOnClass = []): array
     {
         $parameters = [];
 

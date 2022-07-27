@@ -10,6 +10,7 @@ use Knuckles\Scribe\Tools\DocumentationConfig;
 use PHPUnit\Framework\TestCase;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use ReflectionClass;
+use ReflectionFunction;
 
 class GetFromBodyParamAttributeTest extends TestCase
 {
@@ -25,67 +26,127 @@ class GetFromBodyParamAttributeTest extends TestCase
         $results = $this->fetch($endpoint);
 
         $this->assertArraySubset([
-            'location_id' => [
-                'type' => 'string',
-                'required' => true,
-                'description' => 'The id of the location.',
-            ],
             'user_id' => [
-                'type' => 'string',
+                'type' => 'integer',
                 'required' => true,
                 'description' => 'The id of the user.',
-                'example' => 'me',
+                'example' => 9,
             ],
-            'page' => [
-                'type' => 'integer',
+            'room_id' => [
+                'type' => 'string',
                 'required' => false,
-                'description' => 'The page number.',
-                'example' => 4,
+                'description' => 'The id of the room.',
             ],
-            'with_type' => [
+            'forever' => [
+                'type' => 'boolean',
+                'required' => false,
+                'description' => 'Whether to ban the user forever.',
+                'example' => false,
+            ],
+            'another_one' => [
                 'type' => 'number',
                 'required' => false,
-                'description' => '',
-                'example' => 13.0,
+                'description' => 'Just need something here.',
             ],
-            'with_list_type' => [
-                'type' => 'integer[]',
-                'required' => false,
-                'description' => '',
-            ],
-            'fields' => [
-                'type' => 'string[]',
-                'required' => false,
-                'description' => 'The fields.',
-                'example' => ['age', 'name']
-            ],
-            'filters' => [
+            'yet_another_param' => [
                 'type' => 'object',
-                'required' => false,
-                'description' => 'The filters.',
-            ],
-            'filters.class' => [
-                'type' => 'number',
-                'required' => false,
-                'description' => 'Class.',
-                'example' => 11.0
-            ],
-            'filters.other' => [
-                'type' => 'string',
                 'required' => true,
-                'description' => 'Other things.',
+                'description' => 'Some object params.',
             ],
-            'noExampleNoDescription' => [
+            'yet_another_param.name' => [
                 'type' => 'string',
-                'required' => true,
                 'description' => '',
-                'example' => null
-            ],
-            'noExample' => [
-                'type' => 'string',
                 'required' => true,
-                'description' => 'Something',
-                'example' => null
+            ],
+            'even_more_param' => [
+                'type' => 'number[]',
+                'description' => 'A list of numbers',
+                'required' => false,
+            ],
+            'book' => [
+                'type' => 'object',
+                'description' => 'Book information',
+                'required' => false,
+            ],
+            'book.name' => [
+                'type' => 'string',
+                'description' => '',
+                'required' => true,
+            ],
+            'book.author_id' => [
+                'type' => 'integer',
+                'description' => '',
+                'required' => true,
+            ],
+            'book.pages_count' => [
+                'type' => 'integer',
+                'description' => '',
+                'required' => true,
+            ],
+            'ids' => [
+                'type' => 'integer[]',
+                'description' => '',
+                'required' => true,
+            ],
+            'users' => [
+                'type' => 'object[]',
+                'description' => 'Users\' details',
+                'required' => false,
+            ],
+            'users[].first_name' => [
+                'type' => 'string',
+                'description' => 'The first name of the user.',
+                'required' => false,
+                'example' => 'John',
+            ],
+            'users[].last_name' => [
+                'type' => 'string',
+                'description' => 'The last name of the user.',
+                'required' => false,
+                'example' => 'Doe',
+            ],
+        ], $results);
+    }
+
+    /** @test */
+    public function can_fetch_from_bodyparam_attribute_for_array_body()
+    {
+        $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
+            $e->controller = null;
+            $e->method = new ReflectionFunction('\Knuckles\Scribe\Tests\Strategies\BodyParameters\functionWithAttributes');
+        });
+        $results = $this->fetch($endpoint);
+
+        $this->assertArraySubset([
+            '[].first_name' => [
+                'type' => 'string',
+                'description' => 'The first name of the user.',
+                'required' => true,
+                'example' => 'John',
+            ],
+            '[].last_name' => [
+                'type' => 'string',
+                'description' => 'The last name of the user.',
+                'required' => true,
+                'example' => 'Doe',
+            ],
+            '[].contacts[].first_name' => [
+                'type' => 'string',
+                'description' => 'The first name of the contact.',
+                'required' => false,
+                'example' => 'John',
+            ],
+            '[].contacts[].last_name' => [
+                'type' => 'string',
+                'description' => 'The last name of the contact.',
+                'required' => false,
+                'example' => 'Doe',
+            ],
+            '[].roles' => [
+                'type' => 'string[]',
+                'description' => 'The name of the role.',
+                'required' => true,
+                'example' => ['Admin'],
             ],
         ], $results);
     }
@@ -109,21 +170,34 @@ class GetFromBodyParamAttributeTest extends TestCase
 
 
 #[BodyParam("user_id", description: "Will be overriden.")]
-#[BodyParam("location_id", description: "The id of the location.")]
+#[BodyParam("room_id", "string", "The id of the room.", example: "4", required: false)]
 class BodyParamAttributeTestController
 {
-    #[BodyParam("user_id", description: "The id of the user.", example: "me")]
-    #[BodyParam("page", 'integer', description: "The page number.", required: false, example: 4)]
-    #[BodyParam("with_type", "number", example: 13.0, required: false)]
-    #[BodyParam("with_list_type", type: "int[]", required: false)]
-    #[BodyParam("fields", "string[]", "The fields.", required: false, example: ["age", "name"])]
-    #[BodyParam("filters", "object", "The filters. ", required: false)]
-    #[BodyParam("filters.class", "double", required: false, example: 11.0, description: "Class.")]
-    #[BodyParam("filters.other", "string", description: "Other things.")]
-    #[BodyParam("noExampleNoDescription", example: "No-example")]
-    #[BodyParam("noExample", description: "Something", example: "No-example")]
+    #[BodyParam("user_id", description: "The id of the user.", example: 9, type: "int")]
+    #[BodyParam("forever", "boolean", "Whether to ban the user forever.", example: false, required: false)]
+    #[BodyParam("another_one", "number", "Just need something here.", required: false)]
+    #[BodyParam("yet_another_param", "object", description: "Some object params.")]
+    #[BodyParam("yet_another_param.name", "string")]
+    #[BodyParam("even_more_param", "number[]", "A list of numbers", required: false)]
+    #[BodyParam("book", "object", "Book information", required: false)]
+    #[BodyParam("book.name", type: "string")]
+    #[BodyParam("book.author_id", type: "integer")]
+    #[BodyParam("book.pages_count", type: "integer")]
+    #[BodyParam("ids", "integer[]")]
+    #[BodyParam("users", "object[]", "Users' details", required: false)]
+    #[BodyParam("users[].first_name", "string", "The first name of the user.", example: "John", required: false)]
+    #[BodyParam("users[].last_name", "string", "The last name of the user.", example: "Doe", required: false)]
     public function methodWithAttributes()
     {
 
     }
+}
+
+#[BodyParam('[].first_name', 'string', 'The first name of the user.', example: 'John')]
+#[BodyParam('[].last_name', 'string', 'The last name of the user.', example: 'Doe')]
+#[BodyParam('[].contacts[].first_name', 'string', 'The first name of the contact.', example: 'John', required: false)]
+#[BodyParam('[].contacts[].last_name', 'string', 'The last name of the contact.', example: 'Doe', required: false)]
+#[BodyParam('[].roles', 'string[]', 'The name of the role.', example: ["Admin"])]
+function functionWithAttributes() {
+
 }

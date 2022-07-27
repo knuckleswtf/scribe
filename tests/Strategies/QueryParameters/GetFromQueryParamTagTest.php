@@ -31,7 +31,7 @@ class GetFromQueryParamTagTest extends TestCase
             new Tag('queryParam', 'noExampleNoDescription No-example.'),
             new Tag('queryParam', 'noExample Something No-example'),
         ];
-        $results = $strategy->getParametersFromTags($tags);
+        $results = $strategy->getFromTags($tags);
 
         $this->assertArraySubset([
             'location_id' => [
