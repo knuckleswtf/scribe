@@ -13,17 +13,11 @@
         }
         // When the body is an array, the item names will be ".0.thing"
         $fullName = ltrim($fullName, '.');
-        switch($baseType) {
-            case 'number':
-            case 'integer':
-                $inputType = 'number';
-                break;
-            case 'file':
-                $inputType = 'file';
-                break;
-            default:
-                $inputType = 'text';
-        }
+        $inputType = match($baseType) {
+            'number', 'integer' => 'number',
+            'file' => 'file',
+            default => 'text',
+        };
     @endphp
     @if($type === 'boolean')
         <label data-endpoint="{{ $endpointId }}" hidden>

@@ -25,7 +25,7 @@ class UseTransformerTagsTest extends BaseLaravelTest
      * @param $expected
      *
      * @test
-     * @dataProvider dataResources
+     * @dataProvider serializerAndExpected
      */
     public function can_parse_transformer_tag($serializer, $expected)
     {
@@ -35,7 +35,7 @@ class UseTransformerTagsTest extends BaseLaravelTest
         $tags = [
             new Tag('transformer', '\Knuckles\Scribe\Tests\Fixtures\TestTransformer'),
         ];
-        $results = $strategy->getTransformerResponse($tags);
+        $results = $strategy->getTransformerResponseFromTags($tags);
 
         $this->assertArraySubset([
             [
@@ -53,7 +53,7 @@ class UseTransformerTagsTest extends BaseLaravelTest
             new Tag('transformer', '\Knuckles\Scribe\Tests\Fixtures\TestTransformer'),
             new Tag('transformermodel', '\Knuckles\Scribe\Tests\Fixtures\TestModel'),
         ];
-        $results = $strategy->getTransformerResponse($tags);
+        $results = $strategy->getTransformerResponseFromTags($tags);
 
         $this->assertArraySubset([
             [
@@ -84,7 +84,7 @@ class UseTransformerTagsTest extends BaseLaravelTest
             new Tag('transformer', '\Knuckles\Scribe\Tests\Fixtures\TestEloquentTransformer'),
             new Tag('transformermodel', '\Knuckles\Scribe\Tests\Fixtures\TestUser states=state1,random-state'),
         ];
-        $results = $strategy->getTransformerResponse($tags);
+        $results = $strategy->getTransformerResponseFromTags($tags);
 
         $this->assertArraySubset([
             [
@@ -108,7 +108,7 @@ class UseTransformerTagsTest extends BaseLaravelTest
         $tags = [
             new Tag('transformer', '201 \Knuckles\Scribe\Tests\Fixtures\TestTransformer'),
         ];
-        $results = $strategy->getTransformerResponse($tags);
+        $results = $strategy->getTransformerResponseFromTags($tags);
 
         $this->assertArraySubset([
             [
@@ -132,7 +132,7 @@ class UseTransformerTagsTest extends BaseLaravelTest
         $tags = [
             new Tag('transformercollection', '\Knuckles\Scribe\Tests\Fixtures\TestTransformer'),
         ];
-        $results = $strategy->getTransformerResponse($tags);
+        $results = $strategy->getTransformerResponseFromTags($tags);
 
         $this->assertArraySubset([
             [
@@ -165,7 +165,7 @@ class UseTransformerTagsTest extends BaseLaravelTest
             new Tag('transformercollection', '\Knuckles\Scribe\Tests\Fixtures\TestTransformer'),
             new Tag('transformermodel', '\Knuckles\Scribe\Tests\Fixtures\TestModel'),
         ];
-        $results = $strategy->getTransformerResponse($tags);
+        $results = $strategy->getTransformerResponseFromTags($tags);
 
         $this->assertArraySubset([
             [
@@ -198,7 +198,7 @@ class UseTransformerTagsTest extends BaseLaravelTest
             new Tag('transformermodel', '\Knuckles\Scribe\Tests\Fixtures\TestModel'),
             new Tag('transformerpaginator', 'League\Fractal\Pagination\IlluminatePaginatorAdapter 1'),
         ];
-        $results = $strategy->getTransformerResponse($tags);
+        $results = $strategy->getTransformerResponseFromTags($tags);
 
         $this->assertArraySubset([
             [
@@ -226,7 +226,7 @@ class UseTransformerTagsTest extends BaseLaravelTest
         ], $results);
     }
 
-    public function dataResources()
+    public function serializerAndExpected()
     {
         return [
             [

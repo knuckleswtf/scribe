@@ -7,16 +7,10 @@ use Knuckles\Scribe\Tools\DocumentationConfig;
 
 abstract class Strategy
 {
-    /**
-     * The Scribe config
-     */
-    protected DocumentationConfig $config;
-
     public ?ExtractedEndpointData $endpointData;
 
-    public function __construct(DocumentationConfig $config)
+    public function __construct(protected DocumentationConfig $config)
     {
-        $this->config = $config;
     }
 
     /**

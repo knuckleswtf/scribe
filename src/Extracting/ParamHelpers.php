@@ -171,23 +171,15 @@ trait ParamHelpers
         }
 
         $base = str_replace('[]', '', strtolower($typeName));
-        switch ($base) {
-            case 'int':
-                return str_replace($base, 'integer', $typeName);
-            case 'float':
-            case 'double':
-                return str_replace($base, 'number', $typeName);
-            case 'bool':
-                return str_replace($base, 'boolean', $typeName);
-            case 'array':
-                if (empty($value) || array_keys($value)[0] === 0) {
-                    return static::normalizeTypeName(gettype($value[0] ?? '')).'[]';
-                } else {
-                    return 'object';
-                }
-            default:
-                return $typeName;
-        }
+        return match ($base) {
+            'bool' => str_replace($base, 'boolean', $typeName),
+            'int' => str_replace($base, 'integer', $typeName),
+            'float', 'double' => str_replace($base, 'number', $typeName),
+            'array' => (empty($value) || array_keys($value)[0] === 0)
+                ? static::normalizeTypeName(gettype($value[0] ?? '')) . '[]'
+                : 'object',
+            default => $typeName
+        };
     }
 
     /**

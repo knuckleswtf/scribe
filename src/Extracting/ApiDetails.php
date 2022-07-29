@@ -96,26 +96,15 @@ class ApiDetails
                 "To authenticate requests, include ",
                 "Authenticate requests to this API's endpoints by sending ",
             ]);
-            switch ($strategy) {
-                case 'query':
-                    $authDescription .= "a query parameter **`$parameterName`** in the request.";
-                    break;
-                case 'body':
-                    $authDescription .= "a parameter **`$parameterName`** in the body of the request.";
-                    break;
-                case 'query_or_body':
-                    $authDescription .= "a parameter **`$parameterName`** either in the query string or in the request body.";
-                    break;
-                case 'bearer':
-                    $authDescription .= sprintf('an **`Authorization`** header with the value **`"Bearer %s"`**.', $this->config->get('auth.placeholder') ?: 'your-token');;
-                    break;
-                case 'basic':
-                    $authDescription .= "an **`Authorization`** header in the form **`\"Basic {credentials}\"`**. The value of `{credentials}` should be your username/id and your password, joined with a colon (:), and then base64-encoded.";
-                    break;
-                case 'header':
-                    $authDescription .= sprintf('a **`%s`** header with the value **`"%s"`**.', $parameterName, $this->config->get('auth.placeholder') ?: 'your-token');
-                    break;
-            }
+            $authDescription .= match ($strategy) {
+                'query' => "a query parameter **`$parameterName`** in the request.",
+                'body' => "a parameter **`$parameterName`** in the body of the request.",
+                'query_or_body' => "a parameter **`$parameterName`** either in the query string or in the request body.",
+                'bearer' => sprintf('an **`Authorization`** header with the value **`"Bearer %s"`**.', $this->config->get('auth.placeholder') ?: 'your-token'),
+                'basic' => "an **`Authorization`** header in the form **`\"Basic {credentials}\"`**. The value of `{credentials}` should be your username/id and your password, joined with a colon (:), and then base64-encoded.",
+                'header' => sprintf('a **`%s`** header with the value **`"%s"`**.', $parameterName, $this->config->get('auth.placeholder') ?: 'your-token'),
+                default => '',
+            };
             $authDescription .= "\n\nAll authenticated endpoints are marked with a `requires authentication` badge in the documentation below.";
             $extraInfo = $this->config->get('auth.extra_info', '');
         }

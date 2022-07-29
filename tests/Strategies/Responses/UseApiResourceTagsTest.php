@@ -73,7 +73,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
             new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
             new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser'),
         ];
-        $results = $strategy->getApiResourceResponse($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+        $results = $strategy->getApiResourceResponseFromTags($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
 
         $this->assertArraySubset([
             [
@@ -109,7 +109,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
         });
         TestUser::create(['first_name' => 'Testy', 'last_name' => 'Testes', 'email' => 'um']);
 
-        $results = $strategy->getApiResourceResponse($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+        $results = $strategy->getApiResourceResponseFromTags($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
 
         $this->assertArraySubset([
             [
@@ -137,8 +137,8 @@ class UseApiResourceTagsTest extends BaseLaravelTest
             new Tag('apiResource', 'status=202 scenario="Success" \Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
             new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser'),
         ];
-        $results = $strategy->getApiResourceResponse(
-            $strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route)
+        $results = $strategy->getApiResourceResponseFromTags(
+            $strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route), false
         );
 
         $this->assertArraySubset([
@@ -169,7 +169,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
             new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
             new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser'),
         ];
-        $results = $strategy->getApiResourceResponse($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+        $results = $strategy->getApiResourceResponseFromTags($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
 
         $this->assertArraySubset([
             [
@@ -195,7 +195,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
             new Tag('apiResource', '201 \Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
             new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser states=state1,random-state'),
         ];
-        $results = $strategy->getApiResourceResponse($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+        $results = $strategy->getApiResourceResponseFromTags($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
 
         $this->assertArraySubset([
             [
@@ -233,7 +233,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
             new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
             new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser'),
         ];
-        $results = $strategy->getApiResourceResponse($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+        $results = $strategy->getApiResourceResponseFromTags($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
 
         $this->assertArraySubset([
             [
@@ -275,7 +275,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
             new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
             new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser with=children'),
         ];
-        $results = $strategy->getApiResourceResponse($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+        $results = $strategy->getApiResourceResponseFromTags($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
 
         $this->assertArraySubset([
             [
@@ -321,7 +321,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
             new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
             new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser with=children.children'),
         ];
-        $results = $strategy->getApiResourceResponse($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+        $results = $strategy->getApiResourceResponseFromTags($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
 
         $this->assertArraySubset([
             [
@@ -369,7 +369,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
             new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
             new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser with=pets'),
         ];
-        $results = $strategy->getApiResourceResponse($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+        $results = $strategy->getApiResourceResponseFromTags($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
 
         $this->assertArraySubset([
             [
@@ -415,7 +415,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
             new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
             new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser with=children.pets'),
         ];
-        $results = $strategy->getApiResourceResponse($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+        $results = $strategy->getApiResourceResponseFromTags($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
 
         $this->assertArraySubset([
             [
@@ -473,7 +473,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
             new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
             new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser with=pets'),
         ];
-        $results = $strategy->getApiResourceResponse($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+        $results = $strategy->getApiResourceResponseFromTags($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
 
         $this->assertArraySubset([
             [
@@ -513,7 +513,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
             new Tag('apiResourceCollection', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
             new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser'),
         ];
-        $results = $strategy->getApiResourceResponse($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+        $results = $strategy->getApiResourceResponseFromTags($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
 
         $this->assertArraySubset([
             [
@@ -548,7 +548,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
             new Tag('apiResourceCollection', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResourceCollection'),
             new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser'),
         ];
-        $results = $strategy->getApiResourceResponse($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+        $results = $strategy->getApiResourceResponseFromTags($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
 
         $this->assertArraySubset([
             [
@@ -586,7 +586,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
             new Tag('apiResourceCollection', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResourceCollection'),
             new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser paginate=1,simple'),
         ];
-        $results = $strategy->getApiResourceResponse($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+        $results = $strategy->getApiResourceResponseFromTags($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
 
         $this->assertArraySubset([
             [
@@ -618,20 +618,6 @@ class UseApiResourceTagsTest extends BaseLaravelTest
         ], $results);
     }
 
-    public function dataResources()
-    {
-        return [
-            [
-                null,
-                '{"data":{"id":1,"description":"Welcome on this test versions","name":"TestName"}}',
-            ],
-            [
-                'League\Fractal\Serializer\JsonApiSerializer',
-                '{"data":{"type":null,"id":"1","attributes":{"description":"Welcome on this test versions","name":"TestName"}}}',
-            ],
-        ];
-    }
-
     /** @test */
     public function can_parse_apiresourceadditional_tags()
     {
@@ -645,7 +631,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
             new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser'),
             new Tag('apiResourceAdditional', 'a=b "custom field"=c e="custom value" "another field"="true value"')
         ];
-        $results = $strategy->getApiResourceResponse($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+        $results = $strategy->getApiResourceResponseFromTags($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
 
         $this->assertArraySubset([
             [
@@ -678,7 +664,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
             new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser paginate=1,simple'),
             new Tag('apiResourceAdditional', 'a=b'),
         ];
-        $results = $strategy->getApiResourceResponse($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+        $results = $strategy->getApiResourceResponseFromTags($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
 
         $this->assertArraySubset([
             [

@@ -8,26 +8,20 @@ use Attribute;
 class ResponseFromApiResource
 {
     public function __construct(
-        public string $name,
-        public string $model,
-        public int $status = 200,
-        public bool $collection = false, /* Mark if this should be used as a collection */
+        public string  $name,
+        public string  $model,
+        public int     $status = 200,
+        /* Mark if this should be used as a collection. Only needed if not using a ResourceCollection. */
+        public bool    $collection = false,
 
         public ?string $description = '',
-        public array $states = [],
-        public array $with = [],
+        public array   $factoryStates = [],
+        public array   $with = [],
 
-        public ?int $paginate = null,
-        public ?int $simplePaginate = null,
-    ) {
-    }
-
-    public function toArray()
+        public ?int    $paginate = null,
+        public ?int    $simplePaginate = null,
+        public array   $additionalData = [],
+    )
     {
-        return  [
-            "status" => $this->status,
-            "description" => $this->description,
-            "content" => $this->getApiResourceResponse(),
-        ];
     }
 }

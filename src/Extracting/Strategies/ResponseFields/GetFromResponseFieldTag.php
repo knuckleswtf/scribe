@@ -36,7 +36,6 @@ class GetFromResponseFieldTag extends GetFieldsFromTagStrategy
             $data['description'] = trim("$type $description");
             $data['type'] = '';
 
-            // Try to get a type from first 2xx response
             $data['type'] = ResponseFieldTools::inferTypeOfResponseField($data, $this->endpointData);
         }
 

@@ -15,8 +15,6 @@ trait InstantiatesExampleModels
      *
      * @param array $relations
      * @param array $factoryStates
-     *
-     * @return Model|object
      */
     protected function instantiateExampleModel(string $type, array $factoryStates = [], array $relations = [])
     {

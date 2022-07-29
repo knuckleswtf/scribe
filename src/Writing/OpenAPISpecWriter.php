@@ -421,29 +421,21 @@ class OpenAPISpecWriter
 
         $location = $this->config->get('auth.in');
         $parameterName = $this->config->get('auth.name');
-        $scheme = [];
 
-        switch ($location) {
-            case 'query':
-            case 'header':
-                $scheme = [
-                    'type' => 'apiKey',
-                    'name' => $parameterName,
-                    'in' => $location,
-                    'description' => '',
-                ];
-                break;
-
-            case 'bearer':
-            case 'basic':
-                $scheme = [
-                    'type' => 'http',
-                    'scheme' => $location,
-                    'description' => '',
-                ];
-                break;
-            // OpenAPI doesn't support auth with body parameter
-        }
+        $scheme = match ($location) {
+            'query', 'header' => [
+                'type' => 'apiKey',
+                'name' => $parameterName,
+                'in' => $location,
+                'description' => '',
+            ],
+            'bearer', 'basic' => [
+                'type' => 'http',
+                'scheme' => $location,
+                'description' => '',
+            ],
+            default => [],
+        };
 
         return [
             // All security schemes must be registered in `components.securitySchemes`...
@@ -464,16 +456,11 @@ class OpenAPISpecWriter
 
     protected function convertScribeOrPHPTypeToOpenAPIType($type)
     {
-        switch ($type) {
-            case 'float':
-            case 'double':
-                return 'number';
-            case 'NULL':
-                // null is not an allowed type in OpenAPI
-                return 'string';
-            default:
-                return $type;
-        }
+        return match ($type) {
+            'float', 'double' => 'number',
+            'NULL' => 'string',
+            default => $type,
+        };
     }
 
     /**

@@ -8,9 +8,9 @@ use Attribute;
 class Response
 {
     public function __construct(
-        public int $status = 200,
-        public ?string $content = null,
-        public ?string $description = '',
+        public string|array|null $content = null,
+        public int               $status = 200,
+        public ?string           $description = '',
     ) {
     }
 
@@ -18,7 +18,7 @@ class Response
     {
         return  [
             "status" => $this->status,
-            "content" => $this->content,
+            "content" => is_string($this->content) ? $this->content : json_encode($this->content, JSON_THROW_ON_ERROR),
             "description" => $this->description,
         ];
     }

@@ -11,22 +11,16 @@ class ResponseFromTransformer
         public string $name,
         public string $model,
         public int $status = 200,
+        /* Mark if this should be used as a collection. */
         public bool $collection = false,
+
         public ?string $description = '',
-        public array $states = [],
+        public array $factoryStates = [],
         public array $with = [],
         public ?string $resourceKey = null,
+
         /* Format: [numberPerPage, adapter]. Example: [10, SomePaginator::class] */
         public array $paginate = [],
     ) {
-    }
-
-    public function toArray()
-    {
-        return  [
-            "status" => $this->status,
-            "description" => $this->description,
-            "content" => $this->getTransformerResponse(),
-        ];
     }
 }

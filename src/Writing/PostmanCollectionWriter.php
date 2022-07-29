@@ -71,32 +71,29 @@ class PostmanCollectionWriter
             ];
         }
 
-        switch ($this->config->get('auth.in')) {
-            case "basic":
-                return [
-                    'type' => 'basic',
-                ];
-            case "bearer":
-                return [
-                    'type' => 'bearer',
-                ];
-            default:
-                return [
-                    'type' => 'apikey',
-                    'apikey' => [
-                        [
-                            'key' => 'in',
-                            'value' => $this->config->get('auth.in'),
-                            'type' => 'string',
-                        ],
-                        [
-                            'key' => 'key',
-                            'value' => $this->config->get('auth.name'),
-                            'type' => 'string',
-                        ],
+        return match ($this->config->get('auth.in')) {
+            "basic" => [
+                'type' => 'basic',
+            ],
+            "bearer" => [
+                'type' => 'bearer',
+            ],
+            default => [
+                'type' => 'apikey',
+                'apikey' => [
+                    [
+                        'key' => 'in',
+                        'value' => $this->config->get('auth.in'),
+                        'type' => 'string',
                     ],
-                ];
-        }
+                    [
+                        'key' => 'key',
+                        'value' => $this->config->get('auth.name'),
+                        'type' => 'string',
+                    ],
+                ],
+            ],
+        };
     }
 
     protected function generateEndpointItem(OutputEndpointData $endpoint): array
@@ -139,17 +136,11 @@ class PostmanCollectionWriter
     {
         $body = [];
         $contentType = $endpoint->headers['Content-Type'] ?? null;
-        switch ($contentType) {
-            case 'multipart/form-data':
-                $inputMode = 'formdata';
-                break;
-            case 'application/x-www-form-urlencoded':
-                $inputMode = 'urlencoded';
-                break;
-            case 'application/json':
-            default:
-                $inputMode = 'raw';
-        }
+        $inputMode = match ($contentType) {
+            'multipart/form-data' => 'formdata',
+            'application/x-www-form-urlencoded' => 'urlencoded',
+            default => 'raw',
+        };
         $body['mode'] = $inputMode;
         $body[$inputMode] = [];
 

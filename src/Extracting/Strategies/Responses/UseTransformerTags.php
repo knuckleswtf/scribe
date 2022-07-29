@@ -9,6 +9,7 @@ use Illuminate\Support\Arr;
 use Knuckles\Scribe\Extracting\DatabaseTransactionHelpers;
 use Knuckles\Scribe\Extracting\InstantiatesExampleModels;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
+use Knuckles\Scribe\Extracting\Shared\TransformerResponseTools;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\AnnotationParser as a;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
@@ -30,80 +31,49 @@ class UseTransformerTags extends Strategy
 
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules = []): ?array
     {
-        $docBlocks = RouteDocBlocker::getDocBlocksFromRoute($endpointData->route);
-        $methodDocBlock = $docBlocks['method'];
-
-        $this->startDbTransaction();
-
-        try {
-            return $this->getTransformerResponse($methodDocBlock->getTags());
-        } catch (Exception $e) {
-            c::warn('Exception thrown when fetching transformer response for '. $endpointData->name());
-            e::dumpExceptionIfVerbose($e);
-
-            return null;
-        } finally {
-            $this->endDbTransaction();
-        }
+        $methodDocBlock = RouteDocBlocker::getDocBlocksFromRoute($endpointData->route)['method'];
+        $tags = $methodDocBlock->getTags();
+        return $this->getTransformerResponseFromTags($tags);
     }
 
     /**
      * Get a response from the @transformer/@transformerCollection and @transformerModel tags.
      *
-     * @param Tag[] $tags
+     * @param Tag[] $allTags
      *
      * @return array|null
      */
-    public function getTransformerResponse(array $tags): ?array
+    public function getTransformerResponseFromTag(Tag $transformerTag, array $allTags): ?array
     {
-        if (empty($transformerTag = $this->getTransformerTag($tags))) {
-            return null;
-        }
+        [$statusCode, $transformerClass, $isCollection] = $this->getStatusCodeAndTransformerClass($transformerTag);
+        [$model, $factoryStates, $relations, $resourceKey] = $this->getClassToBeTransformed($allTags, (new ReflectionClass($transformerClass))->getMethod('transform'));
 
-        [$statusCode, $transformer] = $this->getStatusCodeAndTransformerClass($transformerTag);
-        [$model, $factoryStates, $relations, $resourceKey] = $this->getClassToBeTransformed($tags, (new ReflectionClass($transformer))->getMethod('transform'));
-        $modelInstance = $this->instantiateExampleModel($model, $factoryStates, $relations);
+        $modelInstantiator = fn() => $this->instantiateExampleModel($model, $factoryStates, $relations);
+        $pagination = $this->getTransformerPaginatorData($allTags);
+        $serializer = $this->config->get('fractal.serializer');
 
-        $fractal = new Manager();
+        $this->startDbTransaction();
+        $content = TransformerResponseTools::fetch(
+            $transformerClass, $isCollection, $modelInstantiator, $pagination, $resourceKey, $serializer
+        );
+        $this->endDbTransaction();
 
-        if (!is_null($this->config->get('fractal.serializer'))) {
-            $fractal->setSerializer(app($this->config->get('fractal.serializer')));
-        }
-
-        if ((strtolower($transformerTag->getName()) == 'transformercollection')) {
-            $models = [$modelInstance, $this->instantiateExampleModel($model, $factoryStates, $relations)];
-            $resource = new Collection($models, new $transformer());
-
-            ['adapter' => $paginatorAdapter, 'perPage' => $perPage] = $this->getTransformerPaginatorData($tags);
-            if ($paginatorAdapter) {
-                $total = count($models);
-                // Need to pass only the first page to both adapter and paginator, otherwise they will display ebverything
-                $firstPage = collect($models)->slice(0, $perPage);
-                $resource = new Collection($firstPage, new $transformer(), $resourceKey);
-                $paginator = new LengthAwarePaginator($firstPage, $total, $perPage);
-                $resource->setPaginator(new $paginatorAdapter($paginator));
-            }
-        } else {
-            $resource = (new Item($modelInstance, new $transformer(), $resourceKey));
-        }
-
-        $response = response($fractal->createData($resource)->toJson());
         return [
             [
                 'status' => $statusCode ?: 200,
-                'content' => $response->getContent(),
+                'content' => $content,
             ],
         ];
     }
 
     private function getStatusCodeAndTransformerClass(Tag $tag): array
     {
-        $content = $tag->getContent();
-        preg_match('/^(\d{3})?\s?([\s\S]*)$/', $content, $result);
+        preg_match('/^(\d{3})?\s?([\s\S]*)$/', $tag->getContent(), $result);
         $status = (int)($result[1] ?: 200);
         $transformerClass = $result[2];
+        $isCollection = strtolower($tag->getName()) == 'transformercollection';
 
-        return [$status, $transformerClass];
+        return [$status, $transformerClass, $isCollection];
     }
 
     /**
@@ -162,11 +132,20 @@ class UseTransformerTags extends Strategy
             return ['adapter' => null, 'perPage' => null];
         }
 
-        $content = $tag->getContent();
-        preg_match('/^\s*(.+?)\s+(\d+)?$/', $content, $result);
+        preg_match('/^\s*(.+?)\s+(\d+)?$/', $tag->getContent(), $result);
         $paginatorAdapter = $result[1];
         $perPage = $result[2] ?? null;
 
         return ['adapter' => $paginatorAdapter, 'perPage' => $perPage];
     }
+
+    public function getTransformerResponseFromTags(array $tags): ?array
+    {
+        if (empty($transformerTag = $this->getTransformerTag($tags))) {
+            return null;
+        }
+
+        return $this->getTransformerResponseFromTag($transformerTag, $tags);
+    }
+
 }
