@@ -22,18 +22,21 @@ class GetFromDocBlocks extends Strategy
     {
         [$groupName, $groupDescription, $title] = $this->getEndpointGroupAndTitleDetails($methodDocBlock, $classDocBlock);
 
-        return [
+        $metadata = [
             'groupName' => $groupName,
             'groupDescription' => $groupDescription,
             'subgroup' => $this->getEndpointSubGroup($methodDocBlock, $classDocBlock),
             'subgroupDescription' => $this->getEndpointSubGroupDescription($methodDocBlock, $classDocBlock),
             'title' => $title ?: $methodDocBlock->getShortDescription(),
             'description' => $methodDocBlock->getLongDescription()->getContents(),
-            'authenticated' => $this->getAuthStatusFromDocBlock($methodDocBlock, $classDocBlock),
         ];
+        if (!is_null($authStatus = $this->getAuthStatusFromDocBlock($methodDocBlock, $classDocBlock))) {
+            $metadata['authenticated'] = $authStatus;
+        }
+        return $metadata;
     }
 
-    protected function getAuthStatusFromDocBlock(DocBlock $methodDocBlock, DocBlock $classDocBlock = null): bool
+    protected function getAuthStatusFromDocBlock(DocBlock $methodDocBlock, DocBlock $classDocBlock = null): ?bool
     {
         foreach ($methodDocBlock->getTags() as $tag) {
             if (strtolower($tag->getName()) === 'authenticated') {
@@ -47,7 +50,7 @@ class GetFromDocBlocks extends Strategy
 
         return $classDocBlock
             ? $this->getAuthStatusFromDocBlock($classDocBlock)
-            : $this->config->get('auth.default', false);
+            : null;
     }
 
     /**
@@ -96,7 +99,7 @@ class GetFromDocBlocks extends Strategy
             }
         }
 
-        return [$this->config->get('groups.default'), '', $methodDocBlock->getShortDescription()];
+        return [null, '', $methodDocBlock->getShortDescription()];
     }
 
     protected function getEndpointSubGroup(DocBlock $methodDocBlock, DocBlock $controllerDocBlock): ?string

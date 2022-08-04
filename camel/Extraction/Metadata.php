@@ -7,8 +7,12 @@ use Knuckles\Camel\BaseDTO;
 class Metadata extends BaseDTO
 {
     public ?string $groupName;
+    public ?string $groupDescription;
     public ?string $subgroup;
     public ?string $subgroupDescription;
+    public ?string $title;
+    public ?string $description;
+    public bool $authenticated = false;
 
     /**
      * Name of the group that this group should be placed just before.
@@ -21,12 +25,4 @@ class Metadata extends BaseDTO
      * Only used in custom endpoints, if the endpoint's `groupName` doesn't already exist.
      */
     public ?string $afterGroup;
-
-    public ?string $groupDescription;
-
-    public ?string $title;
-
-    public ?string $description;
-
-    public bool $authenticated = false;
 }

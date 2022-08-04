@@ -24,39 +24,6 @@ class Extractor
 
     private static ?Route $routeBeingProcessed = null;
 
-    private static array $defaultStrategies = [
-        'metadata' => [
-            \Knuckles\Scribe\Extracting\Strategies\Metadata\GetFromDocBlocks::class,
-        ],
-        'urlParameters' => [
-            \Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromLaravelAPI::class,
-            \Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromLumenAPI::class,
-            \Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromUrlParamTag::class,
-        ],
-        'queryParameters' => [
-            \Knuckles\Scribe\Extracting\Strategies\QueryParameters\GetFromQueryParamTag::class,
-        ],
-        'headers' => [
-            \Knuckles\Scribe\Extracting\Strategies\Headers\GetFromRouteRules::class,
-            \Knuckles\Scribe\Extracting\Strategies\Headers\GetFromHeaderTag::class,
-        ],
-        'bodyParameters' => [
-            \Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromFormRequest::class,
-            \Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromInlineValidator::class,
-            \Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromBodyParamTag::class,
-        ],
-        'responses' => [
-            \Knuckles\Scribe\Extracting\Strategies\Responses\UseTransformerTags::class,
-            \Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseTag::class,
-            \Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseFileTag::class,
-            \Knuckles\Scribe\Extracting\Strategies\Responses\UseApiResourceTags::class,
-            \Knuckles\Scribe\Extracting\Strategies\Responses\ResponseCalls::class,
-        ],
-        'responseFields' => [
-            \Knuckles\Scribe\Extracting\Strategies\ResponseFields\GetFromResponseFieldTag::class,
-        ],
-    ];
-
     public function __construct(DocumentationConfig $config = null)
     {
         // If no config is injected, pull from global
@@ -126,10 +93,16 @@ class Extractor
     {
         $endpointData->metadata = new Metadata([
             'groupName' => $this->config->get('groups.default', ''),
+            "authenticated" => $this->config->get("auth.default", false)
         ]);
 
         $this->iterateThroughStrategies('metadata', $endpointData, $rulesToApply, function ($results) use ($endpointData) {
             foreach ($results as $key => $item) {
+                $hadPreviousValue = !is_null($endpointData->metadata->$key);
+                $noNewValueSet = is_null($item) || $item === "";
+                if ($hadPreviousValue && $noNewValueSet) {
+                    continue;
+                }
                 $endpointData->metadata->$key = $item;
             }
         });
@@ -214,7 +187,7 @@ class Extractor
      */
     protected function iterateThroughStrategies(string $stage, ExtractedEndpointData $endpointData, array $rulesToApply, callable $handler): void
     {
-        $strategies = $this->config->get("strategies.$stage", self::$defaultStrategies[$stage]);
+        $strategies = $this->config->get("strategies.$stage", []);
 
         foreach ($strategies as $strategyClass) {
             /** @var Strategy $strategy */

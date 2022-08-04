@@ -26,7 +26,7 @@ DOCBLOCK;
         $classDocblock = '';
         $results = $strategy->getMetadataFromDocBlock(new DocBlock($methodDocblock), new DocBlock($classDocblock));
 
-        $this->assertFalse($results['authenticated']);
+        $this->assertArrayNotHasKey('authenticated', $results);
         $this->assertNull($results['subgroup']);
         $this->assertSame('Endpoint title.', $results['title']);
         $this->assertSame("Endpoint description.\nMultiline.", $results['description']);
@@ -51,7 +51,7 @@ DOCBLOCK;
 DOCBLOCK;
         $results = $strategy->getMetadataFromDocBlock(new DocBlock($methodDocblock), new DocBlock($classDocblock));
 
-        $this->assertFalse($results['authenticated']);
+        $this->assertArrayNotHasKey('authenticated', $results);
         $this->assertNull($results['subgroup']);
         $this->assertSame('Group A', $results['groupName']);
         $this->assertSame('Group description.', $results['groupDescription']);

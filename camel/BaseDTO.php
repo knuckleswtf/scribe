@@ -14,12 +14,7 @@ class BaseDTO extends DataTransferObject implements Arrayable
      */
     public array $custom = [];
 
-    /**
-     * @param array|self $data
-     *
-     * @return static
-     */
-    public static function create($data): self
+    public static function create(BaseDTO|array $data): static
     {
         if ($data instanceof static) {
             return $data;

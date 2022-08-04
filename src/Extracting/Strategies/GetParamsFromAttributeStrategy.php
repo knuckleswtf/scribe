@@ -14,7 +14,9 @@ class GetParamsFromAttributeStrategy extends PhpAttributeStrategy
 {
     use ParamHelpers;
 
-    protected function extractFromAttributes(array $attributesOnMethod, array $attributesOnController, ExtractedEndpointData $endpointData): ?array
+    protected function extractFromAttributes(
+        array $attributesOnMethod, array $attributesOnController,
+        ExtractedEndpointData $endpointData): ?array
     {
         $parameters = [];
         foreach ($attributesOnController as $attributeInstance) {

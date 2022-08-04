@@ -39,12 +39,12 @@ abstract class PhpAttributeStrategy extends Strategy
     {
         $attributesOnMethod = collect($this->attributeNames)
             ->flatMap(fn(string $name) => $method->getAttributes($name))
-            ->map(fn(ReflectionAttribute $a) => $a->newInstance())->toArray();
+            ->map(fn(ReflectionAttribute $a) => $a->newInstance())->all();
 
         if ($class) {
             $attributesOnController = collect($this->attributeNames)
                 ->flatMap(fn(string $name) => $class->getAttributes($name))
-                ->map(fn(ReflectionAttribute $a) => $a->newInstance())->toArray();
+                ->map(fn(ReflectionAttribute $a) => $a->newInstance())->all();
         }
 
         return [$attributesOnMethod, $attributesOnController ?? []];
@@ -57,5 +57,8 @@ abstract class PhpAttributeStrategy extends Strategy
      *
      * @return array|null
      */
-    abstract protected function extractFromAttributes(array $attributesOnMethod, array $attributesOnController, ExtractedEndpointData $endpointData): ?array;
+    abstract protected function extractFromAttributes(
+        array $attributesOnMethod, array $attributesOnController,
+        ExtractedEndpointData $endpointData
+    ): ?array;
 }

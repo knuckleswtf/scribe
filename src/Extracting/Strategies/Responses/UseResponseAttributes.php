@@ -28,7 +28,10 @@ class UseResponseAttributes extends PhpAttributeStrategy
         ResponseFromTransformer::class,
     ];
 
-    protected function extractFromAttributes(array $attributesOnMethod, array $attributesOnController, ExtractedEndpointData $endpointData): ?array
+    protected function extractFromAttributes(
+        array $attributesOnMethod, array $attributesOnController,
+        ExtractedEndpointData $endpointData
+    ): ?array
     {
         $responses = [];
         foreach ([...$attributesOnController, ...$attributesOnMethod] as $attributeInstance) {

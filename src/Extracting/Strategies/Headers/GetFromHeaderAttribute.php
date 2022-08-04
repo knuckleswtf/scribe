@@ -13,7 +13,10 @@ class GetFromHeaderAttribute extends PhpAttributeStrategy
 {
     protected array $attributeNames = [Header::class];
 
-    protected function extractFromAttributes(array $attributesOnMethod, array $attributesOnController, ExtractedEndpointData $endpointData): ?array
+    protected function extractFromAttributes(
+        array $attributesOnMethod, array $attributesOnController,
+        ExtractedEndpointData $endpointData
+    ): ?array
     {
         $headers = [];
         foreach ([...$attributesOnController, ...$attributesOnMethod] as $attributeInstance) {
