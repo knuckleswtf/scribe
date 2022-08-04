@@ -14,13 +14,19 @@ class BaseDTO extends DataTransferObject implements Arrayable
      */
     public array $custom = [];
 
-    public static function create(BaseDTO|array $data): static
+    public static function create(BaseDTO|array $data, BaseDTO|array $inheritFrom = []): static
     {
         if ($data instanceof static) {
             return $data;
         }
 
-        return new static($data);
+        $mergedData = $inheritFrom instanceof static ? $inheritFrom->toArray() : $inheritFrom;
+
+        foreach ($data as $property => $value) {
+            $mergedData[$property] = $value;
+        }
+
+        return new static($mergedData);
     }
 
     protected function parseArray(array $array): array

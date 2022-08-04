@@ -115,7 +115,7 @@ class Extractor
                 if (empty($item['name'])) {
                     $item['name'] = $key;
                 }
-                $endpointData->urlParameters[$key] = Parameter::create($item);
+                $endpointData->urlParameters[$key] = Parameter::create($item, $endpointData->urlParameters[$key] ?? []);
             }
         });
     }
@@ -127,7 +127,7 @@ class Extractor
                 if (empty($item['name'])) {
                     $item['name'] = $key;
                 }
-                $endpointData->queryParameters[$key] = Parameter::create($item);
+                $endpointData->queryParameters[$key] = Parameter::create($item, $endpointData->queryParameters[$key] ?? []);
             }
         });
     }
@@ -139,7 +139,7 @@ class Extractor
                 if (empty($item['name'])) {
                     $item['name'] = $key;
                 }
-                $endpointData->bodyParameters[$key] = Parameter::create($item);
+                $endpointData->bodyParameters[$key] = Parameter::create($item, $endpointData->bodyParameters[$key] ?? []);
             }
         });
     }
@@ -158,7 +158,7 @@ class Extractor
     {
         $this->iterateThroughStrategies('responseFields', $endpointData, $rulesToApply, function ($results) use ($endpointData) {
             foreach ($results as $key => $item) {
-                $endpointData->responseFields[$key] = ResponseField::create($item);
+                $endpointData->responseFields[$key] = Parameter::create($item, $endpointData->responseFields[$key] ?? []);
             }
         });
     }

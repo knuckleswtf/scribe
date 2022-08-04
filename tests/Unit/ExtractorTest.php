@@ -5,6 +5,7 @@ namespace Knuckles\Scribe\Tests\Unit;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Illuminate\Routing\Route;
 use Knuckles\Camel\Extraction\Parameter;
+use Knuckles\Scribe\Attributes\UrlParam;
 use Knuckles\Scribe\Extracting\Extractor;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
@@ -133,7 +134,7 @@ class ExtractorTest extends TestCase
     /** @test */
     public function does_not_generate_values_for_excluded_params_and_excludes_them_from_clean_params()
     {
-        $route = $this->createRoute('POST', '/api/test', 'withExcludedExamples');
+        $route = $this->createRouteOldSyntax('POST', '/api/test', 'withExcludedExamples');
         $parsed = $this->extractor->processRoute($route)->toArray();
         $cleanBodyParameters = $parsed['cleanBodyParameters'];
         $cleanQueryParameters = $parsed['cleanQueryParameters'];
@@ -166,19 +167,19 @@ class ExtractorTest extends TestCase
     /** @test */
     public function can_parse_route_methods()
     {
-        $route = $this->createRoute('GET', '/get', 'withEndpointDescription');
+        $route = $this->createRouteOldSyntax('GET', '/get', 'withEndpointDescription');
         $parsed = $this->extractor->processRoute($route);
         $this->assertEquals(['GET'], $parsed->httpMethods);
 
-        $route = $this->createRoute('POST', '/post', 'withEndpointDescription');
+        $route = $this->createRouteOldSyntax('POST', '/post', 'withEndpointDescription');
         $parsed = $this->extractor->processRoute($route);
         $this->assertEquals(['POST'], $parsed->httpMethods);
 
-        $route = $this->createRoute('PUT', '/put', 'withEndpointDescription');
+        $route = $this->createRouteOldSyntax('PUT', '/put', 'withEndpointDescription');
         $parsed = $this->extractor->processRoute($route);
         $this->assertEquals(['PUT'], $parsed->httpMethods);
 
-        $route = $this->createRoute('DELETE', '/delete', 'withEndpointDescription');
+        $route = $this->createRouteOldSyntax('DELETE', '/delete', 'withEndpointDescription');
         $parsed = $this->extractor->processRoute($route);
         $this->assertEquals(['DELETE'], $parsed->httpMethods);
     }
@@ -189,7 +190,7 @@ class ExtractorTest extends TestCase
      */
     public function adds_appropriate_field_based_on_configured_auth_type($config, $expected)
     {
-        $route = $this->createRoute('POST', '/withAuthenticatedTag', 'withAuthenticatedTag', true);
+        $route = $this->createRouteOldSyntax('POST', '/withAuthenticatedTag', 'withAuthenticatedTag');
         $generator = new Extractor(new DocumentationConfig(array_merge($this->config, $config)));
         $parsed = $generator->processRoute($route, [])->toArray();
         $this->assertNotNull($parsed[$expected['where']][$expected['name']]);
@@ -200,7 +201,7 @@ class ExtractorTest extends TestCase
     /** @test */
     public function generates_consistent_examples_when_faker_seed_is_set()
     {
-        $route = $this->createRoute('POST', '/withBodyParameters', 'withBodyParameters');
+        $route = $this->createRouteOldSyntax('POST', '/withBodyParameters', 'withBodyParameters');
 
         $paramName = 'room_id';
         $results = [];
@@ -225,7 +226,7 @@ class ExtractorTest extends TestCase
     /** @test */
     public function can_use_arrays_in_routes_uses()
     {
-        $route = $this->createRouteUsesArray('GET', '/api/array/test', 'withEndpointDescription');
+        $route = $this->createRoute('GET', '/api/array/test', 'withEndpointDescription');
 
         $parsed = $this->extractor->processRoute($route);
 
@@ -245,7 +246,7 @@ class ExtractorTest extends TestCase
          * @bodyParam name required Name of the location
          */
         $handler = fn () =>  'hi';
-        $route = $this->createRouteUsesCallable('POST', '/api/closure/test', $handler);
+        $route = $this->createClosureRoute('POST', '/api/closure/test', $handler);
 
         $parsed = $this->extractor->processRoute($route);
 
@@ -260,22 +261,22 @@ class ExtractorTest extends TestCase
     /** @test */
     public function endpoint_metadata_supports_custom_declarations()
     {
-        $route = $this->createRoute('POST', '/api/test', 'dummy');
+        $route = $this->createRouteOldSyntax('POST', '/api/test', 'dummy');
         $parsed = $this->extractor->processRoute($route);
         $this->assertSame('some custom metadata', $parsed->metadata->custom['myProperty']);
     }
 
-    public function createRoute(string $httpMethod, string $path, string $controllerMethod, $register = false, $class = TestController::class)
-    {
-        return new Route([$httpMethod], $path, ['uses' => $class . "@$controllerMethod"]);
-    }
-
-    public function createRouteUsesArray(string $httpMethod, string $path, string $controllerMethod, $register = false, $class = TestController::class)
+    public function createRoute(string $httpMethod, string $path, string $controllerMethod, $class = TestController::class)
     {
         return new Route([$httpMethod], $path, ['uses' => [$class, $controllerMethod]]);
     }
 
-    public function createRouteUsesCallable(string $httpMethod, string $path, callable $handler, $register = false)
+    public function createRouteOldSyntax(string $httpMethod, string $path, string $controllerMethod, $class = TestController::class)
+    {
+        return new Route([$httpMethod], $path, ['uses' => $class . "@$controllerMethod"]);
+    }
+
+    public function createClosureRoute(string $httpMethod, string $path, callable $handler)
     {
         return new Route([$httpMethod], $path, ['uses' => $handler]);
     }

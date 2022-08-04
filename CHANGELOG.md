@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Nested response fields are now collapsed ([00b09bb](https://github.com/knuckleswtf/scribe/commit/00b09bbea8ec64006db864bf807004d48926c6d3))
 - Inlined routes (no more Scribe/Controller class)
 - Changed signature of Strategy#invoke ($routeRules is now optional)
+- Parameter data from successive stages is now merged
 
 ## 3.35.0 (27 July 2022)
 ### Modified
