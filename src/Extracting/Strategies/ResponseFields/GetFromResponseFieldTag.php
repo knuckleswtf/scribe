@@ -8,6 +8,8 @@ use Knuckles\Camel\Extraction\ResponseCollection;
 use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
+use Knuckles\Scribe\Tools\Utils as u;
+use Mpociot\Reflection\DocBlock;
 use Mpociot\Reflection\DocBlock\Tag;
 
 class GetFromResponseFieldTag extends Strategy
@@ -18,7 +20,35 @@ class GetFromResponseFieldTag extends Strategy
     {
         $methodDocBlock = RouteDocBlocker::getDocBlocksFromRoute($endpointData->route)['method'];
 
-        return $this->getResponseFieldsFromDocBlock($methodDocBlock->getTags(), $endpointData->responses);
+        return $this->getResponseFieldsFromDocBlock($this->getMergedTags($methodDocBlock->getTags()), $endpointData->responses);
+    }
+
+    /**
+     * Get method and api resource tags
+     *
+     * @param array $tags
+     * @return array
+     * @throws \ReflectionException
+     */
+    public function getMergedTags(array $tags): array
+    {
+        $responseFieldTags = [];
+
+        if ($apiResourceTag = $this->getApiResourceTag($tags)) {
+            $className = $apiResourceTag->getContent();
+
+            if (!empty($className)) {
+                $method = u::getReflectedRouteMethod([$className, 'toArray']);
+                $docBlock = new DocBlock($method->getDocComment() ?: '');
+                $responseFieldTags = $docBlock->getTags();
+
+                if (!empty($responseFieldTags)) {
+                    return array_merge($tags, $responseFieldTags);
+                }
+            }
+        }
+
+        return $tags;
     }
 
     /**
@@ -84,5 +114,23 @@ class GetFromResponseFieldTag extends Strategy
             })->toArray();
 
         return $parameters;
+    }
+
+    /**
+     * Get api resource tag.
+     *
+     * @param Tag[] $tags
+     *
+     * @return Tag|null
+     */
+    public function getApiResourceTag(array $tags): ?Tag
+    {
+        $apiResourceTags = array_values(
+            array_filter($tags, function ($tag) {
+                return ($tag instanceof Tag) && in_array(strtolower($tag->getName()), ['apiresource', 'apiresourcecollection']);
+            })
+        );
+
+        return empty($apiResourceTags) ? null : $apiResourceTags[0];
     }
 }
