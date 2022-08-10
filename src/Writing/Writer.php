@@ -44,7 +44,7 @@ class Writer
     {
         $this->docsName = $docsName;
         $this->markdownOutputPath = ".{$docsName}"; //.scribe by default
-        $this->laravelTypeOutputPath = "resources/views/$docsName";
+        $this->laravelTypeOutputPath = function_exists('base_path') ? base_path("resources/views/$docsName") : "resources/views/$docsName";
         // If no config is injected, pull from global. Makes testing easier.
         $this->config = $config ?: new DocumentationConfig(config($docsName));
 
