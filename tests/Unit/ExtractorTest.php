@@ -4,6 +4,7 @@ namespace Knuckles\Scribe\Tests\Unit;
 
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Illuminate\Routing\Route;
+use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Camel\Extraction\Parameter;
 use Knuckles\Scribe\Attributes\UrlParam;
 use Knuckles\Scribe\Extracting\Extractor;
@@ -266,6 +267,32 @@ class ExtractorTest extends TestCase
         $this->assertSame('some custom metadata', $parsed->metadata->custom['myProperty']);
     }
 
+    /** @test */
+    public function can_override_data_for_inherited_methods()
+    {
+        $route = $this->createRoute('POST', '/api/test', 'endpoint', TestParentController::class);
+        $parent = $this->extractor->processRoute($route);
+        $this->assertSame('Parent title', $parent->metadata->title);
+        $this->assertSame('Parent group name', $parent->metadata->groupName);
+        $this->assertSame('Parent description', $parent->metadata->description);
+        $this->assertCount(1, $parent->responses);
+        $this->assertCount(1, $parent->bodyParameters);
+        $this->assertArraySubset(["type" => "integer"], $parent->bodyParameters['thing']->toArray());
+        $this->assertEmpty($parent->queryParameters);
+
+        $inheritedRoute = $this->createRoute('POST', '/api/test', 'endpoint', TestInheritedController::class);
+        $inherited = $this->extractor->processRoute($inheritedRoute);
+        $this->assertSame('Overridden title', $inherited->metadata->title);
+        $this->assertSame('Overridden group name', $inherited->metadata->groupName);
+        $this->assertSame('Parent description', $inherited->metadata->description);
+        $this->assertCount(0, $inherited->responses);
+        $this->assertCount(2, $inherited->bodyParameters);
+        $this->assertArraySubset(["type" => "integer"], $inherited->bodyParameters['thing']->toArray());
+        $this->assertArraySubset(["type" => "string"], $inherited->bodyParameters["other_thing"]->toArray());
+        $this->assertCount(1, $inherited->queryParameters);
+        $this->assertArraySubset(["type" => "string"], $inherited->queryParameters["queryThing"]->toArray());
+    }
+
     public function createRoute(string $httpMethod, string $path, string $controllerMethod, $class = TestController::class)
     {
         return new Route([$httpMethod], $path, ['uses' => [$class, $controllerMethod]]);
@@ -348,6 +375,58 @@ class ExtractorTest extends TestCase
                     'name' => 'access_token',
                     'where' => 'bodyParameters',
                 ]
+            ],
+        ];
+    }
+}
+
+
+class TestParentController
+{
+    /**
+     * Parent title
+     *
+     * Parent description
+     *
+     * @group Parent group name
+     *
+     * @bodyParam thing integer
+     * @response {"hello":"there"}
+     */
+    public function endpoint()
+    {
+
+    }
+}
+
+class TestInheritedController extends TestParentController
+{
+    public static function inheritedDocsOverrides()
+    {
+        return [
+            "endpoint" => [
+                "metadata" => [
+                    "title" => "Overridden title",
+                    "groupName" => "Overridden group name",
+                ],
+                "queryParameters" => function (ExtractedEndpointData $endpointData) {
+                    // Overrides
+                    return [
+                        'queryThing' => [
+                            'type' => 'string',
+                        ],
+                    ];
+                },
+                "bodyParameters" => [
+                    // Merges
+                    "other_thing" => [
+                        "type" => "string",
+                    ],
+                ],
+                "responses" => function (ExtractedEndpointData $endpointData) {
+                    // Completely overrides responses
+                    return [];
+                },
             ],
         ];
     }

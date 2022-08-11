@@ -11,6 +11,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Knuckles\Camel\Extraction\ResponseCollection;
 use Knuckles\Camel\Extraction\ResponseField;
 use Knuckles\Camel\Output\OutputEndpointData;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
@@ -43,7 +44,6 @@ class Extractor
      * @param array $routeRules Rules to apply when generating documentation for this route
      *
      * @return ExtractedEndpointData
-     * @throws \ReflectionException
      *
      */
     public function processRoute(Route $route, array $routeRules = []): ExtractedEndpointData
@@ -51,20 +51,32 @@ class Extractor
         self::$routeBeingProcessed = $route;
 
         $endpointData = ExtractedEndpointData::fromRoute($route);
+
+        $inheritedDocsOverrides = [];
+        if ($endpointData?->controller->hasMethod('inheritedDocsOverrides')) {
+            $inheritedDocsOverrides = call_user_func([$endpointData->controller->getName(), 'inheritedDocsOverrides']);
+            $inheritedDocsOverrides = $inheritedDocsOverrides[$endpointData->method->getName()] ?? [];
+        }
+
         $this->fetchMetadata($endpointData, $routeRules);
+        $this->mergeInheritedMethodsData('metadata', $endpointData, $inheritedDocsOverrides);
 
         $this->fetchUrlParameters($endpointData, $routeRules);
+        $this->mergeInheritedMethodsData('urlParameters', $endpointData, $inheritedDocsOverrides);
         $endpointData->cleanUrlParameters = self::cleanParams($endpointData->urlParameters);
 
         $this->addAuthField($endpointData);
 
         $this->fetchQueryParameters($endpointData, $routeRules);
+        $this->mergeInheritedMethodsData('queryParameters', $endpointData, $inheritedDocsOverrides);
         $endpointData->cleanQueryParameters = self::cleanParams($endpointData->queryParameters);
 
         $this->fetchRequestHeaders($endpointData, $routeRules);
+        $this->mergeInheritedMethodsData('headers', $endpointData, $inheritedDocsOverrides);
 
         $this->fetchBodyParameters($endpointData, $routeRules);
         $endpointData->cleanBodyParameters = self::cleanParams($endpointData->bodyParameters);
+        $this->mergeInheritedMethodsData('bodyParameters', $endpointData, $inheritedDocsOverrides);
 
         if (count($endpointData->cleanBodyParameters) && !isset($endpointData->headers['Content-Type'])) {
             // Set content type if the user forgot to set it
@@ -81,8 +93,10 @@ class Extractor
         $endpointData->cleanBodyParameters = $regularParameters;
 
         $this->fetchResponses($endpointData, $routeRules);
+        $this->mergeInheritedMethodsData('responses', $endpointData, $inheritedDocsOverrides);
 
         $this->fetchResponseFields($endpointData, $routeRules);
+        $this->mergeInheritedMethodsData('responseFields', $endpointData, $inheritedDocsOverrides);
 
         self::$routeBeingProcessed = null;
 
@@ -93,7 +107,7 @@ class Extractor
     {
         $endpointData->metadata = new Metadata([
             'groupName' => $this->config->get('groups.default', ''),
-            "authenticated" => $this->config->get("auth.default", false)
+            "authenticated" => $this->config->get("auth.default", false),
         ]);
 
         $this->iterateThroughStrategies('metadata', $endpointData, $rulesToApply, function ($results) use ($endpointData) {
@@ -444,7 +458,7 @@ class Extractor
                 // When the body is an array, param names will be  "[].paramname",
                 // so $parts is ['[]']
                 if ($parts[0] == '[]') {
-                    $dotPathToParent = '[]'.$dotPathToParent;
+                    $dotPathToParent = '[]' . $dotPathToParent;
                 }
 
                 $dotPath = $dotPathToParent . '.__fields.' . $fieldName;
@@ -470,5 +484,40 @@ class Extractor
         }
 
         return $finalParameters;
+    }
+
+    protected function mergeInheritedMethodsData(string $stage, ExtractedEndpointData $endpointData, array $inheritedDocsOverrides = []): void
+    {
+        $overrides = $inheritedDocsOverrides[$stage] ?? [];
+        $normalizeparamData = fn($data, $key) => array_merge($data, ["name" => $key]);
+        if (is_array($overrides)) {
+            foreach ($overrides as $key => $item) {
+                switch ($stage) {
+                    case "responses":
+                        $endpointData->responses->concat($overrides);
+                        $endpointData->responses->sortBy('status');
+                        break;
+                    case "urlParameters":
+                    case "bodyParameters":
+                    case "queryParameters":
+                        $endpointData->$stage[$key] = Parameter::make($normalizeparamData($item, $key));
+                        break;
+                    case "responseFields":
+                        $endpointData->$stage[$key] = ResponseField::make($normalizeparamData($item, $key));
+                        break;
+                    default:
+                        $endpointData->$stage[$key] = $item;
+                }
+            }
+        } else if (is_callable($overrides)) {
+            $results = $overrides($endpointData);
+
+            $endpointData->$stage = match ($stage) {
+                "responses" => ResponseCollection::make($results),
+                "urlParameters", "bodyParameters", "queryParameters" => collect($results)->map(fn($param, $name) => Parameter::make($normalizeparamData($param, $name)))->all(),
+                "responseFields" => collect($results)->map(fn($field, $name) => ResponseField::make($normalizeparamData($field, $name)))->all(),
+                default => $results,
+            };
+        }
     }
 }

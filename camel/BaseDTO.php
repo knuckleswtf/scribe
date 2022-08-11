@@ -6,7 +6,7 @@ use Illuminate\Contracts\Support\Arrayable;
 use Spatie\DataTransferObject\DataTransferObject;
 
 
-class BaseDTO extends DataTransferObject implements Arrayable
+class BaseDTO extends DataTransferObject implements Arrayable, \ArrayAccess
 {
     /**
      * @var array $custom
@@ -47,5 +47,30 @@ class BaseDTO extends DataTransferObject implements Arrayable
         }
 
         return $array;
+    }
+
+    public static function make(array|self $data): static
+    {
+        return $data instanceof static ? $data : new static($data);
+    }
+
+    public function offsetExists(mixed $offset): bool
+    {
+        return isset($this->$offset);
+    }
+
+    public function offsetGet(mixed $offset): mixed
+    {
+        return $this->$offset;
+    }
+
+    public function offsetSet(mixed $offset, mixed $value): void
+    {
+        $this->$offset = $value;
+    }
+
+    public function offsetUnset(mixed $offset): void
+    {
+        unset($this->$offset);
     }
 }
