@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Inlined routes (no more Scribe/Controller class)
 - Changed signature of Strategy#invoke ($routeRules is now optional)
 - Parameter data from successive stages is now merged
+- Basic support for overriding docs for inherited methods ([9735fdf](9735fdf150469f186bab395fcfabd042f570c50c))
 
 ## 3.35.0 (27 July 2022)
 ### Modified
