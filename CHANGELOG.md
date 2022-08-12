@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+## 3.36.0 (12 August 2022)
+### Modified
+- Support `@responseField` on Eloquent API resources ([#505](https://github.com/knuckleswtf/scribe/pull/505))
+
 ## 3.35.0 (27 July 2022)
 ### Modified
 - Use correct folders when generating in multi-docs ([ac47c67](https://github.com/knuckleswtf/scribe/commit/ac47c67eeb5d47cd30db74302d1cdd97720dd695))
