@@ -230,7 +230,7 @@ class Writer
     {
         if ($this->isStatic) return null;
 
-        return config('view.paths.0', "resources/views")."/$this->docsName";
+        return config('view.paths.0', function_exists('base_path') ? base_path("resources/views") : "resources/views")."/$this->docsName";
     }
 
 }

@@ -41,4 +41,22 @@ class GetFromResponseFieldTag extends GetFieldsFromTagStrategy
 
         return $data;
     }
+
+    /**
+     * Get api resource tag.
+     *
+     * @param Tag[] $tags
+     *
+     * @return Tag|null
+     */
+    public function getApiResourceTag(array $tags): ?Tag
+    {
+        $apiResourceTags = array_values(
+            array_filter($tags, function ($tag) {
+                return ($tag instanceof Tag) && in_array(strtolower($tag->getName()), ['apiresource', 'apiresourcecollection']);
+            })
+        );
+
+        return empty($apiResourceTags) ? null : $apiResourceTags[0];
+    }
 }
