@@ -28,6 +28,15 @@ trait TestHelpers
         );
     }
 
+    protected function generateAndExpectConsoleOutput(string ...$expectedOutput): void
+    {
+        $output = $this->generate();
+
+        foreach ($expectedOutput as $expected) {
+            $this->assertStringContainsString($expected, $output);
+        }
+    }
+
     protected function assertFileContainsString(string $filePath, string $string)
     {
         $this->assertFileExists($filePath);

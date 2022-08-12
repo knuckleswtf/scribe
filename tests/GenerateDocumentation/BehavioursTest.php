@@ -187,12 +187,20 @@ class BehavioursTest extends BaseLaravelTest
         Utils::deleteDirectoryAndContents('static/');
     }
 
-    protected function generateAndExpectConsoleOutput(string ...$expectedOutput): void
+    /** @test */
+    public function checks_for_upgrades_after_run_unless_disabled()
     {
-        $output = $this->generate();
+        file_put_contents("config/scribe_test.php", str_replace("'logo' => false,", "", file_get_contents("config/scribe.php")));
+        config(["scribe_test" => require "config/scribe_test.php"]);
 
-        foreach ($expectedOutput as $expected) {
-            $this->assertStringContainsString($expected, $output);
-        }
+        $output = $this->artisan('scribe:generate', ['--config' => 'scribe_test']);
+        $this->assertStringContainsString("Checking for any pending upgrades to your config file...", $output);
+        $this->assertStringContainsString("`logo` will be added", $output);
+
+        $output = $this->artisan('scribe:generate', ['--config' => 'scribe_test', '--no-upgrade-check' => true]);
+        $this->assertStringNotContainsString("Checking for any pending upgrades to your config file...", $output);
+
+        unlink("config/scribe_test.php");
+        Utils::deleteDirectoryAndContents(".scribe_test");
     }
 }

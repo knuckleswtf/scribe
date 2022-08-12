@@ -4,6 +4,7 @@ namespace Knuckles\Scribe\Extracting\Strategies\ResponseFields;
 
 use Knuckles\Scribe\Extracting\Shared\ResponseFieldTools;
 use Knuckles\Scribe\Extracting\Strategies\GetFieldsFromTagStrategy;
+use Mpociot\Reflection\DocBlock;
 
 class GetFromResponseFieldTag extends GetFieldsFromTagStrategy
 {
@@ -42,21 +43,20 @@ class GetFromResponseFieldTag extends GetFieldsFromTagStrategy
         return $data;
     }
 
-    /**
-     * Get api resource tag.
-     *
-     * @param Tag[] $tags
-     *
-     * @return Tag|null
-     */
-    public function getApiResourceTag(array $tags): ?Tag
+    public function getFromTags(array $tagsOnMethod, array $tagsOnClass = []): array
     {
         $apiResourceTags = array_values(
-            array_filter($tags, function ($tag) {
-                return ($tag instanceof Tag) && in_array(strtolower($tag->getName()), ['apiresource', 'apiresourcecollection']);
+            array_filter($tagsOnMethod, function ($tag) {
+                return in_array(strtolower($tag->getName()), ['apiresource', 'apiresourcecollection']);
             })
         );
 
-        return empty($apiResourceTags) ? null : $apiResourceTags[0];
+        if ($apiResourceTags && !empty($className = $apiResourceTags[0]->getContent())) {
+            $method = u::getReflectedRouteMethod([$className, 'toArray']);
+            $docBlock = new DocBlock($method->getDocComment() ?: '');
+            $tagsOnApiResource = $docBlock->getTags();
+        }
+
+        return parent::getFromTags(array_merge($tagsOnMethod, $tagsOnApiResource ?? []), $tagsOnClass);
     }
 }

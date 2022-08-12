@@ -113,7 +113,12 @@ class OutputTest extends BaseLaravelTest
         config(['scribe.postman.enabled' => true]);
         config(['scribe.openapi.enabled' => true]);
 
-        $this->generate();
+        $this->generateAndExpectConsoleOutput(
+            "Wrote Blade docs to: vendor/orchestra/testbench-core/laravel/resources/views/scribe",
+            "Wrote Laravel assets to: vendor/orchestra/testbench-core/laravel/public/vendor/scribe",
+            "Wrote Postman collection to: vendor/orchestra/testbench-core/laravel/storage/app/scribe/collection.json",
+            "Wrote OpenAPI specification to: vendor/orchestra/testbench-core/laravel/storage/app/scribe/openapi.yaml",
+        );
 
         $this->assertFileExists($this->postmanOutputPath(true));
         $this->assertFileExists($this->openapiOutputPath(true));
@@ -142,7 +147,19 @@ class OutputTest extends BaseLaravelTest
         config(['scribe_admin.postman.enabled' => true]);
         config(['scribe_admin.openapi.enabled' => true]);
 
-        $this->generate(["--config" => "scribe_admin"]);
+        $output = $this->generate(["--config" => "scribe_admin"]);
+        $this->assertStringContainsString(
+            "Wrote Blade docs to: vendor/orchestra/testbench-core/laravel/resources/views/scribe_admin", $output
+        );
+        $this->assertStringContainsString(
+            "Wrote Laravel assets to: vendor/orchestra/testbench-core/laravel/public/vendor/scribe_admin", $output
+        );
+        $this->assertStringContainsString(
+            "Wrote Postman collection to: vendor/orchestra/testbench-core/laravel/storage/app/scribe_admin/collection.json", $output
+        );
+        $this->assertStringContainsString(
+            "Wrote OpenAPI specification to: vendor/orchestra/testbench-core/laravel/storage/app/scribe_admin/openapi.yaml", $output
+        );
 
         $paths = collect([
             Storage::disk('local')->path('scribe_admin/collection.json'),
@@ -177,7 +194,10 @@ class OutputTest extends BaseLaravelTest
         ]);
         config(['scribe.postman.enabled' => true]);
 
-        $this->generate();
+        $this->generateAndExpectConsoleOutput(
+            "Wrote HTML docs and assets to: public/docs/",
+            "Wrote Postman collection to: public/docs/collection.json"
+        );
 
         $generatedCollection = json_decode(file_get_contents($this->postmanOutputPath()), true);
         // The Postman ID varies from call to call; erase it to make the test data reproducible.
@@ -207,7 +227,10 @@ class OutputTest extends BaseLaravelTest
             ],
         ]);
 
-        $this->generate();
+        $this->generateAndExpectConsoleOutput(
+            "Wrote HTML docs and assets to: public/docs/",
+            "Wrote OpenAPI specification to: public/docs/openapi.yaml"
+        );
 
         $generatedSpec = Yaml::parseFile($this->openapiOutputPath());
         $fixtureSpec = Yaml::parseFile(__DIR__ . '/../Fixtures/openapi.yaml');

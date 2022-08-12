@@ -54,7 +54,7 @@ class Writer
 
         $this->laravelAssetsPath = $this->config->get('laravel.assets_directory')
             ? '/' . $this->config->get('laravel.assets_directory')
-            : '/vendor/scribe';
+            : "/vendor/$this->docsName";
     }
 
     /**
@@ -87,12 +87,11 @@ class Writer
                 file_put_contents($collectionPath, $collection);
             } else {
                 Storage::disk('local')->put("{$this->docsName}/collection.json", $collection);
-                $collectionPath = "storage/app/{$this->docsName}/collection.json";
+                $collectionPath = Storage::disk('local')->path("$this->docsName/collection.json");
             }
 
-            c::success("Wrote Postman collection to: {$collectionPath}");
-            $this->generatedFiles['postman'] = realpath($collectionPath)
-                ?: Storage::disk('local')->path('scribe/collection.json');
+            c::success("Wrote Postman collection to: {$this->makePathFriendly($collectionPath)}");
+            $this->generatedFiles['postman'] = realpath($collectionPath);
         }
     }
 
@@ -107,12 +106,11 @@ class Writer
                 file_put_contents($specPath, $spec);
             } else {
                 Storage::disk('local')->put("{$this->docsName}/openapi.yaml", $spec);
-                $specPath = "storage/app/{$this->docsName}/openapi.yaml";
+                $specPath = Storage::disk('local')->path("$this->docsName/openapi.yaml");
             }
 
-            c::success("Wrote OpenAPI specification to: {$specPath}");
-            $this->generatedFiles['openapi'] = realpath($specPath)
-                ?: Storage::disk('local')->path('scribe/openapi.yaml');
+            c::success("Wrote OpenAPI specification to: {$this->makePathFriendly($specPath)}");
+            $this->generatedFiles['openapi'] = realpath($specPath);
         }
     }
 
@@ -208,10 +206,10 @@ class Writer
             $assetsOutputPath = $outputPath;
         } else {
             $outputPath = rtrim($this->laravelTypeOutputPath, '/') . '/';
-            c::success("Wrote Blade docs to: $outputPath");
+            c::success("Wrote Blade docs to: ". $this->makePathFriendly($outputPath));
             $this->generatedFiles['blade'] = realpath("{$outputPath}index.blade.php");
             $assetsOutputPath = app()->get('path.public') . $this->laravelAssetsPath . '/';
-            c::success("Wrote Laravel assets to: " . realpath($assetsOutputPath));
+            c::success("Wrote Laravel assets to: " . $this->makePathFriendly($assetsOutputPath));
         }
         $this->generatedFiles['assets']['js'] = realpath("{$assetsOutputPath}js");
         $this->generatedFiles['assets']['css'] = realpath("{$assetsOutputPath}css");
@@ -231,6 +229,17 @@ class Writer
         if ($this->isStatic) return null;
 
         return config('view.paths.0', function_exists('base_path') ? base_path("resources/views") : "resources/views")."/$this->docsName";
+    }
+
+    /**
+     * Turn a path from (possibly) C:\projects\myapp\resources\views
+     * or /projects/myapp/resources/views  to resources/views ie:
+     * - make it relative to PWD
+     * - normalise all slashes to forward slashes
+     */
+    protected function makePathFriendly(string $path): string
+    {
+        return str_replace("\\", "/", str_replace(getcwd() . DIRECTORY_SEPARATOR, "", $path));
     }
 
 }
