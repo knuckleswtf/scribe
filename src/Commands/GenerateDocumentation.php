@@ -41,6 +41,12 @@ class GenerateDocumentation extends Command
     {
         $this->bootstrap();
 
+        if (!empty($this->docConfig->get("default_group"))) {
+            $this->warn("It looks like you just upgraded to Scribe v4.");
+            $this->warn("Please run the upgrade command first: `php artisan scribe:upgrade`.");
+            exit(1);
+        }
+
         $groupedEndpointsInstance = $groupedEndpointsFactory->make($this, $routeMatcher, $this->configName);
 
         $userDefinedEndpoints = Camel::loadUserDefinedEndpoints(Camel::camelDir($this->configName));
@@ -187,7 +193,7 @@ class GenerateDocumentation extends Command
             $upgrader = Upgrader::ofConfigFile("config/{$this->configName}.php", __DIR__ . '/../../config/scribe.php')
                 ->dontTouch(
                     'routes', 'example_languages', 'database_connections_to_transact', 'strategies', 'laravel.middleware',
-                    'postman.overrides', 'openapi.overrides'
+                    'postman.overrides', 'openapi.overrides', 'groups'
                 );
             $changes = $upgrader->dryRun();
             if (!empty($changes)) {
