@@ -511,6 +511,9 @@ trait ParsesValidationRules
                     : null;
             }
         } else if (!is_null($parameterData['example']) && $parameterData['example'] !== self::$MISSING_VALUE) {
+            if($parameterData['example'] === 'No-example' && !$parameterData['required']){
+                return null;
+            }
             // Casting again is important since values may have been cast to string in the validator
             return $this->castToType($parameterData['example'], $parameterData['type']);
         }
