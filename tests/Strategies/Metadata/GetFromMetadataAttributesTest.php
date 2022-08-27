@@ -8,6 +8,7 @@ use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
 use Knuckles\Scribe\Attributes\Subgroup;
+use Knuckles\Scribe\Attributes\Unauthenticated;
 use Knuckles\Scribe\Extracting\Strategies\Metadata\GetFromMetadataAttributes;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use PHPUnit\Framework\TestCase;
@@ -81,6 +82,23 @@ class UseMetadataAttributesTest extends TestCase
             "description" => "",
             "authenticated" => false,
         ], $results);
+
+        $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
+            $e->controller = new ReflectionClass(MetadataAttributesTestController2::class);
+            $e->method = $e->controller->getMethod('c1');
+        });
+        $results = $this->fetch($endpoint);
+        $this->assertArraySubset([
+            "authenticated" => true,
+        ], $results);
+        $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
+            $e->controller = new ReflectionClass(MetadataAttributesTestController2::class);
+            $e->method = $e->controller->getMethod('c2');
+        });
+        $results = $this->fetch($endpoint);
+        $this->assertArraySubset([
+            "authenticated" => false,
+        ], $results);
     }
 
     protected function fetch($endpoint): array
@@ -129,6 +147,19 @@ class MetadataAttributesTestController
     #[Subgroup("SG BA")]
     #[Endpoint("Endpoint B1")]
     public function b1()
+    {
+    }
+}
+
+#[Authenticated]
+class MetadataAttributesTestController2
+{
+    public function c1()
+    {
+    }
+
+    #[Unauthenticated]
+    public function c2()
     {
     }
 }

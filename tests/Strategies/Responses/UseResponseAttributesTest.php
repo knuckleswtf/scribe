@@ -211,14 +211,14 @@ class ResponseAttributesTestController
     }
 
     #[ResponseFromApiResource(TestUserApiResource::class, TestUser::class, collection: true,
-        factoryStates: ["state1", "random-state"], simplePaginate: 1, additionalData: ["a" => "b"])]
+        factoryStates: ["state1", "random-state"], simplePaginate: 1, additional: ["a" => "b"])]
     public function apiResourceAttributes()
     {
 
     }
 
     #[ResponseFromTransformer(TestTransformer::class, TestModel::class, collection: true,
-        paginate: [1, IlluminatePaginatorAdapter::class])]
+        paginate: [IlluminatePaginatorAdapter::class, 1])]
     public function transformerAttributes()
     {
 

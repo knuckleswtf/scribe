@@ -18,10 +18,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Support for specifying example model sources ([39ff208](https://github.com/knuckleswtf/scribe/commit/39ff208085d68eed4c459768ac5a1120934f021a))
 - Support for subgroups ([7cf07738](https://github.com/knuckleswtf/scribe/commit/7cf0773864fbdd1772fea9a5ff9e7ffd3360d7d2),[2ebf40b](https://github.com/knuckleswtf/scribe/commit/2ebf40b5e5be309bf5e685a0cd58bb70856b033d))
 - Nested response fields are now collapsed ([00b09bb](https://github.com/knuckleswtf/scribe/commit/00b09bbea8ec64006db864bf807004d48926c6d3))
-- Inlined routes (no more Scribe/Controller class)
-- Changed signature of Strategy#invoke ($routeRules is now optional)
+- `add_routes` now uses inline routes (no more `Scribe\Controller` class)
+- Changed signature of Strategy ($routeRules is now optional,and there's now an instance var $endpointData, although it's not set by default)
 - Parameter data from successive stages is now merged
 - Basic support for overriding docs for inherited methods ([9735fdf](9735fdf150469f186bab395fcfabd042f570c50c))
+- note views may have changed
 
 ## 3.36.0 (12 August 2022)
 ### Modified

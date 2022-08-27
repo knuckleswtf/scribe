@@ -18,12 +18,12 @@ trait InstantiatesExampleModels
      */
     protected function instantiateExampleModel(string $type, array $factoryStates = [], array $relations = [])
     {
-        $configuredStrategies = $this->config->get('examples.models_source', ['factoryCreate', 'factoryMake', 'database']);
+        $configuredStrategies = $this->config->get('examples.models_source', ['factoryCreate', 'factoryMake', 'databaseFirst']);
 
         $strategies = [
             'factoryCreate' => fn() => $this->getExampleModelFromFactoryCreate($type, $factoryStates, $relations),
             'factoryMake' => fn() => $this->getExampleModelFromFactoryMake($type, $factoryStates, $relations),
-            'database' => fn() => $this->getExampleModelFromDatabase($type, $relations),
+            'databaseFirst' => fn() => $this->getExampleModelFromDatabaseFirst($type, $relations),
         ];
 
         foreach ($configuredStrategies as $strategyName) {
@@ -51,7 +51,7 @@ trait InstantiatesExampleModels
         return $factory->make();
     }
 
-    protected function getExampleModelFromDatabase(string $type, array $relations = [])
+    protected function getExampleModelFromDatabaseFirst(string $type, array $relations = [])
     {
         return $type::with($relations)->first();
     }

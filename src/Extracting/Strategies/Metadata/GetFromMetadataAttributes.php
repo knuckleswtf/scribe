@@ -11,6 +11,7 @@ use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 use Knuckles\Scribe\Attributes\ResponseFromFile;
 use Knuckles\Scribe\Attributes\ResponseFromTransformer;
 use Knuckles\Scribe\Attributes\Subgroup;
+use Knuckles\Scribe\Attributes\Unauthenticated;
 use Knuckles\Scribe\Extracting\DatabaseTransactionHelpers;
 use Knuckles\Scribe\Extracting\InstantiatesExampleModels;
 use Knuckles\Scribe\Extracting\ParamHelpers;
@@ -30,6 +31,7 @@ class GetFromMetadataAttributes extends PhpAttributeStrategy
         Subgroup::class,
         Endpoint::class,
         Authenticated::class,
+        Unauthenticated::class,
     ];
 
     protected function extractFromAttributes(

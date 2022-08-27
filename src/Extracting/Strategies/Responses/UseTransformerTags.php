@@ -4,7 +4,6 @@ namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Exception;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Knuckles\Scribe\Extracting\DatabaseTransactionHelpers;
 use Knuckles\Scribe\Extracting\InstantiatesExampleModels;
@@ -12,12 +11,7 @@ use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Knuckles\Scribe\Extracting\Shared\TransformerResponseTools;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\AnnotationParser as a;
-use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
-use Knuckles\Scribe\Tools\ErrorHandlingUtils as e;
 use Knuckles\Scribe\Tools\Utils;
-use League\Fractal\Manager;
-use League\Fractal\Resource\Collection;
-use League\Fractal\Resource\Item;
 use Mpociot\Reflection\DocBlock\Tag;
 use ReflectionClass;
 use ReflectionFunctionAbstract;
@@ -132,11 +126,14 @@ class UseTransformerTags extends Strategy
             return ['adapter' => null, 'perPage' => null];
         }
 
-        preg_match('/^\s*(.+?)\s+(\d+)?$/', $tag->getContent(), $result);
+        preg_match('/^\s*(.+?)(\s+\d+)?$/', $tag->getContent(), $result);
         $paginatorAdapter = $result[1];
         $perPage = $result[2] ?? null;
+        if ($perPage) {
+            $perPage = trim($perPage);
+        }
 
-        return ['adapter' => $paginatorAdapter, 'perPage' => $perPage];
+        return ['adapter' => $paginatorAdapter, 'perPage' => $perPage ?: null];
     }
 
     public function getTransformerResponseFromTags(array $tags): ?array

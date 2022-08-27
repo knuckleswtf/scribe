@@ -95,7 +95,7 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
      */
     private function extractEndpointsInfoFromLaravelApp(array $matches, array $cachedEndpoints, array $latestEndpointsData, array $groups): array
     {
-        $generator = $this->makeExtractor();
+        $extractor = $this->makeExtractor();
 
         $parsedEndpoints = [];
 
@@ -120,7 +120,7 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
 
             try {
                 c::info('Processing route: ' . c::getRouteRepresentation($route));
-                $currentEndpointData = $generator->processRoute($route, $routeItem->getRules());
+                $currentEndpointData = $extractor->processRoute($route, $routeItem->getRules());
                 // If latest data is different from cached data, merge latest into current
                 [$currentEndpointData, $index] = $this->mergeAnyEndpointDataUpdates($currentEndpointData, $cachedEndpoints, $latestEndpointsData, $groups);
 

@@ -61,7 +61,7 @@ class UseResponseAttributes extends PhpAttributeStrategy
         $this->startDbTransaction();
         $content = ApiResourceResponseTools::fetch(
             $attributeInstance->name, $attributeInstance->collection, $modelInstantiator,
-            $this->endpointData, $pagination, $attributeInstance->additionalData,
+            $this->endpointData, $pagination, $attributeInstance->additional,
         );
         $this->endDbTransaction();
 
@@ -76,7 +76,9 @@ class UseResponseAttributes extends PhpAttributeStrategy
     {
         $modelInstantiator = fn() => $this->instantiateExampleModel($attributeInstance->model, $attributeInstance->factoryStates, $attributeInstance->with);
 
-        $pagination = ['perPage' => $attributeInstance->paginate[0], 'adapter' => $attributeInstance->paginate[1]];
+        $pagination = [
+            'perPage' => $attributeInstance->paginate[1] ?? null, 'adapter' => $attributeInstance->paginate[0]
+        ];
         $this->startDbTransaction();
         $content = TransformerResponseTools::fetch(
             $attributeInstance->name, $attributeInstance->collection, $modelInstantiator,

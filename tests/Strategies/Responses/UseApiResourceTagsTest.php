@@ -92,7 +92,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     /** @test */
     public function respects_models_source_settings()
     {
-        $config = new DocumentationConfig(['examples' => ['models_source' => ['database', 'factoryMake']]]);
+        $config = new DocumentationConfig(['examples' => ['models_source' => ['databaseFirst', 'factoryMake']]]);
         $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
 
         $strategy = new UseApiResourceTags($config);

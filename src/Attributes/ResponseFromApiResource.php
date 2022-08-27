@@ -11,16 +11,16 @@ class ResponseFromApiResource
         public string  $name,
         public string  $model,
         public int     $status = 200,
+        public ?string $description = '',
+
         /* Mark if this should be used as a collection. Only needed if not using a ResourceCollection. */
         public bool    $collection = false,
-
-        public ?string $description = '',
         public array   $factoryStates = [],
         public array   $with = [],
 
         public ?int    $paginate = null,
         public ?int    $simplePaginate = null,
-        public array   $additionalData = [],
+        public array   $additional = [],
     )
     {
     }

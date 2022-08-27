@@ -5,6 +5,7 @@ namespace Knuckles\Scribe\Extracting\Strategies\ResponseFields;
 use Knuckles\Scribe\Extracting\Shared\ResponseFieldTools;
 use Knuckles\Scribe\Extracting\Strategies\GetFieldsFromTagStrategy;
 use Mpociot\Reflection\DocBlock;
+use Knuckles\Scribe\Tools\Utils as u;
 
 class GetFromResponseFieldTag extends GetFieldsFromTagStrategy
 {

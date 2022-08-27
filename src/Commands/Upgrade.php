@@ -3,6 +3,7 @@
 namespace Knuckles\Scribe\Commands;
 
 use Illuminate\Console\Command;
+use Knuckles\Scribe\Tools\Globals;
 use Shalvah\Upgrader\Upgrader;
 
 class Upgrade extends Command
@@ -27,7 +28,9 @@ class Upgrade extends Command
             return;
         }
 
-        $this->info("Welcome to the Scribe v3 to v4 upgrader.");
+        $isMajorUpgrade = array_key_exists("default_group", $oldConfig) || array_key_exists("faker_seed", $oldConfig);
+
+        $isMajorUpgrade && $this->info("Welcome to the Scribe v3 to v4 upgrader.");
         $this->line("Checking for config file changes...");
 
         $upgrader = Upgrader::ofConfigFile("config/$configName.php", __DIR__ . '/../../config/scribe.php')
@@ -53,6 +56,17 @@ class Upgrade extends Command
         }
         $this->newLine();
 
+        if (!$isMajorUpgrade) {
+            $this->info("✔ Done.");
+            $this->info(sprintf("See the full changelog at https://github.com/knuckleswtf/scribe/blob/%s/CHANGELOG.md", Globals::SCRIBE_VERSION));
+            return;
+        }
+
+        $this->upgradeToV4();
+    }
+
+    protected function upgradeToV4(): void
+    {
         if ($this->confirm("Do you have any custom strategies?")) {
             $this->line('1. Add a new property <info>public ?ExtractedEndpointData $endpointData;</info>.');
             $this->line('2. Replace the <info>array $routeRules</info> parameter in __invoke() with <info>array $routeRules = []</info> .');
@@ -62,18 +76,10 @@ class Upgrade extends Command
         if ($this->confirm("Did you customize the Blade templates used by Scribe?")) {
             $this->warn('A few minor changes were made to the templates. See the release announcement for details.');
         }
-        $this->newLine();
-
-        $this->line("Scribe now supports PHP 8 attributes for annotations. "
-            . "You can use both, but we recommend switching to attributes (see the docs).");
-        if ($this->confirm("Would you like help in replacing your docblock tags with attributes?")) {
-            $this->warn('Install our Rector package knuckleswtf/scribe-rector-t2a and run it.');
-        }
-        $this->warn("For attributes to work, you need to add the attribute strategies to your config file. See the release announcement for details.");
 
         $this->newLine();
         $this->info("✔ Done.");
-        $this->line("See the release announcement at <href=https://scribe.knuckles.wtf/v4>http://scribe.knuckles.wtf/v4</> for the full upgrade guide!");
+        $this->line("See the release announcement at <href=https://scribe.knuckles.wtf/blog/laravel-v4>http://scribe.knuckles.wtf/blog/laravel-v4</> for the full upgrade guide!");
     }
 
 }

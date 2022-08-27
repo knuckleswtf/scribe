@@ -29,11 +29,11 @@ class GenerateDocumentation extends Command
 
     protected $description = 'Generate API documentation from your Laravel/Dingo routes.';
 
-    private DocumentationConfig $docConfig;
+    protected DocumentationConfig $docConfig;
 
-    private bool $shouldExtract;
+    protected bool $shouldExtract;
 
-    private bool $forcing;
+    protected bool $forcing;
 
     protected string $configName;
 

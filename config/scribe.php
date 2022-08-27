@@ -358,7 +358,7 @@ INTRO
          * By default, Scribe will try the model's factory, and if that fails, try fetching the first from the database.
          * You can reorder or remove strategies here.
          */
-        'models_source' => ['factoryCreate', 'factoryMake', 'database'],
+        'models_source' => ['factoryCreate', 'factoryMake', 'databaseFirst'],
     ],
 
     /**

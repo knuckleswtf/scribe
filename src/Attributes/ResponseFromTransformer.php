@@ -11,15 +11,15 @@ class ResponseFromTransformer
         public string $name,
         public string $model,
         public int $status = 200,
-        /* Mark if this should be used as a collection. */
-        public bool $collection = false,
-
         public ?string $description = '',
+
+        /* Mark if this should be used as a collection. Only needed if not using a CollectionTransformer. */
+        public bool $collection = false,
         public array $factoryStates = [],
         public array $with = [],
         public ?string $resourceKey = null,
 
-        /* Format: [numberPerPage, adapter]. Example: [10, SomePaginator::class] */
+        /* Format: [adapter, numberPerPage]. Example: [SomePaginator::class, 10] */
         public array $paginate = [],
     ) {
     }

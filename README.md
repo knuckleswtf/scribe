@@ -7,7 +7,7 @@
 </p>
 
 
-> [v3 is out now](https://scribe.knuckles.wtf/blog/2021/06/08/laravel-v3)!
+> [v4 is out now](https://scribe.knuckles.wtf/blog/laravel-v4)!
 
 Scribe helps you generate API documentation for humans from your Laravel/Lumen/[Dingo](https://github.com/dingo/api) codebase. See a live example at [demo.scribe.knuckles.wtf](https://demo.scribe.knuckles.wtf).
 
@@ -26,7 +26,7 @@ Scribe helps you generate API documentation for humans from your Laravel/Lumen/[
 ## Documentation
 Check out the documentation at [scribe.knuckles.wtf/laravel](http://scribe.knuckles.wtf/laravel).
 
-If you're coming from `mpociot/laravel-apidoc-generator`, there's a [migration guide](https://scribe.knuckles.wtf/laravel/migrating-apidoc).
+If you're coming from `mpociot/laravel-apidoc-generator`, first [migrate to v3](http://scribe.knuckles.wtf/blog/laravel/3.x/migrating-apidoc)`, then [to v4](http://scribe.knuckles.wtf/blog/laravel/migrating-v4).
 
 ## Contributing
 Contributing is easy! See our [contribution guide](https://scribe.knuckles.wtf/laravel/contributing).

@@ -60,42 +60,43 @@ class GetFromDocBlocks extends Strategy
     {
         foreach ($methodDocBlock->getTags() as $tag) {
             if ($tag->getName() === 'group') {
-                $routeGroupParts = explode("\n", trim($tag->getContent()));
-                $routeGroupName = array_shift($routeGroupParts);
-                $routeGroupDescription = trim(implode("\n", $routeGroupParts));
+                $endpointGroupParts = explode("\n", trim($tag->getContent()));
+                $endpointGroupName = array_shift($endpointGroupParts);
+                $endpointGroupDescription = trim(implode("\n", $endpointGroupParts));
 
-                // If the route has no title (the methodDocBlock's "short description"),
-                // we'll assume the routeGroupDescription is actually the title
+                // If the endpoint has no title (the methodDocBlock's "short description"),
+                // we'll assume the endpointGroupDescription is actually the title
                 // Something like this:
                 // /**
-                //   * Fetch cars. <-- This is route title.
+                //   * Fetch cars. <-- This is endpoint title.
                 //   * @group Cars <-- This is group name.
                 //   * APIs for cars. <-- This is group description (not required).
                 //   **/
                 // VS
                 // /**
                 //   * @group Cars <-- This is group name.
-                //   * Fetch cars. <-- This is route title, NOT group description.
+                //   * Fetch cars. <-- This is endpoint title, NOT group description.
                 //   **/
 
                 // BTW, this is a spaghetti way of doing this.
                 // It shall be refactored soon. Deus vult!💪
+                // ...Or maybe not
                 if (empty($methodDocBlock->getShortDescription())) {
-                    return [$routeGroupName, '', $routeGroupDescription];
+                    return [$endpointGroupName, '', $endpointGroupDescription];
                 }
 
-                return [$routeGroupName, $routeGroupDescription, $methodDocBlock->getShortDescription()];
+                return [$endpointGroupName, $endpointGroupDescription, $methodDocBlock->getShortDescription()];
             }
         }
 
         // Fall back to the controller
         foreach ($controllerDocBlock->getTags() as $tag) {
             if ($tag->getName() === 'group') {
-                $routeGroupParts = explode("\n", trim($tag->getContent()));
-                $routeGroupName = array_shift($routeGroupParts);
-                $routeGroupDescription = implode("\n", $routeGroupParts);
+                $endpointGroupParts = explode("\n", trim($tag->getContent()));
+                $endpointGroupName = array_shift($endpointGroupParts);
+                $endpointGroupDescription = implode("\n", $endpointGroupParts);
 
-                return [$routeGroupName, $routeGroupDescription, $methodDocBlock->getShortDescription()];
+                return [$endpointGroupName, $endpointGroupDescription, $methodDocBlock->getShortDescription()];
             }
         }
 

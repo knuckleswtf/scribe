@@ -9,9 +9,9 @@ use Knuckles\Scribe\Extracting\Shared\ResponseFileTools;
 class ResponseFromFile
 {
     public function __construct(
-        public ?string $file = null,
+        public string $file,
         public int $status = 200,
-        public array $merge = [],
+        public array|string $merge = [],
         public ?string $description = '',
     ) {
     }
