@@ -31,6 +31,7 @@ class TestRequest extends FormRequest
             'user_id' => 'int|required',
             'room_id' => ['string'],
             'forever' => 'boolean',
+            'no_example_attribute' => 'numeric',
             'another_one' => 'numeric',
             'even_more_param' => 'array',
             'book.name' => 'string',
@@ -58,6 +59,10 @@ class TestRequest extends FormRequest
             ],
             'another_one' => [
                 'description' => 'Just need something here.',
+            ],
+            'no_example_attribute' => [
+                'description' => 'Attribute without example.',
+                'example' => 'No-example',
             ],
             'even_more_param' => [
                 'description' => '',

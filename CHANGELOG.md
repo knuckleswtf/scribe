@@ -24,6 +24,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Basic support for overriding docs for inherited methods ([9735fdf](9735fdf150469f186bab395fcfabd042f570c50c))
 - note views may have changed
 
+## 3.37.0 (27 August 2022)
+### Modified
+- Support `"No-example"` as `example` value in `bodyParameters()` and friends ([#511](https://github.com/knuckleswtf/scribe/pull/511))
+
 ## 3.36.0 (12 August 2022)
 ### Modified
 - Support `@responseField` on Eloquent API resources ([#505](https://github.com/knuckleswtf/scribe/pull/505))

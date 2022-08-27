@@ -46,6 +46,12 @@ class GetFromFormRequestTest extends BaseLaravelTest
                 'required' => false,
                 'description' => 'Just need something here.',
             ],
+            'no_example_attribute' => [
+                'type' => 'number',
+                'required' => false,
+                'description' => 'Attribute without example.',
+                'example' => null,
+            ],
             'even_more_param' => [
                 'type' => 'string[]',
                 'required' => false,
