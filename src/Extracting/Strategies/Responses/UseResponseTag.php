@@ -36,10 +36,10 @@ class UseResponseTag extends Strategy
             $status = $result[1] ?: 200;
             $content = $result[2] ?: '{}';
 
-            ['attributes' => $attributes, 'content' => $content] = a::parseIntoContentAndAttributes($content, ['status', 'scenario']);
+            ['fields' => $fields, 'content' => $content] = a::parseIntoContentAndFields($content, ['status', 'scenario']);
 
-            $status = $attributes['status'] ?: $status;
-            $description = $attributes['scenario'] ? "$status, {$attributes['scenario']}" : "$status";
+            $status = $fields['status'] ?: $status;
+            $description = $fields['scenario'] ? "$status, {$fields['scenario']}" : "$status";
 
             return ['content' => $content, 'status' => (int) $status, 'description' => $description];
         }, $responseTags);

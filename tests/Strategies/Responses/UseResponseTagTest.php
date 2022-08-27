@@ -63,7 +63,7 @@ class UseResponseTagTest extends TestCase
                 ],
             ],
 
-            "with attributes" => [
+            "with fields" => [
                 [
                     new Tag('response', "scenario=\"success\" $response1"),
                     new Tag('response', "status=401 scenario='auth problem' $response2"),

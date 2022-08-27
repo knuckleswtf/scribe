@@ -9,42 +9,42 @@ class AnnotationParser
      * Fields are always optional and may appear at the start or the end of the string.
      *
      * @param string $annotationContent
-     * @param array $allowedAttributes List of attributes to look for.
+     * @param array $allowedFields List of fields to look for.
      *
-     * @return array{content: string, attributes: string[]}
+     * @return array{content: string, fields: string[]}
      */
-    public static function parseIntoContentAndAttributes(string $annotationContent, array $allowedAttributes): array
+    public static function parseIntoContentAndFields(string $annotationContent, array $allowedFields): array
     {
-        $parsedAttributes = array_fill_keys($allowedAttributes, null);
+        $parsedFields = array_fill_keys($allowedFields, null);
 
-        foreach ($allowedAttributes as $attribute) {
-            preg_match("/$attribute=([^\\s'\"]+|\".+?\"|'.+?')\\s*/", $annotationContent, $attributeAndValue);
+        foreach ($allowedFields as $field) {
+            preg_match("/$field=([^\\s'\"]+|\".+?\"|'.+?')\\s*/", $annotationContent, $fieldAndValue);
 
-            if (count($attributeAndValue)) {
-                [$matchingText, $attributeValue] = $attributeAndValue;
+            if (count($fieldAndValue)) {
+                [$matchingText, $attributeValue] = $fieldAndValue;
                 $annotationContent = str_replace($matchingText, '', $annotationContent);
 
-                $parsedAttributes[$attribute] = trim($attributeValue, '"\' ');
+                $parsedFields[$field] = trim($attributeValue, '"\' ');
             }
         }
 
         return [
             'content' => trim($annotationContent),
-            'attributes' => $parsedAttributes
+            'fields' => $parsedFields
         ];
     }
 
     /**
      * Parse an annotation like 'title=This message="everything good"' into a key-value array.
      * All non key-value fields will be ignored. Useful for `@apiResourceAdditional`,
-     * where users may specify arbitrary attributes.
+     * where users may specify arbitrary fields.
      *
      * @param string $annotationContent
      * @return array
      */
-    public static function parseIntoAttributes(string $annotationContent): array
+    public static function parseIntoFields(string $annotationContent): array
     {
-        $attributes = $matches = [];
+        $fields = $matches = [];
 
         preg_match_all(
             '/([^\s\'"]+|".+?"|\'.+?\')=([^\s\'"]+|".+?"|\'.+?\')/',
@@ -54,9 +54,9 @@ class AnnotationParser
         );
 
         foreach ($matches as $match) {
-            $attributes[trim($match[1], '"\' ')] = trim($match[2], '"\' ');
+            $fields[trim($match[1], '"\' ')] = trim($match[2], '"\' ');
         }
 
-        return $attributes;
+        return $fields;
     }
 }

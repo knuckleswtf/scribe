@@ -74,11 +74,11 @@ class UseApiResourceTags extends Strategy
         $status = $result[1] ?: 0;
         $content = $result[2];
 
-        ['attributes' => $attributes, 'content' => $content] = a::parseIntoContentAndAttributes($content, ['status', 'scenario']);
+        ['fields' => $fields, 'content' => $content] = a::parseIntoContentAndFields($content, ['status', 'scenario']);
 
-        $status = $attributes['status'] ?: $status;
+        $status = $fields['status'] ?: $status;
         $apiResourceClass = $content;
-        $description = $attributes['scenario'] ? "$status, {$attributes['scenario']}" : "$status";
+        $description = $fields['scenario'] ? "$status, {$fields['scenario']}" : "$status";
 
         $isCollection = strtolower($tag->getName()) == 'apiresourcecollection';
         return [(int)$status, $description, $apiResourceClass, $isCollection];
@@ -94,10 +94,10 @@ class UseApiResourceTags extends Strategy
         $pagination = [];
 
         if ($modelTag) {
-            ['content' => $modelClass, 'attributes' => $attributes] = a::parseIntoContentAndAttributes($modelTag->getContent(), ['states', 'with', 'paginate']);
-            $states = $attributes['states'] ? explode(',', $attributes['states']) : [];
-            $relations = $attributes['with'] ? explode(',', $attributes['with']) : [];
-            $pagination = $attributes['paginate'] ? explode(',', $attributes['paginate']) : [];
+            ['content' => $modelClass, 'fields' => $fields] = a::parseIntoContentAndFields($modelTag->getContent(), ['states', 'with', 'paginate']);
+            $states = $fields['states'] ? explode(',', $fields['states']) : [];
+            $relations = $fields['with'] ? explode(',', $fields['with']) : [];
+            $pagination = $fields['paginate'] ? explode(',', $fields['paginate']) : [];
         }
 
         if (empty($modelClass)) {
@@ -117,7 +117,7 @@ class UseApiResourceTags extends Strategy
     private function getAdditionalData(array $tags): array
     {
         $tag = Arr::first(Utils::filterDocBlockTags($tags, 'apiresourceadditional'));
-        return $tag ? a::parseIntoAttributes($tag->getContent()) : [];
+        return $tag ? a::parseIntoFields($tag->getContent()) : [];
     }
 
     public function getApiResourceTag(array $tags): ?Tag

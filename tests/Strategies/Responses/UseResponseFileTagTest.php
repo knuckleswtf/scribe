@@ -60,7 +60,7 @@ class UseResponseFileTagTest extends TestCase
                 ],
             ],
 
-            "with attributes" => [
+            "with fields" => [
                 [
                     new Tag('responseFile', 'scenario="success" tests/Fixtures/response_test.json'),
                     new Tag('responseFile', 'status=401 scenario=\'auth problem\' tests/Fixtures/response_error_test.json'),

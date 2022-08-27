@@ -9,43 +9,43 @@ class AnnotationParserTest extends TestCase
 {
     /**
      * @test
-     * @dataProvider annotationsWithContentAndAttributes
+     * @dataProvider annotationsWithContentAndFields
      */
-    public function can_parse_annotation_into_content_and_attributes(string $annotation, array $expected)
+    public function can_parse_annotation_into_content_and_fields(string $annotation, array $expected)
     {
-        $result = AnnotationParser::parseIntoContentAndAttributes($annotation, ['status', 'scenario']);
+        $result = AnnotationParser::parseIntoContentAndFields($annotation, ['status', 'scenario']);
 
         $this->assertEquals($expected, $result);
     }
 
-    public function annotationsWithContentAndAttributes()
+    public function annotationsWithContentAndFields()
     {
         return [
-            "when attributes come first" => [
+            "when fields come first" => [
                 'status=400 scenario="things go wrong" {"message": "failed"}',
                 [
-                    'attributes' => ['status' => '400', 'scenario' => 'things go wrong'],
+                    'fields' => ['status' => '400', 'scenario' => 'things go wrong'],
                     'content' => '{"message": "failed"}',
                 ],
             ],
-            "when attributes come last" => [
+            "when fields come last" => [
                 '{"message": "failed"} status=400 scenario="things go wrong"',
                 [
-                    'attributes' => ['status' => '400', 'scenario' => 'things go wrong'],
+                    'fields' => ['status' => '400', 'scenario' => 'things go wrong'],
                     'content' => '{"message": "failed"}',
                 ],
             ],
-            "when there are no attributes" => [
+            "when there are no fields" => [
                 '{"message": "failed"} ',
                 [
-                    'attributes' => ['status' => null, 'scenario' => null],
+                    'fields' => ['status' => null, 'scenario' => null],
                     'content' => '{"message": "failed"}',
                 ],
             ],
-            "when there are some attributes" => [
+            "when there are some fields" => [
                 ' status=hey {"message": "failed"} ',
                 [
-                    'attributes' => ['status' => 'hey', 'scenario' => null],
+                    'fields' => ['status' => 'hey', 'scenario' => null],
                     'content' => '{"message": "failed"}',
                 ],
             ],
@@ -54,16 +54,16 @@ class AnnotationParserTest extends TestCase
 
     /**
      * @test
-     * @dataProvider annotationsWithAttributes
+     * @dataProvider annotationsWithFields
      */
-    public function can_parse_annotation_into_attributes(string $annotation, array $expected)
+    public function can_parse_annotation_into_fields(string $annotation, array $expected)
     {
-        $result = AnnotationParser::parseIntoAttributes($annotation);
+        $result = AnnotationParser::parseIntoFields($annotation);
 
         $this->assertEquals($expected, $result);
     }
 
-    public function annotationsWithAttributes()
+    public function annotationsWithFields()
     {
         return [
             "with or without quotes" => [
@@ -75,11 +75,11 @@ class AnnotationParserTest extends TestCase
                     'snaked_data' => 'value'
                 ]
             ],
-            "no attributes" => [
+            "no fields" => [
                 '{"message": "failed"}',
                 []
             ],
-            "attributes with empty values" => [
+            "fields with empty values" => [
                 'title= message="everything good"',
                 [
                     'message' => 'everything good'
