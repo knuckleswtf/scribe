@@ -489,7 +489,7 @@ class Extractor
     protected function mergeInheritedMethodsData(string $stage, ExtractedEndpointData $endpointData, array $inheritedDocsOverrides = []): void
     {
         $overrides = $inheritedDocsOverrides[$stage] ?? [];
-        $normalizeparamData = fn($data, $key) => array_merge($data, ["name" => $key]);
+        $normalizeParamData = fn($data, $key) => array_merge($data, ["name" => $key]);
         if (is_array($overrides)) {
             foreach ($overrides as $key => $item) {
                 switch ($stage) {
@@ -500,10 +500,10 @@ class Extractor
                     case "urlParameters":
                     case "bodyParameters":
                     case "queryParameters":
-                        $endpointData->$stage[$key] = Parameter::make($normalizeparamData($item, $key));
+                        $endpointData->$stage[$key] = Parameter::make($normalizeParamData($item, $key));
                         break;
                     case "responseFields":
-                        $endpointData->$stage[$key] = ResponseField::make($normalizeparamData($item, $key));
+                        $endpointData->$stage[$key] = ResponseField::make($normalizeParamData($item, $key));
                         break;
                     default:
                         $endpointData->$stage[$key] = $item;
@@ -514,8 +514,8 @@ class Extractor
 
             $endpointData->$stage = match ($stage) {
                 "responses" => ResponseCollection::make($results),
-                "urlParameters", "bodyParameters", "queryParameters" => collect($results)->map(fn($param, $name) => Parameter::make($normalizeparamData($param, $name)))->all(),
-                "responseFields" => collect($results)->map(fn($field, $name) => ResponseField::make($normalizeparamData($field, $name)))->all(),
+                "urlParameters", "bodyParameters", "queryParameters" => collect($results)->map(fn($param, $name) => Parameter::make($normalizeParamData($param, $name)))->all(),
+                "responseFields" => collect($results)->map(fn($field, $name) => ResponseField::make($normalizeParamData($field, $name)))->all(),
                 default => $results,
             };
         }

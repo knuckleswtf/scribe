@@ -11,8 +11,7 @@
     "homepage": "http://github.com/knuckleswtf/scribe",
     "authors": [
         {
-            "name": "Shalvah",
-            "email": "hello@shalvah.me"
+            "name": "Shalvah"
         }
     ],
     "require": {
