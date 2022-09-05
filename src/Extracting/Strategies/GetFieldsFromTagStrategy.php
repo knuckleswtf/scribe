@@ -3,7 +3,6 @@
 namespace Knuckles\Scribe\Extracting\Strategies;
 
 use Knuckles\Scribe\Extracting\ParamHelpers;
-use Mpociot\Reflection\DocBlock\Tag;
 
 abstract class GetFieldsFromTagStrategy extends TagStrategyWithFormRequestFallback
 {

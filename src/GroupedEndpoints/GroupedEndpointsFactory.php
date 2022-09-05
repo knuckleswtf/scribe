@@ -2,7 +2,6 @@
 
 namespace Knuckles\Scribe\GroupedEndpoints;
 
-use Knuckles\Camel\Camel;
 use Knuckles\Scribe\Commands\GenerateDocumentation;
 use Knuckles\Scribe\Matching\RouteMatcherInterface;
 

@@ -2,17 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting\Shared;
 
-use Exception;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
-use Knuckles\Camel\Extraction\ExtractedEndpointData;
-use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
-use Knuckles\Scribe\Tools\ErrorHandlingUtils as e;
-use Knuckles\Scribe\Tools\Utils;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;

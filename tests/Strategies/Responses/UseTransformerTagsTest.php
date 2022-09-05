@@ -3,7 +3,6 @@
 namespace Knuckles\Scribe\Tests\Strategies\Responses;
 
 use Knuckles\Scribe\Extracting\Strategies\Responses\UseTransformerTags;
-use Knuckles\Scribe\ScribeServiceProvider;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestUser;
 use Knuckles\Scribe\Tools\DocumentationConfig;

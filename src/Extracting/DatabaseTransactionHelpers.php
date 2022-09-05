@@ -4,7 +4,6 @@ namespace Knuckles\Scribe\Extracting;
 
 use Knuckles\Scribe\Exceptions\DatabaseTransactionsNotSupported;
 use Knuckles\Scribe\Tools\DocumentationConfig;
-use Knuckles\Scribe\Tools\Globals;
 use PDOException;
 
 trait DatabaseTransactionHelpers

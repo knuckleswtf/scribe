@@ -31,7 +31,7 @@ class MatchedRoute implements \ArrayAccess
         return is_callable([$this, 'get' . ucfirst($offset)]);
     }
 
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         return call_user_func([$this, 'get' . ucfirst($offset)]);
     }

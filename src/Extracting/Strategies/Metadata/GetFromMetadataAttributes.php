@@ -6,17 +6,9 @@ use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
-use Knuckles\Scribe\Attributes\Response;
-use Knuckles\Scribe\Attributes\ResponseFromApiResource;
-use Knuckles\Scribe\Attributes\ResponseFromFile;
-use Knuckles\Scribe\Attributes\ResponseFromTransformer;
 use Knuckles\Scribe\Attributes\Subgroup;
 use Knuckles\Scribe\Attributes\Unauthenticated;
-use Knuckles\Scribe\Extracting\DatabaseTransactionHelpers;
-use Knuckles\Scribe\Extracting\InstantiatesExampleModels;
 use Knuckles\Scribe\Extracting\ParamHelpers;
-use Knuckles\Scribe\Extracting\Shared\ApiResourceResponseTools;
-use Knuckles\Scribe\Extracting\Shared\TransformerResponseTools;
 use Knuckles\Scribe\Extracting\Strategies\PhpAttributeStrategy;
 
 /**

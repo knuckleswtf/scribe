@@ -4,8 +4,6 @@ namespace Knuckles\Scribe\Tests\Fixtures;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Validation\ValidationException;
-use Knuckles\Scribe\Tests\Unit\ExtractorTest;
 use Knuckles\Scribe\Tools\Utils;
 
 /**

@@ -36,5 +36,11 @@ abstract class TagStrategyWithFormRequestFallback extends Strategy
         return $this->getFromTags($methodDocBlock->getTags(), $classTags);
     }
 
+    /**
+     * @param \Mpociot\Reflection\DocBlock\Tag[] $tagsOnMethod
+     * @param \Mpociot\Reflection\DocBlock\Tag[] $tagsOnClass
+     *
+     * @return array
+     */
     abstract public function getFromTags(array $tagsOnMethod, array $tagsOnClass = []): array;
 }

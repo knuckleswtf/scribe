@@ -3,7 +3,6 @@
 namespace Knuckles\Scribe\GroupedEndpoints;
 
 use Knuckles\Camel\Camel;
-use Knuckles\Scribe\Commands\GenerateDocumentation;
 
 class GroupedEndpointsFromCamelDir implements GroupedEndpointsContract
 {

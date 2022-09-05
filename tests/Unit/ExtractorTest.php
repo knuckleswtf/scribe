@@ -6,7 +6,6 @@ use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Illuminate\Routing\Route;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Camel\Extraction\Parameter;
-use Knuckles\Scribe\Attributes\UrlParam;
 use Knuckles\Scribe\Extracting\Extractor;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;

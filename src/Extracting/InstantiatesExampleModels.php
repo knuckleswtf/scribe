@@ -2,7 +2,6 @@
 
 namespace Knuckles\Scribe\Extracting;
 
-use Illuminate\Database\Eloquent\Model;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\ErrorHandlingUtils as e;
 use Knuckles\Scribe\Tools\Utils;
@@ -11,10 +10,11 @@ use Throwable;
 trait InstantiatesExampleModels
 {
     /**
-     * @param string $type
+     * @param class-string $type
+     * @param string[] $factoryStates
+     * @param string[] $relations
      *
-     * @param array $relations
-     * @param array $factoryStates
+     * @return \Illuminate\Database\Eloquent\Model|object
      */
     protected function instantiateExampleModel(string $type, array $factoryStates = [], array $relations = [])
     {
@@ -39,18 +39,36 @@ trait InstantiatesExampleModels
         return new $type;
     }
 
+    /**
+     * @param class-string $type
+     * @param string[] $factoryStates
+     *
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
     protected function getExampleModelFromFactoryCreate(string $type, array $factoryStates = [], array $relations = [])
     {
         $factory = Utils::getModelFactory($type, $factoryStates, $relations);
         return $factory->create()->load($relations);
     }
 
+    /**
+     * @param class-string $type
+     * @param string[] $factoryStates
+     *
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
     protected function getExampleModelFromFactoryMake(string $type, array $factoryStates = [], array $relations = [])
     {
         $factory = Utils::getModelFactory($type, $factoryStates, $relations);
         return $factory->make();
     }
 
+    /**
+     * @param class-string $type
+     * @param string[] $relations
+     *
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
     protected function getExampleModelFromDatabaseFirst(string $type, array $relations = [])
     {
         return $type::with($relations)->first();

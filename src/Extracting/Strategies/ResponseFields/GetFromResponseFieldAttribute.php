@@ -3,7 +3,6 @@
 namespace Knuckles\Scribe\Extracting\Strategies\ResponseFields;
 
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
-use Knuckles\Camel\Extraction\Response;
 use Knuckles\Scribe\Attributes\ResponseField;
 use Knuckles\Scribe\Extracting\Shared\ResponseFieldTools;
 use Knuckles\Scribe\Extracting\Strategies\PhpAttributeStrategy;

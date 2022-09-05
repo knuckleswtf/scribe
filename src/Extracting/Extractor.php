@@ -53,7 +53,7 @@ class Extractor
         $endpointData = ExtractedEndpointData::fromRoute($route);
 
         $inheritedDocsOverrides = [];
-        if ($endpointData?->controller->hasMethod('inheritedDocsOverrides')) {
+        if ($endpointData->controller->hasMethod('inheritedDocsOverrides')) {
             $inheritedDocsOverrides = call_user_func([$endpointData->controller->getName(), 'inheritedDocsOverrides']);
             $inheritedDocsOverrides = $inheritedDocsOverrides[$endpointData->method->getName()] ?? [];
         }

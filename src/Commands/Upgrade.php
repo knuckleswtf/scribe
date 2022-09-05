@@ -30,7 +30,7 @@ class Upgrade extends Command
 
         $isMajorUpgrade = array_key_exists("default_group", $oldConfig) || array_key_exists("faker_seed", $oldConfig);
 
-        $isMajorUpgrade && $this->info("Welcome to the Scribe v3 to v4 upgrader.");
+        if ($isMajorUpgrade) $this->info("Welcome to the Scribe v3 to v4 upgrader.");
         $this->line("Checking for config file changes...");
 
         $upgrader = Upgrader::ofConfigFile("config/$configName.php", __DIR__ . '/../../config/scribe.php')

@@ -35,6 +35,7 @@ class UseResponseAttributes extends PhpAttributeStrategy
     {
         $responses = [];
         foreach ([...$attributesOnController, ...$attributesOnMethod] as $attributeInstance) {
+            /* @phpstan-ignore-next-line */
             $responses[] = match (get_class($attributeInstance)) {
                 Response::class => $attributeInstance->toArray(),
                 ResponseFromFile::class => $attributeInstance->toArray(),

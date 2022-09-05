@@ -17,3 +17,4 @@ parameters:
         - '/Instantiated class League\\Flysystem\\Adapter\\Local not found./'
         - '/Parameter #1 \$adapter of class League\\Flysystem\\Filesystem constructor expects League\\Flysystem\\FilesystemAdapter, League\\Flysystem\\Adapter\\Local given./'
         - '/Call to method getPathPrefix\(\) on an unknown class League\\Flysystem\\Adapter\\Local/'
+        - '/Access to an undefined property Knuckles\\Scribe\\Extracting\\Shared\\ResponseFieldTools::\$config./'

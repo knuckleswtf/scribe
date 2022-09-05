@@ -2,9 +2,7 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\Responses;
 
-use Illuminate\Support\Facades\Route as RouteFacade;
 use Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseFileTag;
-use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Mpociot\Reflection\DocBlock\Tag;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;

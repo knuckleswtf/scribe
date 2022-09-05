@@ -2,9 +2,7 @@
 
 namespace Knuckles\Camel;
 
-use ArrayIterator;
 use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Spatie\DataTransferObject\DataTransferObjectCollection;
 

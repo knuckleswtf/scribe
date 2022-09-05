@@ -16,7 +16,7 @@ abstract class PhpAttributeStrategy extends Strategy
     use ParamHelpers;
 
     /**
-     * @var array<class-string<T>>
+     * @var string[]
      */
     protected array $attributeNames;
 

@@ -2,7 +2,6 @@
 
 namespace Knuckles\Scribe\Exceptions;
 
-use Knuckles\Scribe\Exceptions\ScribeException;
 use RuntimeException;
 
 class DatabaseTransactionsNotSupported extends RuntimeException implements ScribeException
