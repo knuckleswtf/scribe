@@ -221,7 +221,11 @@ class UrlParamsNormalizer
         }
 
         if (interface_exists($argumentClassName)) {
-            return app($argumentClassName);
+            try {
+                return app($argumentClassName);
+            } catch (\Throwable $e) {
+                return null;
+            }
         }
 
         return null;
