@@ -44,6 +44,9 @@ class GetFromResponseFieldTag extends GetFieldsFromTagStrategy
         return $data;
     }
 
+    /**
+     * Get responseField tags from the controller method or the API resource class.
+     */
     public function getFromTags(array $tagsOnMethod, array $tagsOnClass = []): array
     {
         $apiResourceTags = array_values(
@@ -52,12 +55,29 @@ class GetFromResponseFieldTag extends GetFieldsFromTagStrategy
             })
         );
 
-        if ($apiResourceTags && !empty($className = $apiResourceTags[0]->getContent())) {
+        if (!empty($apiResourceTags) &&
+            !empty($className = $this->getClassNameFromApiResourceTag($apiResourceTags[0]->getContent()))
+        ) {
             $method = u::getReflectedRouteMethod([$className, 'toArray']);
             $docBlock = new DocBlock($method->getDocComment() ?: '');
             $tagsOnApiResource = $docBlock->getTags();
         }
 
         return parent::getFromTags(array_merge($tagsOnMethod, $tagsOnApiResource ?? []), $tagsOnClass);
+    }
+
+    /**
+     * An API resource tag may contain a status code before the class name,
+     * so this method parses out the class name.
+     */
+    public function getClassNameFromApiResourceTag(string $apiResourceTag): string
+    {
+        if (!str_contains($apiResourceTag, ' ')) {
+            return $apiResourceTag;
+        }
+
+        $exploded = explode(' ', $apiResourceTag);
+
+        return $exploded[count($exploded) - 1];
     }
 }
