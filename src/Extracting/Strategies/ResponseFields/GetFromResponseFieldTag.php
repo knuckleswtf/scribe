@@ -35,7 +35,7 @@ class GetFromResponseFieldTag extends Strategy
         $responseFieldTags = [];
 
         if ($apiResourceTag = $this->getApiResourceTag($tags)) {
-            $className = $apiResourceTag->getContent();
+            $className = $this->getClassNameFromApiResourceTag($apiResourceTag->getContent());
 
             if (!empty($className)) {
                 $method = u::getReflectedRouteMethod([$className, 'toArray']);
@@ -132,5 +132,25 @@ class GetFromResponseFieldTag extends Strategy
         );
 
         return empty($apiResourceTags) ? null : $apiResourceTags[0];
+    }
+
+    /**
+     * Get class name from api resource tag.
+     *
+     * The api resource tag may contain response status code (e.g.: 201),
+     * so first must be separated the response code from class name.
+     *
+     * @param string $apiResourceTag
+     * @return string
+     */
+    public function getClassNameFromApiResourceTag(string $apiResourceTag): string
+    {
+        if (strpos($apiResourceTag, ' ') ===  false) {
+            return $apiResourceTag;
+        }
+
+        $exploded = explode(' ', $apiResourceTag);
+
+        return $exploded[count($exploded) - 1];
     }
 }
