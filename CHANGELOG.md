@@ -12,6 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+## 3.37.1 (5 September 2022)
+### Fixed
+- Fix regression in parsing status code from API resource tags ([#516](https://github.com/knuckleswtf/scribe/pull/516))
+- Don't crash if instantiation of method argument fails ([#515](https://github.com/knuckleswtf/scribe/pull/515))
+
 ## 3.37.0 (27 August 2022)
 ### Added
 - Support `"No-example"` as `example` value in `bodyParameters()` and friends ([#511](https://github.com/knuckleswtf/scribe/pull/511))
