@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+## 3.37.2 (8 September 2022)
+### Fixed
+- Multi-docs: Use correct routes in Laravel view ([a41e717](https://github.com/knuckleswtf/scribe/commit/a41e71707b3a33e4c80614c678c389c9fd5196de))
+
 ## 3.37.1 (5 September 2022)
 ### Fixed
 - Fix regression in parsing API resource tags that have a status code when generating response fields ([#516](https://github.com/knuckleswtf/scribe/pull/516))
