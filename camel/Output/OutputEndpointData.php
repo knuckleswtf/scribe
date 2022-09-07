@@ -89,19 +89,19 @@ class OutputEndpointData extends BaseDTO
     public function __construct(array $parameters = [])
     {
         // spatie/dto currently doesn't auto-cast nested DTOs like that
-        $parameters['responses'] = new ResponseCollection($parameters['responses']);
+        $parameters['responses'] = new ResponseCollection($parameters['responses'] ?? []);
         $parameters['bodyParameters'] = array_map(function ($param) {
             return new Parameter($param);
-        }, $parameters['bodyParameters']);
+        }, $parameters['bodyParameters'] ?? []);
         $parameters['queryParameters'] = array_map(function ($param) {
             return new Parameter($param);
-        }, $parameters['queryParameters']);
+        }, $parameters['queryParameters'] ?? []);
         $parameters['urlParameters'] = array_map(function ($param) {
             return new Parameter($param);
-        }, $parameters['urlParameters']);
+        }, $parameters['urlParameters'] ?? []);
         $parameters['responseFields'] = array_map(function ($param) {
             return new ResponseField($param);
-        }, $parameters['responseFields']);
+        }, $parameters['responseFields'] ?? []);
 
         parent::__construct($parameters);
 

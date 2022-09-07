@@ -24,6 +24,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Basic support for overriding docs for inherited methods ([9735fdf](9735fdf150469f186bab395fcfabd042f570c50c))
 - note views may have changed
 
+## 3.37.2 (8 September 2022)
+### Fixed
+- Multi-docs: Use correct routes in Laravel view ([a41e717](https://github.com/knuckleswtf/scribe/commit/a41e71707b3a33e4c80614c678c389c9fd5196de))
+
 ## 3.37.1 (5 September 2022)
 ### Fixed
 - Fix regression in parsing API resource tags that have a status code when generating response fields ([#516](https://github.com/knuckleswtf/scribe/pull/516))
