@@ -179,8 +179,8 @@ class Writer
         // Rewrite asset links to go through Laravel
         $contents = preg_replace('#href="\.\./docs/css/(.+?)"#', 'href="{{ asset("' . $this->laravelAssetsPath . '/css/$1") }}"', $contents);
         $contents = preg_replace('#src="\.\./docs/(js|images)/(.+?)"#', 'src="{{ asset("' . $this->laravelAssetsPath . '/$1/$2") }}"', $contents);
-        $contents = str_replace('href="../docs/collection.json"', 'href="{{ route("scribe.postman") }}"', $contents);
-        $contents = str_replace('href="../docs/openapi.yaml"', 'href="{{ route("scribe.openapi") }}"', $contents);
+        $contents = str_replace('href="../docs/collection.json"', 'href="{{ route("'.$this->docsName.'.postman") }}"', $contents);
+        $contents = str_replace('href="../docs/openapi.yaml"', 'href="{{ route("'.$this->docsName.'.openapi") }}"', $contents);
 
         file_put_contents("$this->laravelTypeOutputPath/index.blade.php", $contents);
     }
