@@ -143,52 +143,51 @@ class Camel
 
     /**
      * @param array[] $endpoints
-     * @param array $endpointGroupIndexes Mapping of endpoint IDs to their index within their group
      * @param array $defaultGroupsOrder The order for groups that users specified in their config file.
      *
      * @return array[]
      */
-    public static function groupEndpoints(array $endpoints, array $endpointGroupIndexes, array $defaultGroupsOrder = []): array
+    public static function groupEndpoints(array $endpoints, array $defaultGroupsOrder = []): array
     {
         $groupedEndpoints = collect($endpoints)->groupBy('metadata.groupName');
 
         if ($defaultGroupsOrder) {
+            // Sort groups based on config file order
             $groupsOrder = Utils::getTopLevelItemsFromMixedConfigList($defaultGroupsOrder);
             $groupedEndpoints = $groupedEndpoints->sortKeysUsing(self::getOrderListComparator($groupsOrder));
         } else {
             $groupedEndpoints = $groupedEndpoints->sortKeys(SORT_NATURAL);
         }
 
-        return $groupedEndpoints->map(function (Collection $endpointsInGroup) use ($defaultGroupsOrder, $endpointGroupIndexes) {
+        return $groupedEndpoints->map(function (Collection $endpointsInGroup) use ($defaultGroupsOrder) {
             /** @var Collection<(int|string),ExtractedEndpointData> $endpointsInGroup */
             $sortedEndpoints = $endpointsInGroup;
-            if (empty($endpointGroupIndexes)) {
-                $groupName = data_get($endpointsInGroup[0], 'metadata.groupName');
-                if ($defaultGroupsOrder && isset($defaultGroupsOrder[$groupName])) {
-                    $subGroupOrEndpointsOrder = Utils::getTopLevelItemsFromMixedConfigList($defaultGroupsOrder[$groupName]);
-                    $sortedEndpoints = $endpointsInGroup->sortBy(
-                        function (ExtractedEndpointData $e) use ($defaultGroupsOrder, $subGroupOrEndpointsOrder) {
-                            $endpointIdentifier = $e->httpMethods[0].' /'.$e->uri;
-                            $index = array_search($e->metadata->subgroup, $subGroupOrEndpointsOrder);
 
-                            if ($index !== false) {
-                                // This is a subgroup
-                                $endpointsOrderInSubgroup = $defaultGroupsOrder[$e->metadata->groupName][$e->metadata->subgroup] ?? null;
-                                if ($endpointsOrderInSubgroup) {
-                                    $indexInSubGroup = array_search($endpointIdentifier, $endpointsOrderInSubgroup);
-                                    $index = ($indexInSubGroup === false) ? $index : ($index + ($indexInSubGroup * 0.1));
-                                }
-                            } else {
-                                // This is an endpoint
-                                $index = array_search($endpointIdentifier, $subGroupOrEndpointsOrder);
-                            }
-                            return $index === false ? INF : $index;
-                        },
-                    );
-                }
-            } else {
+            $groupName = data_get($endpointsInGroup[0], 'metadata.groupName');
+
+            // Sort endpoints in group based on config file order
+            if ($defaultGroupsOrder && isset($defaultGroupsOrder[$groupName])) {
+                $subGroupOrEndpointsOrder = Utils::getTopLevelItemsFromMixedConfigList($defaultGroupsOrder[$groupName]);
                 $sortedEndpoints = $endpointsInGroup->sortBy(
-                    fn(ExtractedEndpointData $e) => $endpointGroupIndexes[$e->endpointId()] ?? INF,
+                    function (ExtractedEndpointData $e) use ($defaultGroupsOrder, $subGroupOrEndpointsOrder) {
+                        $endpointIdentifier = $e->httpMethods[0] . ' /' . $e->uri;
+
+                        // First, check if there's an ordering specified for the endpoint's subgroup
+                        $index = array_search($e->metadata->subgroup, $subGroupOrEndpointsOrder);
+
+                        if ($index !== false) {
+                            // There's a subgroup order; check if there's an endpoints order within that
+                            $endpointsOrderInSubgroup = $defaultGroupsOrder[$e->metadata->groupName][$e->metadata->subgroup] ?? null;
+                            if ($endpointsOrderInSubgroup) {
+                                $indexInSubGroup = array_search($endpointIdentifier, $endpointsOrderInSubgroup);
+                                $index = ($indexInSubGroup === false) ? $index : ($index + ($indexInSubGroup * 0.1));
+                            }
+                        } else {
+                            // No subgroup order; check if there's an ordering for this endpoint
+                            $index = array_search($endpointIdentifier, $subGroupOrEndpointsOrder);
+                        }
+                        return $index === false ? INF : $index;
+                    },
                 );
             }
 

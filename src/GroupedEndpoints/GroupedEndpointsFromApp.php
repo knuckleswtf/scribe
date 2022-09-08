@@ -34,8 +34,6 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
     public static string $camelDir;
     public static string $cacheDir;
 
-    private array $endpointGroupIndexes = [];
-
     public function __construct(
         GenerateDocumentation $command, RouteMatcherInterface $routeMatcher,
         bool $preserveUserChanges, string $docsName = 'scribe'
@@ -68,18 +66,19 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
     {
         $latestEndpointsData = [];
         $cachedEndpoints = [];
-        $groups = [];
 
         if ($preserveUserChanges && is_dir(static::$camelDir) && is_dir(static::$cacheDir)) {
             $latestEndpointsData = Camel::loadEndpointsToFlatPrimitivesArray(static::$camelDir);
             $cachedEndpoints = Camel::loadEndpointsToFlatPrimitivesArray(static::$cacheDir, true);
-            $groups = Camel::loadEndpointsIntoGroups(static::$camelDir);
         }
 
         $routes = $routeMatcher->getRoutes($this->docConfig->get('routes', []), $this->docConfig->get('router'));
-        $endpoints = $this->extractEndpointsInfoFromLaravelApp($routes, $cachedEndpoints, $latestEndpointsData, $groups);
-        $groupedEndpoints = Camel::groupEndpoints($endpoints, $this->endpointGroupIndexes, $this->docConfig->get('groups.order', []));
-        $this->writeEndpointsToDisk($groupedEndpoints);
+        $endpoints = $this->extractEndpointsInfoFromLaravelApp($routes, $cachedEndpoints, $latestEndpointsData);
+
+        $groupsOrder = $this->docConfig->get('groups.order', []);
+        $groupedEndpoints = Camel::groupEndpoints($endpoints, $groupsOrder);
+
+        $this->writeEndpointsToDisk($groupedEndpoints, $groupsOrder);
         $groupedEndpoints = Camel::prepareGroupedEndpointsForOutput($groupedEndpoints);
         return $groupedEndpoints;
     }
@@ -88,12 +87,11 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
      * @param MatchedRoute[] $matches
      * @param array $cachedEndpoints
      * @param array $latestEndpointsData
-     * @param array[] $groups
      *
      * @return array
      * @throws \Exception
      */
-    private function extractEndpointsInfoFromLaravelApp(array $matches, array $cachedEndpoints, array $latestEndpointsData, array $groups): array
+    private function extractEndpointsInfoFromLaravelApp(array $matches, array $cachedEndpoints, array $latestEndpointsData): array
     {
         $extractor = $this->makeExtractor();
 
@@ -122,13 +120,8 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
                 c::info('Processing route: ' . c::getRouteRepresentation($route));
                 $currentEndpointData = $extractor->processRoute($route, $routeItem->getRules());
                 // If latest data is different from cached data, merge latest into current
-                [$currentEndpointData, $index] = $this->mergeAnyEndpointDataUpdates($currentEndpointData, $cachedEndpoints, $latestEndpointsData, $groups);
-
-                // We need to preserve order of endpoints, in case user did custom sorting
+                $currentEndpointData = $this->mergeAnyEndpointDataUpdates($currentEndpointData, $cachedEndpoints, $latestEndpointsData);
                 $parsedEndpoints[] = $currentEndpointData;
-                if ($index !== null) {
-                    $this->endpointGroupIndexes[$currentEndpointData->endpointId()] = $index;
-                }
                 c::success('Processed route: ' . c::getRouteRepresentation($route));
             } catch (\Exception $exception) {
                 $this->encounteredErrors = true;
@@ -144,25 +137,24 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
      * @param ExtractedEndpointData $endpointData
      * @param array[] $cachedEndpoints
      * @param array[] $latestEndpointsData
-     * @param array[] $groups
      *
-     * @return array The extracted endpoint data and the endpoint's index in the group file
+     * @return ExtractedEndpointData The extracted endpoint data
      */
-    private function mergeAnyEndpointDataUpdates(ExtractedEndpointData $endpointData, array $cachedEndpoints, array $latestEndpointsData, array $groups): array
+    private function mergeAnyEndpointDataUpdates(ExtractedEndpointData $endpointData, array $cachedEndpoints, array $latestEndpointsData): ExtractedEndpointData
     {
         // First, find the corresponding endpoint in cached and latest
         $thisEndpointCached = Arr::first($cachedEndpoints, function (array $endpoint) use ($endpointData) {
             return $endpoint['uri'] === $endpointData->uri && $endpoint['httpMethods'] === $endpointData->httpMethods;
         });
         if (!$thisEndpointCached) {
-            return [$endpointData, null];
+            return $endpointData;
         }
 
         $thisEndpointLatest = Arr::first($latestEndpointsData, function (array $endpoint) use ($endpointData) {
             return $endpoint['uri'] === $endpointData->uri && $endpoint['httpMethods'] == $endpointData->httpMethods;
         });
         if (!$thisEndpointLatest) {
-            return [$endpointData, null];
+            return $endpointData;
         }
 
         // Then compare cached and latest to see what sections changed.
@@ -188,12 +180,10 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
         foreach ($changed as $property) {
             $endpointData->$property = $thisEndpointLatest->$property;
         }
-        $index = Camel::getEndpointIndexInGroup($groups, $thisEndpointLatest);
-
-        return [$endpointData, $index];
+        return $endpointData;
     }
 
-    protected function writeEndpointsToDisk(array $grouped): void
+    protected function writeEndpointsToDisk(array $grouped, array $groupsOrder): void
     {
         Utils::deleteFilesMatching(static::$camelDir, function ($file) {
             /** @var $file array|\League\Flysystem\StorageAttributes */
@@ -215,8 +205,12 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
                 $group, 20, 2,
                 Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP | Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK
             );
+            $wasGroupOrderedInConfigFile = isset($groupsOrder[$group['name']]) || in_array($group['name'], $groupsOrder);
+
             if (count(Camel::$groupFileNames) == count($grouped)
-                && isset(Camel::$groupFileNames[$group['name']])) {
+                && isset(Camel::$groupFileNames[$group['name']])
+                && !$wasGroupOrderedInConfigFile
+            ) {
                 $fileName = Camel::$groupFileNames[$group['name']];
             } else {
                 // Format numbers as two digits so they are sorted properly when retrieving later
@@ -227,6 +221,7 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
 
             file_put_contents(static::$camelDir . "/$fileName", $yaml);
             file_put_contents(static::$cacheDir . "/$fileName", "## Autogenerated by Scribe. DO NOT MODIFY.\n\n" . $yaml);
+            Camel::$groupFileNames[$group['name']] = $fileName;
         }
     }
 

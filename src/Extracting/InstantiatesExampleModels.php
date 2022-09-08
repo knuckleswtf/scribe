@@ -32,7 +32,7 @@ trait InstantiatesExampleModels
             }
         }
         if ($type == null) {
-            throw new Exception("Couldn't detect a transformer model from your doc block. Did you remember to specify a model using @transformerModel?");
+            throw new \Exception("Couldn't detect a transformer model from your doc block. Did you remember to specify a model using @transformerModel?");
         }
 
         $configuredStrategies = $this->config->get('examples.models_source', ['factoryCreate', 'factoryMake', 'databaseFirst']);

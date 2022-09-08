@@ -502,54 +502,6 @@ class OutputTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function respects_endpoints_and_group_sort_order()
-    {
-        RouteFacade::get('/api/action1', [TestGroupController::class, 'action1']);
-        RouteFacade::get('/api/action1b', [TestGroupController::class, 'action1b']);
-        RouteFacade::get('/api/action2', [TestGroupController::class, 'action2']);
-        config(['scribe.routes.0.apply.response_calls.methods' => []]);
-
-        $this->generate();
-
-        // First: verify the current order of the groups and endpoints
-        $crawler = new Crawler(file_get_contents($this->htmlOutputPath()));
-        $h1s = $crawler->filter('h1');
-        $this->assertEquals('1. Group 1', trim($h1s->getNode(2)->textContent));
-        $this->assertEquals('2. Group 2', trim($h1s->getNode(3)->textContent));
-        $expectedEndpoints = $crawler->filter('h2');
-        $this->assertEquals("Some endpoint.", $expectedEndpoints->getNode(0)->textContent);
-        $this->assertEquals("Another endpoint.", $expectedEndpoints->getNode(1)->textContent);
-        $this->assertEquals("GET api/action2", $expectedEndpoints->getNode(2)->textContent);
-
-        // Now swap the endpoints
-        $group = Yaml::parseFile('.scribe/endpoints/00.yaml');
-        $this->assertEquals('api/action1', $group['endpoints'][0]['uri']);
-        $this->assertEquals('api/action1b', $group['endpoints'][1]['uri']);
-        $action1 = $group['endpoints'][0];
-        $group['endpoints'][0] = $group['endpoints'][1];
-        $group['endpoints'][1] = $action1;
-        file_put_contents('.scribe/endpoints/00.yaml', Yaml::dump(
-            $group, 20, 2,
-            Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP
-        ));
-        // And then the groups
-        rename('.scribe/endpoints/00.yaml', '.scribe/endpoints/temp.yaml');
-        rename('.scribe/endpoints/01.yaml', '.scribe/endpoints/00.yaml');
-        rename('.scribe/endpoints/temp.yaml', '.scribe/endpoints/1.yaml');
-
-        $this->generate();
-
-        $crawler = new Crawler(file_get_contents($this->htmlOutputPath()));
-        $h1s = $crawler->filter('h1');
-        $this->assertEquals('2. Group 2', trim($h1s->getNode(2)->textContent));
-        $this->assertEquals('1. Group 1', trim($h1s->getNode(3)->textContent));
-        $expectedEndpoints = $crawler->filter('h2');
-        $this->assertEquals("GET api/action2", $expectedEndpoints->getNode(0)->textContent);
-        $this->assertEquals("Another endpoint.", $expectedEndpoints->getNode(1)->textContent);
-        $this->assertEquals("Some endpoint.", $expectedEndpoints->getNode(2)->textContent);
-    }
-
-    /** @test */
     public function will_auto_set_content_type_to_multipart_if_file_params_are_present()
     {
         /**
