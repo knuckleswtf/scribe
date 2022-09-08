@@ -40,9 +40,9 @@ class UseTransformerTags extends Strategy
     public function getTransformerResponseFromTag(Tag $transformerTag, array $allTags): ?array
     {
         [$statusCode, $transformerClass, $isCollection] = $this->getStatusCodeAndTransformerClass($transformerTag);
-        [$model, $factoryStates, $relations, $resourceKey] = $this->getClassToBeTransformed($allTags, (new ReflectionClass($transformerClass))->getMethod('transform'));
+        [$model, $factoryStates, $relations, $resourceKey] = $this->getClassToBeTransformed($allTags);
 
-        $modelInstantiator = fn() => $this->instantiateExampleModel($model, $factoryStates, $relations);
+        $modelInstantiator = fn() => $this->instantiateExampleModel($model, $factoryStates, $relations, (new ReflectionClass($transformerClass))->getMethod('transform'));
         $pagination = $this->getTransformerPaginatorData($allTags);
         $serializer = $this->config->get('fractal.serializer');
 
@@ -72,13 +72,12 @@ class UseTransformerTags extends Strategy
 
     /**
      * @param array $tags
-     * @param ReflectionFunctionAbstract $transformerMethod
      *
      * @return array
      * @throws Exception
      *
      */
-    private function getClassToBeTransformed(array $tags, ReflectionFunctionAbstract $transformerMethod): array
+    private function getClassToBeTransformed(array $tags): array
     {
         $modelTag = Arr::first(Utils::filterDocBlockTags($tags, 'transformermodel'));
 
@@ -91,16 +90,6 @@ class UseTransformerTags extends Strategy
             $states = $fields['states'] ? explode(',', $fields['states']) : [];
             $relations = $fields['with'] ? explode(',', $fields['with']) : [];
             $resourceKey = $fields['resourceKey'] ?? null;
-        } else {
-            $parameter = Arr::first($transformerMethod->getParameters());
-            if ($parameter->hasType() && !$parameter->getType()->isBuiltin() && class_exists($parameter->getType()->getName())) {
-                // Ladies and gentlemen, we have a type!
-                $type = $parameter->getType()->getName();
-            }
-        }
-
-        if ($type == null) {
-            throw new Exception("Couldn't detect a transformer model from your doc block. Did you remember to specify a model using @transformerModel?");
         }
 
         return [$type, $states, $relations, $resourceKey];

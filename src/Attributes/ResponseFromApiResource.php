@@ -9,7 +9,7 @@ class ResponseFromApiResource
 {
     public function __construct(
         public string  $name,
-        public string  $model,
+        public ?string  $model = null,
         public int     $status = 200,
         public ?string $description = '',
 
