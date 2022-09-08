@@ -62,22 +62,24 @@ class Upgrade extends Command
             return;
         }
 
-        $this->upgradeToV4();
+        $this->finishV4Upgrade();
     }
 
-    protected function upgradeToV4(): void
+    protected function finishV4Upgrade(): void
     {
-        if ($this->confirm("Do you have any custom strategies?")) {
-            $this->line('1. Add a new property <info>public ?ExtractedEndpointData $endpointData;</info>.');
-            $this->line('2. Replace the <info>array $routeRules</info> parameter in __invoke() with <info>array $routeRules = []</info> .');
-        }
-        $this->newLine();
+        if (!($this->option('dry-run'))) {
+            if ($this->confirm("Do you have any custom strategies?")) {
+                $this->line('1. Add a new property <info>public ?ExtractedEndpointData $endpointData;</info>.');
+                $this->line('2. Replace the <info>array $routeRules</info> parameter in __invoke() with <info>array $routeRules = []</info> .');
+            }
+            $this->newLine();
 
-        if ($this->confirm("Did you customize the Blade templates used by Scribe?")) {
-            $this->warn('A few minor changes were made to the templates. See the release announcement for details.');
+            if ($this->confirm("Did you customize the Blade templates used by Scribe?")) {
+                $this->warn('A few minor changes were made to the templates. See the release announcement for details.');
+            }
+            $this->newLine();
         }
 
-        $this->newLine();
         $this->info("✔ Done.");
         $this->line("See the release announcement at <href=https://scribe.knuckles.wtf/blog/laravel-v4>http://scribe.knuckles.wtf/blog/laravel-v4</> for the full upgrade guide!");
     }
