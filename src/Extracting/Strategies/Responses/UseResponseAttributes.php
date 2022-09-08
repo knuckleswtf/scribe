@@ -13,6 +13,7 @@ use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\Shared\ApiResourceResponseTools;
 use Knuckles\Scribe\Extracting\Shared\TransformerResponseTools;
 use Knuckles\Scribe\Extracting\Strategies\PhpAttributeStrategy;
+use ReflectionClass;
 
 /**
  * @extends PhpAttributeStrategy<Response|ResponseFromFile|ResponseFromApiResource|ResponseFromTransformer>
@@ -75,11 +76,14 @@ class UseResponseAttributes extends PhpAttributeStrategy
 
     protected function getTransformerResponse(ResponseFromTransformer $attributeInstance)
     {
-        $modelInstantiator = fn() => $this->instantiateExampleModel($attributeInstance->model, $attributeInstance->factoryStates, $attributeInstance->with);
+        $modelInstantiator = fn() => $this->instantiateExampleModel(
+            $attributeInstance->model, $attributeInstance->factoryStates, $attributeInstance->with,
+            (new ReflectionClass($attributeInstance->name))->getMethod('transform')
+        );
 
-        $pagination = [
+        $pagination = $attributeInstance->paginate ? [
             'perPage' => $attributeInstance->paginate[1] ?? null, 'adapter' => $attributeInstance->paginate[0]
-        ];
+        ] : [];
         $this->startDbTransaction();
         $content = TransformerResponseTools::fetch(
             $attributeInstance->name, $attributeInstance->collection, $modelInstantiator,
