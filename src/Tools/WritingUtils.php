@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Tools;
 
+use Knuckles\Scribe\Scribe;
 use Symfony\Component\VarExporter\VarExporter;
 
 class WritingUtils
@@ -204,6 +205,6 @@ class WritingUtils
     public static function getVersionedAsset(string $assetPath): string
     {
         $index = strrpos($assetPath, ".");
-        return substr_replace($assetPath, '-'.Globals::SCRIBE_VERSION, $index, 0);
+        return substr_replace($assetPath, '-'.Scribe::VERSION, $index, 0);
     }
 }

@@ -3,7 +3,7 @@
 namespace Knuckles\Scribe\Commands;
 
 use Illuminate\Console\Command;
-use Knuckles\Scribe\Tools\Globals;
+use Knuckles\Scribe\Scribe;
 use Shalvah\Upgrader\Upgrader;
 
 class Upgrade extends Command
@@ -58,7 +58,7 @@ class Upgrade extends Command
 
         if (!$isMajorUpgrade) {
             $this->info("✔ Done.");
-            $this->info(sprintf("See the full changelog at https://github.com/knuckleswtf/scribe/blob/%s/CHANGELOG.md", Globals::SCRIBE_VERSION));
+            $this->info(sprintf("See the full changelog at https://github.com/knuckleswtf/scribe/blob/%s/CHANGELOG.md", Scribe::VERSION));
             return;
         }
 

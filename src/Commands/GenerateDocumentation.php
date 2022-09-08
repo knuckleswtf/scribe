@@ -15,6 +15,7 @@ use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\ErrorHandlingUtils as e;
 use Knuckles\Scribe\Tools\Globals;
+use Knuckles\Scribe\Scribe;
 use Knuckles\Scribe\Writing\Writer;
 use Shalvah\Upgrader\Upgrader;
 
@@ -207,13 +208,13 @@ class GenerateDocumentation extends Command
 
                 if (!$this->input->isInteractive()) {
                     $this->info("Run `php artisan scribe:upgrade` from an interactive terminal to update your config file automatically.");
-                    $this->info(sprintf("Or see the full changelog at: https://github.com/knuckleswtf/scribe/blob/%s/CHANGELOG.md,", Globals::SCRIBE_VERSION));
+                    $this->info(sprintf("Or see the full changelog at: https://github.com/knuckleswtf/scribe/blob/%s/CHANGELOG.md,", Scribe::VERSION));
                     return;
                 }
 
                 if ($this->confirm("Let's help you update your config file. Accept changes?")) {
                     $upgrader->upgrade();
-                    $this->info(sprintf("✔ Updated. See the full changelog: https://github.com/knuckleswtf/scribe/blob/%s/CHANGELOG.md", Globals::SCRIBE_VERSION));
+                    $this->info(sprintf("✔ Updated. See the full changelog: https://github.com/knuckleswtf/scribe/blob/%s/CHANGELOG.md", Scribe::VERSION));
                 }
             }
         } catch (\Throwable $e) {
