@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
-# 4.0.0
+# 4.0.0 (10 September 2022)
 ### Removed
 - [Breaking Change] Sorting groups or endpoints via editing/renaming the Camel files is no longer supported. Use the `groups.order` config item instead. 
 
