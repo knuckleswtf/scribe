@@ -126,7 +126,7 @@ class Camel
         return $groupedEndpoints->map(function (array $group, string $groupName) use ($configFileOrder) {
             $sortedEndpoints = collect($group['endpoints']);
 
-            if ($configFileOrder && isset($configFileOrder[$groupName])) {
+            if (isset($configFileOrder[$groupName])) {
                 $subGroupOrEndpointsOrder = Utils::getTopLevelItemsFromMixedConfigList($configFileOrder[$groupName]);
                 $sortedEndpoints = $sortedEndpoints->sortBy(
                     function (OutputEndpointData $e) use ($configFileOrder, $subGroupOrEndpointsOrder) {
