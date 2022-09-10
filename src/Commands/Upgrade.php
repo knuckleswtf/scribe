@@ -3,8 +3,11 @@
 namespace Knuckles\Scribe\Commands;
 
 use Illuminate\Console\Command;
+use Knuckles\Camel\Camel;
+use Knuckles\Scribe\GroupedEndpoints\GroupedEndpointsFactory;
 use Knuckles\Scribe\Scribe;
 use Shalvah\Upgrader\Upgrader;
+use Symfony\Component\VarExporter\VarExporter;
 
 class Upgrade extends Command
 {
@@ -13,12 +16,16 @@ class Upgrade extends Command
                             ";
 
     protected $description = '';
+    protected bool $applyChanges;
+    protected string $configName;
 
     public function handle(): void
     {
-        $configName = $this->option('config');
-        if (!($oldConfig = config($configName))) {
-            $this->error("The specified config (config/{$configName}.php) doesn't exist.");
+        $this->applyChanges = !$this->option('dry-run');
+
+        $this->configName = $this->option('config');
+        if (!($oldConfig = config($this->configName))) {
+            $this->error("The specified config (config/{$this->configName}.php) doesn't exist.");
             return;
         }
 
@@ -33,11 +40,14 @@ class Upgrade extends Command
         if ($isMajorUpgrade) $this->info("Welcome to the Scribe v3 to v4 upgrader.");
         $this->line("Checking for config file changes...");
 
-        $upgrader = Upgrader::ofConfigFile("config/$configName.php", __DIR__ . '/../../config/scribe.php')
+        $upgrader = Upgrader::ofConfigFile("config/$this->configName.php", __DIR__ . '/../../config/scribe.php')
             ->dontTouch('routes', 'laravel.middleware', 'postman.overrides', 'openapi.overrides',
                 'example_languages', 'database_connections_to_transact', 'strategies')
             ->move('default_group', 'groups.default')
             ->move('faker_seed', 'examples.faker_seed');
+
+        if (!$isMajorUpgrade)
+            $upgrader->dontTouch('groups');
 
         $changes = $upgrader->dryRun();
         if (empty($changes)) {
@@ -49,9 +59,9 @@ class Upgrade extends Command
                 $this->line($change["description"]);
             }
 
-            if (!($this->option('dry-run'))) {
+            if ($this->applyChanges) {
                 $upgrader->upgrade();
-                $this->info("✔ Upgraded your config file. Your old config is backed up at config/$configName.php.bak.");
+                $this->info("✔ Upgraded your config file. Your old config is backed up at config/$this->configName.php.bak.");
             }
         }
         $this->newLine();
@@ -67,21 +77,88 @@ class Upgrade extends Command
 
     protected function finishV4Upgrade(): void
     {
-        if (!($this->option('dry-run'))) {
+        $this->migrateToConfigFileSort();
+
+        if ($this->applyChanges) {
             if ($this->confirm("Do you have any custom strategies?")) {
                 $this->line('1. Add a new property <info>public ?ExtractedEndpointData $endpointData;</info>.');
                 $this->line('2. Replace the <info>array $routeRules</info> parameter in __invoke() with <info>array $routeRules = []</info> .');
-            }
-            $this->newLine();
-
-            if ($this->confirm("Did you customize the Blade templates used by Scribe?")) {
-                $this->warn('A few minor changes were made to the templates. See the release announcement for details.');
             }
             $this->newLine();
         }
 
         $this->info("✔ Done.");
         $this->line("See the release announcement at <href=https://scribe.knuckles.wtf/blog/laravel-v4>http://scribe.knuckles.wtf/blog/laravel-v4</> for the full upgrade guide!");
+    }
+
+    /**
+     * In v3, you sorted endpoints by reordering them in the group file, and groups by renaming the group files alphabetically
+     * (or by using `beforeGroup`/`afterGroup` for custom endpoints).
+     * v4 replaces them with the config item `groups.order`.
+     */
+    protected function migrateToConfigFileSort()
+    {
+        $this->info("In v3, you sorted endpoints/groups by editing/renaming the generated YAML files (or `beforeGroup`/`afterGroup` for custom endpoints).");
+        $this->info("We'll automatically import your current sorting into the config item `groups.order`.");
+
+        $defaultGroup = config($this->configName.".default_group");
+        $extractedEndpoints = GroupedEndpointsFactory::fromCamelDir($this->configName)->get();
+
+        $order = array_map(function (array $group) {
+            return array_map(function (array $endpoint) {
+                return $endpoint['metadata']['title'] ?: ($endpoint['httpMethods'][0] . ' /'. $endpoint['uri']);
+            }, $group['endpoints']);
+        }, $extractedEndpoints);
+        $groupsOrder = array_keys($order);
+        $keyIndices = array_flip($groupsOrder);
+
+        $userDefinedEndpoints = Camel::loadUserDefinedEndpoints(Camel::camelDir($this->configName));
+
+        if ($userDefinedEndpoints) {
+            foreach ($userDefinedEndpoints as $endpoint) {
+                $groupName = $endpoint['metadata']['groupName'] ?? $defaultGroup;
+                $endpointTitle = $endpoint['metadata']['title'] ?? ($endpoint['httpMethods'][0] . ' /' . $endpoint['uri']);
+
+                if (!isset($order[$groupName])) {
+                    // This is a new group; place it at the right spot.
+                    if (($nextGroup = $endpoint['metadata']['beforeGroup'] ?? null)) {
+                        $index = $keyIndices[$nextGroup];
+                        array_splice($groupsOrder, $index, 0, [$groupName]);
+                    } else if (($previousGroup = $endpoint['metadata']['afterGroup'] ?? null)) {
+                        $index = $keyIndices[$previousGroup];
+                        array_splice($groupsOrder, $index + 1, 0, [$groupName]);
+                    } else {
+                        $groupsOrder[] = $groupName;
+                    }
+                    $order[$groupName] = [$endpointTitle];
+                } else {
+                    // Existing group, add endpoint
+                    $order[$groupName] = [...$order[$groupName], $endpointTitle];
+                }
+            }
+        }
+
+        // Re-add them, so it's sorted in the right order
+        $newOrder = [];
+        foreach ($groupsOrder as $groupName) {
+            $newOrder[$groupName] = $order[$groupName];
+        }
+
+        $output = VarExporter::export($newOrder);
+        if ($this->applyChanges) {
+            $configFile = "config/{$this->configName}.php";
+            $output = str_replace("\n", "\n        ", $output);
+            $newContents = str_replace(
+                "        'order' => [],",
+                "        'order' => $output,",
+                file_get_contents($configFile)
+            );
+            file_put_contents($configFile, $newContents);
+            $this->info("✔ Updated `groups.order`.");
+        } else {
+            $this->line("- `groups.order` will be set to:");
+            $this->info($output);
+        }
     }
 
 }

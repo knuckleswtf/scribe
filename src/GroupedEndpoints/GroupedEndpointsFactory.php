@@ -10,17 +10,17 @@ class GroupedEndpointsFactory
     public function make(GenerateDocumentation $command, RouteMatcherInterface $routeMatcher, string $docsName = 'scribe'): GroupedEndpointsContract
     {
         if ($command->isForcing()) {
-            return $this->makeGroupedEndpointsFromApp($command, $routeMatcher, false, $docsName);
+            return static::fromApp($command, $routeMatcher, false, $docsName);
         }
 
         if ($command->shouldExtract()) {
-            return $this->makeGroupedEndpointsFromApp($command, $routeMatcher, true, $docsName);
+            return static::fromApp($command, $routeMatcher, true, $docsName);
         }
 
-        return $this->makeGroupedEndpointsFromCamelDir($docsName);
+        return static::fromCamelDir($docsName);
     }
 
-    protected function makeGroupedEndpointsFromApp(
+    public static function fromApp(
         GenerateDocumentation $command,
         RouteMatcherInterface $routeMatcher,
         bool $preserveUserChanges,
@@ -29,7 +29,7 @@ class GroupedEndpointsFactory
         return new GroupedEndpointsFromApp($command, $routeMatcher, $preserveUserChanges, $docsName);
     }
 
-    protected function makeGroupedEndpointsFromCamelDir(string $docsName = 'scribe'): GroupedEndpointsFromCamelDir
+    public static function fromCamelDir(string $docsName = 'scribe'): GroupedEndpointsFromCamelDir
     {
         return new GroupedEndpointsFromCamelDir($docsName);
     }
