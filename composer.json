@@ -30,7 +30,7 @@
     "nunomaduro/collision": "^5.10|^6.0",
     "ramsey/uuid": "^4.2.2",
     "shalvah/clara": "^3.1.0",
-    "shalvah/upgrader": "0.*",
+    "shalvah/upgrader": "^0.3.0",
     "spatie/data-transfer-object": "^2.6|^3.0",
     "symfony/var-exporter": "^5.4|^6.0",
     "symfony/yaml": "^5.4|^6.0"

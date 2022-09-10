@@ -149,8 +149,8 @@ class Upgrade extends Command
             $configFile = "config/{$this->configName}.php";
             $output = str_replace("\n", "\n        ", $output);
             $newContents = str_replace(
-                "        'order' => [],",
-                "        'order' => $output,",
+                "'order' => [],",
+                "'order' => $output,",
                 file_get_contents($configFile)
             );
             file_put_contents($configFile, $newContents);
