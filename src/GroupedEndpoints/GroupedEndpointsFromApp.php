@@ -3,6 +3,7 @@
 namespace Knuckles\Scribe\GroupedEndpoints;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Knuckles\Camel\Camel;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
@@ -24,26 +25,18 @@ use Symfony\Component\Yaml\Yaml;
 
 class GroupedEndpointsFromApp implements GroupedEndpointsContract
 {
-    protected string $docsName;
-    private GenerateDocumentation $command;
-    private RouteMatcherInterface $routeMatcher;
     private DocumentationConfig $docConfig;
-    private bool $preserveUserChanges = true;
     private bool $encounteredErrors = false;
 
     public static string $camelDir;
     public static string $cacheDir;
 
     public function __construct(
-        GenerateDocumentation $command, RouteMatcherInterface $routeMatcher,
-        bool $preserveUserChanges, string $docsName = 'scribe'
+        private GenerateDocumentation $command, private RouteMatcherInterface $routeMatcher,
+        private bool $preserveUserChanges = true, protected string $docsName = 'scribe'
     )
     {
-        $this->command = $command;
-        $this->routeMatcher = $routeMatcher;
         $this->docConfig = $command->getDocConfig();
-        $this->preserveUserChanges = $preserveUserChanges;
-        $this->docsName = $docsName;
 
         static::$camelDir = Camel::camelDir($this->docsName);
         static::$cacheDir = Camel::cacheDir($this->docsName);
@@ -69,17 +62,25 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
 
         if ($preserveUserChanges && is_dir(static::$camelDir) && is_dir(static::$cacheDir)) {
             $latestEndpointsData = Camel::loadEndpointsToFlatPrimitivesArray(static::$camelDir);
-            $cachedEndpoints = Camel::loadEndpointsToFlatPrimitivesArray(static::$cacheDir, true);
+            $cachedEndpoints = Camel::loadEndpointsToFlatPrimitivesArray(static::$cacheDir);
         }
 
         $routes = $routeMatcher->getRoutes($this->docConfig->get('routes', []), $this->docConfig->get('router'));
         $endpoints = $this->extractEndpointsInfoFromLaravelApp($routes, $cachedEndpoints, $latestEndpointsData);
 
-        $groupsOrder = $this->docConfig->get('groups.order', []);
-        $groupedEndpoints = Camel::groupEndpoints($endpoints, $groupsOrder);
+        $groupedEndpoints = collect($endpoints)->groupBy('metadata.groupName')->map(function (Collection $endpointsInGroup) {
+            return [
+                'name' => $endpointsInGroup->first(function (ExtractedEndpointData $endpointData) {
+                        return !empty($endpointData->metadata->groupName);
+                    })->metadata->groupName ?? '',
+                'description' => $endpointsInGroup->first(function (ExtractedEndpointData $endpointData) {
+                        return !empty($endpointData->metadata->groupDescription);
+                    })->metadata->groupDescription ?? '',
+                'endpoints' => $endpointsInGroup->toArray(),
+            ];
+        })->all();
+        $this->writeEndpointsToDisk($groupedEndpoints);
 
-        $this->writeEndpointsToDisk($groupedEndpoints, $groupsOrder);
-        $groupedEndpoints = Camel::prepareGroupedEndpointsForOutput($groupedEndpoints);
         return $groupedEndpoints;
     }
 
@@ -183,7 +184,7 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
         return $endpointData;
     }
 
-    protected function writeEndpointsToDisk(array $grouped, array $groupsOrder): void
+    protected function writeEndpointsToDisk(array $grouped): void
     {
         Utils::deleteFilesMatching(static::$camelDir, function ($file) {
             /** @var $file array|\League\Flysystem\StorageAttributes */
@@ -205,23 +206,14 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
                 $group, 20, 2,
                 Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP | Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK
             );
-            $wasGroupOrderedInConfigFile = isset($groupsOrder[$group['name']]) || in_array($group['name'], $groupsOrder);
 
-            if (count(Camel::$groupFileNames) == count($grouped)
-                && isset(Camel::$groupFileNames[$group['name']])
-                && !$wasGroupOrderedInConfigFile
-            ) {
-                $fileName = Camel::$groupFileNames[$group['name']];
-            } else {
-                // Format numbers as two digits so they are sorted properly when retrieving later
-                // (ie "10.yaml" comes after "9.yaml", not after "1.yaml")
-                $fileName = sprintf("%02d.yaml", $fileNameIndex);
-                $fileNameIndex++;
-            }
+            // Format numbers as two digits so they are sorted properly when retrieving later
+            // (ie "10.yaml" comes after "9.yaml", not after "1.yaml")
+            $fileName = sprintf("%02d.yaml", $fileNameIndex);
+            $fileNameIndex++;
 
             file_put_contents(static::$camelDir . "/$fileName", $yaml);
             file_put_contents(static::$cacheDir . "/$fileName", "## Autogenerated by Scribe. DO NOT MODIFY.\n\n" . $yaml);
-            Camel::$groupFileNames[$group['name']] = $fileName;
         }
     }
 

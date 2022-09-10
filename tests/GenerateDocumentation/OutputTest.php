@@ -5,6 +5,7 @@ namespace Knuckles\Scribe\Tests\GenerateDocumentation;
 use Illuminate\Support\Facades\Route as RouteFacade;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Str;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tests\Fixtures\TestGroupController;
@@ -266,18 +267,24 @@ class OutputTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function sorts_group_naturally()
+    public function sorts_group_naturally_if_no_order_specified()
     {
-        RouteFacade::get('/api/action1', TestGroupController::class . '@action1');
-        RouteFacade::get('/api/action1b', TestGroupController::class . '@action1b');
-        RouteFacade::get('/api/action2', TestGroupController::class . '@action2');
-        RouteFacade::get('/api/action10', TestGroupController::class . '@action10');
+        RouteFacade::get('/api/action1', [TestGroupController::class, 'action1']);
+        RouteFacade::get('/api/action1b', [TestGroupController::class, 'action1b']);
+        RouteFacade::get('/api/action2', [TestGroupController::class, 'action2']);
+        RouteFacade::get('/api/action10', [TestGroupController::class, 'action10']);
 
         $this->generate();
 
-        $this->assertEquals('1. Group 1', Yaml::parseFile('.scribe/endpoints/00.yaml')['name']);
-        $this->assertEquals('2. Group 2', Yaml::parseFile('.scribe/endpoints/01.yaml')['name']);
-        $this->assertEquals('10. Group 10', Yaml::parseFile('.scribe/endpoints/02.yaml')['name']);
+        $crawler = new Crawler(file_get_contents($this->htmlOutputPath()));
+        $headings = $crawler->filter('h1')->getIterator();
+        $this->assertCount(5, $headings); // intro, auth, three groups
+        [$_, $_, $firstGroup, $secondGroup, $thirdGroup] = $headings;
+
+        $this->assertEquals('1. Group 1', $firstGroup->textContent);
+        $this->assertEquals('2. Group 2', $secondGroup->textContent);
+        $this->assertEquals('10. Group 10', $thirdGroup->textContent);
+
     }
 
     /** @test */
@@ -296,7 +303,6 @@ class OutputTest extends BaseLaravelTest
                 ],
                 'SG A',
                 'PUT /api/action13c',
-                'POST /api/action13b',
             ],
         ]]);
 
@@ -312,28 +318,82 @@ class OutputTest extends BaseLaravelTest
 
         $this->generate();
 
-        $this->assertEquals('10. Group 10', Yaml::parseFile('.scribe/endpoints/00.yaml')['name']);
-        $secondGroup = Yaml::parseFile('.scribe/endpoints/01.yaml');
-        $this->assertEquals('1. Group 1', $secondGroup['name']);
-        $thirdGroup = Yaml::parseFile('.scribe/endpoints/02.yaml');
-        $this->assertEquals('13. Group 13', $thirdGroup['name']);
-        $this->assertEquals('2. Group 2', Yaml::parseFile('.scribe/endpoints/03.yaml')['name']);
+        $crawler = new Crawler(file_get_contents($this->htmlOutputPath()));
+        $headings = $crawler->filter('h1')->getIterator();
+        $this->assertCount(6, $headings); // intro, auth, four groups
+        [$_, $_, $firstGroup, $secondGroup, $thirdGroup, $fourthGroup] = $headings;
 
-        $this->assertEquals('api/action1b', $secondGroup['endpoints'][0]['uri']);
-        $this->assertEquals('GET', $secondGroup['endpoints'][0]['httpMethods'][0]);
-        $this->assertEquals('api/action1', $secondGroup['endpoints'][1]['uri']);
-        $this->assertEquals('GET', $secondGroup['endpoints'][1]['httpMethods'][0]);
+        $this->assertEquals('10. Group 10', $firstGroup->textContent);
+        $this->assertEquals('1. Group 1', $secondGroup->textContent);
+        $this->assertEquals('13. Group 13', $thirdGroup->textContent);
+        $this->assertEquals('2. Group 2', $fourthGroup->textContent);
 
-        $this->assertEquals('api/action13d', $thirdGroup['endpoints'][0]['uri']);
-        $this->assertEquals('POST', $thirdGroup['endpoints'][0]['httpMethods'][0]);
-        $this->assertEquals('api/action13a', $thirdGroup['endpoints'][1]['uri']);
-        $this->assertEquals('GET', $thirdGroup['endpoints'][1]['httpMethods'][0]);
-        $this->assertEquals('api/action13e', $thirdGroup['endpoints'][2]['uri']);
-        $this->assertEquals('GET', $thirdGroup['endpoints'][2]['httpMethods'][0]);
-        $this->assertEquals('api/action13c', $thirdGroup['endpoints'][3]['uri']);
-        $this->assertEquals('PUT', $thirdGroup['endpoints'][3]['httpMethods'][0]);
-        $this->assertEquals('api/action13b', $thirdGroup['endpoints'][4]['uri']);
-        $this->assertEquals('POST', $thirdGroup['endpoints'][4]['httpMethods'][0]);
+        $firstGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($firstGroup->textContent).'"]');
+        $this->assertEquals(1, $firstGroupEndpointsAndSubgroups->count());
+        $this->assertEquals("GET api/action10", $firstGroupEndpointsAndSubgroups->getNode(0)->textContent);
+
+        $secondGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($secondGroup->textContent).'"]');
+        $this->assertEquals(2, $secondGroupEndpointsAndSubgroups->count());
+        $this->assertEquals("GET api/action1b", $secondGroupEndpointsAndSubgroups->getNode(0)->textContent);
+        $this->assertEquals("GET api/action1", $secondGroupEndpointsAndSubgroups->getNode(1)->textContent);
+
+        $thirdGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($thirdGroup->textContent).'"]');
+        $this->assertEquals(8, $thirdGroupEndpointsAndSubgroups->count());
+        $this->assertEquals("SG B", $thirdGroupEndpointsAndSubgroups->getNode(0)->textContent);
+        $this->assertEquals("POST api/action13d", $thirdGroupEndpointsAndSubgroups->getNode(1)->textContent);
+        $this->assertEquals("GET api/action13a", $thirdGroupEndpointsAndSubgroups->getNode(2)->textContent);
+        $this->assertEquals("SG A", $thirdGroupEndpointsAndSubgroups->getNode(3)->textContent);
+        $this->assertEquals("GET api/action13e", $thirdGroupEndpointsAndSubgroups->getNode(4)->textContent);
+        $this->assertEquals("PUT api/action13c", $thirdGroupEndpointsAndSubgroups->getNode(5)->textContent);
+        $this->assertEquals("SG C", $thirdGroupEndpointsAndSubgroups->getNode(6)->textContent);
+        $this->assertEquals("POST api/action13b", $thirdGroupEndpointsAndSubgroups->getNode(7)->textContent);
+    }
+
+    /** @test */
+    public function merges_and_correctly_sorts_user_defined_endpoints()
+    {
+        RouteFacade::get('/api/action1', [TestGroupController::class, 'action1']);
+        RouteFacade::get('/api/action2', [TestGroupController::class, 'action2']);
+        config(['scribe.routes.0.apply.response_calls.methods' => []]);
+        config(['scribe.groups.order' => [
+            '1. Group 1',
+            '5. Group 5',
+            '4. Group 4',
+            '2. Group 2',
+        ]]);
+
+        if (!is_dir('.scribe/endpoints')) mkdir('.scribe/endpoints', 0777, true);
+        copy(__DIR__ . '/../Fixtures/custom.0.yaml', '.scribe/endpoints/custom.0.yaml');
+
+        $this->generate();
+
+        $crawler = new Crawler(file_get_contents($this->htmlOutputPath()));
+        $headings = $crawler->filter('h1')->getIterator();
+        $this->assertCount(6, $headings); // intro, auth, four groups
+        [$_, $_, $firstGroup, $secondGroup, $thirdGroup, $fourthGroup] = $headings;
+
+        $this->assertEquals('1. Group 1', $firstGroup->textContent);
+        $this->assertEquals('5. Group 5', $secondGroup->textContent);
+        $this->assertEquals('4. Group 4', $thirdGroup->textContent);
+        $this->assertEquals('2. Group 2', $fourthGroup->textContent);
+
+        $firstGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($firstGroup->textContent).'"]');
+        $this->assertEquals(2, $firstGroupEndpointsAndSubgroups->count());
+        $this->assertEquals("GET api/action1", $firstGroupEndpointsAndSubgroups->getNode(0)->textContent);
+        $this->assertEquals("User defined", $firstGroupEndpointsAndSubgroups->getNode(1)->textContent);
+
+        $secondGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($secondGroup->textContent).'"]');
+        $this->assertEquals(2, $secondGroupEndpointsAndSubgroups->count());
+        $this->assertEquals("GET group5", $secondGroupEndpointsAndSubgroups->getNode(0)->textContent);
+        $this->assertEquals("GET alsoGroup5", $secondGroupEndpointsAndSubgroups->getNode(1)->textContent);
+
+        $thirdGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($thirdGroup->textContent).'"]');
+        $this->assertEquals(1, $thirdGroupEndpointsAndSubgroups->count());
+        $this->assertEquals("GET group4", $thirdGroupEndpointsAndSubgroups->getNode(0)->textContent);
+
+        $fourthGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($fourthGroup->textContent).'"]');
+        $this->assertEquals(1, $fourthGroupEndpointsAndSubgroups->count());
+        $this->assertEquals("GET api/action2", $fourthGroupEndpointsAndSubgroups->getNode(0)->textContent);
     }
 
     /** @test */
@@ -346,9 +406,9 @@ class OutputTest extends BaseLaravelTest
         $this->generate();
 
         $authFilePath = '.scribe/auth.md';
-        $group1FilePath = '.scribe/endpoints/00.yaml';
+        $firstGroupFilePath = '.scribe/endpoints/00.yaml';
 
-        $group = Yaml::parseFile($group1FilePath);
+        $group = Yaml::parseFile($firstGroupFilePath);
         $this->assertEquals('api/action1', $group['endpoints'][0]['uri']);
         $this->assertEquals([], $group['endpoints'][0]['urlParameters']);
         $extraParam = [
@@ -360,7 +420,7 @@ class OutputTest extends BaseLaravelTest
             'custom' => [],
         ];
         $group['endpoints'][0]['urlParameters']['a_param'] = $extraParam;
-        file_put_contents($group1FilePath, Yaml::dump(
+        file_put_contents($firstGroupFilePath, Yaml::dump(
             $group, 20, 2,
             Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP
         ));
@@ -368,14 +428,14 @@ class OutputTest extends BaseLaravelTest
 
         $this->generate();
 
-        $group = Yaml::parseFile($group1FilePath);
+        $group = Yaml::parseFile($firstGroupFilePath);
         $this->assertEquals('api/action1', $group['endpoints'][0]['uri']);
         $this->assertEquals(['a_param' => $extraParam], $group['endpoints'][0]['urlParameters']);
         $this->assertStringContainsString('Some other useful stuff.', file_get_contents($authFilePath));
 
         $this->generate(['--force' => true]);
 
-        $group = Yaml::parseFile($group1FilePath);
+        $group = Yaml::parseFile($firstGroupFilePath);
         $this->assertEquals('api/action1', $group['endpoints'][0]['uri']);
         $this->assertEquals([], $group['endpoints'][0]['urlParameters']);
         $this->assertStringNotContainsString('Some other useful stuff.', file_get_contents($authFilePath));
@@ -466,39 +526,6 @@ class OutputTest extends BaseLaravelTest
         $expectedEndpoint = $crawler->filter('h2');
         $this->assertCount(1, $expectedEndpoint);
         $this->assertEquals("Healthcheck", $expectedEndpoint->text());
-    }
-
-    /** @test */
-    public function merges_and_correctly_sorts_user_defined_endpoints()
-    {
-        RouteFacade::get('/api/action1', [TestGroupController::class, 'action1']);
-        RouteFacade::get('/api/action2', [TestGroupController::class, 'action2']);
-        config(['scribe.routes.0.apply.response_calls.methods' => []]);
-        if (!is_dir('.scribe/endpoints'))
-            mkdir('.scribe/endpoints', 0777, true);
-        copy(__DIR__ . '/../Fixtures/custom.0.yaml', '.scribe/endpoints/custom.0.yaml');
-
-        $this->generate();
-
-        $crawler = new Crawler(file_get_contents($this->htmlOutputPath()));
-        $headings = $crawler->filter('h1')->getIterator();
-        // There should only be six headings — intro, auth and four groups
-        $this->assertCount(6, $headings);
-        [$_, $_, $group1, $group2, $group3, $group4] = $headings;
-        $this->assertEquals('1. Group 1', trim($group1->textContent));
-        $this->assertEquals('5. Group 5', trim($group2->textContent));
-        $this->assertEquals('4. Group 4', trim($group3->textContent));
-        $this->assertEquals('2. Group 2', trim($group4->textContent));
-        $expectedEndpoints = $crawler->filter('h2');
-        $this->assertEquals(6, $expectedEndpoints->count());
-        // Enforce the order of the endpoints
-        // Ideally, we should also check the groups they're under
-        $this->assertEquals("Some endpoint.", $expectedEndpoints->getNode(0)->textContent);
-        $this->assertEquals("User defined", $expectedEndpoints->getNode(1)->textContent);
-        $this->assertEquals("GET withBeforeGroup", $expectedEndpoints->getNode(2)->textContent);
-        $this->assertEquals("GET belongingToAnEarlierBeforeGroup", $expectedEndpoints->getNode(3)->textContent);
-        $this->assertEquals("GET withAfterGroup", $expectedEndpoints->getNode(4)->textContent);
-        $this->assertEquals("GET api/action2", $expectedEndpoints->getNode(5)->textContent);
     }
 
     /** @test */

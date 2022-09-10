@@ -50,13 +50,13 @@ class PostmanCollectionWriter
                 'description' => $this->config->get('description', ''),
                 'schema' => "https://schema.getpostman.com/json/collection/v" . self::VERSION . "/collection.json",
             ],
-            'item' => array_map(function (array $group) {
+            'item' => array_values(array_map(function (array $group) {
                 return [
                     'name' => $group['name'],
                     'description' => $group['description'],
                     'item' => array_map(\Closure::fromCallable([$this, 'generateEndpointItem']), $group['endpoints']),
                 ];
-            }, $groupedEndpoints),
+            }, $groupedEndpoints)),
             'auth' => $this->generateAuthObject(),
         ];
 

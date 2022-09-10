@@ -58,12 +58,12 @@ class OpenAPISpecWriter
                 ],
             ],
             'paths' => $this->generatePathsSpec($groupedEndpoints),
-            'tags' => array_map(function (array $group) {
+            'tags' => array_values(array_map(function (array $group) {
                 return [
                     'name' => $group['name'],
                     'description' => $group['description'],
                 ];
-            }, $groupedEndpoints),
+            }, $groupedEndpoints)),
         ], $this->generateSecurityPartialSpec());
     }
 

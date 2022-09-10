@@ -39,10 +39,9 @@
 
 - httpMethods:
     - GET
-  uri: withBeforeGroup
+  uri: group5
   metadata:
     groupName: '5. Group 5'
-    beforeGroup: '2. Group 2'
     title:
     description:
     authenticated: false
@@ -54,10 +53,9 @@
   responseFields: {}
 - httpMethods:
     - GET
-  uri: withAfterGroup
+  uri: group4
   metadata:
     groupName: '4. Group 4'
-    afterGroup: '5. Group 5'
     title:
     description:
     authenticated: false
@@ -70,7 +68,7 @@
 
 - httpMethods:
     - GET
-  uri: belongingToAnEarlierBeforeGroup
+  uri: alsoGroup5
   metadata:
     groupName: '5. Group 5'
     title:

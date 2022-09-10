@@ -9,20 +9,11 @@ namespace Knuckles\Scribe\Tests\Fixtures;
  */
 class TestGroupController
 {
-    /**
-     * Some endpoint.
-     *
-     * By default, this is in Group 1.
-     */
     public function action1()
     {
     }
 
     /**
-     * Another endpoint.
-     *
-     * Here we specify a group. This is also in Group 1.
-     *
      * @group 1. Group 1
      */
     public function action1b()

@@ -48,13 +48,15 @@ class GenerateDocumentation extends Command
             exit(1);
         }
 
+        // Extraction stage - extract endpoint info either from app or existing Camel files (previously extracted data)
         $groupedEndpointsInstance = $groupedEndpointsFactory->make($this, $routeMatcher, $this->configName);
-
+        $extractedEndpoints = $groupedEndpointsInstance->get();
         $userDefinedEndpoints = Camel::loadUserDefinedEndpoints(Camel::camelDir($this->configName));
-        $groupedEndpoints = $this->mergeUserDefinedEndpoints(
-            $groupedEndpointsInstance->get(),
-            $userDefinedEndpoints
-        );
+        $groupedEndpoints = $this->mergeUserDefinedEndpoints($extractedEndpoints, $userDefinedEndpoints);
+
+        // Output stage
+        $configFileOrder = $this->docConfig->get('groups.order', []);
+        $groupedEndpoints = Camel::prepareGroupedEndpointsForOutput($groupedEndpoints, $configFileOrder);
 
         if (!count($userDefinedEndpoints)) {
             // Update the example custom file if there were no custom endpoints
@@ -113,9 +115,6 @@ class GenerateDocumentation extends Command
         if ($this->forcing && !$this->shouldExtract) {
             throw new \InvalidArgumentException("Can't use --force and --no-extraction together.");
         }
-
-        // Reset this map (useful for tests)
-        Camel::$groupFileNames = [];
     }
 
     protected function mergeUserDefinedEndpoints(array $groupedEndpoints, array $userDefinedEndpoints): array
@@ -127,52 +126,15 @@ class GenerateDocumentation extends Command
             });
 
             if ($indexOfGroupWhereThisEndpointShouldBeAdded !== null) {
-                $groupedEndpoints[$indexOfGroupWhereThisEndpointShouldBeAdded]['endpoints'][] = OutputEndpointData::fromExtractedEndpointArray($endpoint);
+                $groupedEndpoints[$indexOfGroupWhereThisEndpointShouldBeAdded]['endpoints'][] = $endpoint;
             } else {
                 $newGroup = [
                     'name' => $endpoint['metadata']['groupName'] ?? $this->docConfig->get('groups.default', ''),
                     'description' => $endpoint['metadata']['groupDescription'] ?? null,
-                    'endpoints' => [OutputEndpointData::fromExtractedEndpointArray($endpoint)],
+                    'endpoints' => [$endpoint],
                 ];
 
-                // Place the new group directly before/after an existing group
-                // if `beforeGroup` or `afterGroup` was set.
-                $beforeGroupName = $endpoint['metadata']['beforeGroup'] ?? null;
-                $afterGroupName = $endpoint['metadata']['afterGroup'] ?? null;
-
-                if ($beforeGroupName) {
-                    $found = false;
-                    $sortedGroupedEndpoints = [];
-                    foreach ($groupedEndpoints as $group) {
-                        if ($group['name'] === $beforeGroupName) {
-                            $found = true;
-                            $sortedGroupedEndpoints[] = $newGroup;
-                        }
-                        $sortedGroupedEndpoints[] = $group;
-                    }
-
-                    if (!$found) {
-                        throw GroupNotFound::forTag($beforeGroupName, "beforeGroup:");
-                    }
-                    $groupedEndpoints = $sortedGroupedEndpoints;
-                } else if ($afterGroupName) {
-                    $found = false;
-                    $sortedGroupedEndpoints = [];
-                    foreach ($groupedEndpoints as $group) {
-                        $sortedGroupedEndpoints[] = $group;
-                        if ($group['name'] === $afterGroupName) {
-                            $found = true;
-                            $sortedGroupedEndpoints[] = $newGroup;
-                        }
-                    }
-
-                    if (!$found) {
-                        throw GroupNotFound::forTag($afterGroupName, "afterGroup:");
-                    }
-                    $groupedEndpoints = $sortedGroupedEndpoints;
-                } else {
-                    $groupedEndpoints[] = $newGroup;
-                }
+                $groupedEndpoints[$newGroup['name']] = $newGroup;
             }
         }
 
