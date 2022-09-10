@@ -13,6 +13,10 @@ use Knuckles\Scribe\Extracting\Extractor;
 use Knuckles\Scribe\Tools\Utils as u;
 
 
+/**
+ * Endpoint DTO, optimized for generating HTML output.
+ * Unneeded properties removed, extra properties and helper methods added.
+ */
 class OutputEndpointData extends BaseDTO
 {
     /**
@@ -90,18 +94,10 @@ class OutputEndpointData extends BaseDTO
     {
         // spatie/dto currently doesn't auto-cast nested DTOs like that
         $parameters['responses'] = new ResponseCollection($parameters['responses'] ?? []);
-        $parameters['bodyParameters'] = array_map(function ($param) {
-            return new Parameter($param);
-        }, $parameters['bodyParameters'] ?? []);
-        $parameters['queryParameters'] = array_map(function ($param) {
-            return new Parameter($param);
-        }, $parameters['queryParameters'] ?? []);
-        $parameters['urlParameters'] = array_map(function ($param) {
-            return new Parameter($param);
-        }, $parameters['urlParameters'] ?? []);
-        $parameters['responseFields'] = array_map(function ($param) {
-            return new ResponseField($param);
-        }, $parameters['responseFields'] ?? []);
+        $parameters['bodyParameters'] = array_map(fn($param) => new Parameter($param), $parameters['bodyParameters'] ?? []);
+        $parameters['queryParameters'] = array_map(fn($param) => new Parameter($param), $parameters['queryParameters'] ?? []);
+        $parameters['urlParameters'] = array_map(fn($param) => new Parameter($param), $parameters['urlParameters'] ?? []);
+        $parameters['responseFields'] = array_map(fn($param) => new ResponseField($param), $parameters['responseFields'] ?? []);
 
         parent::__construct($parameters);
 
