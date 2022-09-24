@@ -127,26 +127,30 @@ class Camel
             $sortedEndpoints = collect($group['endpoints']);
 
             if (isset($configFileOrder[$groupName])) {
-                $subGroupOrEndpointsOrder = Utils::getTopLevelItemsFromMixedConfigList($configFileOrder[$groupName]);
+                // Second-level order list. Can contain endpoint or subgroup names
+                $level2Order = Utils::getTopLevelItemsFromMixedConfigList($configFileOrder[$groupName]);
                 $sortedEndpoints = $sortedEndpoints->sortBy(
-                    function (OutputEndpointData $e) use ($configFileOrder, $subGroupOrEndpointsOrder) {
+                    function (OutputEndpointData $e) use ($configFileOrder, $level2Order) {
                         $endpointIdentifier = $e->httpMethods[0] . ' /' . $e->uri;
 
-                        // First, check if there's an ordering specified for the endpoint's subgroup
-                        $index = array_search($e->metadata->subgroup, $subGroupOrEndpointsOrder);
-
-                        if ($index !== false) {
-                            // There's a subgroup order; check if there's an endpoints order within that
-                            $endpointsOrderInSubgroup = $configFileOrder[$e->metadata->groupName][$e->metadata->subgroup] ?? null;
-                            if ($endpointsOrderInSubgroup) {
-                                $indexInSubGroup = array_search($endpointIdentifier, $endpointsOrderInSubgroup);
-                                $index = ($indexInSubGroup === false) ? $index : ($index + ($indexInSubGroup * 0.1));
-                            }
-                        } else {
-                            // No subgroup order; check if there's an ordering for this endpoint
-                            $index = array_search($endpointIdentifier, $subGroupOrEndpointsOrder);
+                        // First, check if there's an ordering specified for the endpoint itself
+                        $indexOfEndpointInL2Order = array_search($endpointIdentifier, $level2Order);
+                        if ($indexOfEndpointInL2Order !== false) {
+                            return $indexOfEndpointInL2Order;
                         }
-                        return $index === false ? INF : $index;
+
+                        // Check if there's an ordering for the endpoint's subgroup
+                        $indexOfSubgroupInL2Order = array_search($e->metadata->subgroup, $level2Order);
+                        if ($indexOfSubgroupInL2Order !== false) {
+                            // There's a subgroup order; check if there's an endpoints order within that
+                            $orderOfEndpointsInSubgroup = $configFileOrder[$e->metadata->groupName][$e->metadata->subgroup] ?? [];
+                            $indexOfEndpointInSubGroup = array_search($endpointIdentifier, $orderOfEndpointsInSubgroup);
+                            return ($indexOfEndpointInSubGroup === false)
+                                ? $indexOfSubgroupInL2Order
+                                : ($indexOfSubgroupInL2Order + ($indexOfEndpointInSubGroup * 0.1));
+                        }
+
+                        return INF;
                     },
                 );
             }

@@ -39,11 +39,7 @@ class Utils
     {
         $topLevels = [];
         foreach ($mixedList as $item => $value) {
-            if (is_int($item)) {
-                $topLevels[] = $value;
-            } else {
-                $topLevels[] = $item;
-            }
+            $topLevels[] = is_int($item) ? $value : $item;
         }
         return $topLevels;
     }
@@ -340,4 +336,13 @@ class Utils
         );
     }
 
+}
+
+function getTopLevelItemsFromMixedOrderList(array $mixedList): array
+{
+  $topLevels = [];
+  foreach ($mixedList as $item => $value) {
+    $topLevels[] = is_int($item) ? $value : $item;
+  }
+  return $topLevels;
 }
