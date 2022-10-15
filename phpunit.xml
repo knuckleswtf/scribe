@@ -46,6 +46,7 @@
         </testsuite>
         <testsuite name="Unit Tests 4">
             <file>tests/Unit/ValidationRuleParsingTest.php</file>
+            <file>tests/Unit/HtmlWriterTest.php</file>
         </testsuite>
     </testsuites>
 </phpunit>

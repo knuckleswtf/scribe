@@ -346,6 +346,18 @@ INTRO
      */
     'logo' => false,
 
+    /**
+     * Customize the "Last updated" value displayed in the docs by specifying tokens and formats.
+     * Examples:
+     * - {date:F j Y} => March 28, 2022
+     * - {git:short} => Short hash of the last Git commit
+     *
+     * Available tokens are `{date:<format>}` and `{git:<format>}`.
+     * The format you pass to `date` will be passed to PhP's `date()` function.
+     * The format you pass to `git` can be either "short" or "long".
+     */
+    'last_updated' => 'Last updated: {date:F j, Y}',
+
     'examples' => [
         /*
          * If you would like the package to generate the same example values for parameters on each run,

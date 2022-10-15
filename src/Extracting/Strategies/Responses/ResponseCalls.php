@@ -129,7 +129,8 @@ class ResponseCalls extends Strategy
      *
      * @return Request
      */
-    protected function prepareRequest(Route $route, array $rulesToApply, array $urlParams, array $bodyParams, array $queryParams, array $fileParameters, array $headers): Request
+    protected function prepareRequest(Route $route, array $rulesToApply, array $urlParams, array $bodyParams,
+        array $queryParams, array $fileParameters, array $headers): Request
     {
         $uri = Utils::getUrlWithBoundParameters($route->uri(), $urlParams);
         $routeMethods = $this->getMethods($route);
@@ -146,7 +147,10 @@ class ResponseCalls extends Strategy
 
         // Always use the current app domain for response calls
         $rootUrl = config('app.url');
-        $request = Request::create("$rootUrl/$uri", $method, [], $cookies, $fileParameters, $this->transformHeadersToServerVars($headers), json_encode($bodyParams));
+        $request = Request::create(
+            "$rootUrl/$uri", $method, [], $cookies, $fileParameters,
+            $this->transformHeadersToServerVars($headers), json_encode($bodyParams)
+        );
         // Doing it again to catch any ones we didn't transform properly.
         $request = $this->addHeaders($request, $route, $headers);
 

@@ -104,7 +104,7 @@ class HtmlWriter
         return $this->markdownParser->text(file_get_contents($markdownFilePath));
     }
 
-    protected function getMetadata(): array
+    public function getMetadata(): array
     {
         $links = [];
 
@@ -117,24 +117,48 @@ class HtmlWriter
         }
 
         $auth = $this->config->get('auth');
-        if ($auth['in'] === 'bearer' || $auth['in'] === 'basic') {
-            $auth['name'] = 'Authorization';
-            $auth['location'] = 'header';
-            $auth['prefix'] = ucfirst($auth['in']) . ' ';
-        } else {
-            $auth['location'] = $auth['in'];
-            $auth['prefix'] = '';
+        if ($auth) {
+            if ($auth['in'] === 'bearer' || $auth['in'] === 'basic') {
+                $auth['name'] = 'Authorization';
+                $auth['location'] = 'header';
+                $auth['prefix'] = ucfirst($auth['in']) . ' ';
+            } else {
+                $auth['location'] = $auth['in'];
+                $auth['prefix'] = '';
+            }
         }
 
         return [
             'title' => $this->config->get('title') ?: config('app.name', '') . ' Documentation',
             'example_languages' => $this->config->get('example_languages'),
             'logo' => $this->config->get('logo') ?? false,
-            'last_updated' => date("F j Y"),
+            'last_updated' => $this->getLastUpdated(),
             'auth' => $auth,
             'try_it_out' => $this->config->get('try_it_out'),
             'links' => array_merge($links, ['<a href="http://github.com/knuckleswtf/scribe">Documentation powered by Scribe ✍</a>']),
         ];
+    }
+
+    protected function getLastUpdated()
+    {
+        $lastUpdated = $this->config->get('last_updated', 'Last updated: {date:F j, Y}');
+
+        $tokens = [
+            "date" => fn($format) => date($format),
+            "git" => fn($option) => match ($option) {
+                "short" => trim(shell_exec('git rev-parse --short HEAD')),
+                "long" => trim(shell_exec('git rev-parse HEAD')),
+            },
+        ];
+
+        foreach ($tokens as $token => $resolver) {
+            $matches = [];
+            if(preg_match('#(\{'.$token.':(.+?)})#', $lastUpdated, $matches)) {
+                $lastUpdated = str_replace($matches[1], $resolver($matches[2]), $lastUpdated);
+            }
+        }
+
+        return $lastUpdated;
     }
 
     protected function getHeadings(array $headingsBeforeEndpoints, array $endpointsByGroupAndSubgroup, array $headingsAfterEndpoints)

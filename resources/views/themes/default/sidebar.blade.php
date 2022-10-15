@@ -58,6 +58,6 @@
         </ul>
     @endif
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: {{ $metadata['last_updated'] }}</li>
+        <li>{{ $metadata['last_updated'] }}</li>
     </ul>
 </div>
