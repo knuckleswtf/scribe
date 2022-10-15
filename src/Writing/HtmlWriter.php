@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Writing;
 
+use http\Exception\InvalidArgumentException;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
 use Knuckles\Camel\Output\OutputEndpointData;
@@ -145,9 +146,10 @@ class HtmlWriter
 
         $tokens = [
             "date" => fn($format) => date($format),
-            "git" => fn($option) => match ($option) {
+            "git" => fn($format) => match ($format) {
                 "short" => trim(shell_exec('git rev-parse --short HEAD')),
                 "long" => trim(shell_exec('git rev-parse HEAD')),
+                default => throw new InvalidArgumentException("The `git` token only supports formats 'short' and 'long', but you specified $format"),
             },
         ];
 

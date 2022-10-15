@@ -12,6 +12,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.1.0 (15 October 2022)
+### Added
+- Set bearer token properly in Postman Collection ([#529](https://github.com/knuckleswtf/scribe/pull/529/))
+- Customizable "Last updated at" label ([44996fe](https://github.com/knuckleswtf/scribe/commit/529/44996fe6f09b42648da19df97dd444d1aac8b003))
+- Turn subgroups into folders in Postman collection ([3152793](https://github.com/knuckleswtf/scribe/commit/529/3152793064afdf26a5de2c310bac73acc6581c48))
+
 # 4.0.0 (10 September 2022)
 ### Removed
 - [Breaking Change] Sorting groups or endpoints via editing/renaming the Camel files is no longer supported. Use the `groups.order` config item instead. 
