@@ -138,7 +138,7 @@
           "response": []
         },
         {
-          "name": "api/withQueryParameters",
+          "name": "GET api/withQueryParameters",
           "request": {
             "url": {
               "host": "{{baseUrl}}",
@@ -213,7 +213,7 @@
           ]
         },
         {
-          "name": "api/withAuthTag",
+          "name": "GET api/withAuthTag",
           "request": {
             "url": {
               "host": "{{baseUrl}}",
@@ -260,7 +260,7 @@
       "description": "",
       "item": [
         {
-          "name": "api/echoesUrlParameters/{param}/{param2}/{param3?}/{param4?}",
+          "name": "GET api/echoesUrlParameters/{param}/{param2}/{param3?}/{param4?}",
           "request": {
             "url": {
               "host": "{{baseUrl}}",

@@ -54,7 +54,7 @@ class PostmanCollectionWriter
                 return [
                     'name' => $group['name'],
                     'description' => $group['description'],
-                    'item' => array_map(\Closure::fromCallable([$this, 'generateEndpointItem']), $group['endpoints']),
+                    'item' => $this->generateSubItem($group),
                 ];
             }, $groupedEndpoints)),
             'auth' => $this->generateAuthObject(),
@@ -103,6 +103,32 @@ class PostmanCollectionWriter
         };
     }
 
+    protected function generateSubItem(array $group): array
+    {
+        $seenSubgroups = [];
+        $items = [];
+        /** @var OutputEndpointData $endpoint */
+        foreach ($group['endpoints'] as $endpoint) {
+            if (!$endpoint->metadata->subgroup) {
+                $items[] = $this->generateEndpointItem($endpoint);
+            } else {
+                if (isset($seenSubgroups[$endpoint->metadata->subgroup])) {
+                    $subgroupIndex = $seenSubgroups[$endpoint->metadata->subgroup];
+                    $items[$subgroupIndex]['description'] = $items[$subgroupIndex]['description'] ?: $endpoint->metadata->subgroupDescription;
+                    $items[$subgroupIndex]['item'] = [...$items[$subgroupIndex]['item'], $this->generateEndpointItem($endpoint)];
+                } else {
+                    $items[] = [
+                        'name' => $endpoint->metadata->subgroup,
+                        'description' => $endpoint->metadata->subgroupDescription,
+                        'item' => [$this->generateEndpointItem($endpoint)],
+                    ];
+                    $seenSubgroups[$endpoint->metadata->subgroup] = count($items) - 1;
+                }
+            }
+        }
+        return $items;
+    }
+
     protected function generateEndpointItem(OutputEndpointData $endpoint): array
     {
         $method = $endpoint->httpMethods[0];
@@ -120,7 +146,7 @@ class PostmanCollectionWriter
         }
 
         $endpointItem = [
-            'name' => $endpoint->metadata->title !== '' ? $endpoint->metadata->title : $endpoint->uri,
+            'name' => $endpoint->metadata->title !== '' ? $endpoint->metadata->title : ($endpoint->httpMethods[0].' '.$endpoint->uri),
             'request' => [
                 'url' => $this->generateUrlObject($endpoint),
                 'method' => $method,
@@ -330,7 +356,7 @@ class PostmanCollectionWriter
             foreach ($response->headers as $header => $value) {
                 $headers[] = [
                     'key' => $header,
-                    'value' => $value
+                    'value' => $value,
                 ];
             }
 

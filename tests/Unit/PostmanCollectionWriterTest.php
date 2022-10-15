@@ -39,7 +39,7 @@ class PostmanCollectionWriterTest extends TestCase
         $this->assertSame('Group', data_get($collection, 'item.0.name'), 'Group name exists');
 
         $item = data_get($collection, 'item.0.item.0');
-        $this->assertSame('some/path', $item['name'], 'Name defaults to path');
+        $this->assertSame('GET some/path', $item['name'], 'Name defaults to path');
         $this->assertSame('fake.localhost', data_get($collection, 'variable.0.value'));
         $this->assertSame('{{baseUrl}}', data_get($item, 'request.url.host'));
         $this->assertSame('some/path', data_get($item, 'request.url.path'), 'Path is set correctly');
@@ -81,7 +81,7 @@ class PostmanCollectionWriterTest extends TestCase
         $collection = $this->generate(endpoints: [$endpoints]);
 
         $item = data_get($collection, 'item.0.item.0');
-        $this->assertSame('fake/{param}', $item['name'], 'Name defaults to URL path');
+        $this->assertSame('POST fake/{param}', $item['name'], 'Name defaults to URL path');
         $this->assertSame('fake/:param', data_get($item, 'request.url.path'), 'Path is converted');
 
         $variableData = data_get($collection, 'item.0.item.0.request.url.variable');
@@ -262,11 +262,35 @@ class PostmanCollectionWriterTest extends TestCase
         $this->assertEquals(['type' => 'noauth'], $collection['item'][0]['item'][1]['request']['auth']);
     }
 
+    /** @test */
+    public function organizes_groups_and_subgroups_correctly()
+    {
+        $endpointData1 = $this->createMockEndpointData('endpoint1');
+        $endpointData1->metadata->subgroup = "Subgroup A";
+        $endpointData2 = $this->createMockEndpointData('endpoint2');
+        $endpointData3 = $this->createMockEndpointData('endpoint3');
+        $endpointData3->metadata->subgroup = "Subgroup A";
+        $endpointData3->metadata->subgroupDescription = "Subgroup A description";
+        $endpoints = $this->createMockEndpointGroup([$endpointData1, $endpointData2, $endpointData3], 'Group A');
+
+        $config = [
+            'title' => 'Test API',
+            'base_url' => 'fake.localhost',
+            'auth' => [ 'enabled' => false,],
+        ];
+        $collection = $this->generate($config, [$endpoints]);
+
+        $this->assertEquals('Group A', $collection['item'][0]['name']);
+        $this->assertEquals(['Subgroup A', 'POST endpoint2'], array_map(fn($i) => $i['name'], $collection['item'][0]['item']));
+        $this->assertEquals(['POST endpoint1', 'POST endpoint3'], array_map(fn($i) => $i['name'], $collection['item'][0]['item'][0]['item']));
+        $this->assertEquals('Subgroup A description', $collection['item'][0]['item'][0]['description']);
+    }
+
     protected function createMockEndpointData(string $path, string $title = ''): OutputEndpointData
     {
         return OutputEndpointData::create([
             'uri' => $path,
-            'httpMethods' => ['GET'],
+            'httpMethods' => ['POST'],
             'metadata' => [
                 'title' => $title,
             ],
