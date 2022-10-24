@@ -81,9 +81,9 @@ class HtmlWriter
         Utils::copyDirectory("{$assetsFolder}/images/", "{$destinationFolder}/images");
 
         $assets = [
-            "{$assetsFolder}/css/theme-default.style.css" => ["$destinationFolder/css/", "theme-$theme.style.css"],
-            "{$assetsFolder}/css/theme-default.print.css" => ["$destinationFolder/css/", "theme-$theme.print.css"],
-            "{$assetsFolder}/js/theme-default.js" => ["$destinationFolder/js/", WritingUtils::getVersionedAsset("theme-$theme.js")],
+            "{$assetsFolder}/css/theme-$theme.style.css" => ["$destinationFolder/css/", "theme-$theme.style.css"],
+            "{$assetsFolder}/css/theme-$theme.print.css" => ["$destinationFolder/css/", "theme-$theme.print.css"],
+            "{$assetsFolder}/js/theme-$theme.js" => ["$destinationFolder/js/", WritingUtils::getVersionedAsset("theme-$theme.js")],
         ];
 
         if ($this->config->get('try_it_out.enabled', true)) {
@@ -107,14 +107,17 @@ class HtmlWriter
 
     public function getMetadata(): array
     {
-        $links = [];
+        // todo remove 'links' in future
+        $links = []; // Left for backwards compat
 
         // NB:These paths are wrong for laravel type but will be set correctly by the Writer class
         if ($this->config->get('postman.enabled', true)) {
             $links[] = "<a href=\"{$this->assetPathPrefix}collection.json\">View Postman collection</a>";
+            $postmanCollectionUrl = "{$this->assetPathPrefix}collection.json";
         }
         if ($this->config->get('openapi.enabled', false)) {
             $links[] = "<a href=\"{$this->assetPathPrefix}openapi.yaml\">View OpenAPI spec</a>";
+            $openApiSpecUrl = "{$this->assetPathPrefix}openapi.yaml";
         }
 
         $auth = $this->config->get('auth');
@@ -136,6 +139,8 @@ class HtmlWriter
             'last_updated' => $this->getLastUpdated(),
             'auth' => $auth,
             'try_it_out' => $this->config->get('try_it_out'),
+            "postman_collection_url" => $postmanCollectionUrl ?? null,
+            "openapi_spec_url" => $openApiSpecUrl ?? null,
             'links' => array_merge($links, ['<a href="http://github.com/knuckleswtf/scribe">Documentation powered by Scribe ✍</a>']),
         ];
     }

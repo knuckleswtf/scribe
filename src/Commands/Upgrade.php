@@ -85,9 +85,9 @@ class Upgrade extends Command
                 $this->line('2. Replace the <info>array $routeRules</info> parameter in __invoke() with <info>array $routeRules = []</info> .');
             }
             $this->newLine();
+            $this->info("✔ Done.");
         }
 
-        $this->info("✔ Done.");
         $this->line("See the release announcement at <href=https://scribe.knuckles.wtf/blog/laravel-v4>http://scribe.knuckles.wtf/blog/laravel-v4</> for the full upgrade guide!");
     }
 
