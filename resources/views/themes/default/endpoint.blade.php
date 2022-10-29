@@ -31,7 +31,7 @@
         </blockquote>
         @if(count($response->headers))
         <details class="annotation">
-            <summary>
+            <summary style="cursor: pointer;">
                 <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
             </summary>
             <pre><code class="language-http">@foreach($response->headers as $header => $value)

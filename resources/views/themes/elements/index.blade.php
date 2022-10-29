@@ -15,18 +15,33 @@
 
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
 
-    <link rel="stylesheet" href="https://unpkg.com/@stoplight/elements/styles.min.css">
+    <link rel="stylesheet"
+          href="https://unpkg.com/@highlightjs/cdn-assets@11.6.0/styles/docco.min.css">
+    <script src="https://unpkg.com/@highlightjs/cdn-assets@10.7.2/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <style>
+        .hljs {
+            /* Remove highlightjs background color */
+            background-color: transparent; !important;
+        }
+    </style>
 
-    @if(isset($metadata['example_languages']))
-        <style id="language-style">
-            /* starts out as display none and is replaced with js later  */
-            @foreach($metadata['example_languages'] as $lang)
-            body .content .{{ $lang }}-example code {
-                display: none;
+    @if($metadata['example_languages'])
+        <script>
+            function switchExampleLanguage(lang) {
+                document.querySelectorAll(`.example-request`).forEach(el => el.style.display = 'none');
+                document.querySelectorAll(`.example-request-${lang}`).forEach(el => el.style.display = 'initial');
+                document.querySelectorAll(`.example-request-lang-toggle`).forEach(el => el.value = lang);
             }
-            @endforeach
-        </style>
+        </script>
     @endif
+    <script>
+        function switchExampleResponse(endpointId, index) {
+            document.querySelectorAll(`.example-response-${endpointId}`).forEach(el => el.style.display = 'none');
+            document.querySelectorAll(`.example-response-${endpointId}-${index}`).forEach(el => el.style.display = 'initial');
+            document.querySelectorAll(`.example-response-${endpointId}-toggle`).forEach(el => el.value = index);
+        }
+    </script>
 
     @if($tryItOut['enabled'] ?? true)
         <script>
@@ -53,7 +68,6 @@
 
                 <div class="sl-overflow-y-auto sl-flex-1 sl-w-full sl-px-24 sl-bg-canvas">
                     <div class="sl-py-16" style="max-width: 1500px;">
-
 
                         <div class="sl-mb-10">
                             <div class="sl-flex sl-justify-between sl-items-center">
