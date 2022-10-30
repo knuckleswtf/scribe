@@ -31,9 +31,7 @@
             @endif
         </div>
         <div class="sl-prose sl-markdown-viewer" style="font-size: 12px;">
-            <p>
-                {!! Parsedown::instance()->text($description) !!}
-            </p>
+            {!! Parsedown::instance()->text($description) !!}
         </div>
         @if(!$hasChildren && !is_null($example) && $example != '')
             <div class="sl-stack sl-stack--horizontal sl-stack--2 sl-flex sl-flex-row sl-items-baseline sl-text-muted">
