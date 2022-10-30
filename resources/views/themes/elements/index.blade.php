@@ -1,7 +1,8 @@
 @php
     use Knuckles\Scribe\Tools\WritingUtils as u;
 @endphp
-        <!doctype html>
+
+<!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -26,22 +27,6 @@
         }
     </style>
 
-    @if($metadata['example_languages'])
-        <script>
-            function switchExampleLanguage(lang) {
-                document.querySelectorAll(`.example-request`).forEach(el => el.style.display = 'none');
-                document.querySelectorAll(`.example-request-${lang}`).forEach(el => el.style.display = 'initial');
-                document.querySelectorAll(`.example-request-lang-toggle`).forEach(el => el.value = lang);
-            }
-        </script>
-    @endif
-    <script>
-        function switchExampleResponse(endpointId, index) {
-            document.querySelectorAll(`.example-response-${endpointId}`).forEach(el => el.style.display = 'none');
-            document.querySelectorAll(`.example-response-${endpointId}-${index}`).forEach(el => el.style.display = 'initial');
-            document.querySelectorAll(`.example-response-${endpointId}-toggle`).forEach(el => el.value = index);
-        }
-    </script>
 
     @if($tryItOut['enabled'] ?? true)
         <script>
@@ -58,6 +43,40 @@
 
 <body data-languages="{{ json_encode($metadata['example_languages'] ?? []) }}">
 
+@if($metadata['example_languages'])
+    <script>
+        function switchExampleLanguage(lang) {
+            document.querySelectorAll(`.example-request`).forEach(el => el.style.display = 'none');
+            document.querySelectorAll(`.example-request-${lang}`).forEach(el => el.style.display = 'initial');
+            document.querySelectorAll(`.example-request-lang-toggle`).forEach(el => el.value = lang);
+        }
+    </script>
+@endif
+
+<script>
+    function switchExampleResponse(endpointId, index) {
+        document.querySelectorAll(`.example-response-${endpointId}`).forEach(el => el.style.display = 'none');
+        document.querySelectorAll(`.example-response-${endpointId}-${index}`).forEach(el => el.style.display = 'initial');
+        document.querySelectorAll(`.example-response-${endpointId}-toggle`).forEach(el => el.value = index);
+    }
+
+    function toggleSidebarChildren(elem, heading) {
+        let children = document.querySelectorAll(`.children-${heading}`)
+        if (!children.length) return;
+
+        let oldState = children[0].style.display
+        if (oldState == 'none') {
+            children.forEach(el => el.style.removeProperty('display'));
+            elem.querySelector('.expand-chevron').style.display = 'none'
+            elem.querySelector('.expanded-chevron').style.removeProperty('display')
+        } else {
+            children.forEach(el => el.style.display = 'none');
+            elem.querySelector('.expand-chevron').style.removeProperty('display')
+            elem.querySelector('.expanded-chevron').style.display = 'none'
+        }
+
+    }
+</script>
 
 <div style="height: 100%;">
     <div data-overlay-container="true" class="" style="height: 100%;">
@@ -80,6 +99,7 @@
                                     <div>
                                         <button type="button" aria-label="Download" aria-haspopup="true"
                                                 aria-expanded="false"
+                                                onclick="let oldState = window['download-menu'].style.display; window['download-menu'].style.display= oldState == 'none' ? 'initial' : 'none';"
                                                 class="sl-button sl-h-sm sl-text-base sl-font-medium sl-ml-2 sl-px-1.5 sl-bg-canvas hover:sl-bg-canvas-50 active:sl-bg-canvas-100 sl-rounded sl-border-button sl-border disabled:sl-opacity-60">
                                             Download
                                             <span class="sl-text-xs sl--mr-0.5 sl-ml-1">
@@ -93,10 +113,7 @@
                                             </span>
                                         </button>
 
-                                        <div class="sl-bg-transparent"><span hidden=""></span>
-                                            <div style="border: 0px; clip: rect(0px, 0px, 0px, 0px); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;">
-                                                <button tabindex="-1" aria-label="Dismiss"></button>
-                                            </div>
+                                        <div class="sl-bg-transparent" id="download-menu" style="display: none;">
                                             <div data-ismodal="false" tabindex="-1"
                                                  data-testid="popover" data-ispopover="true"
                                                  class="sl-popover sl-inline-flex" role="presentation"
@@ -126,21 +143,7 @@
                                                         </div>
                                                     @endif
                                                 </div>
-                                                <div class="sl-popover__tip sl-absolute sl-text-canvas-pure"
-                                                     style="top: -10px; font-size: 16px; line-height: 0; margin-left: -5px; left: 117.888px;">
-                                                    <svg aria-hidden="true" focusable="false" data-prefix="fas"
-                                                         data-icon="caret-up" class="svg-inline--fa fa-caret-up sl-icon"
-                                                         role="img" xmlns="http://www.w3.org/2000/svg"
-                                                         viewBox="0 0 320 512">
-                                                        <path fill="currentColor"
-                                                              d="M9.39 265.4l127.1-128C143.6 131.1 151.8 128 160 128s16.38 3.125 22.63 9.375l127.1 128c9.156 9.156 11.9 22.91 6.943 34.88S300.9 320 287.1 320H32.01c-12.94 0-24.62-7.781-29.58-19.75S.2333 274.5 9.39 265.4z"></path>
-                                                    </svg>
-                                                </div>
                                             </div>
-                                            <div style="border: 0px; clip: rect(0px, 0px, 0px, 0px); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;">
-                                                <button tabindex="-1" aria-label="Dismiss"></button>
-                                            </div>
-                                            <span hidden=""></span>
                                         </div>
                                     </div>
                                 @endif
