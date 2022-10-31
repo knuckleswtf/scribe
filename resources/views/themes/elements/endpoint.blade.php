@@ -47,105 +47,54 @@
                 <div class="sl-stack sl-stack--vertical sl-stack--8 sl-flex sl-flex-col sl-items-stretch">
                     @if(count($endpoint->headers))
                         <div class="sl-stack sl-stack--vertical sl-stack--5 sl-flex sl-flex-col sl-items-stretch">
-                            <div class="sl-stack sl-stack--horizontal sl-stack--6 sl-flex sl-flex-row sl-items-center">
-                                <h3 id="/paths/api-file-input/post#request-headers" aria-label="Headers"
-                                    class="sl-link-heading sl-text-2xl sl-leading-snug sl-font-prose sl-font-semibold sl-text-heading">
-                                    <a href="#/paths/api-file-input/post#request-headers"
-                                       class="sl-link sl-link-heading__link sl-inline-flex sl-items-center sl-text-current">
-                                        <div>Headers</div>
-                                        <div class="sl-link-heading__icon sl-text-base sl-ml-4 sl-text-muted">
-                                            <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="link"
-                                                 class="svg-inline--fa fa-link sl-icon" role="img"
-                                                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
-                                                <path fill="currentColor"
-                                                      d="M172.5 131.1C228.1 75.51 320.5 75.51 376.1 131.1C426.1 181.1 433.5 260.8 392.4 318.3L391.3 319.9C381 334.2 361 337.6 346.7 327.3C332.3 317 328.9 297 339.2 282.7L340.3 281.1C363.2 249 359.6 205.1 331.7 177.2C300.3 145.8 249.2 145.8 217.7 177.2L105.5 289.5C73.99 320.1 73.99 372 105.5 403.5C133.3 431.4 177.3 435 209.3 412.1L210.9 410.1C225.3 400.7 245.3 404 255.5 418.4C265.8 432.8 262.5 452.8 248.1 463.1L246.5 464.2C188.1 505.3 110.2 498.7 60.21 448.8C3.741 392.3 3.741 300.7 60.21 244.3L172.5 131.1zM467.5 380C411 436.5 319.5 436.5 263 380C213 330 206.5 251.2 247.6 193.7L248.7 192.1C258.1 177.8 278.1 174.4 293.3 184.7C307.7 194.1 311.1 214.1 300.8 229.3L299.7 230.9C276.8 262.1 280.4 306.9 308.3 334.8C339.7 366.2 390.8 366.2 422.3 334.8L534.5 222.5C566 191 566 139.1 534.5 108.5C506.7 80.63 462.7 76.99 430.7 99.9L429.1 101C414.7 111.3 394.7 107.1 384.5 93.58C374.2 79.2 377.5 59.21 391.9 48.94L393.5 47.82C451 6.731 529.8 13.25 579.8 63.24C636.3 119.7 636.3 211.3 579.8 267.7L467.5 380z"></path>
-                                            </svg>
-                                        </div>
-                                    </a></h3>
-                            </div>
-                            <div class="" id="mosaic-provider-react-aria-1-1">
-                                <div data-overlay-container="true" class="">
-                                    <div class="JsonSchemaViewer">
-                                        <div></div>
-                                        @foreach($endpoint->headers as $header => $value)
-                                            @component('scribe::themes.elements.components.field-details', [
-                                              'name' => $header,
-                                              'type' => null,
-                                              'required' => false,
-                                              'description' => null,
-                                              'example' => $value,
-                                              'endpointId' => $endpoint->endpointId(),
-                                              'component' => 'header',
-                                              'isInput' => true,
-                                            ])
-                                            @endcomponent
-                                        @endforeach
-                                    </div>
-                                </div>
+                            <h3 class="sl-text-2xl sl-leading-snug sl-font-prose">
+                                Headers
+                            </h3>
+                            <div class="JsonSchemaViewer">
+                                @foreach($endpoint->headers as $header => $value)
+                                    @component('scribe::themes.elements.components.field-details', [
+                                      'name' => $header,
+                                      'type' => null,
+                                      'required' => false,
+                                      'description' => null,
+                                      'example' => $value,
+                                      'endpointId' => $endpoint->endpointId(),
+                                      'component' => 'header',
+                                      'isInput' => true,
+                                    ])
+                                    @endcomponent
+                                @endforeach
                             </div>
                         </div>
                     @endif
 
                     @if(count($endpoint->urlParameters))
                         <div class="sl-stack sl-stack--vertical sl-stack--6 sl-flex sl-flex-col sl-items-stretch">
-                            <div class="sl-stack sl-stack--horizontal sl-stack--6 sl-flex sl-flex-row sl-items-center">
-                                <h3 id="/paths/api-file-input/post#request-body"
-                                    class="sl-link-heading sl-text-2xl sl-leading-snug sl-font-prose sl-font-semibold sl-text-heading">
-                                    <a href="#/paths/api-file-input/post#request-body"
-                                       class="sl-link sl-link-heading__link sl-inline-flex sl-items-center sl-text-current">
-                                        URL Parameters
-                                        <div class="sl-link-heading__icon sl-text-base sl-ml-4 sl-text-muted">
-                                            <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="link"
-                                                 class="svg-inline--fa fa-link sl-icon" role="img"
-                                                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
-                                                <path fill="currentColor"
-                                                      d="M172.5 131.1C228.1 75.51 320.5 75.51 376.1 131.1C426.1 181.1 433.5 260.8 392.4 318.3L391.3 319.9C381 334.2 361 337.6 346.7 327.3C332.3 317 328.9 297 339.2 282.7L340.3 281.1C363.2 249 359.6 205.1 331.7 177.2C300.3 145.8 249.2 145.8 217.7 177.2L105.5 289.5C73.99 320.1 73.99 372 105.5 403.5C133.3 431.4 177.3 435 209.3 412.1L210.9 410.1C225.3 400.7 245.3 404 255.5 418.4C265.8 432.8 262.5 452.8 248.1 463.1L246.5 464.2C188.1 505.3 110.2 498.7 60.21 448.8C3.741 392.3 3.741 300.7 60.21 244.3L172.5 131.1zM467.5 380C411 436.5 319.5 436.5 263 380C213 330 206.5 251.2 247.6 193.7L248.7 192.1C258.1 177.8 278.1 174.4 293.3 184.7C307.7 194.1 311.1 214.1 300.8 229.3L299.7 230.9C276.8 262.1 280.4 306.9 308.3 334.8C339.7 366.2 390.8 366.2 422.3 334.8L534.5 222.5C566 191 566 139.1 534.5 108.5C506.7 80.63 462.7 76.99 430.7 99.9L429.1 101C414.7 111.3 394.7 107.1 384.5 93.58C374.2 79.2 377.5 59.21 391.9 48.94L393.5 47.82C451 6.731 529.8 13.25 579.8 63.24C636.3 119.7 636.3 211.3 579.8 267.7L467.5 380z"></path>
-                                            </svg>
-                                        </div>
-                                    </a></h3>
-                            </div>
+                            <h3 class="sl-text-2xl sl-leading-snug sl-font-prose">URL Parameters</h3>
 
-                            <div data-overlay-container="true" class="">
-                                <div class="JsonSchemaViewer">
-                                    @foreach($endpoint->urlParameters as $attribute => $parameter)
-                                        @component('scribe::themes.elements.components.field-details', [
-                                          'name' => $parameter->name,
-                                          'type' => $parameter->type ?? 'string',
-                                          'required' => $parameter->required,
-                                          'description' => $parameter->description,
-                                          'example' => $parameter->example ?? '',
-                                          'endpointId' => $endpoint->endpointId(),
-                                          'component' => 'url',
-                                          'isInput' => true,
-                                        ])
-                                        @endcomponent
-                                    @endforeach
-                                </div>
+                            <div class="JsonSchemaViewer">
+                                @foreach($endpoint->urlParameters as $attribute => $parameter)
+                                    @component('scribe::themes.elements.components.field-details', [
+                                      'name' => $parameter->name,
+                                      'type' => $parameter->type ?? 'string',
+                                      'required' => $parameter->required,
+                                      'description' => $parameter->description,
+                                      'example' => $parameter->example ?? '',
+                                      'endpointId' => $endpoint->endpointId(),
+                                      'component' => 'url',
+                                      'isInput' => true,
+                                    ])
+                                    @endcomponent
+                                @endforeach
                             </div>
                         </div>
                     @endif
 
 
                     @if(count($endpoint->queryParameters))
-                        <div class="sl-stack sl-stack--vertical sl-stack--6 sl-flex sl-flex-col sl-items-stretch">
-                            <div class="sl-stack sl-stack--horizontal sl-stack--6 sl-flex sl-flex-row sl-items-center">
-                                <h3 id="/paths/api-file-input/post#request-body"
-                                    class="sl-link-heading sl-text-2xl sl-leading-snug sl-font-prose sl-font-semibold sl-text-heading">
-                                    <a href="#/paths/api-file-input/post#request-body"
-                                       class="sl-link sl-link-heading__link sl-inline-flex sl-items-center sl-text-current">
-                                        Query Parameters
-                                        <div class="sl-link-heading__icon sl-text-base sl-ml-4 sl-text-muted">
-                                            <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="link"
-                                                 class="svg-inline--fa fa-link sl-icon" role="img"
-                                                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
-                                                <path fill="currentColor"
-                                                      d="M172.5 131.1C228.1 75.51 320.5 75.51 376.1 131.1C426.1 181.1 433.5 260.8 392.4 318.3L391.3 319.9C381 334.2 361 337.6 346.7 327.3C332.3 317 328.9 297 339.2 282.7L340.3 281.1C363.2 249 359.6 205.1 331.7 177.2C300.3 145.8 249.2 145.8 217.7 177.2L105.5 289.5C73.99 320.1 73.99 372 105.5 403.5C133.3 431.4 177.3 435 209.3 412.1L210.9 410.1C225.3 400.7 245.3 404 255.5 418.4C265.8 432.8 262.5 452.8 248.1 463.1L246.5 464.2C188.1 505.3 110.2 498.7 60.21 448.8C3.741 392.3 3.741 300.7 60.21 244.3L172.5 131.1zM467.5 380C411 436.5 319.5 436.5 263 380C213 330 206.5 251.2 247.6 193.7L248.7 192.1C258.1 177.8 278.1 174.4 293.3 184.7C307.7 194.1 311.1 214.1 300.8 229.3L299.7 230.9C276.8 262.1 280.4 306.9 308.3 334.8C339.7 366.2 390.8 366.2 422.3 334.8L534.5 222.5C566 191 566 139.1 534.5 108.5C506.7 80.63 462.7 76.99 430.7 99.9L429.1 101C414.7 111.3 394.7 107.1 384.5 93.58C374.2 79.2 377.5 59.21 391.9 48.94L393.5 47.82C451 6.731 529.8 13.25 579.8 63.24C636.3 119.7 636.3 211.3 579.8 267.7L467.5 380z"></path>
-                                            </svg>
-                                        </div>
-                                    </a></h3>
-                            </div>
+                            <div class="sl-stack sl-stack--vertical sl-stack--6 sl-flex sl-flex-col sl-items-stretch">
+                                <h3 class="sl-text-2xl sl-leading-snug sl-font-prose">Query Parameters</h3>
 
-                            <div data-overlay-container="true" class="">
                                 <div class="JsonSchemaViewer">
                                     @foreach($endpoint->queryParameters as $attribute => $parameter)
                                         @component('scribe::themes.elements.components.field-details', [
@@ -160,65 +109,29 @@
                                         ])
                                         @endcomponent
                                     @endforeach
-                                </div>
                             </div>
                         </div>
                     @endif
 
                     @if(count($endpoint->nestedBodyParameters))
                         <div class="sl-stack sl-stack--vertical sl-stack--6 sl-flex sl-flex-col sl-items-stretch">
-                            <div class="sl-stack sl-stack--horizontal sl-stack--6 sl-flex sl-flex-row sl-items-center">
-                                <h3 id="/paths/api-file-input/post#request-body"
-                                    class="sl-link-heading sl-text-2xl sl-leading-snug sl-font-prose sl-font-semibold sl-text-heading">
-                                    <a href="#/paths/api-file-input/post#request-body"
-                                       class="sl-link sl-link-heading__link sl-inline-flex sl-items-center sl-text-current">
-                                        Body Parameters
-                                        <div class="sl-link-heading__icon sl-text-base sl-ml-4 sl-text-muted">
-                                            <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="link"
-                                                 class="svg-inline--fa fa-link sl-icon" role="img"
-                                                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
-                                                <path fill="currentColor"
-                                                      d="M172.5 131.1C228.1 75.51 320.5 75.51 376.1 131.1C426.1 181.1 433.5 260.8 392.4 318.3L391.3 319.9C381 334.2 361 337.6 346.7 327.3C332.3 317 328.9 297 339.2 282.7L340.3 281.1C363.2 249 359.6 205.1 331.7 177.2C300.3 145.8 249.2 145.8 217.7 177.2L105.5 289.5C73.99 320.1 73.99 372 105.5 403.5C133.3 431.4 177.3 435 209.3 412.1L210.9 410.1C225.3 400.7 245.3 404 255.5 418.4C265.8 432.8 262.5 452.8 248.1 463.1L246.5 464.2C188.1 505.3 110.2 498.7 60.21 448.8C3.741 392.3 3.741 300.7 60.21 244.3L172.5 131.1zM467.5 380C411 436.5 319.5 436.5 263 380C213 330 206.5 251.2 247.6 193.7L248.7 192.1C258.1 177.8 278.1 174.4 293.3 184.7C307.7 194.1 311.1 214.1 300.8 229.3L299.7 230.9C276.8 262.1 280.4 306.9 308.3 334.8C339.7 366.2 390.8 366.2 422.3 334.8L534.5 222.5C566 191 566 139.1 534.5 108.5C506.7 80.63 462.7 76.99 430.7 99.9L429.1 101C414.7 111.3 394.7 107.1 384.5 93.58C374.2 79.2 377.5 59.21 391.9 48.94L393.5 47.82C451 6.731 529.8 13.25 579.8 63.24C636.3 119.7 636.3 211.3 579.8 267.7L467.5 380z"></path>
-                                            </svg>
-                                        </div>
-                                    </a></h3>
-                            </div>
+                            <h3 class="sl-text-2xl sl-leading-snug sl-font-prose">Body Parameters</h3>
 
-                            <div data-overlay-container="true" class="">
                                 <div class="JsonSchemaViewer">
-                                    <div></div>
                                     @component('scribe::themes.elements.components.nested-fields', [
                                       'fields' => $endpoint->nestedBodyParameters,
                                       'endpointId' => $endpoint->endpointId(),
                                     ])
                                     @endcomponent
-                                </div>
                             </div>
                         </div>
                     @endif
 
                     @if(count($endpoint->responseFields))
-                        <div class="sl-stack sl-stack--vertical sl-stack--6 sl-flex sl-flex-col sl-items-stretch">
-                            <div class="sl-stack sl-stack--horizontal sl-stack--6 sl-flex sl-flex-row sl-items-center">
-                                <h3 id="/paths/api-file-input/post#request-body"
-                                    class="sl-link-heading sl-text-2xl sl-leading-snug sl-font-prose sl-font-semibold sl-text-heading">
-                                    <a href="#/paths/api-file-input/post#request-body"
-                                       class="sl-link sl-link-heading__link sl-inline-flex sl-items-center sl-text-current">
-                                        Response Fields
-                                        <div class="sl-link-heading__icon sl-text-base sl-ml-4 sl-text-muted">
-                                            <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="link"
-                                                 class="svg-inline--fa fa-link sl-icon" role="img"
-                                                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
-                                                <path fill="currentColor"
-                                                      d="M172.5 131.1C228.1 75.51 320.5 75.51 376.1 131.1C426.1 181.1 433.5 260.8 392.4 318.3L391.3 319.9C381 334.2 361 337.6 346.7 327.3C332.3 317 328.9 297 339.2 282.7L340.3 281.1C363.2 249 359.6 205.1 331.7 177.2C300.3 145.8 249.2 145.8 217.7 177.2L105.5 289.5C73.99 320.1 73.99 372 105.5 403.5C133.3 431.4 177.3 435 209.3 412.1L210.9 410.1C225.3 400.7 245.3 404 255.5 418.4C265.8 432.8 262.5 452.8 248.1 463.1L246.5 464.2C188.1 505.3 110.2 498.7 60.21 448.8C3.741 392.3 3.741 300.7 60.21 244.3L172.5 131.1zM467.5 380C411 436.5 319.5 436.5 263 380C213 330 206.5 251.2 247.6 193.7L248.7 192.1C258.1 177.8 278.1 174.4 293.3 184.7C307.7 194.1 311.1 214.1 300.8 229.3L299.7 230.9C276.8 262.1 280.4 306.9 308.3 334.8C339.7 366.2 390.8 366.2 422.3 334.8L534.5 222.5C566 191 566 139.1 534.5 108.5C506.7 80.63 462.7 76.99 430.7 99.9L429.1 101C414.7 111.3 394.7 107.1 384.5 93.58C374.2 79.2 377.5 59.21 391.9 48.94L393.5 47.82C451 6.731 529.8 13.25 579.8 63.24C636.3 119.7 636.3 211.3 579.8 267.7L467.5 380z"></path>
-                                            </svg>
-                                        </div>
-                                    </a></h3>
-                            </div>
+                            <div class="sl-stack sl-stack--vertical sl-stack--6 sl-flex sl-flex-col sl-items-stretch">
+                                <h3 class="sl-text-2xl sl-leading-snug sl-font-prose">Response Fields</h3>
 
-                            <div data-overlay-container="true" class="">
                                 <div class="JsonSchemaViewer">
-                                    <div></div>
                                     @component('scribe::themes.elements.components.nested-fields', [
                                       'fields' => $endpoint->nestedResponseFields,
                                       'endpointId' => $endpoint->endpointId(),
@@ -227,8 +140,7 @@
                                     @endcomponent
                                 </div>
                             </div>
-                        </div>
-                    @endif
+                        @endif
                 </div>
             </div>
         </div>
@@ -405,9 +317,9 @@
                                     <div class="sl-panel__content sl-p-0">@if(count($response->headers))
                                                 <details class="sl-pl-2">
                                                     <summary style="cursor: pointer; list-style: none;">
-                                                        <small onclick="wasOpen = parentElement.parentElement.open; event.target.querySelector('.open').style.display = !wasOpen ? 'none' : 'initial';  event.target.querySelector('.close').style.display = wasOpen ? 'none' : 'initial'; ">
-                                                            <svg focusable="false"style="display: none;" class="close svg-inline--fa fa-chevron-down fa-fw fa-sm sl-icon" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M224 416c-8.188 0-16.38-3.125-22.62-9.375l-192-192c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L224 338.8l169.4-169.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-192 192C240.4 412.9 232.2 416 224 416z"></path></svg>
-                                                            <svg focusable="false" class="open svg-inline--fa fa-chevron-right fa-fw fa-sm sl-icon" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M96 480c-8.188 0-16.38-3.125-22.62-9.375c-12.5-12.5-12.5-32.75 0-45.25L242.8 256L73.38 86.63c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0l192 192c12.5 12.5 12.5 32.75 0 45.25l-192 192C112.4 476.9 104.2 480 96 480z"></path></svg>
+                                                        <small onclick="wasOpen = parentElement.parentElement.open; event.target.querySelector('.expand-chevron').style.display = !wasOpen ? 'none' : 'initial';  event.target.querySelector('.expanded-chevron').style.display = wasOpen ? 'none' : 'initial'; ">
+                                                            <svg focusable="false"style="display: none;" class="expanded-chevron svg-inline--fa fa-chevron-down fa-fw fa-sm sl-icon" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M224 416c-8.188 0-16.38-3.125-22.62-9.375l-192-192c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L224 338.8l169.4-169.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-192 192C240.4 412.9 232.2 416 224 416z"></path></svg>
+                                                            <svg focusable="false" class="expand-chevron svg-inline--fa fa-chevron-right fa-fw fa-sm sl-icon" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M96 480c-8.188 0-16.38-3.125-22.62-9.375c-12.5-12.5-12.5-32.75 0-45.25L242.8 256L73.38 86.63c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0l192 192c12.5 12.5 12.5 32.75 0 45.25l-192 192C112.4 476.9 104.2 480 96 480z"></path></svg>
                                                             Headers
                                                         </small>
                                                     </summary>

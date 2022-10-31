@@ -60,22 +60,32 @@
         document.querySelectorAll(`.example-response-${endpointId}-toggle`).forEach(el => el.value = index);
     }
 
-    function toggleSidebarChildren(elem, heading) {
-        let children = document.querySelectorAll(`.children-${heading}`)
-        if (!children.length) return;
+    function toggleElementChildren(evt) {
+        let elem = evt.currentTarget;
+        let children = elem.querySelector(`.children`);
+        if (!children) return;
 
-        let oldState = children[0].style.display
-        if (oldState == 'none') {
-            children.forEach(el => el.style.removeProperty('display'));
+        if (children.contains(event.target)) return;
+
+        let oldState = children.style.display
+        if (oldState === 'none') {
+            children.style.removeProperty('display');
             elem.querySelector('.expand-chevron').style.display = 'none'
             elem.querySelector('.expanded-chevron').style.removeProperty('display')
         } else {
-            children.forEach(el => el.style.display = 'none');
+            children.style.display = 'none';
             elem.querySelector('.expand-chevron').style.removeProperty('display')
             elem.querySelector('.expanded-chevron').style.display = 'none'
         }
 
+        evt.stopPropagation();
     }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.expandable').forEach(el => {
+            el.addEventListener('click', toggleElementChildren);
+        });
+    });
 </script>
 
 <div style="height: 100%;">
@@ -85,7 +95,7 @@
 
                 @include("scribe::themes.elements.sidebar")
 
-                <div class="sl-overflow-y-auto sl-flex-1 sl-w-full sl-px-24 sl-bg-canvas">
+                <div class="sl-overflow-y-auto sl-flex-1 sl-w-full sl-px-16 sl-bg-canvas">
                     <div class="sl-py-16" style="max-width: 1500px;">
 
                         <div class="sl-mb-10">
