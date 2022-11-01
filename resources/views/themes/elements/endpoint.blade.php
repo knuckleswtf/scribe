@@ -50,7 +50,7 @@
                             <h3 class="sl-text-2xl sl-leading-snug sl-font-prose">
                                 Headers
                             </h3>
-                            <div class="JsonSchemaViewer">
+                            <div class="sl-text-sm">
                                 @foreach($endpoint->headers as $header => $value)
                                     @component('scribe::themes.elements.components.field-details', [
                                       'name' => $header,
@@ -72,7 +72,7 @@
                         <div class="sl-stack sl-stack--vertical sl-stack--6 sl-flex sl-flex-col sl-items-stretch">
                             <h3 class="sl-text-2xl sl-leading-snug sl-font-prose">URL Parameters</h3>
 
-                            <div class="JsonSchemaViewer">
+                            <div class="sl-text-sm">
                                 @foreach($endpoint->urlParameters as $attribute => $parameter)
                                     @component('scribe::themes.elements.components.field-details', [
                                       'name' => $parameter->name,
@@ -95,7 +95,7 @@
                             <div class="sl-stack sl-stack--vertical sl-stack--6 sl-flex sl-flex-col sl-items-stretch">
                                 <h3 class="sl-text-2xl sl-leading-snug sl-font-prose">Query Parameters</h3>
 
-                                <div class="JsonSchemaViewer">
+                                <div class="sl-text-sm">
                                     @foreach($endpoint->queryParameters as $attribute => $parameter)
                                         @component('scribe::themes.elements.components.field-details', [
                                           'name' => $parameter->name,
@@ -117,7 +117,7 @@
                         <div class="sl-stack sl-stack--vertical sl-stack--6 sl-flex sl-flex-col sl-items-stretch">
                             <h3 class="sl-text-2xl sl-leading-snug sl-font-prose">Body Parameters</h3>
 
-                                <div class="JsonSchemaViewer">
+                                <div class="sl-text-sm">
                                     @component('scribe::themes.elements.components.nested-fields', [
                                       'fields' => $endpoint->nestedBodyParameters,
                                       'endpointId' => $endpoint->endpointId(),
@@ -131,7 +131,7 @@
                             <div class="sl-stack sl-stack--vertical sl-stack--6 sl-flex sl-flex-col sl-items-stretch">
                                 <h3 class="sl-text-2xl sl-leading-snug sl-font-prose">Response Fields</h3>
 
-                                <div class="JsonSchemaViewer">
+                                <div class="sl-text-sm">
                                     @component('scribe::themes.elements.components.nested-fields', [
                                       'fields' => $endpoint->nestedResponseFields,
                                       'endpointId' => $endpoint->endpointId(),
