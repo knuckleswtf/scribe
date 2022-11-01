@@ -1,4 +1,4 @@
-<div class="sl-flex sl-overflow-y-auto sl-flex-col sl-sticky sl-inset-y-0 sl-pt-8 sl-bg-canvas-100 sl-border-r"
+<div id="sidebar" class="sl-flex sl-overflow-y-auto sl-flex-col sl-sticky sl-inset-y-0 sl-pt-8 sl-bg-canvas-100 sl-border-r"
      style="width: calc((100% - 1800px) / 2 + 300px); padding-left: calc((100% - 1800px) / 2); min-width: 300px; max-height: 100vh">
     <div class="sl-flex sl-items-center sl-mb-5 sl-ml-4">
         @if($metadata['logo'] != false)
@@ -17,7 +17,7 @@
             <div class="sl-my-3">
                 @foreach($headings as $h1)
                     <div class="expandable">
-                        <div title="{!! $h1['name'] !!}"
+                        <div title="{!! $h1['name'] !!}" id="toc-item-{!! $h1['slug'] !!}"
                              class="sl-flex sl-items-center sl-h-md sl-pr-4 sl-pl-4 sl-bg-canvas-100 hover:sl-bg-canvas-200 sl-cursor-pointer sl-select-none">
                             <a href="#{!! $h1['slug'] !!}"
                                class="sl-flex-1 sl-items-center sl-truncate sl-mr-1.5 sl-p-0">{!! $h1['name'] !!}</a>
@@ -50,7 +50,7 @@
                                     <div class="expandable">
                                         <div class="sl-flex sl-items-center sl-h-md sl-pr-4 sl-pl-8 sl-bg-canvas-100 hover:sl-bg-canvas-200 sl-cursor-pointer sl-select-none">
                                             <div class="sl-flex-1 sl-items-center sl-truncate sl-mr-1.5 sl-p-0"
-                                                 title="{!! $h2['slug'] !!}">
+                                                 title="{!! $h2['name'] !!}" id="toc-item-{!! $h2['slug'] !!}">
                                                 <a class="ElementsTableOfContentsItem sl-block sl-no-underline"
                                                    href="#{!! $h2['slug'] !!}">
                                                     {!! $h2['name'] !!}
@@ -82,11 +82,11 @@
                                         @if(count($h2['subheadings']) > 0)
                                             <div class="children" style="display: none;">
                                                 @foreach($h2['subheadings'] as $h3)
-                                                    <a class="children ElementsTableOfContentsItem sl-block sl-no-underline"
+                                                    <a class="ElementsTableOfContentsItem sl-block sl-no-underline"
                                                        href="#{!! $h3['slug'] !!}">
-                                                        <div title="{!! $h3['slug'] !!}"
+                                                        <div title="{!! $h3['name'] !!}" id="toc-item-{!! $h3['slug'] !!}"
                                                              class="sl-flex sl-items-center sl-h-md sl-pr-4 sl-pl-12 sl-bg-canvas-100 hover:sl-bg-canvas-200 sl-cursor-pointer sl-select-none">
-                                                            <div class="sl-flex-1 sl-items-center sl-truncate sl-mr-1.5">{!! $h3['name'] !!}</div>
+                                                            {!! $h3['name'] !!}
                                                         </div>
                                                     </a>
                                                 @endforeach

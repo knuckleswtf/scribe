@@ -2,7 +2,7 @@
     use Knuckles\Scribe\Tools\WritingUtils as u;
 @endphp
 
-<!doctype html>
+        <!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -23,7 +23,8 @@
     <style>
         .hljs {
             /* Remove highlightjs background color */
-            background-color: transparent; !important;
+            background-color: transparent;
+        !important;
         }
     </style>
 
@@ -41,7 +42,7 @@
 
 </head>
 
-<body data-languages="{{ json_encode($metadata['example_languages'] ?? []) }}">
+<body>
 
 @if($metadata['example_languages'])
     <script>
@@ -60,6 +61,19 @@
         document.querySelectorAll(`.example-response-${endpointId}-toggle`).forEach(el => el.value = index);
     }
 
+    function toggleExpansionChevrons(evt) {
+        let elem = evt.currentTarget;
+
+        const newState = elem.querySelector('.expand-chevron').style.display === 'none' ? 'expand' : 'expanded';
+        if (newState === 'expanded') {
+            elem.querySelector('.expand-chevron').style.display = 'none';
+            elem.querySelector('.expanded-chevron').style.removeProperty('display');
+        } else {
+            elem.querySelector('.expand-chevron').style.removeProperty('display')
+            elem.querySelector('.expanded-chevron').style.display = 'none'
+        }
+    }
+
     function toggleElementChildren(evt) {
         let elem = evt.currentTarget;
         let children = elem.querySelector(`.children`);
@@ -70,22 +84,46 @@
         let oldState = children.style.display
         if (oldState === 'none') {
             children.style.removeProperty('display');
-            elem.querySelector('.expand-chevron').style.display = 'none'
-            elem.querySelector('.expanded-chevron').style.removeProperty('display')
+            toggleExpansionChevrons(evt);
         } else {
             children.style.display = 'none';
-            elem.querySelector('.expand-chevron').style.removeProperty('display')
-            elem.querySelector('.expanded-chevron').style.display = 'none'
+            toggleExpansionChevrons(evt);
         }
 
         evt.stopPropagation();
     }
 
+    function highlightSidebarItem(evt = null) {
+        if (evt && evt.oldURL) {
+            let oldHash = new URL(evt.oldURL).hash.slice(1);
+            if (oldHash) {
+                let previousItem = window['sidebar'].querySelector(`#toc-item-${oldHash}`);
+                previousItem.classList.remove('sl-bg-primary-tint');
+                previousItem.classList.add('sl-bg-canvas-100');
+            }
+        }
+
+        let newHash = location.hash.slice(1);
+        if (newHash) {
+            let item = window['sidebar'].querySelector(`#toc-item-${newHash}`);
+            item.classList.remove('sl-bg-canvas-100');
+            item.classList.add('sl-bg-primary-tint');
+        }
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
+        highlightSidebarItem();
+
         document.querySelectorAll('.expandable').forEach(el => {
             el.addEventListener('click', toggleElementChildren);
         });
+
+        document.querySelectorAll('details').forEach(el => {
+            el.addEventListener('toggle', toggleExpansionChevrons);
+        });
     });
+
+    addEventListener('hashchange', highlightSidebarItem);
 </script>
 
 <div style="height: 100%;">
@@ -133,23 +171,19 @@
                                                     @if($metadata['postman_collection_url'])
                                                         <div class="sl-menu-item sl-flex sl-items-center sl-text-base sl-whitespace-nowrap sl-pt-1 sl-pr-3 sl-pb-1 sl-pl-3"
                                                              role="menuitem">
-                                                            <div class="sl-menu-item__title-wrapper sl-flex-1 sl-w-full sl-pr-0">
-                                                                <div class="sl-truncate">
-                                                                    <a href="{!! $metadata['postman_collection_url'] !!}" target="_blank">Postman
-                                                                        collection</a>
-                                                                </div>
-                                                            </div>
+                                                            <a href="{!! $metadata['postman_collection_url'] !!}"
+                                                               target="_blank"
+                                                               class="sl-menu-item__title-wrapper sl-flex-1 sl-w-full sl-pr-0">Postman
+                                                                collection</a>
                                                         </div>
                                                     @endif
                                                     @if($metadata['openapi_spec_url'])
                                                         <div class="sl-menu-item sl-flex sl-items-center sl-text-base sl-whitespace-nowrap sl-pt-1 sl-pr-3 sl-pb-1 sl-pl-3"
                                                              role="menuitem">
-                                                            <div class="sl-menu-item__title-wrapper sl-flex-1 sl-w-full sl-pr-0">
-                                                                <div class="sl-truncate">
-                                                                    <a href="{!! $metadata['openapi_spec_url'] !!}" target="_blank">OpenAPI
-                                                                        spec</a>
-                                                                </div>
-                                                            </div>
+                                                            <a href="{!! $metadata['openapi_spec_url'] !!}"
+                                                               target="_blank"
+                                                               class="sl-menu-item__title-wrapper sl-flex-1 sl-w-full sl-pr-0">OpenAPI
+                                                                spec</a>
                                                         </div>
                                                     @endif
                                                 </div>
@@ -173,7 +207,7 @@
                         <div class="sl-mb-10">
                             <div class="sl-relative">
                                 <div class="sl-prose sl-markdown-viewer sl-my-5">
-                        {!! $append !!}
+                                    {!! $append !!}
                                 </div>
                             </div>
                         </div>
