@@ -111,7 +111,7 @@
         }
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
+    addEventListener('DOMContentLoaded', () => {
         highlightSidebarItem();
 
         document.querySelectorAll('.expandable').forEach(el => {
@@ -126,59 +126,46 @@
     addEventListener('hashchange', highlightSidebarItem);
 </script>
 
-<div style="height: 100%;">
-    <div data-overlay-container="true" class="" style="height: 100%;">
-        <div class="sl-elements sl-antialiased sl-h-full sl-text-base sl-font-ui sl-text-body">
-            <div class="sl-elements-api sl-flex sl-inset-0 sl-h-full">
+<div class="sl-elements sl-antialiased sl-h-full sl-text-base sl-font-ui sl-text-body sl-flex sl-inset-0">
 
-                @include("scribe::themes.elements.sidebar")
+    @include("scribe::themes.elements.sidebar")
 
-                <div class="sl-overflow-y-auto sl-flex-1 sl-w-full sl-px-16 sl-bg-canvas">
-                    <div class="sl-py-16" style="max-width: 1500px;">
+    <div class="sl-overflow-y-auto sl-flex-1 sl-w-full sl-px-16 sl-bg-canvas sl-py-16" style="max-width: 1500px;">
 
-                        <div class="sl-mb-10">
-                            <div class="sl-mb-4">
-                                <h1 class="sl-text-5xl sl-leading-tight sl-font-prose sl-font-semibold sl-text-heading">
-                                    {!! $metadata['title'] !!}
-                                </h1>
-                                @if($metadata['postman_collection_url'])
-                                    <a title="Download Postman collection" class="sl-mx-1"
-                                       href="{!! $metadata['postman_collection_url'] !!}" target="_blank">
-                                        <small>Postman collection →</small>
-                                    </a>
-                                @endif
-                                @if($metadata['openapi_spec_url'])
-                                    <a title="Download OpenAPI spec" class="sl-mx-1"
-                                       href="{!! $metadata['openapi_spec_url'] !!}" target="_blank">
-                                        <small>OpenAPI spec →</small>
-                                    </a>
-                                @endif
-                            </div>
-
-                            <div class="sl-prose sl-markdown-viewer sl-my-5">
-                                {!! $intro !!}
-
-                                {!! $auth !!}
-                            </div>
-                        </div>
-
-                        @include("scribe::themes.elements.groups")
-
-                        <div class="sl-mb-10">
-                            <div class="sl-relative">
-                                <div class="sl-prose sl-markdown-viewer sl-my-5">
-                                    {!! $append !!}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
+        <div class="sl-mb-10">
+            <div class="sl-mb-4">
+                <h1 class="sl-text-5xl sl-leading-tight sl-font-prose sl-font-semibold sl-text-heading">
+                    {!! $metadata['title'] !!}
+                </h1>
+                @if($metadata['postman_collection_url'])
+                    <a title="Download Postman collection" class="sl-mx-1"
+                       href="{!! $metadata['postman_collection_url'] !!}" target="_blank">
+                        <small>Postman collection →</small>
+                    </a>
+                @endif
+                @if($metadata['openapi_spec_url'])
+                    <a title="Download OpenAPI spec" class="sl-mx-1"
+                       href="{!! $metadata['openapi_spec_url'] !!}" target="_blank">
+                        <small>OpenAPI spec →</small>
+                    </a>
+                @endif
             </div>
 
+            <div class="sl-prose sl-markdown-viewer sl-my-4">
+                {!! $intro !!}
+
+                {!! $auth !!}
+            </div>
+        </div>
+
+        @include("scribe::themes.elements.groups")
+
+        <div class="sl-prose sl-markdown-viewer sl-my-5">
+            {!! $append !!}
         </div>
     </div>
+
 </div>
+
 </body>
 </html>
