@@ -137,68 +137,28 @@
                     <div class="sl-py-16" style="max-width: 1500px;">
 
                         <div class="sl-mb-10">
-                            <div class="sl-flex sl-justify-between sl-items-center">
-                                <div class="sl-relative">
-                                    <h1 class="sl-text-5xl sl-leading-tight sl-font-prose sl-font-semibold sl-mb-4 sl-text-heading">
-                                        {!! $metadata['title'] !!}
-                                    </h1>
-                                </div>
-                                @if($metadata['openapi_spec_url'] || $metadata['postman_collection_url'])
-                                    <div>
-                                        <button type="button" aria-label="Download" aria-haspopup="true"
-                                                aria-expanded="false"
-                                                onclick="let oldState = window['download-menu'].style.display; window['download-menu'].style.display= oldState == 'none' ? 'initial' : 'none';"
-                                                class="sl-button sl-h-sm sl-text-base sl-font-medium sl-ml-2 sl-px-1.5 sl-bg-canvas hover:sl-bg-canvas-50 active:sl-bg-canvas-100 sl-rounded sl-border-button sl-border disabled:sl-opacity-60">
-                                            Download
-                                            <span class="sl-text-xs sl--mr-0.5 sl-ml-1">
-                                                <svg aria-hidden="true" focusable="false" data-prefix="fas"
-                                                     data-icon="chevron-down"
-                                                     class="svg-inline--fa fa-chevron-down fa-fw sl-icon" role="img"
-                                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-                                                    <path fill="currentColor"
-                                                          d="M224 416c-8.188 0-16.38-3.125-22.62-9.375l-192-192c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L224 338.8l169.4-169.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-192 192C240.4 412.9 232.2 416 224 416z"></path>
-                                                </svg>
-                                            </span>
-                                        </button>
-
-                                        <div class="sl-bg-transparent" id="download-menu" style="display: none;">
-                                            <div data-ismodal="false" tabindex="-1"
-                                                 data-testid="popover" data-ispopover="true"
-                                                 class="sl-popover sl-inline-flex" role="presentation"
-                                                 style="position: absolute; z-index: 100000; left: 502.045px; top: 158px; max-height: 359.091px;">
-                                                <div class="sl-menu sl-menu--pointer-interactions sl-inline-block sl-overflow-y-auto sl-w-full sl-py-2 sl-bg-canvas-pure sl-cursor sl-no-focus-ring"
-                                                     role="menu" style="min-width: 150px; max-width: 400px;">
-                                                    @if($metadata['postman_collection_url'])
-                                                        <div class="sl-menu-item sl-flex sl-items-center sl-text-base sl-whitespace-nowrap sl-pt-1 sl-pr-3 sl-pb-1 sl-pl-3"
-                                                             role="menuitem">
-                                                            <a href="{!! $metadata['postman_collection_url'] !!}"
-                                                               target="_blank"
-                                                               class="sl-menu-item__title-wrapper sl-flex-1 sl-w-full sl-pr-0">Postman
-                                                                collection</a>
-                                                        </div>
-                                                    @endif
-                                                    @if($metadata['openapi_spec_url'])
-                                                        <div class="sl-menu-item sl-flex sl-items-center sl-text-base sl-whitespace-nowrap sl-pt-1 sl-pr-3 sl-pb-1 sl-pl-3"
-                                                             role="menuitem">
-                                                            <a href="{!! $metadata['openapi_spec_url'] !!}"
-                                                               target="_blank"
-                                                               class="sl-menu-item__title-wrapper sl-flex-1 sl-w-full sl-pr-0">OpenAPI
-                                                                spec</a>
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                            <div class="sl-mb-4">
+                                <h1 class="sl-text-5xl sl-leading-tight sl-font-prose sl-font-semibold sl-text-heading">
+                                    {!! $metadata['title'] !!}
+                                </h1>
+                                @if($metadata['postman_collection_url'])
+                                    <a title="Download Postman collection" class="sl-mx-1"
+                                       href="{!! $metadata['postman_collection_url'] !!}" target="_blank">
+                                        <small>Postman collection →</small>
+                                    </a>
+                                @endif
+                                @if($metadata['openapi_spec_url'])
+                                    <a title="Download OpenAPI spec" class="sl-mx-1"
+                                       href="{!! $metadata['openapi_spec_url'] !!}" target="_blank">
+                                        <small>OpenAPI spec →</small>
+                                    </a>
                                 @endif
                             </div>
 
-                            <div class="sl-relative">
-                                <div class="sl-prose sl-markdown-viewer sl-my-5">
-                                    {!! $intro !!}
+                            <div class="sl-prose sl-markdown-viewer sl-my-5">
+                                {!! $intro !!}
 
-                                    {!! $auth !!}
-                                </div>
+                                {!! $auth !!}
                             </div>
                         </div>
 
