@@ -38,9 +38,9 @@
                             <div class="children" style="display: none;">
                                 @foreach($h1['subheadings'] as $h2)
                                     <div class="expandable">
-                                        <div class="sl-flex sl-items-center sl-h-md sl-pr-4 sl-pl-8 sl-bg-canvas-100 hover:sl-bg-canvas-200 sl-cursor-pointer sl-select-none">
-                                            <div class="sl-flex-1 sl-items-center sl-truncate sl-mr-1.5 sl-p-0"
-                                                 title="{!! $h2['name'] !!}" id="toc-item-{!! $h2['slug'] !!}">
+                                        <div class="sl-flex sl-items-center sl-h-md sl-pr-4 sl-pl-8 sl-bg-canvas-100 hover:sl-bg-canvas-200 sl-cursor-pointer sl-select-none"
+                                             id="toc-item-{!! $h2['slug'] !!}">
+                                            <div class="sl-flex-1 sl-items-center sl-truncate sl-mr-1.5 sl-p-0" title="{!! $h2['name'] !!}">
                                                 <a class="ElementsTableOfContentsItem sl-block sl-no-underline"
                                                    href="#{!! $h2['slug'] !!}">
                                                     {!! $h2['name'] !!}
