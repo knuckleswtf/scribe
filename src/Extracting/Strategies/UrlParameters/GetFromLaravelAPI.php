@@ -195,7 +195,7 @@ class GetFromLaravelAPI extends Strategy
             $paramIndex = array_search("{{$alternateParamName}}", $parts);
         }
 
-        if ($paramIndex === false) return null;
+        if ($paramIndex === false || $paramIndex === 0) return null;
 
         $things = $parts[$paramIndex - 1];
         // Replace underscores/hyphens, so "side_projects" becomes "side project"
