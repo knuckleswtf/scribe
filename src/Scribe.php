@@ -64,7 +64,7 @@ class Scribe
      * in order to normalize the URL. The default normalization tries to convert URL parameters from
      * Laravel resource-style (`users/{user}/projects/{project}`)
      * to a general style (`users/{user_id}/projects/{id}`).
-     * The callback will be passed the existing URL, the route object, the controller method and class.
+     * The callback will be passed the default Laravel URL, the route object, the controller method and class.
      *
      * @param ?callable(string,\Illuminate\Routing\Route,\ReflectionFunctionAbstract,?\ReflectionClass): string $callable
      */
