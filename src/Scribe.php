@@ -52,10 +52,24 @@ class Scribe
      * to instantiate Form Requests. his callback takes the name of the form request class,
      * the current Laravel route being processed, and the controller method.
      *
-     * @param callable(string,\Illuminate\Routing\Route,\ReflectionFunctionAbstract): mixed $callable
+     * @param ?callable(string,\Illuminate\Routing\Route,\ReflectionFunctionAbstract): mixed $callable
      */
-    public static function instantiateFormRequestUsing(callable $callable)
+    public static function instantiateFormRequestUsing(?callable $callable)
     {
         Globals::$__instantiateFormRequestUsing = $callable;
+    }
+
+    /**
+     * Specify a callback that will be called when instantiating an `ExtractedEndpointData` object
+     * in order to normalize the URL. The default normalization tries to convert URL parameters from
+     * Laravel resource-style (`users/{user}/projects/{project}`)
+     * to a general style (`users/{user_id}/projects/{id}`).
+     * The callback will be passed the existing URL, the route object, the controller method and class.
+     *
+     * @param ?callable(string,\Illuminate\Routing\Route,\ReflectionFunctionAbstract,?\ReflectionClass): string $callable
+     */
+    public static function normalizeEndpointUrlUsing(?callable $callable)
+    {
+        Globals::$__normalizeEndpointUrlUsing = $callable;
     }
 }
