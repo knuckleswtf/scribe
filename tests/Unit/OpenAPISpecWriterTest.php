@@ -33,7 +33,7 @@ class OpenAPISpecWriterTest extends TestCase
 
         $results = $this->generate($groups);
 
-        $this->assertEquals(OpenAPISpecWriter::VERSION, $results['openapi']);
+        $this->assertEquals(OpenAPISpecWriter::SPEC_VERSION, $results['openapi']);
         $this->assertEquals($this->config['title'], $results['info']['title']);
         $this->assertEquals($this->config['description'], $results['info']['description']);
         $this->assertNotEmpty($results['info']['version']);

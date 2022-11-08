@@ -15,7 +15,7 @@ class PostmanCollectionWriter
      * Postman collection schema version
      * https://schema.getpostman.com/json/collection/v2.1.0/collection.json
      */
-    const VERSION = '2.1.0';
+    const SPEC_VERSION = '2.1.0';
 
     protected DocumentationConfig $config;
 
@@ -48,7 +48,7 @@ class PostmanCollectionWriter
                 'name' => $this->config->get('title') ?: config('app.name'),
                 '_postman_id' => Uuid::uuid4()->toString(),
                 'description' => $this->config->get('description', ''),
-                'schema' => "https://schema.getpostman.com/json/collection/v" . self::VERSION . "/collection.json",
+                'schema' => "https://schema.getpostman.com/json/collection/v" . self::SPEC_VERSION . "/collection.json",
             ],
             'item' => array_values(array_map(function (array $group) {
                 return [

@@ -19,7 +19,7 @@ class OpenAPISpecWriter
 {
     use ParamHelpers;
 
-    const VERSION = '3.0.3';
+    const SPEC_VERSION = '3.0.3';
 
     private DocumentationConfig $config;
 
@@ -46,7 +46,7 @@ class OpenAPISpecWriter
     public function generateSpecContent(array $groupedEndpoints): array
     {
         return array_merge([
-            'openapi' => self::VERSION,
+            'openapi' => self::SPEC_VERSION,
             'info' => [
                 'title' => $this->config->get('title') ?: config('app.name', ''),
                 'description' => $this->config->get('description', ''),
