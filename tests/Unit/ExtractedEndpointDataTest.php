@@ -59,6 +59,12 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
 
         $this->assertEquals('audio-things/{audio_thing}', $this->originalUri($route));
         $this->assertEquals('audio-things/{id}', $this->expectedUri($route));
+
+        Route::apiResource('big-users.audio-things.things', TestController::class)->only('store');
+        $route = $this->getRoute(['prefixes' => '*big-users*']);
+
+        $this->assertEquals('big-users/{big_user}/audio-things/{audio_thing}/things', $this->originalUri($route));
+        $this->assertEquals('big-users/{big_user_id}/audio-things/{audio_thing_id}/things', $this->expectedUri($route));
     }
 
     /** @test */

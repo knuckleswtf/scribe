@@ -30,7 +30,7 @@ class UrlParamsNormalizer
         $uri = $route->uri;
         preg_match_all('#\{(\w+?)}#', $uri, $params);
 
-        $resourceRouteNames = [".index", ".show", ".update", ".destroy"];
+        $resourceRouteNames = [".index", ".show", ".update", ".destroy", ".store"];
 
         $typeHintedEloquentModels = self::getTypeHintedEloquentModels($method);
         $routeName = $route->action['as'] ?? '';
@@ -42,7 +42,11 @@ class UrlParamsNormalizer
             $alreadyFoundResourceParam = false;
             foreach (array_reverse($pluralResources) as $pluralResource) {
                 $singularResource = Str::singular($pluralResource);
-                $singularResourceParam = str_replace('-', '_', $singularResource); // URL parameters are often declared with _ in Laravel but - outside
+
+                // Laravel turns hyphens in parameters to underscores
+                // (`cool-things/{cool-thing}` to `cool-things/{cool_thing_id}`)
+                // so we do the same
+                $singularResourceParam = str_replace('-', '_', $singularResource);
 
                 $urlPatternsToSearchFor = [
                     "{$pluralResource}/{{$singularResourceParam}}",
@@ -63,10 +67,10 @@ class UrlParamsNormalizer
                 } else {
                     // Other resource parameters will be `params/{<param>_id}`
                     $replaceWith = [
-                        "{$pluralResource}/{{$singularResource}_{$binding}}",
                         "{$pluralResource}/{{$singularResourceParam}_{$binding}}",
-                        "{$pluralResource}/{{$singularResource}_{$binding}?}",
+                        "{$pluralResource}/{{$singularResource}_{$binding}}",
                         "{$pluralResource}/{{$singularResourceParam}_{$binding}?}",
+                        "{$pluralResource}/{{$singularResource}_{$binding}?}",
                     ];
                 }
                 $uri = str_replace($urlPatternsToSearchFor, $replaceWith, $uri);
