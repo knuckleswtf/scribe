@@ -84,6 +84,7 @@ class OpenAPISpecWriter
             $operations = $endpoints->mapWithKeys(function (OutputEndpointData $endpoint) use ($groupedEndpoints) {
                 $spec = [
                     'summary' => $endpoint->metadata->title,
+                    'operationId' => $this->operationId($endpoint),
                     'description' => $endpoint->metadata->description,
                     'parameters' => $this->generateEndpointParametersSpec($endpoint),
                     'responses' => $this->generateEndpointResponsesSpec($endpoint),
@@ -534,5 +535,13 @@ class OpenAPISpecWriter
                 'example' => $field->example,
             ];
         }
+    }
+
+    function operationId(OutputEndpointData $endpoint): string
+    {
+        if ($endpoint->metadata->title) return preg_replace('/[^\w+]/', '', Str::camel($endpoint->metadata->title));
+
+        $parts = preg_split('/[^\w+]/', $endpoint->uri, -1, PREG_SPLIT_NO_EMPTY);
+        return Str::lower($endpoint->httpMethods[0]) . join('', array_map(fn ($part) => ucfirst($part), $parts));
     }
 }
