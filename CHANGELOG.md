@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.2.1 (9 November 2022)
+### Fixed
+- Fix display of headings when append file has a H1 ([4924499](https://github.com/knuckleswtf/scribe/commit/4924499dc4411aa656e0e41dac7a317ab5fba94c))
+
 # 4.2.0 (8 November 2022)
 ### Added
 - Allow users customize endpoint URL normalization ([fe70df9e](https://github.com/knuckleswtf/scribe/commit/fe70df9ef07c9f1a21bdc4f06c59435ab24b2141))
