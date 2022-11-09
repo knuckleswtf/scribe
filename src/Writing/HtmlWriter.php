@@ -182,7 +182,7 @@ class HtmlWriter
             }
         }
 
-        $headings = array_merge($headings, array_map(function ($group) {
+        $headings = array_merge($headings, array_values(array_map(function ($group) {
             $groupSlug = Str::slug($group['name']);
 
             return [
@@ -194,7 +194,7 @@ class HtmlWriter
                             'slug' => $endpoint->fullSlug(),
                             'name' => $endpoint->name(),
                             'subheadings' => []
-                        ])->all();
+                        ])->values();
                     }
 
                     return [
@@ -205,12 +205,12 @@ class HtmlWriter
                                 'slug' => $endpoint->fullSlug(),
                                 'name' => $endpoint->name(),
                                 'subheadings' => []
-                            ])->all(),
+                            ])->values(),
                         ],
                     ];
-                })->all(),
+                })->values(),
             ];
-        }, $endpointsByGroupAndSubgroup));
+        }, $endpointsByGroupAndSubgroup)));
 
         $lastL1ElementIndex = null;
         foreach ($headingsAfterEndpoints as $heading) {
