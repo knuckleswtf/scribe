@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.2.2 (10 November 2022)
+### Fixed
+- Support #[ResponseField] on API resources ([66492aa](https://github.com/knuckleswtf/scribe/commit/66492aabdddb9481f0b74adca40fc6ce9a015253))
+
 # 4.2.1 (9 November 2022)
 ### Fixed
 - Fix display of headings when append file has a H1 ([4924499](https://github.com/knuckleswtf/scribe/commit/4924499dc4411aa656e0e41dac7a317ab5fba94c))
