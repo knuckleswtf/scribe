@@ -3,6 +3,7 @@
 namespace Knuckles\Scribe\Tests\Fixtures;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Knuckles\Scribe\Attributes\ResponseField;
 
 class TestPetApiResource extends JsonResource
 {
@@ -13,6 +14,8 @@ class TestPetApiResource extends JsonResource
      *
      * @return array
      */
+    #[ResponseField('id', description: 'The id of the pet.')]
+    #[ResponseField('species', 'string', 'The breed')]
     public function toArray($request)
     {
         $result = [

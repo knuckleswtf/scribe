@@ -10,5 +10,5 @@ use Knuckles\Scribe\Extracting\Strategies\GetParamsFromAttributeStrategy;
  */
 class GetFromUrlParamAttribute extends GetParamsFromAttributeStrategy
 {
-    protected array $attributeNames = [UrlParam::class];
+    protected static array $attributeNames = [UrlParam::class];
 }

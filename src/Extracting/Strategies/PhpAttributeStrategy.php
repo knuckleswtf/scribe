@@ -18,7 +18,7 @@ abstract class PhpAttributeStrategy extends Strategy
     /**
      * @var string[]
      */
-    protected array $attributeNames;
+    protected static array $attributeNames;
 
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules = []): array
     {
@@ -37,12 +37,12 @@ abstract class PhpAttributeStrategy extends Strategy
      */
     protected function getAttributes(ReflectionFunctionAbstract $method, ?ReflectionClass $class = null): array
     {
-        $attributesOnMethod = collect($this->attributeNames)
+        $attributesOnMethod = collect(static::$attributeNames)
             ->flatMap(fn(string $name) => $method->getAttributes($name))
             ->map(fn(ReflectionAttribute $a) => $a->newInstance())->all();
 
         if ($class) {
-            $attributesOnController = collect($this->attributeNames)
+            $attributesOnController = collect(static::$attributeNames)
                 ->flatMap(fn(string $name) => $class->getAttributes($name))
                 ->map(fn(ReflectionAttribute $a) => $a->newInstance())->all();
         }

@@ -10,5 +10,5 @@ use Knuckles\Scribe\Extracting\Strategies\GetParamsFromAttributeStrategy;
  */
 class GetFromBodyParamAttribute extends GetParamsFromAttributeStrategy
 {
-    protected array $attributeNames = [BodyParam::class];
+    protected static array $attributeNames = [BodyParam::class];
 }

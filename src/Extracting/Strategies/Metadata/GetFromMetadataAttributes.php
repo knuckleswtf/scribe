@@ -18,7 +18,7 @@ class GetFromMetadataAttributes extends PhpAttributeStrategy
 {
     use ParamHelpers;
 
-    protected array $attributeNames = [
+    protected static array $attributeNames = [
         Group::class,
         Subgroup::class,
         Endpoint::class,
