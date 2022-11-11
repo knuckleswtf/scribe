@@ -12,11 +12,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.2.2 (10 November 2022)
+### Fixed
+- Support #[ResponseField] on API resources ([66492aa](https://github.com/knuckleswtf/scribe/commit/66492aabdddb9481f0b74adca40fc6ce9a015253))
+
+# 4.2.1 (9 November 2022)
+### Fixed
+- Fix display of headings when append file has a H1 ([4924499](https://github.com/knuckleswtf/scribe/commit/4924499dc4411aa656e0e41dac7a317ab5fba94c))
+
+# 4.2.0 (8 November 2022)
+### Added
+- Allow users customize endpoint URL normalization ([fe70df9e](https://github.com/knuckleswtf/scribe/commit/fe70df9ef07c9f1a21bdc4f06c59435ab24b2141))
+- Set operationId on endpoints in OpenAPI spec ([69aeec6](https://github.com/knuckleswtf/scribe/commit/69aeec6fe37d0946e104d676455aa91f32856599))
+
+### Fixed
+- Fixed bug in extracting URL "thing" ([#548](https://github.com/knuckleswtf/scribe/pull/548/))
+- Fix bug in normalizing URL ([d0e7e3](https://github.com/knuckleswtf/scribe/commit/d0e7e3a4b26031bfa24fc71cf88cacf2da61f921/))
+
 # 4.1.0 (15 October 2022)
 ### Added
 - Set bearer token properly in Postman Collection ([#529](https://github.com/knuckleswtf/scribe/pull/529/))
-- Customizable "Last updated at" label ([44996fe](https://github.com/knuckleswtf/scribe/commit/529/44996fe6f09b42648da19df97dd444d1aac8b003))
-- Turn subgroups into folders in Postman collection ([3152793](https://github.com/knuckleswtf/scribe/commit/529/3152793064afdf26a5de2c310bac73acc6581c48))
+- Customizable "Last updated at" label ([44996fe](https://github.com/knuckleswtf/scribe/commit/44996fe6f09b42648da19df97dd444d1aac8b003))
+- Turn subgroups into folders in Postman collection ([3152793](https://github.com/knuckleswtf/scribe/commit/3152793064afdf26a5de2c310bac73acc6581c48))
 
 # 4.0.0 (10 September 2022)
 ### Removed

@@ -11,7 +11,7 @@ use Knuckles\Scribe\Extracting\Strategies\PhpAttributeStrategy;
  */
 class GetFromHeaderAttribute extends PhpAttributeStrategy
 {
-    protected array $attributeNames = [Header::class];
+    protected static array $attributeNames = [Header::class];
 
     protected function extractFromAttributes(
         array $attributesOnMethod, array $attributesOnController,

@@ -10,5 +10,5 @@ use Knuckles\Scribe\Extracting\Strategies\GetParamsFromAttributeStrategy;
  */
 class GetFromQueryParamAttribute extends GetParamsFromAttributeStrategy
 {
-    protected array $attributeNames = [QueryParam::class];
+    protected static array $attributeNames = [QueryParam::class];
 }

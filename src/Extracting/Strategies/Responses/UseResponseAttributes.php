@@ -22,7 +22,7 @@ class UseResponseAttributes extends PhpAttributeStrategy
 {
     use ParamHelpers, DatabaseTransactionHelpers, InstantiatesExampleModels;
 
-    protected array $attributeNames = [
+    protected static array $attributeNames = [
         Response::class,
         ResponseFromFile::class,
         ResponseFromApiResource::class,

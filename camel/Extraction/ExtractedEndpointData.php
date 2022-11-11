@@ -5,6 +5,7 @@ namespace Knuckles\Camel\Extraction;
 use Illuminate\Routing\Route;
 use Knuckles\Camel\BaseDTO;
 use Knuckles\Scribe\Extracting\Shared\UrlParamsNormalizer;
+use Knuckles\Scribe\Tools\Globals;
 use Knuckles\Scribe\Tools\Utils as u;
 use ReflectionClass;
 
@@ -86,7 +87,11 @@ class ExtractedEndpointData extends BaseDTO
 
         parent::__construct($parameters);
 
-        $this->uri = UrlParamsNormalizer::normalizeParameterNamesInRouteUri($this->route, $this->method);
+        $this->uri = match (is_callable(Globals::$__normalizeEndpointUrlUsing)) {
+            true => call_user_func_array(Globals::$__normalizeEndpointUrlUsing,
+                [$this->route->uri, $this->route, $this->method, $this->controller]),
+            default => UrlParamsNormalizer::normalizeParameterNamesInRouteUri($this->route, $this->method),
+        };
     }
 
     public static function fromRoute(Route $route, array $extras = []): self

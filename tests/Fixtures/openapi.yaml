@@ -11,6 +11,7 @@ paths:
         post:
             summary: 'Endpoint with body form data parameters.'
             description: ''
+            operationId: endpointWithBodyFormDataParameters
             parameters:
                 -
                     in: header
@@ -52,6 +53,7 @@ paths:
         get:
             summary: ''
             description: ''
+            operationId: getApiWithResponseTag
             parameters:
                 -
                     in: header
@@ -88,6 +90,7 @@ paths:
         get:
             summary: ''
             description: ''
+            operationId: getApiWithQueryParameters
             parameters:
                 -
                     in: query
@@ -161,6 +164,7 @@ paths:
         get:
             summary: ''
             description: ''
+            operationId: getApiWithAuthTag
             parameters:
                 -
                     in: header
@@ -183,6 +187,7 @@ paths:
         get:
             summary: ''
             description: ''
+            operationId: getApiEchoesUrlParametersParamParam2Param3Param4
             parameters:
                 -
                     in: query
@@ -267,6 +272,7 @@ paths:
         post:
             summary: 'Endpoint with body parameters as array.'
             description: ''
+            operationId: endpointWithBodyParametersAsArray
             parameters:
                 - in: header
                   name: Custom-Header
