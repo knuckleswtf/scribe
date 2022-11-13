@@ -98,8 +98,7 @@
         <p>
             <label id="auth-{{ $endpoint->endpointId() }}" hidden>{{ $metadata['auth']['name'] }} header:
                 <b><code>{{ $metadata['auth']['prefix'] }}</code></b>
-                <input type="text"
-                       name="{{ $metadata['auth']['name'] }}"
+                <input class="auth-value" name="{{ $metadata['auth']['name'] }}"
                        data-prefix="{{ $metadata['auth']['prefix'] }}"
                        data-endpoint="{{ $endpoint->endpointId() }}"
                        data-component="header"></label>

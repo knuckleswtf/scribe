@@ -11,6 +11,7 @@ use Knuckles\Camel\Extraction\ResponseCollection;
 use Knuckles\Camel\Extraction\ResponseField;
 use Knuckles\Scribe\Extracting\Extractor;
 use Knuckles\Scribe\Tools\Utils as u;
+use Knuckles\Scribe\Tools\WritingUtils;
 
 
 /**
@@ -109,7 +110,7 @@ class OutputEndpointData extends BaseDTO
 
         $this->boundUri = u::getUrlWithBoundParameters($this->uri, $this->cleanUrlParameters);
 
-        [$files, $regularParameters] = static::getFileParameters($this->cleanBodyParameters);
+        [$files, $regularParameters] = static::splitIntoFileAndRegularParameters($this->cleanBodyParameters);
 
         if (count($files)) {
             $this->headers['Content-Type'] = 'multipart/form-data';
@@ -179,6 +180,25 @@ class OutputEndpointData extends BaseDTO
         return in_array('GET', $this->httpMethods);
     }
 
+    public function isAuthed(): bool
+    {
+        return $this->metadata->authenticated;
+    }
+
+    public function hasJsonBody(): bool
+    {
+        if ($this->hasFiles() || empty($this->nestedBodyParameters))
+            return false;
+
+        $contentType = data_get($this->headers, "Content-Type", data_get($this->headers, "content-type", ""));
+        return str_contains($contentType, "json");
+    }
+
+    public function getSampleBody()
+    {
+        return WritingUtils::getSampleBody($this->nestedBodyParameters);
+    }
+
     public function hasHeadersOrQueryOrBodyParams(): bool
     {
         return !empty($this->headers)
@@ -186,7 +206,7 @@ class OutputEndpointData extends BaseDTO
             || !empty($this->cleanBodyParameters);
     }
 
-    public static function getFileParameters(array $parameters): array
+    public static function splitIntoFileAndRegularParameters(array $parameters): array
     {
         $files = [];
         $regularParameters = [];
@@ -194,7 +214,7 @@ class OutputEndpointData extends BaseDTO
             if ($example instanceof UploadedFile) {
                 $files[$name] = $example;
             } else if (is_array($example) && !empty($example)) {
-                [$subFiles, $subRegulars] = static::getFileParameters($example);
+                [$subFiles, $subRegulars] = static::splitIntoFileAndRegularParameters($example);
                 foreach ($subFiles as $subName => $subExample) {
                     $files[$name][$subName] = $subExample;
                 }

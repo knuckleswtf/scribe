@@ -144,133 +144,236 @@
                 </div>
             </div>
         </div>
-        <div data-testid="two-column-right" class="sl-relative sl-w-2/5 sl-ml-16" style="max-width: 500px;">
-            <div class="sl-stack sl-stack--vertical sl-stack--6 sl-flex sl-flex-col sl-items-stretch">
-                <div class="sl-inverted">
-                    <div class="sl-overflow-y-hidden sl-rounded-lg">
-                        <div class="TryItPanel sl-bg-canvas-100 sl-rounded-lg">
-                            <div class="sl-panel sl-outline-none sl-w-full">
-                                <div aria-expanded="true" tabindex="0"
-                                     class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
-                                     role="button">
-                                    <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
-                                        <div class="sl-flex sl-items-center sl-mr-1.5">
-                                            <svg aria-hidden="true" focusable="false" data-prefix="fas"
-                                                 data-icon="caret-down"
-                                                 class="svg-inline--fa fa-caret-down fa-fw sl-icon" role="img"
-                                                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-                                                <path fill="currentColor"
-                                                      d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
-                                            </svg>
-                                        </div>
-                                        Parameters
-                                    </div>
-                                </div>
-                                <div class="sl-panel__content-wrapper sl-bg-canvas-100" role="region">
-                                    <div class="sl-overflow-y-auto ParameterGrid OperationParametersContent sl-p-4">
-                                        <label aria-hidden="true" data-testid="param-label" for="id_Accept_bvK8YIAi"
-                                               class="sl-text-base">Accept</label><span class="sl-mx-3">:</span>
-                                        <div>
-                                            <div class="sl-flex sl-flex-1">
-                                                <div class="sl-input sl-flex-1 sl-relative"><input
-                                                            id="id_Accept_bvK8YIAi" aria-label="Accept"
-                                                            placeholder="example: application/json" type="text"
-                                                            aria-required="true"
-                                                            class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border"
-                                                            value=""></div>
+
+        @if($metadata['try_it_out']['enabled'] ?? false)
+            <div data-testid="two-column-right" class="sl-relative sl-w-2/5 sl-ml-16" style="max-width: 500px;">
+                <div class="sl-stack sl-stack--vertical sl-stack--6 sl-flex sl-flex-col sl-items-stretch">
+                    <div class="sl-inverted">
+                        <div class="sl-overflow-y-hidden sl-rounded-lg">
+                            <div class="TryItPanel sl-bg-canvas-100 sl-rounded-lg">
+
+                                @if($endpoint->isAuthed())
+                                    <div class="sl-panel sl-outline-none sl-w-full expandable">
+                                        <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
+                                             role="button">
+                                            <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
+                                                <div class="sl-flex sl-items-center sl-mr-1.5 expansion-chevrons expansion-chevrons-solid expanded">
+                                                    <svg aria-hidden="true" focusable="false" data-prefix="fas"
+                                                         data-icon="caret-down"
+                                                         class="svg-inline--fa fa-caret-down fa-fw sl-icon" role="img"
+                                                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                                                        <path fill="currentColor"
+                                                              d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
+                                                    </svg>
+                                                </div>
+                                                Auth
                                             </div>
                                         </div>
-                                        <label aria-hidden="true" data-testid="param-label"
-                                               for="id_Content-Type_sY6AWtnS"
-                                               class="sl-text-base">Content-Type</label><span class="sl-mx-3">:</span>
-                                        <div>
-                                            <div class="sl-flex sl-flex-1">
-                                                <div class="sl-input sl-flex-1 sl-relative"><input
-                                                            id="id_Content-Type_sY6AWtnS" aria-label="Content-Type"
-                                                            placeholder="example: multipart/form-data" type="text"
-                                                            aria-required="true"
-                                                            class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border"
-                                                            value=""></div>
+                                        <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
+                                            <div class="ParameterGrid sl-p-4">
+                                                <label aria-hidden="true" for="auth-{{ $endpoint->endpointId() }}">{{ $metadata['auth']['name'] }}</label>
+                                                <span class="sl-mx-3">:</span>
+                                                <div class="sl-flex sl-flex-1">
+                                                    <div class="sl-input sl-flex-1 sl-relative">
+                                                        <code>{{ $metadata['auth']['prefix'] }}</code>
+                                                        <input aria-label="{{ $metadata['auth']['name'] }}" id="auth-{{ $endpoint->endpointId() }}"
+                                                               data-component="{{ $metadata['auth']['location'] }}"
+                                                               data-prefix="{{ $metadata['auth']['prefix'] }}"
+                                                               name="{{ $metadata['auth']['name'] }}"
+                                                               placeholder="{{ $metadata['auth']['placeholder'] }}"
+                                                               class="auth-value sl-relative {{ $metadata['auth']['prefix'] ? 'sl-w-3/5' : 'sl-w-full sl-pr-2.5 sl-pl-2.5' }} sl-h-md sl-text-base sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border">
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="sl-panel sl-outline-none sl-w-full">
-                                <div aria-expanded="true" tabindex="0"
-                                     class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
-                                     role="button">
-                                    <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
-                                        <div class="sl-flex sl-items-center sl-mr-1.5">
-                                            <svg aria-hidden="true" focusable="false" data-prefix="fas"
-                                                 data-icon="caret-down"
-                                                 class="svg-inline--fa fa-caret-down fa-fw sl-icon" role="img"
-                                                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-                                                <path fill="currentColor"
-                                                      d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
-                                            </svg>
-                                        </div>
-                                        Body
-                                    </div>
-                                </div>
-                                <div class="sl-panel__content-wrapper sl-bg-canvas-100" role="region">
-                                    <div class="sl-overflow-y-auto ParameterGrid OperationParametersContent sl-p-4">
-                                        <label aria-hidden="true" data-testid="param-label" for="id_the_file_YxeQBmS1">the_file*</label><span
-                                                class="sl-mx-3">:</span>
-                                        <div class="sl-flex sl-flex-1 sl-items-center">
-                                            <div class="sl-input sl-flex-1 sl-relative sl-bg-canvas-100 sl-text-muted">
-                                                <input disabled="" id="id_the_file_YxeQBmS1" aria-label="the_file"
-                                                       placeholder="pick a file" type="text" aria-required="true"
-                                                       class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border sl-cursor-not-allowed"
-                                                       value="" style="padding-left: 15px;"></div>
-                                            <div><label role="button"
-                                                        for="id_the_file_YxeQBmS1-file-input">Upload</label><input
-                                                        type="file" hidden="" id="id_the_file_YxeQBmS1-file-input">
+                                @endif
+
+
+                                @if(count($endpoint->headers))
+                                    <div class="sl-panel sl-outline-none sl-w-full expandable">
+                                        <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
+                                             role="button">
+                                            <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
+                                                <div class="sl-flex sl-items-center sl-mr-1.5 expansion-chevrons expansion-chevrons-solid expanded">
+                                                    <svg aria-hidden="true" focusable="false" data-prefix="fas"
+                                                         data-icon="caret-down"
+                                                         class="svg-inline--fa fa-caret-down fa-fw sl-icon" role="img"
+                                                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                                                        <path fill="currentColor"
+                                                              d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
+                                                    </svg>
+                                                </div>
+                                                Headers
                                             </div>
                                         </div>
-                                        <label aria-hidden="true" data-testid="param-label" for="id_nested_7pJPNXn2"
-                                               class="sl-text-base">nested*</label><span class="sl-mx-3">:</span>
-                                        <div>
-                                            <div class="sl-flex sl-flex-1">
-                                                <div class="sl-input sl-flex-1 sl-relative"><input
-                                                            id="id_nested_7pJPNXn2" aria-label="nested"
-                                                            placeholder="example: [[]]" type="text" aria-required="true"
-                                                            class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border"
-                                                            value="[[]]"></div>
+                                        <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
+                                            <div class="ParameterGrid sl-p-4">
+                                                @foreach($endpoint->headers as $name => $example)
+                                                    @php
+                                                    if($endpoint->isAuthed() && $metadata['auth']['location'] === 'header' && $name === $metadata['auth']['name']) continue;
+                                                    @endphp
+                                                <label aria-hidden="true" for="header-{{ $endpoint->endpointId() }}-{{ $name }}">{{ $name }}</label>
+                                                <span class="sl-mx-3">:</span>
+                                                <div class="sl-flex sl-flex-1">
+                                                    <div class="sl-input sl-flex-1 sl-relative">
+                                                        <input aria-label="{{ $name }}" id="header-{{ $endpoint->endpointId() }}-{{ $name }}"
+                                                                value="{{ $example }}"
+                                                                class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border">
+                                                    </div>
+                                                </div>
+                                                @endforeach
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="SendButtonHolder sl-mt-4 sl-p-4 sl-pt-0">
-                                <div class="sl-stack sl-stack--horizontal sl-stack--2 sl-flex sl-flex-row sl-items-center">
-                                    <button type="button"
-                                            class="sl-button sl-h-sm sl-text-base sl-font-medium sl-px-1.5 sl-bg-primary hover:sl-bg-primary-dark active:sl-bg-primary-darker disabled:sl-bg-canvas-100 sl-text-on-primary disabled:sl-text-body sl-rounded sl-border-transparent sl-border disabled:sl-opacity-70">
-                                        Send API Request
-                                    </button>
+                                @endif
+
+                                @if(count($endpoint->urlParameters))
+                                    <div class="sl-panel sl-outline-none sl-w-full expandable">
+                                        <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
+                                             role="button">
+                                            <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
+                                                <div class="sl-flex sl-items-center sl-mr-1.5 expansion-chevrons expansion-chevrons-solid expanded">
+                                                    <svg aria-hidden="true" focusable="false" data-prefix="fas"
+                                                         data-icon="caret-down"
+                                                         class="svg-inline--fa fa-caret-down fa-fw sl-icon" role="img"
+                                                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                                                        <path fill="currentColor"
+                                                              d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
+                                                    </svg>
+                                                </div>
+                                                URL Parameters
+                                            </div>
+                                        </div>
+                                        <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
+                                            <div class="ParameterGrid sl-p-4">
+                                                @foreach($endpoint->urlParameters as $name => $parameter)
+                                                <label aria-hidden="true" for="urlparam-{{ $endpoint->endpointId() }}-{{ $name }}">{{ $name }}</label>
+                                                <span class="sl-mx-3">:</span>
+                                                <div class="sl-flex sl-flex-1">
+                                                    <div class="sl-input sl-flex-1 sl-relative">
+                                                        <input aria-label="{{ $name }}" id="urlparam-{{ $endpoint->endpointId() }}-{{ $name }}"
+                                                                placeholder="{{ $parameter->description }}" value="{{ $parameter->example }}"
+                                                                class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border">
+                                                    </div>
+                                                </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+
+
+                                @if(count($endpoint->queryParameters))
+                                    <div class="sl-panel sl-outline-none sl-w-full expandable">
+                                        <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
+                                             role="button">
+                                            <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
+                                                <div class="sl-flex sl-items-center sl-mr-1.5 expansion-chevrons expansion-chevrons-solid expanded">
+                                                    <svg aria-hidden="true" focusable="false" data-prefix="fas"
+                                                         data-icon="caret-down"
+                                                         class="svg-inline--fa fa-caret-down fa-fw sl-icon" role="img"
+                                                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                                                        <path fill="currentColor"
+                                                              d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
+                                                    </svg>
+                                                </div>
+                                                Query Parameters
+                                            </div>
+                                        </div>
+                                        <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
+                                            <div class="ParameterGrid sl-p-4">
+                                                @foreach($endpoint->queryParameters as $name => $parameter)
+                                                <label aria-hidden="true" for="urlparam-{{ $endpoint->endpointId() }}-{{ $name }}">{{ $name }}</label>
+                                                <span class="sl-mx-3">:</span>
+                                                <div class="sl-flex sl-flex-1">
+                                                    <div class="sl-input sl-flex-1 sl-relative">
+                                                        <input aria-label="{{ $name }}" id="urlparam-{{ $endpoint->endpointId() }}-{{ $name }}"
+                                                                placeholder="{{ $parameter->description }}" value="{{ $parameter->example }}"
+                                                                class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border">
+                                                    </div>
+                                                </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+
+
+                                @if(count($endpoint->bodyParameters))
+                                    <div class="sl-panel sl-outline-none sl-w-full expandable">
+                                        <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-4 sl-pl-3 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-cursor-pointer sl-select-none"
+                                             role="button">
+                                            <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
+                                                <div class="sl-flex sl-items-center sl-mr-1.5 expansion-chevrons expansion-chevrons-solid expanded">
+                                                    <svg aria-hidden="true" focusable="false" data-prefix="fas"
+                                                         data-icon="caret-down"
+                                                         class="svg-inline--fa fa-caret-down fa-fw sl-icon" role="img"
+                                                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                                                        <path fill="currentColor"
+                                                              d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
+                                                    </svg>
+                                                </div>
+                                                Body
+                                            </div>
+                                        </div>
+                                        <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
+                                                @if($endpoint->hasJsonBody())
+                                                    <div class="TextRequestBody sl-p-4">
+                                                        <div class="code-editor language-json" id="json-body-{{ $endpoint->endpointId() }}"
+                                                             style="font-family: var(--font-code); font-size: 12px; line-height: var(--lh-code);"
+                                                        >{!! json_encode($endpoint->getSampleBody(), JSON_PRETTY_PRINT) !!}</div>
+                                                    </div>
+                                                    @elseif(false)
+                                                <div class="ParameterGrid sl-p-4">
+                                                @foreach($endpoint->queryParameters as $name => $parameter)
+                                                <label aria-hidden="true" for="urlparam-{{ $endpoint->endpointId() }}-{{ $name }}">{{ $name }}</label>
+                                                <span class="sl-mx-3">:</span>
+                                                <div class="sl-flex sl-flex-1">
+                                                    <div class="sl-input sl-flex-1 sl-relative">
+                                                        <input aria-label="{{ $name }}" id="urlparam-{{ $endpoint->endpointId() }}-{{ $name }}"
+                                                                placeholder="{{ $parameter->description }}" value="{{ $parameter->example }}"
+                                                                class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border"
+                                                        >
+                                                    </div>
+                                                </div>
+                                                @endforeach
+                                                    </div>
+                                                    @endif
+                                        </div>
+                                    </div>
+                                @endif
+
+
+                                <div class="SendButtonHolder sl-mt-4 sl-p-4 sl-pt-0">
+                                    <div class="sl-stack sl-stack--horizontal sl-stack--2 sl-flex sl-flex-row sl-items-center">
+                                        <button type="button"
+                                                class="sl-button sl-h-sm sl-text-base sl-font-medium sl-px-1.5 sl-bg-primary hover:sl-bg-primary-dark active:sl-bg-primary-darker disabled:sl-bg-canvas-100 sl-text-on-primary disabled:sl-text-body sl-rounded sl-border-transparent sl-border disabled:sl-opacity-70">
+                                            Send API Request
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                @if($metadata['example_languages'])
-                    <div class="sl-panel sl-outline-none sl-w-full sl-rounded-lg">
-                        <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-3 sl-pl-4 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-select-none">
-                            <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
-                                <div class="sl--ml-2">
-                                    Request sample:
-                                    <select class="example-request-lang-toggle" aria-label="Request Sample Language"
-                                            onchange="switchExampleLanguage(event.target.value);">
-                                        @foreach($metadata['example_languages'] as $language)
-                                            <option>{{ $language }}</option>
-                                        @endforeach
-                                    </select>
+                    @if($metadata['example_languages'])
+                        <div class="sl-panel sl-outline-none sl-w-full sl-rounded-lg">
+                            <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-3 sl-pl-4 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-select-none">
+                                <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
+                                    <div class="sl--ml-2">
+                                        Request sample:
+                                        <select class="example-request-lang-toggle" aria-label="Request Sample Language"
+                                                onchange="switchExampleLanguage(event.target.value);">
+                                            @foreach($metadata['example_languages'] as $language)
+                                                <option>{{ $language }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        @foreach($metadata['example_languages'] as $index => $language)
-                                <div class="example-request example-request-{{ $language }}"
+                            @foreach($metadata['example_languages'] as $index => $language)
+                                <div class="sl-bg-canvas-100 example-request example-request-{{ $language }}"
                                      style="{{ $index == 0 ? '' : 'display: none;' }}">
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-rounded">
@@ -279,21 +382,23 @@
                                     </div>
                                 </div>
                             @endforeach
-                    </div>
-                @endif
+                        </div>
+                    @endif
 
-                @if($endpoint->isGet() || $endpoint->hasResponses())
+                    @if($endpoint->isGet() || $endpoint->hasResponses())
                         <div class="sl-panel sl-outline-none sl-w-full sl-rounded-lg">
                             <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-3 sl-pl-4 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-select-none">
                                 <div class="sl-flex sl-flex-1 sl-items-center sl-py-2">
                                     <div class="sl--ml-2">
                                         <div class="sl-h-sm sl-text-base sl-font-medium sl-px-1.5 sl-text-muted sl-rounded sl-border-transparent sl-border">
                                             <div class="sl-mb-2 sl-inline-block">Response sample:</div>
-                                            <div class="sl-mb-2 sl-inline-block"><select class="example-response-{{ $endpoint->endpointId() }}-toggle" aria-label="Response sample"
-                                                    onchange="switchExampleResponse('{{ $endpoint->endpointId() }}', event.target.value);">
+                                            <div class="sl-mb-2 sl-inline-block"><select
+                                                        class="example-response-{{ $endpoint->endpointId() }}-toggle"
+                                                        aria-label="Response sample"
+                                                        onchange="switchExampleResponse('{{ $endpoint->endpointId() }}', event.target.value);">
                                                     @foreach($endpoint->responses as $index => $response)
-                                                    <option value="{{ $index }}">{{ $response->description ?: $response->status }}</option>
-                                                @endforeach
+                                                        <option value="{{ $index }}">{{ $response->description ?: $response->status }}</option>
+                                                    @endforeach
                                                 </select></div>
                                         </div>
                                     </div>
@@ -329,27 +434,32 @@
     </svg>
                                                             </span>
                                                         Headers
-                                                        </small>
-                                                    </summary>
-                                                    <pre><code class="language-http">@foreach($response->headers as $header => $value)
-{{ $header }}: {{ is_array($value) ? implode('; ', $value) : $value }}
-@endforeach </code></pre></details>@endif
+                                                    </small>
+                                                </summary>
+                                                <pre><code class="language-http">@foreach($response->headers as $header => $value)
+                                                            {{ $header }}
+                                                            : {{ is_array($value) ? implode('; ', $value) : $value }}
+                                                        @endforeach </code></pre>
+                                            </details>
+                                        @endif
                                         @if(is_string($response->content) && Str::startsWith($response->content, "<<binary>>"))
                                             <pre><code>[Binary data] - {{ htmlentities(str_replace("<<binary>>", "", $response->content)) }}</code></pre>
-                                                @elseif($response->status == 204)
+                                        @elseif($response->status == 204)
                                             <pre><code>[Empty response]</code></pre>
-                                                @else
-                                                    @php($parsed = json_decode($response->content))
-                                                    {{-- If response is a JSON string, prettify it. Otherwise, just print it --}}
-                                            <pre><code style="max-height: 300px;" class="language-json sl-overflow-x-auto sl-overflow-y-auto">{!! htmlentities($parsed != null ? json_encode($parsed, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : $response->content) !!}</code></pre>
+                                        @else
+                                            @php($parsed = json_decode($response->content))
+                                            {{-- If response is a JSON string, prettify it. Otherwise, just print it --}}
+                                            <pre><code style="max-height: 300px;"
+                                                       class="language-json sl-overflow-x-auto sl-overflow-y-auto">{!! htmlentities($parsed != null ? json_encode($parsed, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : $response->content) !!}</code></pre>
                                         @endif
                                     </div>
                                 </div>
-                    @endforeach
-                @endif
+                            @endforeach
+                            @endif
+                        </div>
+                </div>
             </div>
-        </div>
-    </div>
+        @endif
 </div>
 
 

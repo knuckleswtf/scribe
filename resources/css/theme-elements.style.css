@@ -13618,11 +13618,17 @@ svg:not(:host).svg-inline--fa {
 }
 
 
-/* CUSTOM */
+/* SCRIBE CUSTOM STYLES */
 
-html, body {
-    background-color: whitesmoke;
+
+:root, [data-theme=light], [data-theme=light] .sl-inverted .sl-inverted, [data-theme=light] .sl-inverted .sl-inverted .sl-inverted .sl-inverted {
+    --color-canvas: #f2f2f2;
 }
+
+:root .sl-inverted, [data-theme=light] .sl-inverted, [data-theme=light] .sl-inverted .sl-inverted .sl-inverted {
+   --color-canvas: #f2f2f2;
+}
+
 aside {
     display: block;
     padding: 1em;
