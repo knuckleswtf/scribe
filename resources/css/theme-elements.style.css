@@ -13649,3 +13649,18 @@ aside.success {
 aside.info {
     background: #8fbcd4;
 }
+
+input[type="file"]::file-selector-button {
+    color: var(--color-text-muted);
+    background-color: var(--color-canvas-100);
+    padding-left: 0;
+    border-radius: 2px; /* sl-rounded */
+    border-color: transparent; /* sl-border-transparent */
+    font-size: 10px; /* sl-font-base */
+    height: 32px; /* sl-h-md */
+}
+
+input[type="file"]::file-selector-button:hover {
+    border-color: var(--color-border-input); /* .hover\:sl-border-input:hover */
+    cursor: pointer;
+}

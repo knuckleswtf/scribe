@@ -284,13 +284,30 @@
                                         <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
                                             <div class="ParameterGrid sl-p-4">
                                                 @foreach($endpoint->queryParameters as $name => $parameter)
-                                                <label aria-hidden="true" for="urlparam-{{ $endpoint->endpointId() }}-{{ $name }}">{{ $name }}</label>
+                                                    @php
+                                                        /** @var \Knuckles\Camel\Output\Parameter $parameter */
+                                                        if ($parameter->type == 'object') // Skip; individual object children are listed
+                                                            continue;
+                                                        if (str_contains($name, "[]"))
+                                                            // This likely belongs to an obj-array (eg objs[].a); we only show the parent (objs[]), so skip
+                                                            continue;
+                                                    @endphp
+                                                <label aria-hidden="true" for="queryparam-{{ $endpoint->endpointId() }}-{{ $name }}">{{ $name }}</label>
                                                 <span class="sl-mx-3">:</span>
                                                 <div class="sl-flex sl-flex-1">
                                                     <div class="sl-input sl-flex-1 sl-relative">
-                                                        <input aria-label="{{ $name }}" id="urlparam-{{ $endpoint->endpointId() }}-{{ $name }}"
+                                                        @if(str_ends_with($parameter->type, '[]'))
+                                                            <input aria-label="{{ $name }}" id="queryparam-{{ $endpoint->endpointId() }}-{{ $name }}"
+                                                                   placeholder="{{ $parameter->description }}"
+                                                                   value="{{ json_encode($parameter->example) }}"
+                                                                   class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border"
+                                                            >
+                                                        @else
+                                                        <input aria-label="{{ $name }}" id="queryparam-{{ $endpoint->endpointId() }}-{{ $name }}"
                                                                 placeholder="{{ $parameter->description }}" value="{{ $parameter->example }}"
-                                                                class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border">
+                                                                class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border"
+                                                        >
+                                                        @endif
                                                     </div>
                                                 </div>
                                                 @endforeach
@@ -324,17 +341,42 @@
                                                              style="font-family: var(--font-code); font-size: 12px; line-height: var(--lh-code);"
                                                         >{!! json_encode($endpoint->getSampleBody(), JSON_PRETTY_PRINT) !!}</div>
                                                     </div>
-                                                    @elseif(false)
+                                                    @else
                                                 <div class="ParameterGrid sl-p-4">
-                                                @foreach($endpoint->queryParameters as $name => $parameter)
-                                                <label aria-hidden="true" for="urlparam-{{ $endpoint->endpointId() }}-{{ $name }}">{{ $name }}</label>
+                                                @foreach($endpoint->bodyParameters as $name => $parameter)
+                                                    @php
+                                                    /** @var \Knuckles\Camel\Output\Parameter $parameter */
+                                                    if ($parameter->type == 'object') // Skip; individual object children are listed
+                                                        continue;
+                                                    if (str_contains($name, "[]"))
+                                                        // This likely belongs to an obj-array (eg objs[].a); we only show the parent (objs[]), so skip
+                                                        continue;
+                                                    @endphp
+                                                <label aria-hidden="true" for="bodyparam-{{ $endpoint->endpointId() }}-{{ $name }}">{{ $name }}</label>
                                                 <span class="sl-mx-3">:</span>
                                                 <div class="sl-flex sl-flex-1">
                                                     <div class="sl-input sl-flex-1 sl-relative">
-                                                        <input aria-label="{{ $name }}" id="urlparam-{{ $endpoint->endpointId() }}-{{ $name }}"
-                                                                placeholder="{{ $parameter->description }}" value="{{ $parameter->example }}"
-                                                                class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border"
-                                                        >
+                                                        @if($parameter->type == 'file')
+                                                            <input aria-label="{{ $name }}"
+                                                                   id="bodyparam-{{ $endpoint->endpointId() }}-{{ $name }}"
+                                                                   type="file" placeholder="Upload"
+                                                                   class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border"
+                                                            >
+                                                        @elseif(str_ends_with($parameter->type, '[]'))
+                                                            <input aria-label="{{ $name }}"
+                                                                   id="bodyparam-{{ $endpoint->endpointId() }}-{{ $name }}"
+                                                                   placeholder="{{ $parameter->description }}"
+                                                                   value="{{ json_encode($parameter->example) }}"
+                                                                   class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border"
+                                                            >
+                                                        @else
+                                                            <input aria-label="{{ $name }}"
+                                                                   id="bodyparam-{{ $endpoint->endpointId() }}-{{ $name }}"
+                                                                   placeholder="{{ $parameter->description }}"
+                                                                   value="{{ $parameter->example }}"
+                                                                   class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border"
+                                                            >
+                                                        @endif
                                                     </div>
                                                 </div>
                                                 @endforeach
@@ -363,7 +405,7 @@
                                 <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
                                     <div class="sl--ml-2">
                                         Request sample:
-                                        <select class="example-request-lang-toggle" aria-label="Request Sample Language"
+                                        <select class="example-request-lang-toggle sl-text-base" aria-label="Request Sample Language"
                                                 onchange="switchExampleLanguage(event.target.value);">
                                             @foreach($metadata['example_languages'] as $language)
                                                 <option>{{ $language }}</option>
@@ -392,8 +434,9 @@
                                     <div class="sl--ml-2">
                                         <div class="sl-h-sm sl-text-base sl-font-medium sl-px-1.5 sl-text-muted sl-rounded sl-border-transparent sl-border">
                                             <div class="sl-mb-2 sl-inline-block">Response sample:</div>
-                                            <div class="sl-mb-2 sl-inline-block"><select
-                                                        class="example-response-{{ $endpoint->endpointId() }}-toggle"
+                                            <div class="sl-mb-2 sl-inline-block">
+                                                <select
+                                                        class="example-response-{{ $endpoint->endpointId() }}-toggle sl-text-base"
                                                         aria-label="Response sample"
                                                         onchange="switchExampleResponse('{{ $endpoint->endpointId() }}', event.target.value);">
                                                     @foreach($endpoint->responses as $index => $response)

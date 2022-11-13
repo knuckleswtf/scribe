@@ -177,7 +177,6 @@ class WritingUtils
 
     public static function getSampleBody(array $nestedBodyParameters)
     {
-        ray($nestedBodyParameters);
         if (!empty($nestedBodyParameters['[]'])) {
             return [self::getSampleBody($nestedBodyParameters['[]']['__fields'])];
         }
