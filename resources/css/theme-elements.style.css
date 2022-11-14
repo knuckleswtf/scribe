@@ -13664,3 +13664,27 @@ input[type="file"]::file-selector-button:hover {
     border-color: var(--color-border-input); /* .hover\:sl-border-input:hover */
     cursor: pointer;
 }
+
+* {
+    /* Foreground, Background */
+    scrollbar-color: #3c4c67 transparent);
+}
+*::-webkit-scrollbar { /* Background */
+    width: 5px;
+    height: 5px;
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb { /* Foreground */
+    background: #3c4c67;
+}
+
+
+.sl-inverted * {
+    /* Foreground, Background */
+    scrollbar-color: #FFFFFF99 transparent;
+}
+
+.sl-inverted *::-webkit-scrollbar-thumb { /* Foreground */
+    background: #FFFFFF99;
+}
