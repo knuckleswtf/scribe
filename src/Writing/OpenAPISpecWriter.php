@@ -378,6 +378,14 @@ class OpenAPISpecWriter
                 ];
 
             case 'object':
+                if (property_exists($decoded, 'data')) {
+                    $decoded = $decoded->data;
+                }
+
+                if (is_array($decoded)) {
+                    $decoded = Arr::first($decoded);
+                }
+
                 $properties = collect($decoded)->mapWithKeys(function ($value, $key) use ($endpoint) {
                     $spec = [
                         // Note that we aren't recursing for nested objects. We stop at one level.
