@@ -33,7 +33,7 @@
         </script>
         <script src="{{ u::getVersionedAsset($assetPathPrefix.'js/tryitout.js') }}"></script>
         <style>
-            .code-editor {
+            .code-editor, .response-content {
                 color: whitesmoke;
                 background-color: transparent;
             }
@@ -62,6 +62,94 @@
             }
 
         </style>
+
+        <script>
+            function tryItOut(btnElement) {
+                btnElement.disabled = true;
+
+                let endpointId = btnElement.dataset.endpoint;
+
+                let errorPanel = document.querySelector(`.tryItOut-error[data-endpoint=${endpointId}]`);
+                errorPanel.hidden = true;
+                let responsePanel = document.querySelector(`.tryItOut-response[data-endpoint=${endpointId}]`);
+                responsePanel.hidden = true;
+
+                let form = btnElement.form;
+                let { method, path, hasjsonbody } = form.dataset;
+                let body = {};
+                if (hasjsonbody === "1") {
+                    body = form.querySelector('.code-editor').textContent;
+                } else if (form.dataset.hasfiles === "1") {
+                    body = new FormData();
+                    form.querySelectorAll('input[data-component=body]')
+                        .forEach(el => {
+                            if (el.type === 'file') {
+                                if (el.files[0]) body.append(el.name, el.files[0])
+                            } else body.append(el.name, el.value);
+                        });
+                } else {
+                    form.querySelectorAll('input[data-component=body]').forEach(el => {
+                        _.set(body, el.name, el.value);
+                    });
+                }
+
+                const urlParameters = form.querySelectorAll('input[data-component=url]');
+                urlParameters.forEach(el => (path = path.replace(new RegExp(`\\{${el.name}\\??}`), el.value)));
+
+                const headers = Object.fromEntries(Array.from(form.querySelectorAll('input[data-component=header]'))
+                    .map(el => [el.name, (el.dataset.prefix || '') + el.value]));
+
+                const query = {}
+                form.querySelectorAll('input[data-component=query]').forEach(el => {
+                    _.set(query, el.name, el.value);
+                });
+
+                let preflightPromise = Promise.resolve();
+                if (window.useCsrf && window.csrfUrl) {
+                    preflightPromise = makeAPICall('GET', window.csrfUrl).then(() => {
+                        headers['X-XSRF-TOKEN'] = getCookie('XSRF-TOKEN');
+                    });
+                }
+
+                return preflightPromise.then(() => makeAPICall(method, path, body, query, headers, endpointId))
+                    .then(([responseStatus, statusText, responseContent, responseHeaders]) => {
+                        responsePanel.hidden = false;
+                        responsePanel.querySelector(`.response-status`).textContent = responseStatus + " " + statusText ;
+
+                        let contentEl = responsePanel.querySelector(`.response-content`);
+                        if (responseContent === '') {
+                            contentEl.textContent = '<Empty response>'
+                            return;
+                        }
+
+                        // Prettify it if it's JSON
+                        let isJson = false;
+                        try {
+                            const jsonParsed = JSON.parse(responseContent);
+                            if (jsonParsed !== null) {
+                                isJson = true;
+                                responseContent = JSON.stringify(jsonParsed, null, 4);
+                            }
+                        } catch (e) {}
+
+                        contentEl.innerHTML = responseContent;
+                        isJson && window.hljs.highlightElement(contentEl);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        let errorMessage = err.message || err;
+                        errorPanel.hidden = false;
+                        errorPanel.querySelector(`.error-message`).textContent = errorMessage;
+                    })
+                    .finally(() => { btnElement.disabled = false } );
+            }
+
+            window.addEventListener('DOMContentLoaded', () => {
+                document.querySelectorAll('.tryItOut-btn').forEach(el => {
+                    el.addEventListener('click', () => tryItOut(el));
+                });
+            })
+        </script>
     @endif
 
     <script src="{{ u::getVersionedAsset($assetPathPrefix.'js/theme-elements.js') }}"></script>

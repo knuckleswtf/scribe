@@ -74,7 +74,8 @@
         @if($metadata['try_it_out']['enabled'] ?? false)
             <button type="button"
                     style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-{{ $endpoint->endpointId() }}"
+                    data-endpoint="{{ $endpoint->endpointId() }}"
+                    class="tryItOut-btn"
                     onclick="tryItOut('{{ $endpoint->endpointId() }}');">Try it out ⚡
             </button>
             <button type="button"
