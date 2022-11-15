@@ -3,20 +3,19 @@ window.abortControllers = {};
 function cacheAuthValue() {
     // Whenever the auth header is set for one endpoint, cache it for the others
     window.lastAuthValue = '';
-    document.querySelectorAll(`label[id^=auth-] > input`)
-        .forEach(el => {
-            el.addEventListener('change', (event) => {
-                window.lastAuthValue = event.target.value;
-                document.querySelectorAll(`label[id^=auth-] > input`)
-                    .forEach(otherInput => {
-                        if (otherInput === el) return;
-                        // Don't block the main thread
-                       setTimeout(() => {
-                           otherInput.value = window.lastAuthValue;
-                        }, 0);
-                    });
+    let authInputs = document.querySelectorAll(`.auth-value`)
+    authInputs.forEach(el => {
+        el.addEventListener('input', (event) => {
+            window.lastAuthValue = event.target.value;
+            authInputs.forEach(otherInput => {
+                if (otherInput === el) return;
+                // Don't block the main thread
+                setTimeout(() => {
+                    otherInput.value = window.lastAuthValue;
+                }, 0);
             });
         });
+    });
 }
 
 window.addEventListener('DOMContentLoaded', cacheAuthValue);
@@ -82,10 +81,10 @@ function cancelTryOut(endpointId) {
     document.querySelector('#example-responses-' + endpointId).hidden = false;
 }
 
-function makeAPICall(method, path, body, query, headers, endpointId) {
+function makeAPICall(method, path, body = {}, query = {}, headers = {}, endpointId = null) {
     console.log({endpointId, path, body, query, headers});
 
-    if (!(body instanceof FormData)) {
+    if (!(body instanceof FormData) && typeof body !== "string") {
         body = JSON.stringify(body)
     }
 
@@ -123,7 +122,7 @@ function makeAPICall(method, path, body, query, headers, endpointId) {
         mode: 'cors',
         credentials: 'same-origin',
     })
-        .then(response => Promise.all([response.status, response.text(), response.headers]));
+        .then(response => Promise.all([response.status, response.statusText, response.text(), response.headers]));
 }
 
 function hideCodeSamples(endpointId) {
@@ -252,13 +251,13 @@ async function executeTryOut(endpointId, form) {
 
     let preflightPromise = Promise.resolve();
     if (window.useCsrf && window.csrfUrl) {
-        preflightPromise = makeAPICall('GET', window.csrfUrl, {}, {}, {}, null).then(() => {
+        preflightPromise = makeAPICall('GET', window.csrfUrl).then(() => {
             headers['X-XSRF-TOKEN'] = getCookie('XSRF-TOKEN');
         });
     }
 
     return preflightPromise.then(() => makeAPICall(method, path, body, query, headers, endpointId))
-        .then(([responseStatus, responseContent, responseHeaders]) => {
+        .then(([responseStatus, statusText, responseContent, responseHeaders]) => {
             handleResponse(endpointId, responseContent, responseStatus, responseHeaders)
         })
         .catch(err => {

@@ -838,21 +838,30 @@ html {
 .content aside {
     padding-top: 1em;
     padding-bottom: 1em;
-    text-shadow: 0 1px 0 #a0c6da;
     margin-top: 1.5em;
     margin-bottom: 1.5em;
+    background: #292929;
+    line-height: 1.6;
+    color: #c8c8c8;
+    text-shadow: none;
+}
+
+.content aside.info {
     background: #8fbcd4;
-    line-height: 1.6
+    text-shadow: 0 1px 0 #a0c6da;
+    color: initial;
 }
 
 .content aside.warning {
     background-color: #c97a7e;
-    text-shadow: 0 1px 0 #d18e91
+    text-shadow: 0 1px 0 #d18e91;
+    color: initial;
 }
 
 .content aside.success {
     background-color: #6ac174;
-    text-shadow: 0 1px 0 #80ca89
+    text-shadow: 0 1px 0 #80ca89;
+    color: initial;
 }
 
 .content aside:before {

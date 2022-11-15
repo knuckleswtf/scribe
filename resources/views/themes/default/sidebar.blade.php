@@ -1,7 +1,7 @@
 <a href="#" id="nav-button">
     <span>
         MENU
-        <img src="{!! $assetPathPrefix !!}images/navbar.png" alt="navbar-image" />
+        <img src="{!! $assetPathPrefix !!}images/navbar.png" alt="navbar-image"/>
     </span>
 </a>
 <div class="tocify-wrapper">
@@ -50,13 +50,16 @@
         @endforeach
     </div>
 
-    @if(isset($metadata['links']))
-        <ul class="toc-footer" id="toc-footer">
-            @foreach($metadata['links'] as $link)
-                <li>{!! $link !!}</li>
-            @endforeach
-        </ul>
-    @endif
+    <ul class="toc-footer" id="toc-footer">
+        @if($metadata['postman_collection_url'])
+            <li><a href="{!! $metadata['postman_collection_url'] !!}">View Postman collection</a></li>
+        @endif
+        @if($metadata['openapi_spec_url'])
+            <li><a href="{!! $metadata['openapi_spec_url'] !!}">View OpenAPI spec</a></li>
+        @endif
+        <li><a href="http://github.com/knuckleswtf/scribe">Documentation powered by Scribe ✍</a></li>
+    </ul>
+
     <ul class="toc-footer" id="last-updated">
         <li>{{ $metadata['last_updated'] }}</li>
     </ul>

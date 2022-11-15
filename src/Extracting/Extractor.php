@@ -85,7 +85,7 @@ class Extractor
         // We need to do all this so response calls can work correctly,
         // even though they're only needed for output
         // Note that this
-        [$files, $regularParameters] = OutputEndpointData::getFileParameters($endpointData->cleanBodyParameters);
+        [$files, $regularParameters] = OutputEndpointData::splitIntoFileAndRegularParameters($endpointData->cleanBodyParameters);
         if (count($files)) {
             $endpointData->headers['Content-Type'] = 'multipart/form-data';
         }

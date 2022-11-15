@@ -7,7 +7,6 @@ use Symfony\Component\VarExporter\VarExporter;
 
 class WritingUtils
 {
-
     public static array $httpMethodToCssColour = [
         'GET' => 'green',
         'HEAD' => 'darkgreen',
@@ -174,6 +173,21 @@ class WritingUtils
             }
         }
         return $params;
+    }
+
+    public static function getSampleBody(array $nestedBodyParameters)
+    {
+        if (!empty($nestedBodyParameters['[]'])) {
+            return [self::getSampleBody($nestedBodyParameters['[]']['__fields'])];
+        }
+
+        return array_map(function ($param) {
+            if (!empty($param['__fields'])) {
+                return self::getSampleBody($param['__fields']);
+            }
+
+            return $param['example'];
+        }, $nestedBodyParameters);
     }
 
     /**

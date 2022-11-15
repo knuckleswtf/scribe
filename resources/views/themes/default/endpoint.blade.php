@@ -31,7 +31,7 @@
         </blockquote>
         @if(count($response->headers))
         <details class="annotation">
-            <summary>
+            <summary style="cursor: pointer;">
                 <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
             </summary>
             <pre><code class="language-http">@foreach($response->headers as $header => $value)
@@ -74,7 +74,8 @@
         @if($metadata['try_it_out']['enabled'] ?? false)
             <button type="button"
                     style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-{{ $endpoint->endpointId() }}"
+                    data-endpoint="{{ $endpoint->endpointId() }}"
+                    class="tryItOut-btn"
                     onclick="tryItOut('{{ $endpoint->endpointId() }}');">Try it out ⚡
             </button>
             <button type="button"
@@ -98,8 +99,7 @@
         <p>
             <label id="auth-{{ $endpoint->endpointId() }}" hidden>{{ $metadata['auth']['name'] }} header:
                 <b><code>{{ $metadata['auth']['prefix'] }}</code></b>
-                <input type="text"
-                       name="{{ $metadata['auth']['name'] }}"
+                <input class="auth-value" name="{{ $metadata['auth']['name'] }}"
                        data-prefix="{{ $metadata['auth']['prefix'] }}"
                        data-endpoint="{{ $endpoint->endpointId() }}"
                        data-component="header"></label>

@@ -54,7 +54,7 @@ trait ParamHelpers
         return $fakeFactories[$baseType] ?? $fakeFactories['string'];
     }
 
-    private function getDummyDataGeneratorBetween(string $type, $min, $max = 9000): \Closure
+    private function getDummyDataGeneratorBetween(string $type, $min, $max = 300): \Closure
     {
         $baseType = $type;
         $isListType = false;
