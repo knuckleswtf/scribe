@@ -9,6 +9,32 @@ use Illuminate\Support\Str;
 trait ParamHelpers
 {
 
+    protected function getFakeFactoryByName(string $name): ?\Closure
+    {
+        $faker = $this->getFaker();
+
+        $name = strtolower(array_reverse(explode('.', $name))[0]);
+        $normalizedName = match (true) {
+            Str::endsWith($name, ['email', 'email_address']) => 'email',
+            Str::endsWith($name, ['uuid']) => 'uuid',
+            Str::endsWith($name, ['url']) => 'url',
+            Str::endsWith($name, ['locale']) => 'locale',
+            Str::endsWith($name, ['timezone']) => 'timezone',
+            default => $name,
+        };
+
+        return match ($normalizedName) {
+            'email' => fn() => $faker->safeEmail(),
+            'password', 'pwd' => fn() => $faker->password(),
+            'url' => fn() => $faker->url(),
+            'description' => fn() => $faker->sentence(),
+            'uuid' => fn() => $faker->uuid(),
+            'locale' => fn() => $faker->locale(),
+            'timezone' => fn() => $faker->timezone(),
+            default => null,
+        };
+    }
+
     protected function getFaker(): \Faker\Generator
     {
         $faker = Factory::create();
@@ -18,14 +44,14 @@ trait ParamHelpers
         return $faker;
     }
 
-    protected function generateDummyValue(string $type, int $size = null)
+    protected function generateDummyValue(string $type, array $hints = [])
     {
-        $fakeFactory = $this->getDummyValueGenerator($type, $size);
+        $fakeFactory = $this->getDummyValueGenerator($type, $hints);
 
         return $fakeFactory();
     }
 
-    protected function getDummyValueGenerator(string $type, int $size = null): \Closure
+    protected function getDummyValueGenerator(string $type, array $hints = []): \Closure
     {
         $baseType = $type;
         $isListType = false;
@@ -35,54 +61,53 @@ trait ParamHelpers
             $isListType = true;
         }
 
+        $size = $hints['size'] ?? null;
         if ($isListType) {
-            // Return a one-array item for a list.
-            return fn() => [$this->generateDummyValue($baseType)];
+            // Return a one-array item for a list by default.
+            return $size
+                ? fn() => [$this->generateDummyValue($baseType, range(0, min($size - 1, 5)))]
+                : fn() => [$this->generateDummyValue($baseType, $hints)];
+        }
+
+        if (($hints['name'] ?? false) && $baseType != 'file') {
+            $fakeFactoryByName = $this->getFakeFactoryByName($hints['name']);
+            if ($fakeFactoryByName) return $fakeFactoryByName;
         }
 
         $faker = $this->getFaker();
+        $min = $hints['min'] ?? null;
+        $max = $hints['max'] ?? null;
+        // If max and min were provided, the override size.
+        $isExactSize = is_null($min) && is_null($max) && !is_null($size);
 
-        $fakeFactories = [
-            'integer' => fn() => $size ?: $faker->numberBetween(1, 20),
-            'number' => fn() => $size ?: $faker->randomFloat(),
+        $fakeFactoriesByType = [
+            'integer' => function () use ($size, $isExactSize, $max, $faker, $min) {
+                if ($isExactSize) return $size;
+                return $max ? $faker->numberBetween((int)$min, (int)$max) : $faker->numberBetween(1, 20);
+            },
+            'number' => function () use ($size, $isExactSize, $max, $faker, $min) {
+                if ($isExactSize) return $size;
+                return $max ? $faker->numberBetween((int)$min, (int)$max) : $faker->randomFloat();
+            },
             'boolean' => fn() => $faker->boolean(),
             'string' => fn() => $size ? $faker->lexify(str_repeat("?", $size)) : $faker->word(),
             'object' => fn() => [],
             'file' => fn() => UploadedFile::fake()->create('test.jpg')->size($size ?: 10),
         ];
 
-        return $fakeFactories[$baseType] ?? $fakeFactories['string'];
+        return $fakeFactoriesByType[$baseType] ?? $fakeFactoriesByType['string'];
     }
 
-    private function getDummyDataGeneratorBetween(string $type, $min, $max = 300): \Closure
+    private function getDummyDataGeneratorBetween(string $type, $min, $max = 90, string $fieldName = null): \Closure
     {
-        $baseType = $type;
-        $isListType = false;
-
-        if (Str::endsWith($type, '[]')) {
-            $baseType = strtolower(substr($type, 0, strlen($type) - 2));
-            $isListType = true;
-        }
-
-        $randomSize = $this->getFaker()->numberBetween($min, $max);
-
-        if ($isListType) {
-            return fn() => array_map(
-                fn() => $this->generateDummyValue($baseType),
-                range(0, $randomSize - 1)
-            );
-        }
-
-        $faker = $this->getFaker();
-
-        $fakeFactories = [
-            'integer' => fn() => $faker->numberBetween((int)$min, (int)$max),
-            'number' => fn() => $faker->numberBetween((int)$min, (int)$max),
-            'string' => fn() => $faker->lexify(str_repeat("?", $randomSize)),
-            'file' => fn() => UploadedFile::fake()->create('test.jpg')->size($randomSize),
+        $hints = [
+            'name' => $fieldName,
+            'size' => $this->getFaker()->numberBetween($min, $max),
+            'min' => $min,
+            'max' => $max,
         ];
 
-        return $fakeFactories[$baseType] ?? $fakeFactories['string'];
+        return $this->getDummyValueGenerator($type, $hints);
     }
 
     protected function isSupportedTypeInDocBlocks(string $type): bool

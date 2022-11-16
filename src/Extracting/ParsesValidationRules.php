@@ -206,8 +206,8 @@ trait ParsesValidationRules
                     $parameterData['type'] = 'boolean';
                     break;
                 case 'string':
-                    $parameterData['setter'] = function () {
-                        return $this->generateDummyValue('string');
+                    $parameterData['setter'] = function () use ($parameterData) {
+                        return $this->generateDummyValue('string', ['name' => $parameterData['name']]);
                     };
                     $parameterData['type'] = 'string';
                     break;
@@ -262,21 +262,15 @@ trait ParsesValidationRules
                 case 'timezone':
                     // Laravel's message merely says "The value must be a valid zone"
                     $parameterData['description'] .= " Must be a valid time zone, such as <code>Africa/Accra</code>.";
-                    $parameterData['setter'] = function () {
-                        return $this->getFaker()->timezone();
-                    };
+                    $parameterData['setter'] = $this->getFakeFactoryByName('timezone');
                     break;
                 case 'email':
                     $parameterData['description'] .= ' ' . $this->getDescription($rule);
-                    $parameterData['setter'] = function () {
-                        return $this->getFaker()->safeEmail();
-                    };
+                    $parameterData['setter'] = $this->getFakeFactoryByName('email');
                     $parameterData['type'] = 'string';
                     break;
                 case 'url':
-                    $parameterData['setter'] = function () {
-                        return $this->getFaker()->url();
-                    };
+                    $parameterData['setter'] = $this->getFakeFactoryByName('url');
                     $parameterData['type'] = 'string';
                     // Laravel's message is "The value format is invalid". Ugh.🤮
                     $parameterData['description'] .= " Must be a valid URL.";
@@ -336,7 +330,7 @@ trait ParsesValidationRules
                     break;
                 case 'uuid':
                     $parameterData['description'] .= ' ' . $this->getDescription($rule) . ' ';
-                    $parameterData['setter'] = fn() => $this->getFaker()->uuid();;
+                    $parameterData['setter'] = $this->getFakeFactoryByName('uuid');
                     break;
                 case 'regex':
                     $parameterData['description'] .= ' ' . $this->getDescription($rule, [':regex' => $arguments[0]]);
@@ -364,26 +358,27 @@ trait ParsesValidationRules
                     $parameterData['description'] .= ' ' . $this->getDescription(
                             $rule, [':size' => $arguments[0]], $this->getLaravelValidationBaseTypeMapping($parameterData['type'])
                         );
-                    $parameterData['setter'] = $this->getDummyValueGenerator($parameterData['type'], $arguments[0]);
+                    $parameterData['setter'] = $this->getDummyValueGenerator($parameterData['type'], ['size' => $arguments[0]]);
                     break;
                 case 'min':
                     $parameterData['description'] .= ' ' . $this->getDescription(
                             $rule, [':min' => $arguments[0]], $this->getLaravelValidationBaseTypeMapping($parameterData['type'])
                         );
-                    $parameterData['setter'] = $this->getDummyDataGeneratorBetween($parameterData['type'], floatval($arguments[0]));
+                    $parameterData['setter'] = $this->getDummyDataGeneratorBetween($parameterData['type'], floatval($arguments[0]), fieldName: $parameterData['name']);
                     break;
                 case 'max':
                     $parameterData['description'] .= ' ' . $this->getDescription(
                             $rule, [':max' => $arguments[0]], $this->getLaravelValidationBaseTypeMapping($parameterData['type'])
                         );
-                    $parameterData['setter'] = $this->getDummyDataGeneratorBetween($parameterData['type'], 0, floatval($arguments[0])/3);
+                    $max = min($arguments[0], 20);
+                    $parameterData['setter'] = $this->getDummyDataGeneratorBetween($parameterData['type'], 0, $max, $parameterData['name']);
                     break;
                 case 'between':
                     $parameterData['description'] .= ' ' . $this->getDescription(
                             $rule, [':min' => $arguments[0], ':max' => $arguments[1]], $this->getLaravelValidationBaseTypeMapping($parameterData['type'])
                         );
                     // Avoid exponentially complex operations by using the minimum length
-                    $parameterData['setter'] = $this->getDummyDataGeneratorBetween($parameterData['type'], floatval($arguments[0]), floatval($arguments[0]) + 1);
+                    $parameterData['setter'] = $this->getDummyDataGeneratorBetween($parameterData['type'], floatval($arguments[0]), floatval($arguments[0]) + 1, $parameterData['name']);
                     break;
 
                 /**

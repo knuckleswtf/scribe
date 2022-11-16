@@ -50,7 +50,8 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         try {
             $validator->validate();
         } catch (ValidationException $e) {
-            dump('Value: ', $exampleData[$parameterName]);
+            dump('Rules: ', $ruleset);
+            dump('Generated value: ', $exampleData[$parameterName]);
             dump($e->errors());
             $this->fail("Generated example data from validation rule failed to match actual.");
         }

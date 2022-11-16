@@ -166,7 +166,7 @@ class GetFromLaravelAPI extends Strategy
                 $parameterRegex = $endpointData->route->wheres[$name] ?? null;
                 $parameters[$name]['example'] = $parameterRegex
                     ? $this->castToType($this->getFaker()->regexify($parameterRegex), $parameters[$name]['type'])
-                    : $this->generateDummyValue($parameters[$name]['type']);
+                    : $this->generateDummyValue($parameters[$name]['type'], hints: ['name' => $name]);
             }
         }
         return $parameters;

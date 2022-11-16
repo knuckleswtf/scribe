@@ -33,7 +33,7 @@ class GetParamsFromAttributeStrategy extends PhpAttributeStrategy
     {
         $data['type'] = static::normalizeTypeName($data['type']);
         if (is_null($data['example'])) {
-            $data['example'] = $this->generateDummyValue($data['type']);
+            $data['example'] = $this->generateDummyValue($data['type'], ['name' => $data['name']]);
         } else if ($data['example'] == 'No-example' || $data['example'] == 'No-example.') {
             $data['example'] = null;
         }

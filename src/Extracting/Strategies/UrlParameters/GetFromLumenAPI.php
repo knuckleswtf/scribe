@@ -49,7 +49,7 @@ class GetFromLumenAPI extends Strategy
                 'name' => $name,
                 'description' => '',
                 'required' => !boolval($isThisParameterOptional),
-                'example' => $this->generateDummyValue($type),
+                'example' => $this->generateDummyValue($type, hints: ['name' => $name]),
                 'type' => $type,
             ];
         }
