@@ -1079,3 +1079,17 @@ html {
 button {
     border: none;
 }
+
+* {
+    /* Foreground, Background */
+    scrollbar-color: #3c4c67 transparent);
+}
+*::-webkit-scrollbar { /* Background */
+    width: 7px;
+    height: 7px;
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb { /* Foreground */
+    background: #626161;
+}

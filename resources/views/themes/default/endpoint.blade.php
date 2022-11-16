@@ -36,8 +36,7 @@
             </summary>
             <pre><code class="language-http">@foreach($response->headers as $header => $value)
 {{ $header }}: {{ is_array($value) ? implode('; ', $value) : $value }}
-@endforeach </code></pre>
-        </details> @endif
+@endforeach </code></pre></details> @endif
         <pre>
 @if(is_string($response->content) && Str::startsWith($response->content, "<<binary>>"))
 <code>[Binary data] - {{ htmlentities(str_replace("<<binary>>", "", $response->content)) }}</code>
@@ -46,7 +45,7 @@
 @else
 @php($parsed = json_decode($response->content))
 {{-- If response is a JSON string, prettify it. Otherwise, just print it --}}
-<code class="language-json">{!! htmlentities($parsed != null ? json_encode($parsed, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : $response->content) !!}</code>
+<code class="language-json" style="max-height: 300px;">{!! htmlentities($parsed != null ? json_encode($parsed, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : $response->content) !!}</code>
 @endif </pre>
     @endforeach
 @endif
@@ -55,7 +54,7 @@
     <blockquote>Received response<span
                 id="execution-response-status-{{ $endpoint->endpointId() }}"></span>:
     </blockquote>
-    <pre class="json"><code id="execution-response-content-{{ $endpoint->endpointId() }}"></code></pre>
+    <pre class="json"><code id="execution-response-content-{{ $endpoint->endpointId() }}" style="max-height: 400px;"></code></pre>
 </span>
 <span id="execution-error-{{ $endpoint->endpointId() }}" hidden>
     <blockquote>Request failed with error:</blockquote>
@@ -139,6 +138,12 @@
     @if(count($endpoint->queryParameters))
         <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
         @foreach($endpoint->queryParameters as $attribute => $parameter)
+                <?php
+                $htmlOptions = [];
+                if ($endpoint->isAuthed() && $metadata['auth']['location'] == 'query' && $metadata['auth']['name'] == $attribute) {
+                    $htmlOptions = [ 'class' => 'auth-value', ];
+                }
+                ?>
             <p>
                 @component('scribe::components.field-details', [
                   'name' => $parameter->name,
@@ -149,6 +154,7 @@
                   'endpointId' => $endpoint->endpointId(),
                   'component' => 'query',
                   'isInput' => true,
+                  'html' => $htmlOptions,
                 ])
                 @endcomponent
             </p>
