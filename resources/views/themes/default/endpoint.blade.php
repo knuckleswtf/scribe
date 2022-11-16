@@ -5,7 +5,7 @@
 <h2 id="{!! $endpoint->fullSlug() !!}">{{ $endpoint->name() }}</h2>
 
 <p>
-@component('scribe::components.badges.auth', ['authenticated' => $endpoint->metadata->authenticated])
+@component('scribe::components.badges.auth', ['authenticated' => $endpoint->isAuthed()])
 @endcomponent
 </p>
 
@@ -63,10 +63,9 @@
 </span>
 <form id="form-{{ $endpoint->endpointId() }}" data-method="{{ $endpoint->httpMethods[0] }}"
       data-path="{{ $endpoint->uri }}"
-      data-authed="{{ $endpoint->metadata->authenticated ? 1 : 0 }}"
+      data-authed="{{ $endpoint->isAuthed() ? 1 : 0 }}"
       data-hasfiles="{{ $endpoint->hasFiles() ? 1 : 0 }}"
       data-isarraybody="{{ $endpoint->isArrayBody() ? 1 : 0 }}"
-      data-headers='@json($endpoint->headers)'
       autocomplete="off"
       onsubmit="event.preventDefault(); executeTryOut('{{ $endpoint->endpointId() }}', this);">
     <h3>
@@ -74,8 +73,7 @@
         @if($metadata['try_it_out']['enabled'] ?? false)
             <button type="button"
                     style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    data-endpoint="{{ $endpoint->endpointId() }}"
-                    class="tryItOut-btn"
+                    id="btn-tryout-{{ $endpoint->endpointId() }}"
                     onclick="tryItOut('{{ $endpoint->endpointId() }}');">Try it out ⚡
             </button>
             <button type="button"
@@ -95,15 +93,30 @@
             <b><code>{{$endpoint->uri}}</code></b>
         </p>
     @endforeach
-    @if($endpoint->metadata->authenticated && $metadata['auth']['location'] === 'header')
-        <p>
-            <label id="auth-{{ $endpoint->endpointId() }}" hidden>{{ $metadata['auth']['name'] }} header:
-                <b><code>{{ $metadata['auth']['prefix'] }}</code></b>
-                <input class="auth-value" name="{{ $metadata['auth']['name'] }}"
-                       data-prefix="{{ $metadata['auth']['prefix'] }}"
-                       data-endpoint="{{ $endpoint->endpointId() }}"
-                       data-component="header"></label>
-        </p>
+    @if(count($endpoint->headers))
+        <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+        @foreach($endpoint->headers as $name => $example)
+            <?php
+                $htmlOptions = [];
+                if ($endpoint->isAuthed() && $metadata['auth']['location'] == 'header' && $metadata['auth']['name'] == $name) {
+                  $htmlOptions = [ 'class' => 'auth-value', ];
+                  }
+            ?>
+            <p>
+                @component('scribe::components.field-details', [
+                  'name' => $name,
+                  'type' => null,
+                  'required' => true,
+                  'description' => null,
+                  'example' => $example,
+                  'endpointId' => $endpoint->endpointId(),
+                  'component' => 'header',
+                  'isInput' => true,
+                  'html' => $htmlOptions,
+                ])
+                @endcomponent
+            </p>
+        @endforeach
     @endif
     @if(count($endpoint->urlParameters))
         <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>

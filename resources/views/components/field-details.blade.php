@@ -1,3 +1,6 @@
+@php
+    $html ??= []; $class = $html['class'] ?? null;
+@endphp
 <b><code>{{ $name }}</code></b>&nbsp;&nbsp;
 @if($type)<small>{{ $type }}</small>@endif&nbsp;
 @if($isInput && !$required)<i>optional</i>@endif &nbsp;
@@ -24,7 +27,7 @@
             <input type="radio" name="{{ $fullName }}"
                    value="{{$component === 'body' ? 'true' : 1}}"
                    data-endpoint="{{ $endpointId }}"
-                   data-component="{{ $component }}"
+                   data-component="{{ $component }}" @if($class)class="{{ $class }}"@endif
             >
             <code>true</code>
         </label>
@@ -32,22 +35,22 @@
             <input type="radio" name="{{ $fullName }}"
                    value="{{$component === 'body' ? 'false' : 0}}"
                    data-endpoint="{{ $endpointId }}"
-                   data-component="{{ $component }}"
+                   data-component="{{ $component }}" @if($class)class="{{ $class }}"@endif
             >
             <code>false</code>
         </label>
     @elseif($isList)
         <input type="{{ $inputType }}"
-               name="{{ $fullName."[0]" }}"
+               name="{{ $fullName."[0]" }}" @if($class)class="{{ $class }}"@endif
                data-endpoint="{{ $endpointId }}"
                data-component="{{ $component }}" hidden>
         <input type="{{ $inputType }}"
-               name="{{ $fullName."[1]" }}"
+               name="{{ $fullName."[1]" }}" @if($class)class="{{ $class }}"@endif
                data-endpoint="{{ $endpointId }}"
                data-component="{{ $component }}" hidden>
     @else
         <input type="{{ $inputType }}"
-               name="{{ $fullName }}"
+               name="{{ $fullName }}" @if($class)class="{{ $class }}"@endif
                data-endpoint="{{ $endpointId }}"
                value="{!! (isset($example) && (is_string($example) || is_numeric($example))) ? $example : '' !!}"
                data-component="{{ $component }}" hidden>

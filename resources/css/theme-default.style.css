@@ -1075,3 +1075,7 @@ html {
     }
 
 }
+
+button {
+    border: none;
+}

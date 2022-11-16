@@ -150,7 +150,7 @@ function handleResponse(endpointId, response, status, headers) {
 
     }
     responseContentEl.textContent = response === '' ? '<Empty response>' : response;
-    isJson && window.hljs.highlightBlock(responseContentEl);
+    isJson && window.hljs.highlightElement(responseContentEl);
     const statusEl = document.querySelector('#execution-response-status-' + endpointId);
     statusEl.textContent = ` (${status})`;
     document.querySelector('#execution-results-' + endpointId).hidden = false;
@@ -218,8 +218,8 @@ async function executeTryOut(endpointId, form) {
     const queryParameters = form.querySelectorAll('input[data-component=query]');
     queryParameters.forEach(el => {
         if (el.type !== 'radio' || (el.type === 'radio' && el.checked)) {
-            if (el.value === '' && el.required === false) {
-                // Don't include empty optional values in the request
+            if (el.value === '') {
+                // Don't include empty values in the request
                 return;
             }
 
@@ -231,12 +231,9 @@ async function executeTryOut(endpointId, form) {
     const urlParameters = form.querySelectorAll('input[data-component=url]');
     urlParameters.forEach(el => (path = path.replace(new RegExp(`\\{${el.name}\\??}`), el.value)));
 
-    const headers = JSON.parse(form.dataset.headers);
-    // Check for auth param that might go in header
-    if (form.dataset.authed === "1") {
-        const authHeaderEl = form.querySelector('input[data-component=header]');
-        if (authHeaderEl) headers[authHeaderEl.name] = authHeaderEl.dataset.prefix + authHeaderEl.value;
-    }
+    const headers = Object.fromEntries(Array.from(form.querySelectorAll('input[data-component=header]'))
+        .map(el => [el.name, el.value]));
+
     // When using FormData, the browser sets the correct content-type + boundary
     let method = form.dataset.method;
     if (body instanceof FormData) {
