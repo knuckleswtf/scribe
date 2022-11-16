@@ -1,7 +1,7 @@
 /*! normalize.css v3.0.2 | MIT License | git.io/normalize */
 
 html {
-    font-family: 'PT Sans', sans-serif;
+    font-family: 'Open Sans', sans-serif;
     font-size: 1.2em;
     -ms-text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%
@@ -223,7 +223,7 @@ th {
 
 body,
 html {
-    font-family: 'PT Sans', Helvetica Neue, Helvetica, Arial, Microsoft Yahei, 微软雅黑, STXihei, 华文细黑, sans-serif;
+    font-family: 'Open Sans', Helvetica Neue, Helvetica, Arial, Microsoft Yahei, 微软雅黑, STXihei, 华文细黑, sans-serif;
     font-size: 16px;
 }
 
@@ -233,7 +233,7 @@ html {
 .content h4,
 .content h5,
 .content h6 {
-    font-family: 'PT Sans', Helvetica Neue, Helvetica, Arial, Microsoft Yahei, 微软雅黑, STXihei, 华文细黑, sans-serif;
+    font-family: 'Open Sans', Helvetica Neue, Helvetica, Arial, Microsoft Yahei, 微软雅黑, STXihei, 华文细黑, sans-serif;
 }
 
 .content h1,
@@ -264,7 +264,7 @@ html {
 .content aside.success:before,
 .content aside.warning:before,
 .tocify-wrapper>.search:before {
-    font-family: 'PT Sans', sans-serif;
+    font-family: 'Open Sans', sans-serif;
     speak: none;
     font-style: normal;
     font-variant: normal;

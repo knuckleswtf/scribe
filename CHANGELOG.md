@@ -12,6 +12,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.4.0 (16 November 2022)
+- Fixxes and improvements for the `default` theme
+
 # 4.3.0 (15 November 2022)
 ### Added
 - New theme (beta)! Try it out by setting `theme` in your config to `elements`. ([#559](https://github.com/knuckleswtf/scribe/pull/559))
