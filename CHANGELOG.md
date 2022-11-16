@@ -12,8 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.5.0 (17 November 2022)
+- Smarter example generation; Scribe now uses the parameter name as an added hint. ([46e3bbc](https://github.com/knuckleswtf/scribe/commit/46e3bbc2e007566df1bbef8c32b940bb1f4c0f58))
+
 # 4.4.0 (16 November 2022)
-- Fixxes and improvements for the `default` theme
+- Fixes and improvements for the `default` theme
 
 # 4.3.0 (15 November 2022)
 ### Added
