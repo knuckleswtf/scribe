@@ -20,6 +20,9 @@
             <file>src/ScribeServiceProvider.php</file>
         </exclude>
     </coverage>
+    <php>
+        <server name="SCRIBE_TESTS" value="1" />
+    </php>
     <testsuites>
         <testsuite name="Full Test">
             <file>tests/GenerateDocumentation/OutputTest.php</file>

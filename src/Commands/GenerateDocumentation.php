@@ -66,14 +66,9 @@ class GenerateDocumentation extends Command
         $writer = new Writer($this->docConfig, $this->configName);
         $writer->writeDocs($groupedEndpoints);
 
-        if ($groupedEndpointsInstance->hasEncounteredErrors()) {
-            c::warn('Generated docs, but encountered some errors while processing routes.');
-            c::warn('Check the output above for details.');
-        }
-
         $this->upgradeConfigFileIfNeeded();
 
-        $this->sayGoodbye();
+        $this->sayGoodbye(errored: $groupedEndpointsInstance->hasEncounteredErrors());
     }
 
     public function isForcing(): bool
@@ -187,7 +182,7 @@ class GenerateDocumentation extends Command
 
     }
 
-    protected function sayGoodbye(): void
+    protected function sayGoodbye(bool $errored = false): void
     {
         $message = 'All done. ';
         if ($this->docConfig->get('type') == 'laravel') {
@@ -200,5 +195,13 @@ class GenerateDocumentation extends Command
 
         $this->newLine();
         c::success($message);
+
+        if ($errored) {
+            c::warn('Generated docs, but encountered some errors while processing routes.');
+            c::warn('Check the output above for details.');
+            if (empty($_SERVER["SCRIBE_TESTS"])) {
+                exit(2);
+            }
+        }
     }
 }
