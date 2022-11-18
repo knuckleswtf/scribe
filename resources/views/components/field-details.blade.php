@@ -1,7 +1,7 @@
 @php
     $html ??= []; $class = $html['class'] ?? null;
 @endphp
-<b><code>{{ $name }}</code></b>&nbsp;&nbsp;
+<b style="line-height: 2;"><code>{{ $name }}</code></b>&nbsp;&nbsp;
 @if($type)<small>{{ $type }}</small>@endif&nbsp;
 @if($isInput && !$required)<i>optional</i>@endif &nbsp;
 @if($isInput && empty($hasChildren))
@@ -57,4 +57,10 @@
     @endif
 @endif
 <br>
-{!! Parsedown::instance()->text($description) !!}
+@php
+if($example !== null && $example !== '' && !is_array($example)) {
+    $exampleAsString = $example === false ? "false" : $example;
+    $description .= " Example: `$example`";
+    }
+@endphp
+{!! Parsedown::instance()->text(trim($description)) !!}

@@ -1,22 +1,23 @@
 @php
-    $isInput ??= true
+    $isInput ??= true;
+    $level ??= 0;
 @endphp
 @foreach($fields as $name => $field)
     @if($name === '[]')
         @php
             $description = "The request body is an array (<code>{$field['type']}</code>`)";
             $description .= !empty($field['description']) ? ", representing ".lcfirst($field['description'])."." : '.';
+            if(count($field['__fields'])) $description .= " Each item has the following properties:";
         @endphp
-        <p>
-            {!! Parsedown::instance()->text($description) !!}
-        </p>
+        {!! Parsedown::instance()->text($description) !!}
+
         @foreach($field['__fields'] as $subfieldName => $subfield)
                 @if(!empty($subfield['__fields']))
                     <x-scribe::nested-fields
-                            :fields="[$subfieldName => $subfield]" :endpointId="$endpointId" :isInput="$isInput"
+                            :fields="[$subfieldName => $subfield]" :endpointId="$endpointId" :isInput="$isInput" :level="$level + 2"
                     />
                 @else
-                    <p>
+                    <div style="margin-left: {{ ($level + 2) * 14 }}px; clear: unset;">
                         @component('scribe::components.field-details', [
                           'name' => $subfield['name'],
                           'type' => $subfield['type'] ?? 'string',
@@ -29,11 +30,11 @@
                           'isInput' => $isInput,
                         ])
                         @endcomponent
-                    </p>
+                    </div>
                 @endif
             @endforeach
     @elseif(!empty($field['__fields']))
-        <p>
+        <div style="@if($level) margin-left: {{ $level * 14 }}px;@else padding-left: 28px; @endif clear: unset;">
         <details>
             <summary style="padding-bottom: 10px;">
                 @component('scribe::components.field-details', [
@@ -52,10 +53,10 @@
             @foreach($field['__fields'] as $subfieldName => $subfield)
                 @if(!empty($subfield['__fields']))
                     <x-scribe::nested-fields
-                            :fields="[$subfieldName => $subfield]" :endpointId="$endpointId" :isInput="$isInput"
+                            :fields="[$subfieldName => $subfield]" :endpointId="$endpointId" :isInput="$isInput" :level="$level + 1"
                     />
                 @else
-                    <p>
+                    <div style="margin-left: {{ ($level + 1) * 14 }}px; clear: unset;">
                         @component('scribe::components.field-details', [
                           'name' => $subfield['name'],
                           'type' => $subfield['type'] ?? 'string',
@@ -68,13 +69,13 @@
                           'isInput' => $isInput,
                         ])
                         @endcomponent
-                    </p>
+                    </div>
                 @endif
             @endforeach
         </details>
-        </p>
+        </div>
     @else
-        <p>
+        <div style="@if($level) margin-left: {{ ($level + 1) * 14 }}px;@else padding-left: 28px; @endif clear: unset;">
             @component('scribe::components.field-details', [
               'name' => $field['name'],
               'type' => $field['type'] ?? 'string',
@@ -87,6 +88,6 @@
               'isInput' => $isInput,
             ])
             @endcomponent
-        </p>
+        </div>
     @endif
 @endforeach

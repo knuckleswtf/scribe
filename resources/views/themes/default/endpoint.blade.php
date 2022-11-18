@@ -101,7 +101,7 @@
                   $htmlOptions = [ 'class' => 'auth-value', ];
                   }
             ?>
-            <p>
+            <div style="padding-left: 28px; clear: unset;">
                 @component('scribe::components.field-details', [
                   'name' => $name,
                   'type' => null,
@@ -114,13 +114,13 @@
                   'html' => $htmlOptions,
                 ])
                 @endcomponent
-            </p>
+            </div>
         @endforeach
     @endif
     @if(count($endpoint->urlParameters))
         <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
         @foreach($endpoint->urlParameters as $attribute => $parameter)
-            <p>
+            <div style="padding-left: 28px; clear: unset;">
                 @component('scribe::components.field-details', [
                   'name' => $parameter->name,
                   'type' => $parameter->type ?? 'string',
@@ -132,7 +132,7 @@
                   'isInput' => true,
                 ])
                 @endcomponent
-            </p>
+            </div>
         @endforeach
     @endif
     @if(count($endpoint->queryParameters))
@@ -144,7 +144,7 @@
                     $htmlOptions = [ 'class' => 'auth-value', ];
                 }
                 ?>
-            <p>
+            <div style="padding-left: 28px; clear: unset;">
                 @component('scribe::components.field-details', [
                   'name' => $parameter->name,
                   'type' => $parameter->type,
@@ -157,7 +157,7 @@
                   'html' => $htmlOptions,
                 ])
                 @endcomponent
-            </p>
+            </div>
         @endforeach
     @endif
     @if(count($endpoint->nestedBodyParameters))
