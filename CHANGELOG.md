@@ -12,7 +12,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.6.0 (18 November 2022)
+## Modified
+- Styling improvements for the default theme; also show example with parameter description. ([e9bd84fb](https://github.com/knuckleswtf/scribe/commit/e9bd84fb7d1ad3330506ff045380a362bfaa4d99))
+- Description generation: pluralize/singularize values from Laravel's validator. ([0b9473b5](https://github.com/knuckleswtf/scribe/commit/0b9473b5cd8046df9fb230b36fff61b3159e9fb2))
+
+## Fixed
+- Don't include status code in description (closes #561) ([8a90c2d1](https://github.com/knuckleswtf/scribe/commit/8a90c2d1ea808a39e570778e8717604c07d8326f))
+- Remove mistaken example check (Fix #557) ([ad4f808](https://github.com/knuckleswtf/scribe/commit/ad4f8089692d75fc4870f37bbd96ba1df9f34dea))
+
 # 4.5.0 (16 November 2022)
+## Modified
 - Smarter example generation; Scribe now uses the parameter name as an added hint. ([46e3bbc](https://github.com/knuckleswtf/scribe/commit/46e3bbc2e007566df1bbef8c32b940bb1f4c0f58))
 
 # 4.4.0 (16 November 2022)
