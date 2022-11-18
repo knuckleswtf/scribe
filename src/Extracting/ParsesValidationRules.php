@@ -669,10 +669,14 @@ trait ParsesValidationRules
             $description = str_replace($placeholder, $argument, $description);
         }
 
-        // FOr rules that validate subfields
-        $description = str_replace("The :attribute field", "This field", $description);
+        // For rules that validate subfields
+        $description = str_replace("The :attribute field ", "This field ", $description);
 
-        return str_replace("The value must", "Must", str_replace(":attribute", "value", $description));
+        return str_replace(
+            [" :attribute ", "The value must ", " 1 characters", " 1 digits", " 1 kilobytes"],
+            [" value ", "Must ", " 1 character", " 1 digit", " 1 kilobyte"],
+            $description
+        );
     }
 
     private function getLaravelValidationBaseTypeMapping(string $parameterType): string
