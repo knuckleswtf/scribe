@@ -370,8 +370,8 @@ trait ParsesValidationRules
                     $parameterData['description'] .= ' ' . $this->getDescription(
                             $rule, [':max' => $arguments[0]], $this->getLaravelValidationBaseTypeMapping($parameterData['type'])
                         );
-                    $max = min($arguments[0], 20);
-                    $parameterData['setter'] = $this->getDummyDataGeneratorBetween($parameterData['type'], 0, $max, $parameterData['name']);
+                    $max = min($arguments[0], 25);
+                    $parameterData['setter'] = $this->getDummyDataGeneratorBetween($parameterData['type'], 1, $max, $parameterData['name']);
                     break;
                 case 'between':
                     $parameterData['description'] .= ' ' . $this->getDescription(
