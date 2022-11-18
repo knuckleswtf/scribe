@@ -595,7 +595,7 @@ trait ParsesValidationRules
                         }
                     } else {
                         $parentDetails['type'] = 'object';
-                        if (!$this->examplePresent($parentDetails) || is_string($parentDetails['example'][0])) {
+                        if (!$this->examplePresent($parentDetails)) {
                             $parentDetails['example'] = [];
                         }
                     }
