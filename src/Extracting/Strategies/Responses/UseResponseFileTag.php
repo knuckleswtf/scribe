@@ -38,7 +38,7 @@ class UseResponseFileTag extends Strategy
             ['fields' => $fields, 'content' => $filePath] = a::parseIntoContentAndFields($mainContent, ['status', 'scenario']);
 
             $status = $fields['status'] ?: ($status ?: 200);
-            $description = $fields['scenario'] ? "$status, {$fields['scenario']}" : "$status";
+            $description = $fields['scenario'] ?: "";
             $content = ResponseFileTools::getResponseContents($filePath, $json);
 
             return [

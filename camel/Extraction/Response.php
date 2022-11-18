@@ -49,4 +49,11 @@ class Response extends BaseDTO
 
         parent::__construct($parameters);
     }
+
+    public function fullDescription()
+    {
+        $description = $this->status;
+        if ($this->description) $description .= ", {$this->description}";
+        return $description;
+    }
 }

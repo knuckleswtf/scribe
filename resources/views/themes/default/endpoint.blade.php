@@ -27,7 +27,7 @@
 @if($endpoint->isGet() || $endpoint->hasResponses())
     @foreach($endpoint->responses as $response)
         <blockquote>
-            <p>Example response ({{$response->description ?: $response->status}}):</p>
+            <p>Example response ({{ $response->fullDescription() }}):</p>
         </blockquote>
         @if(count($response->headers))
         <details class="annotation">

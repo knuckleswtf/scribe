@@ -47,7 +47,7 @@ class UseResponseTagTest extends TestCase
                 [
                     [
                         'status' => 200,
-                        'description' => '200',
+                        'description' => '',
                         'content' => [
                             'id' => 4,
                             'name' => 'banana',
@@ -55,7 +55,7 @@ class UseResponseTagTest extends TestCase
                     ],
                     [
                         'status' => 401,
-                        'description' => '401',
+                        'description' => '',
                         'content' => [
                             'message' => 'Unauthorized',
                         ],
@@ -71,7 +71,7 @@ class UseResponseTagTest extends TestCase
                 [
                     [
                         'status' => 200,
-                        'description' => '200, success',
+                        'description' => 'success',
                         'content' => [
                             'id' => 4,
                             'name' => 'banana',
@@ -79,7 +79,7 @@ class UseResponseTagTest extends TestCase
                     ],
                     [
                         'status' => 401,
-                        'description' => '401, auth problem',
+                        'description' => 'auth problem',
                         'content' => [
                             'message' => 'Unauthorized',
                         ],

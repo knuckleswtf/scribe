@@ -144,7 +144,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
         $this->assertArraySubset([
             [
                 'status' => 202,
-                'description' => '202, Success',
+                'description' => 'Success',
                 'content' => json_encode([
                     'data' => [
                         'id' => 4,

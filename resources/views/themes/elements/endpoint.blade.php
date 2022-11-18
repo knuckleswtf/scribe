@@ -194,7 +194,7 @@
                                                         aria-label="Response sample"
                                                         onchange="switchExampleResponse('{{ $endpoint->endpointId() }}', event.target.value);">
                                                     @foreach($endpoint->responses as $index => $response)
-                                                        <option value="{{ $index }}">{{ $response->description ?: $response->status }}</option>
+                                                        <option value="{{ $index }}">{{ $response->fullDescription() }}</option>
                                                     @endforeach
                                                 </select></div>
                                         </div>

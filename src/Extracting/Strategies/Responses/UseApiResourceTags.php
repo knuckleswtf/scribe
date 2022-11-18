@@ -78,7 +78,7 @@ class UseApiResourceTags extends Strategy
 
         $status = $fields['status'] ?: $status;
         $apiResourceClass = $content;
-        $description = $fields['scenario'] ? "$status, {$fields['scenario']}" : "$status";
+        $description = $fields['scenario'] ?: "";
 
         $isCollection = strtolower($tag->getName()) == 'apiresourcecollection';
         return [(int)$status, $description, $apiResourceClass, $isCollection];
