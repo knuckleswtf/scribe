@@ -698,7 +698,8 @@ html {
 .content>form>h6,
 .content>form>p,
 .content>form>table,
-.content>form>ul {
+.content>form>ul,
+.content>form>div {
     margin-right: 50%;
     padding: 0 28px;
     box-sizing: border-box;
@@ -997,7 +998,8 @@ html {
     .content>form>h6,
     .content>form>p,
     .content>form>table,
-    .content>form>ul {
+    .content>form>ul,
+    .content>form>div {
         margin-right: 0;
     }
     .content blockquote,
