@@ -58,9 +58,12 @@
 @endif
 <br>
 @php
-if($example !== null && $example !== '' && !is_array($example)) {
-    $exampleAsString = $example === false ? "false" : $example;
-    $description .= " Example: `$example`";
+    if($example !== null && $example !== '' && !is_array($example)) {
+        $exampleAsString = $example;
+        if (is_bool($example)) {
+            $exampleAsString = $example ? "true" : "false";
+        }
+        $description .= " Example: `$exampleAsString`";
     }
 @endphp
 {!! Parsedown::instance()->text(trim($description)) !!}
