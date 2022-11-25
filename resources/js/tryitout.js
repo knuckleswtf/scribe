@@ -43,7 +43,7 @@ function tryItOut(endpointId) {
 
     // Show all input fields
     document.querySelectorAll(`input[data-endpoint=${endpointId}],label[data-endpoint=${endpointId}]`)
-        .forEach(el => el.hidden = false);
+        .forEach(el => el.style.display = 'block');
 
     if (document.querySelector(`#form-${endpointId}`).dataset.authed === "1") {
         const authElement = document.querySelector(`#auth-${endpointId}`);
@@ -67,7 +67,7 @@ function cancelTryOut(endpointId) {
     document.querySelector(`#btn-canceltryout-${endpointId}`).hidden = true;
     // Hide inputs
     document.querySelectorAll(`input[data-endpoint=${endpointId}],label[data-endpoint=${endpointId}]`)
-        .forEach(el => el.hidden = true);
+        .forEach(el => el.style.display = 'none');
     document.querySelectorAll(`#form-${endpointId} details`)
         .forEach(el => el.open = false);
     const authElement = document.querySelector(`#auth-${endpointId}`);
