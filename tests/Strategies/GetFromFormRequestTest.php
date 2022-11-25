@@ -53,9 +53,10 @@ class GetFromFormRequestTest extends BaseLaravelTest
                 'example' => null,
             ],
             'even_more_param' => [
-                'type' => 'string[]',
+                'type' => 'object',
                 'required' => false,
                 'description' => '',
+                'example' => [],
             ],
             'book' => [
                 'type' => 'object',
@@ -104,6 +105,7 @@ class GetFromFormRequestTest extends BaseLaravelTest
         ], $results);
 
         $this->assertIsArray($results['ids']['example']);
+        $this->assertIsInt($results['ids']['example'][0]);
     }
 
     /** @test */
@@ -142,6 +144,61 @@ class GetFromFormRequestTest extends BaseLaravelTest
 
         $method = new \ReflectionMethod(TestController::class, 'withFormRequestParameterQueryParamsComment');
         $this->assertEquals([], $this->fetchViaBodyParams($method));
+    }
+
+    /** @test */
+    public function sets_examples_from_parent_if_set()
+    {
+        $strategy = new BodyParameters\GetFromFormRequest(new DocumentationConfig([]));
+        $dataExample = [
+            'title' => 'Things Fall Apart',
+            'meta' => ['tags' => ['epic']],
+        ];
+        $parametersFromFormRequest = $strategy->getParametersFromValidationRules(
+            [
+                'data' => 'array|required',
+                'data.title' => 'string|required',
+                'data.meta' => 'array',
+                'data.meta.tags' => 'array',
+                'data.meta.tags.*' => 'string',
+            ],
+            [
+                'data' => [
+                    'example' => $dataExample,
+                ],
+            ],
+        );
+
+        $parsed = $strategy->normaliseArrayAndObjectParameters($parametersFromFormRequest);
+        $this->assertEquals($dataExample, $parsed['data']['example']);
+        $this->assertEquals($dataExample['title'], $parsed['data.title']['example']);
+        $this->assertEquals($dataExample['meta'], $parsed['data.meta']['example']);
+        $this->assertEquals($dataExample['meta']['tags'], $parsed['data.meta.tags']['example']);
+    }
+
+
+    /** @test */
+    public function creates_missing_parent_fields()
+    {
+        $strategy = new BodyParameters\GetFromFormRequest(new DocumentationConfig([]));
+        $parametersFromFormRequest = $strategy->getParametersFromValidationRules(
+            [
+                'cars.*.dogs.*.*' => 'array',
+                'thing1.thing2.*.thing3.thing4' => 'int',
+            ],
+            [],
+        );
+
+        $expected = [
+            'cars' => ['type' => 'object[]'],
+            'cars[].dogs' => ['type' => 'object[][]'],
+            'thing1' => ['type' => 'object'],
+            'thing1.thing2' => ['type' => 'object[]'],
+            'thing1.thing2[].thing3' => ['type' => 'object'],
+            'thing1.thing2[].thing3.thing4' => ['type' => 'integer'],
+        ];
+        $parsed = $strategy->normaliseArrayAndObjectParameters($parametersFromFormRequest);
+        $this->assertArraySubset($expected, $parsed);
     }
 
     /** @test */

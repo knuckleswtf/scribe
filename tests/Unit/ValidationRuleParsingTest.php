@@ -152,7 +152,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['array_param' => 'array'],
             [],
             [
-                'type' => 'string[]',
+                'type' => 'object',
                 'description' => '',
             ],
         ];

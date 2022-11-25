@@ -525,121 +525,168 @@ trait ParsesValidationRules
      * 'cars.*.things.*.*' with type 'string' becomes 'cars[].things' with type 'string[][]' and 'cars' with type
      * 'object[]'
      *
+     * Additionally, if the user declared a subfield but not the parent, we create a parameter for the parent.
+     *
      * @param array[] $parametersFromValidationRules
      *
      * @return array
      */
     public function normaliseArrayAndObjectParameters(array $parametersFromValidationRules): array
     {
-        $results = [];
-        $originalParams = $parametersFromValidationRules;
-        foreach ($parametersFromValidationRules as $name => $details) {
-            if (isset($results[$name])) {
-                continue;
-            }
+        // Convert any `array` types into concrete types like `object[]`, object, or `string[]`
+        $parameters = $this->convertGenericArrayType($parametersFromValidationRules);
+
+        // Change cars.*.dogs.things.*.* with type X to cars.*.dogs.things with type X[][]
+        $parameters = $this->convertArraySubfields($parameters);
+
+        // Add the fields `cars.*.dogs` and `cars` if they don't exist
+        $parameters = $this->addMissingParentFields($parameters);
+
+        return $this->setExamples($parameters);
+    }
+
+    public function convertGenericArrayType(array $parameters): array
+    {
+        $converted = [];
+        $allKeys = array_keys($parameters);
+        foreach (array_reverse($parameters) as $name => $details) {
             if ($details['type'] === 'array') {
-                // This is the parent field, a generic array type. If a child item exists,
-                // this will be overwritten with the correct type (such as object or object[]) by the code below
-                $details['type'] = 'string[]';
-            }
+                // This is a parent field, a generic array type. Scribe only supports concrete array types (T[]),
+                // so we convert this to the correct type (such as object or object[])
 
-            if (Str::endsWith($name, '.*')) {
-                // Wrap array example properly
-                $details['example'] = $this->exampleOrDefault($details, $this->getParameterExample($details));
-                $needsWrapping = !is_array($details['example']);
-
-                $nestingLevel = 0;
-                // Change cars.*.dogs.things.*.* with type X to cars.*.dogs.things with type X[][]
-                while (Str::endsWith($name, '.*')) {
-                    $details['type'] .= '[]';
-                    if ($needsWrapping) {
-                        $details['example'] = [$details['example']];
-                    }
-                    $name = substr($name, 0, -2);
-                    $nestingLevel++;
+                // Supposing current key is "users", with type "array". To fix this:
+                // 1. If `users.*` or `users.*.thing` exists, `users` is an `X[]` (where X is the type of `users.*`
+                // 2. If `users.<name>` exists, `users` is an `object`
+                // 3. Otherwise, default to `object`
+                // Important: We're iterating in reverse, to ensure we set child items before parent items
+                // (assuming the user specified parents first, which is the more common thing)
+                if ($childKey = Arr::first($allKeys, fn($key) => Str::startsWith($key, "$name.*"))) {
+                    $childType = ($converted[$childKey] ?? $parameters[$childKey])['type'];
+                    $details['type'] = "{$childType}[]";
+                } elseif (Arr::first($allKeys, fn($key) => Str::startsWith($key, "$name."))) {
+                    $details['type'] = 'object';
+                } else {
+                    $details['type'] = 'object';
                 }
             }
 
-            // Now make sure the field cars.*.dogs exists
+            $converted[$name] = $details;
+        }
+
+        // Re-add items in the original order, so as to not cause side effects
+        foreach ($allKeys as $key) {
+            $parameters[$key] = $converted[$key] ?? $parameters[$key];
+        }
+
+        return $parameters;
+    }
+
+    public function convertArraySubfields(array $parameters): array
+    {
+        $results = [];
+        foreach ($parameters as $name => $details) {
+            if (Str::endsWith($name, '.*')) {
+                // The user might have set the example via bodyParameters()
+                $hasExample = $this->examplePresent($details);
+
+                // Change cars.*.dogs.things.*.* with type X to cars.*.dogs.things with type X[][]
+                while (Str::endsWith($name, '.*')) {
+                    $details['type'] .= '[]';
+                    $name = substr($name, 0, -2);
+
+                    if ($hasExample) {
+                        $details['example'] = [$details['example']];
+                    } else if (isset($details['setter'])) {
+                        $previousSetter = $details['setter'];
+                        $details['setter'] = fn() => [$previousSetter()];
+                    }
+                }
+            }
+
+            $results[$name] = $details;
+        }
+
+        return $results;
+    }
+
+    public function setExamples(array $parameters): array
+    {
+        $examples = [];
+
+        foreach ($parameters as $name => $details) {
+            if ($this->examplePresent($details)) {
+                // Record already-present examples (eg from bodyParameters()).
+                // This allows a user to set 'data' => ['example' => ['title' => 'A title'],
+                // and we automatically set this as the example for `data.title`
+                // Note that this approach assumes parent fields are listed before the children; meh.
+                $examples[$details['name']] = $details['example'];
+            } else {
+                // For object fields (eg 'data.details.title'), set examples from their parents if present as described above.
+                if (preg_match('/.+\.[^*]+$/', $details['name'])) {
+                    [$parentName, $fieldName] = preg_split('/\.(?=[\w-]+$)/', $details['name']);
+                    if (array_key_exists($parentName, $examples) && is_array($examples[$parentName])
+                        && array_key_exists($fieldName, $examples[$parentName])) {
+                        $examples[$details['name']] = $details['example'] = $examples[$parentName][$fieldName];
+                    }
+                }
+            }
+
+            $details['example'] = $this->getParameterExample($details);
+            unset($details['setter']);
+
+            $parameters[$name] = $details;
+
+        }
+
+        return $parameters;
+    }
+
+    protected function addMissingParentFields(array $parameters): array
+    {
+        $results = [];
+        foreach ($parameters as $name => $details) {
+            if (isset($results[$name])) {
+                continue;
+            }
+
             $parentPath = $name;
             while (Str::contains($parentPath, '.')) {
                 $parentPath = preg_replace('/\.[^.]+$/', '', $parentPath);
-                if (empty($parametersFromValidationRules[$parentPath])) {
+                $normalisedParentPath = str_replace('.*.', '[].', $parentPath);
+
+                if (empty($results[$normalisedParentPath])) {
+                    // Parent field doesn't exist, create it.
+
                     if (Str::endsWith($parentPath, '.*')) {
                         $parentPath = substr($parentPath, 0, -2);
+                        $normalisedParentPath = str_replace('.*.', '[].', $parentPath);
+
                         $type = 'object[]';
                         $example = [[]];
                     } else {
                         $type = 'object';
                         $example = [];
                     }
-                    $normalisedPath = str_replace('.*.', '[].', $parentPath);
-                    $results[$normalisedPath] = [
-                        'name' => $normalisedPath,
+                    $results[$normalisedParentPath] = [
+                        'name' => $normalisedParentPath,
                         'type' => $type,
                         'required' => false,
                         'description' => '',
                         'example' => $example,
                     ];
-                } else {
-                    // if the parent field already exists with a type 'array'
-                    $parentDetails = $parametersFromValidationRules[$parentPath];
-                    unset($parametersFromValidationRules[$parentPath]);
-
-                    if (Str::endsWith($parentPath, '.*')) {
-                        $parentPath = substr($parentPath, 0, -2);
-                        $parentDetails['type'] = 'object[]';
-                        // Set the example too. Very likely the example array was an array of strings or an empty array
-                        if (!$this->examplePresent($parentDetails) || is_string($parentDetails['example'][0]) || is_string($parentDetails['example'][0][0])) {
-                            $parentDetails['example'] = [[]];
-                        }
-                    } else {
-                        $parentDetails['type'] = 'object';
-                        if (!$this->examplePresent($parentDetails)) {
-                            $parentDetails['example'] = [];
-                        }
-                    }
-
-                    $normalisedPath = str_replace('.*.', '[].', $parentPath);
-                    $parentDetails['name'] = $normalisedPath;
-                    $results[$normalisedPath] = $parentDetails;
                 }
             }
 
             $details['name'] = $name = str_replace('.*.', '[].', $name);
 
-            // If an example was specified on the parent, use that instead.
-            if (isset($originalParams[$details['name']]) && $this->examplePresent($originalParams[$details['name']])) {
-                $details['example'] = $originalParams[$details['name']]['example'];
+            if (isset($parameters[$details['name']]) && $this->examplePresent($parameters[$details['name']])) {
+                $details['example'] = $parameters[$details['name']]['example'];
             }
-
-            // Change type 'array' to 'object' if there are subfields
-            if (
-                $details['type'] === 'array'
-                && Arr::first(array_keys($parametersFromValidationRules), function ($key) use ($name) {
-                    return preg_match("/{$name}\\.[^*]/", $key);
-                })
-            ) {
-                $details['type'] = 'object';
-            }
-
-            $details['example'] = $this->getParameterExample($details);
-            unset($details['setter']);
 
             $results[$name] = $details;
-
         }
 
         return $results;
-    }
-
-    private function exampleOrDefault(array $parameterData, $default)
-    {
-        if (!isset($parameterData['example']) || $parameterData['example'] === self::$MISSING_VALUE) {
-            return $default;
-        }
-
-        return $parameterData['example'];
     }
 
     private function examplePresent(array $parameterData)
