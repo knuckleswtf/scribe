@@ -16,4 +16,4 @@ READ BEFORE OPENING AN ISSUE:
 
 - [ ] I've read the [documentation](https://scribe.knuckles.wtf/laravel) and I can't find details on how to achieve this.
 
-Okay, but DID YOU REALLY CHECK THE DOCS? Use the search bar on the docs page, and then come back and put an x in the box above only if you don't find answers. 
+Okay, but DID YOU REALLY CHECK THE DOCS? Use the search bar on the docs page, and then come back and put an x in the box above only if you don't find answers. I know it's difficult when you don't know what you're looking for, but do your best.
