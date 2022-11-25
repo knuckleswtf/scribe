@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.6.1 (25 November 2022)
+## Fixed
+- Fix content overflow (closes #567) ([1fad3eb0](https://github.com/knuckleswtf/scribe/commit/1fad3eb021e3fd763485e5cf4c9d9ce495e9dd4a))
+
 # 4.6.0 (18 November 2022)
 ## Modified
 - Styling improvements for the default theme; also show example with parameter description. ([e9bd84fb](https://github.com/knuckleswtf/scribe/commit/e9bd84fb7d1ad3330506ff045380a362bfaa4d99))

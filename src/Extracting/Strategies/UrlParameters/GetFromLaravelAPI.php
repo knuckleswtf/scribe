@@ -217,7 +217,11 @@ class GetFromLaravelAPI extends Strategy
         if (class_exists($class = "{$rootNamespace}Models\\" . $className)
             // For the heathens that don't use a Models\ directory
             || class_exists($class = $rootNamespace . $className)) {
-            $instance = new $class;
+            try {
+                $instance = new $class;
+            } catch (\Error) { // It might be an enum or some other non-instantiable class
+                return null;
+            }
             return $instance instanceof Model ? $instance : null;
         }
 
