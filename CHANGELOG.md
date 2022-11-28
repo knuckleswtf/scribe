@@ -12,6 +12,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.7.0 (27 November 2022)
+## Added
+- `scribe:config:diff` command for easier debugging
+
+## Modified
+- Don't escape slashes in response content ([fdb8f4e5](https://github.com/knuckleswtf/scribe/commit/fdb8f4e5cab6e9b16339a5af1cb698fbcf77dafa))
+
+## Fixed
+- Fix default theme CSS ([#571](https://github.com/knuckleswtf/scribe/pull/571))
+
 # 4.6.1 (25 November 2022)
 ## Fixed
 - Fix content overflow (closes #567) ([1fad3eb0](https://github.com/knuckleswtf/scribe/commit/1fad3eb021e3fd763485e5cf4c9d9ce495e9dd4a))
