@@ -81,7 +81,10 @@ class ResponseCalls extends Strategy
         })->toArray();
         $fileParameters = array_merge($endpointData->fileParameters, $hardcodedFileParams);
 
-        $request = $this->prepareRequest($endpointData->route, $rulesToApply, $urlParameters, $bodyParameters, $queryParameters, $fileParameters, $headers);
+        $request = $this->prepareRequest(
+            $endpointData->route, $endpointData->uri, $rulesToApply, $urlParameters,
+            $bodyParameters, $queryParameters, $fileParameters, $headers
+        );
 
         $request = $this->runPreRequestHook($request, $endpointData);
 
@@ -129,10 +132,10 @@ class ResponseCalls extends Strategy
      *
      * @return Request
      */
-    protected function prepareRequest(Route $route, array $rulesToApply, array $urlParams, array $bodyParams,
-        array $queryParams, array $fileParameters, array $headers): Request
+    protected function prepareRequest(Route $route, string $url, array $rulesToApply, array $urlParams,
+        array $bodyParams, array $queryParams, array $fileParameters, array $headers): Request
     {
-        $uri = Utils::getUrlWithBoundParameters($route->uri(), $urlParams);
+        $uri = Utils::getUrlWithBoundParameters($url, $urlParams);
         $routeMethods = $this->getMethods($route);
         $method = array_shift($routeMethods);
         $cookies = $rulesToApply['cookies'] ?? [];
