@@ -18,6 +18,8 @@
         </include>
         <exclude>
             <file>src/ScribeServiceProvider.php</file>
+            <file>src/Tools/ConfigDiffer.php</file>
+            <file>src/Commands/DiffConfig.php</file>
         </exclude>
     </coverage>
     <php>
@@ -38,6 +40,7 @@
         <testsuite name="Unit Tests 1">
             <file>tests/Unit/ExtractorTest.php</file>
             <file>tests/Unit/ExtractorPluginSystemTest.php</file>
+            <file>tests/Unit/ConfigDifferTest.php</file>
         </testsuite>
         <testsuite name="Unit Tests 2">
             <file>tests/Unit/ExtractedEndpointDataTest.php</file>

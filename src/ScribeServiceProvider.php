@@ -3,6 +3,7 @@
 namespace Knuckles\Scribe;
 
 use Illuminate\Support\ServiceProvider;
+use Knuckles\Scribe\Commands\DiffConfig;
 use Knuckles\Scribe\Commands\GenerateDocumentation;
 use Knuckles\Scribe\Commands\MakeStrategy;
 use Knuckles\Scribe\Commands\Upgrade;
@@ -85,6 +86,7 @@ class ScribeServiceProvider extends ServiceProvider
                 GenerateDocumentation::class,
                 MakeStrategy::class,
                 Upgrade::class,
+                DiffConfig::class,
             ]);
         }
     }
