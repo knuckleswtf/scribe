@@ -18,7 +18,7 @@ class Response extends BaseDTO
     public function __construct(array $parameters = [])
     {
         if (is_array($parameters['content'] ?? null)) {
-            $parameters['content'] = json_encode($parameters['content']);
+            $parameters['content'] = json_encode($parameters['content'], JSON_UNESCAPED_SLASHES);
         }
 
         if (isset($parameters['status'])) {
