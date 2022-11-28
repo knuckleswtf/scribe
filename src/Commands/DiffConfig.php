@@ -7,13 +7,13 @@ use Knuckles\Scribe\Tools\ConfigDiffer;
 
 class DiffConfig extends Command
 {
-    protected $signature = "scribe:config:diff";
+    protected $signature = "scribe:config:diff {--config=scribe : choose which config file to use}";
 
     protected $description = "Dump your changed config to the console. Use this when posting bug reports";
 
     public function handle(): void
     {
-        $usersConfig = config('scribe');
+        $usersConfig = config($this->option('config'));
         $defaultConfig = require __DIR__."/../../config/scribe.php";
 
         $ignore = ['example_languages', 'routes', 'description', 'auth.extra_info', "intro_text", "groups"];
