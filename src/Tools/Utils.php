@@ -270,19 +270,19 @@ class Utils
                 $relationVector = array_shift($relationChain);
 
                 $relationModel = get_class((new $modelName())->{$relationVector}()->getModel());
-                $relationType = get_class((new $modelName())->{$relationVector}());
+                $relation = (new $modelName())->{$relationVector}();
 
                 $factoryChain = empty($relationChain)
                     ? call_user_func_array([$relationModel, 'factory'], [])
                     : Utils::getModelFactory($relationModel, $states, [implode('.', $relationChain)]);
 
-                if ($relationType === BelongsToMany::class) {
+                if ($relation instanceof BelongsToMany) {
                     $pivot = method_exists($factory, 'pivot' . $relationVector)
                         ? $factory->{'pivot' . $relationVector}()
                         : [];
 
                     $factory = $factory->hasAttached($factoryChain, $pivot, $relationVector);
-                } else if ($relationType === BelongsTo::class) {
+                } else if ($relation instanceof BelongsTo) {
                     $factory = $factory->for($factoryChain, $relationVector);
                 } else {
                     $factory = $factory->has($factoryChain, $relationVector);
