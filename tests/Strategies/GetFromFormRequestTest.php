@@ -176,6 +176,28 @@ class GetFromFormRequestTest extends BaseLaravelTest
         $this->assertEquals($dataExample['meta']['tags'], $parsed['data.meta.tags']['example']);
     }
 
+    /** @test */
+    public function generates_proper_examples_if_not_set()
+    {
+        $strategy = new BodyParameters\GetFromFormRequest(new DocumentationConfig([]));
+        $parametersFromFormRequest = $strategy->getParametersFromValidationRules(
+            [
+                'data' => 'array|required',
+                'data.title' => 'string|required',
+                'data.meta' => 'array',
+                'data.meta.tags' => 'array',
+                'data.meta.tags.*' => 'string',
+            ],
+            []
+        );
+
+        $parsed = $strategy->normaliseArrayAndObjectParameters($parametersFromFormRequest);
+        $this->assertEquals([], $parsed['data']['example']);
+        $this->assertTrue(is_string($parsed['data.title']['example']));
+        $this->assertNull($parsed['data.meta']['example']); // null because not required
+        $this->assertTrue(is_array($parsed['data.meta.tags']['example']));
+        $this->assertTrue(is_string($parsed['data.meta.tags']['example'][0]));
+    }
 
     /** @test */
     public function creates_missing_parent_fields()

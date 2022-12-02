@@ -563,10 +563,9 @@ trait ParsesValidationRules
                 if ($childKey = Arr::first($allKeys, fn($key) => Str::startsWith($key, "$name.*"))) {
                     $childType = ($converted[$childKey] ?? $parameters[$childKey])['type'];
                     $details['type'] = "{$childType}[]";
-                } elseif (Arr::first($allKeys, fn($key) => Str::startsWith($key, "$name."))) {
+                } else { // `array` types default to `object` if no subtype is specified
                     $details['type'] = 'object';
-                } else {
-                    $details['type'] = 'object';
+                    unset($details['setter']);
                 }
             }
 
@@ -620,14 +619,12 @@ trait ParsesValidationRules
                 // and we automatically set this as the example for `data.title`
                 // Note that this approach assumes parent fields are listed before the children; meh.
                 $examples[$details['name']] = $details['example'];
-            } else {
+            } elseif (preg_match('/.+\.[^*]+$/', $details['name'])) {
                 // For object fields (eg 'data.details.title'), set examples from their parents if present as described above.
-                if (preg_match('/.+\.[^*]+$/', $details['name'])) {
-                    [$parentName, $fieldName] = preg_split('/\.(?=[\w-]+$)/', $details['name']);
-                    if (array_key_exists($parentName, $examples) && is_array($examples[$parentName])
-                        && array_key_exists($fieldName, $examples[$parentName])) {
-                        $examples[$details['name']] = $details['example'] = $examples[$parentName][$fieldName];
-                    }
+                [$parentName, $fieldName] = preg_split('/\.(?=[\w-]+$)/', $details['name']);
+                if (array_key_exists($parentName, $examples) && is_array($examples[$parentName])
+                    && array_key_exists($fieldName, $examples[$parentName])) {
+                    $examples[$details['name']] = $details['example'] = $examples[$parentName][$fieldName];
                 }
             }
 

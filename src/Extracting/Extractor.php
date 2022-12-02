@@ -267,7 +267,7 @@ class Extractor
             if (Str::contains($paramName, '.')) { // Object field (or array of objects)
                 self::setObject($cleanParameters, $paramName, $details->example, $parameters, $details->required);
             } else {
-                $cleanParameters[$paramName] = $details->example instanceof \stdClass ? $details->example : $details->example;
+                $cleanParameters[$paramName] = $details->example;
             }
         }
 
