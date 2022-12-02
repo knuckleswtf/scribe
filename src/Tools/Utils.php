@@ -271,6 +271,7 @@ class Utils
 
                 $relationModel = get_class((new $modelName())->{$relationVector}()->getModel());
                 $relation = (new $modelName())->{$relationVector}();
+                $relationType = get_class($relation);
 
                 $factoryChain = empty($relationChain)
                     ? call_user_func_array([$relationModel, 'factory'], [])
@@ -282,7 +283,7 @@ class Utils
                         : [];
 
                     $factory = $factory->hasAttached($factoryChain, $pivot, $relationVector);
-                } else if ($relation instanceof BelongsTo) {
+                } else if ($relationType === BelongsTo::class) {
                     $factory = $factory->for($factoryChain, $relationVector);
                 } else {
                     $factory = $factory->has($factoryChain, $relationVector);
@@ -302,7 +303,7 @@ class Utils
                 $factory = $factory->states($states);
             }
         }
-
+        ray($factory);
         return $factory;
     }
 

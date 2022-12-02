@@ -558,53 +558,6 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function loads_specified_morph_one_relations_for_generated_model()
-    {
-        Schema::create('test_posts', function (Blueprint $table) {
-            $table->id();
-            $table->string('title');
-            $table->string('body');
-            $table->timestamps();
-        });
-
-        Schema::create('test_images', function (Blueprint $table) {
-            $table->id();
-            $table->string('imageable_type');
-            $table->string('imageable_id');
-            $table->string('url');
-            $table->timestamps();
-        });
-
-        $config = new DocumentationConfig([]);
-
-        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
-
-        $strategy = new UseApiResourceTags($config);
-        $tags = [
-            new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestPostApiResource'),
-            new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestPost with=image'),
-        ];
-        $results = $strategy->getApiResourceResponseFromTags($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
-
-        $this->assertArraySubset([
-            [
-                'status' => 200,
-                'content' => json_encode([
-                    'data' => [
-                        'id' => 1,
-                        'title' => 'Test title',
-                        'body' => 'random body',
-                        'image' => [
-                            'id' => 1,
-                            'url' => 'https://test.com',
-                        ],
-                    ]
-                ]),
-            ],
-        ], $results);
-    }
-
-    /** @test */
     public function can_parse_apiresourcecollection_tags()
     {
         $config = new DocumentationConfig([]);

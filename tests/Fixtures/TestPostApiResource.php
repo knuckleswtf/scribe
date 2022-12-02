@@ -22,9 +22,6 @@ class TestPostApiResource extends JsonResource
             'tags' => $this->whenLoaded('tags', function () {
                 return TestTagApiResource::collection($this->tags);
             }),
-            'image' => $this->whenLoaded('image', function () {
-                return TestImageApiResource::make($this->image);
-            }),
         ];
     }
 }

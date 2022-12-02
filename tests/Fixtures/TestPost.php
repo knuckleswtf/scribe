@@ -24,9 +24,4 @@ class TestPost extends Model
     {
         return $this->morphToMany(TestTag::class, 'taggable')->withPivot('order');
     }
-
-    public function image()
-    {
-        return $this->morphOne(TestImage::class, 'imageable');
-    }
 }
