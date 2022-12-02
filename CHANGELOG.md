@@ -12,6 +12,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.8.0 (2 December 2022)
+## Added
+- Support nested `MorphToMany` with pivot values ([#575](https://github.com/knuckleswtf/scribe/pull/575))
+
+## Fixed
+- Remove array setter when default param type to object (closes #573) ([f0a3205](https://github.com/knuckleswtf/scribe/commit/f0a320584713e9e01332d1294dc5d08965cfeea4))
+
+
 # 4.7.1 (28 November 2022)
 ## Fixed
 - Use correct URL in response calls ([ebadfcdc](https://github.com/knuckleswtf/scribe/commit/ebadfcdcaf6eac2a36f7c080570c12a2b2fffbd6))
