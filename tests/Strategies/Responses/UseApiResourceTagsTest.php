@@ -502,6 +502,62 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
+    public function loads_specified_morph_to_many_relations_for_generated_model_with_pivot()
+    {
+        Schema::create('test_posts', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->string('body');
+            $table->timestamps();
+        });
+
+        Schema::create('test_tags', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->timestamps();
+        });
+
+        Schema::create('taggables', function (Blueprint $table) {
+            $table->id();
+            $table->string('test_tag_id');
+            $table->string('taggable_type');
+            $table->string('taggable_id');
+            $table->string('priority');
+        });
+
+        $config = new DocumentationConfig([]);
+
+        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+
+        $strategy = new UseApiResourceTags($config);
+        $tags = [
+            new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestPostApiResource'),
+            new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestPost with=tags'),
+        ];
+        $results = $strategy->getApiResourceResponseFromTags($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+
+        $this->assertArraySubset([
+            [
+                'status' => 200,
+                'content' => json_encode([
+                    'data' => [
+                        'id' => 1,
+                        'title' => 'Test title',
+                        'body' => 'random body',
+                        'tags' => [
+                            [
+                                'id' => 1,
+                                'name' => 'tag 1',
+                                'priority' => "high"
+                            ],
+                        ],
+                    ],
+                ]),
+            ],
+        ], $results);
+    }
+
+    /** @test */
     public function can_parse_apiresourcecollection_tags()
     {
         $config = new DocumentationConfig([]);

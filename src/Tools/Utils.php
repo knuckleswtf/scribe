@@ -269,14 +269,15 @@ class Utils
                 $relationChain = explode('.', $relation);
                 $relationVector = array_shift($relationChain);
 
-                $relationModel = get_class((new $modelName())->{$relationVector}()->getModel());
-                $relationType = get_class((new $modelName())->{$relationVector}());
+                $relation = (new $modelName())->{$relationVector}();
+                $relationType = get_class($relation);
+                $relationModel = get_class($relation->getModel());
 
                 $factoryChain = empty($relationChain)
                     ? call_user_func_array([$relationModel, 'factory'], [])
                     : Utils::getModelFactory($relationModel, $states, [implode('.', $relationChain)]);
 
-                if ($relationType === BelongsToMany::class) {
+                if ($relation instanceof BelongsToMany) {
                     $pivot = method_exists($factory, 'pivot' . $relationVector)
                         ? $factory->{'pivot' . $relationVector}()
                         : [];
