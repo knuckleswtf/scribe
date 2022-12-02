@@ -522,7 +522,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
             $table->string('test_tag_id');
             $table->string('taggable_type');
             $table->string('taggable_id');
-            $table->integer('order');
+            $table->string('priority');
         });
 
         $config = new DocumentationConfig([]);
@@ -548,7 +548,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
                             [
                                 'id' => 1,
                                 'name' => 'tag 1',
-                                'order' => 1
+                                'priority' => "high"
                             ],
                         ],
                     ],

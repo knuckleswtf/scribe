@@ -20,7 +20,7 @@ class TestPostFactory extends Factory
     public function pivotTags(): array
     {
         return [
-            'order' => 1
+            'priority' => "high"
         ];
     }
 }

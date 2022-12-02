@@ -17,6 +17,6 @@ class TestTag extends Model
 
     public function posts(): MorphToMany
     {
-        return $this->morphedByMany(TestPost::class, 'taggable')->withPivot('order');
+        return $this->morphedByMany(TestPost::class, 'taggable')->withPivot('priority');
     }
 }

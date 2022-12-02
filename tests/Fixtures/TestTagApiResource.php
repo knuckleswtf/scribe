@@ -18,8 +18,8 @@ class TestTagApiResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name ,
-            'order' => $this->whenPivotLoaded('taggables', function () {
-                return $this->pivot->order;
+            'priority' => $this->whenPivotLoaded('taggables', function () {
+                return $this->pivot->priority;
             }),
         ];
     }
