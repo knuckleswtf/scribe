@@ -303,7 +303,7 @@ class Utils
                 $factory = $factory->states($states);
             }
         }
-        ray($factory);
+
         return $factory;
     }
 
