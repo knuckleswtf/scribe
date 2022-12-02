@@ -269,9 +269,9 @@ class Utils
                 $relationChain = explode('.', $relation);
                 $relationVector = array_shift($relationChain);
 
-                $relationModel = get_class((new $modelName())->{$relationVector}()->getModel());
                 $relation = (new $modelName())->{$relationVector}();
                 $relationType = get_class($relation);
+                $relationModel = get_class($relation->getModel());
 
                 $factoryChain = empty($relationChain)
                     ? call_user_func_array([$relationModel, 'factory'], [])
