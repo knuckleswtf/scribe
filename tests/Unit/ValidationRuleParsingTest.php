@@ -148,14 +148,6 @@ class ValidationRuleParsingTest extends BaseLaravelTest
                 'description' => $description . ".",
             ],
         ];
-        yield 'array' => [
-            ['array_param' => 'array'],
-            [],
-            [
-                'type' => 'object',
-                'description' => '',
-            ],
-        ];
         yield 'file' => [
             ['file_param' => 'file|required'],
             ['file_param' => ['description' => $description]],
