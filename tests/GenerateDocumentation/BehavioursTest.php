@@ -127,11 +127,11 @@ class BehavioursTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function calls_beforeGenerating_hook()
+    public function calls_bootstrap_hook()
     {
         $commandInstance = null;
 
-        Scribe::beforeGenerateCommandStarts(function (GenerateDocumentation $command) use (&$commandInstance){
+        Scribe::bootstrap(function (GenerateDocumentation $command) use (&$commandInstance){
             $commandInstance = $command;
         });
 
@@ -141,7 +141,7 @@ class BehavioursTest extends BaseLaravelTest
 
         $this->assertTrue($commandInstance instanceof GenerateDocumentation);
 
-        Scribe::beforeGenerateCommandStarts(fn() => null);
+        Scribe::bootstrap(fn() => null);
     }
 
     /** @test */

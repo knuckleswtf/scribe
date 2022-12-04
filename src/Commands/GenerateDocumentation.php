@@ -86,16 +86,11 @@ class GenerateDocumentation extends Command
         return $this->docConfig;
     }
 
-    public function setDocConfig(DocumentationConfig $config)
+    protected function runBootstrapHook()
     {
-        $this->docConfig = $config;
-    }
-
-    protected function runBeforeGenerateCommandStartsHook()
-    {
-        if (is_callable(Globals::$__beforeGenerateCommandStarts)) {
+        if (is_callable(Globals::$__bootstrap)) {
             c::info("Running `beforeGenerating()` hook...");
-            call_user_func_array(Globals::$__beforeGenerateCommandStarts, [$this]);
+            call_user_func_array(Globals::$__bootstrap, [$this]);
         }
     }
 
@@ -124,7 +119,7 @@ class GenerateDocumentation extends Command
             throw new \InvalidArgumentException("Can't use --force and --no-extraction together.");
         }
 
-        $this->runBeforeGenerateCommandStartsHook();
+        $this->runBootstrapHook();
     }
 
     protected function mergeUserDefinedEndpoints(array $groupedEndpoints, array $userDefinedEndpoints): array

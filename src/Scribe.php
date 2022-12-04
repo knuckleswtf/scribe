@@ -27,9 +27,9 @@ class Scribe
      *
      * @param callable(GenerateDocumentation): mixed $callable
      */
-    public static function beforeGenerateCommandStarts(callable $callable)
+    public static function bootstrap(callable $callable)
     {
-        Globals::$__beforeGenerateCommandStarts = $callable;
+        Globals::$__bootstrap = $callable;
     }
 
     /**

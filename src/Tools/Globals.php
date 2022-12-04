@@ -12,7 +12,7 @@ class Globals
 
     public static $__beforeResponseCall;
 
-    public static $__beforeGenerateCommandStarts;
+    public static $__bootstrap;
 
     public static $__afterGenerating;
 
