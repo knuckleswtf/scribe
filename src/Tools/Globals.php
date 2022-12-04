@@ -12,6 +12,8 @@ class Globals
 
     public static $__beforeResponseCall;
 
+    public static $__beforeGenerating;
+
     public static $__afterGenerating;
 
     public static $__instantiateFormRequestUsing;

@@ -40,6 +40,8 @@ class GenerateDocumentation extends Command
 
     public function handle(RouteMatcherInterface $routeMatcher, GroupedEndpointsFactory $groupedEndpointsFactory): void
     {
+        $this->runBeforeGeneratingHook();
+
         $this->bootstrap();
 
         if (!empty($this->docConfig->get("default_group"))) {
@@ -84,6 +86,14 @@ class GenerateDocumentation extends Command
     public function getDocConfig(): DocumentationConfig
     {
         return $this->docConfig;
+    }
+
+    protected function runBeforeGeneratingHook()
+    {
+        if (is_callable(Globals::$__beforeGenerating)) {
+            c::info("Running `beforeGenerating()` hook...");
+            call_user_func_array(Globals::$__beforeGenerating, []);
+        }
     }
 
     public function bootstrap(): void

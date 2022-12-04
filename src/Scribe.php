@@ -22,6 +22,16 @@ class Scribe
     }
 
     /**
+     * Specify a callback that will be executed just before the generate command is executed
+     *
+     * @param callable(): mixed $callable
+     */
+    public static function beforeGenerating(callable $callable)
+    {
+        Globals::$__beforeGenerating = $callable;
+    }
+
+    /**
      * Specify a callback that will be executed when Scribe is done generating your docs.
      * This callback will receive a map of all the output paths generated, that looks like this:
      * [

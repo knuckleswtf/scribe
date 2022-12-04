@@ -126,6 +126,24 @@ class BehavioursTest extends BaseLaravelTest
     }
 
     /** @test */
+    public function calls_beforeGenerating_hook()
+    {
+        $called = false;
+
+        Scribe::beforeGenerating(function () use (&$called){
+            $called = true;
+        });
+
+        RouteFacade::get('/api/test', [TestController::class, 'withEndpointDescription']);
+
+        $this->generate();
+
+        $this->assertTrue($called);
+
+        Scribe::beforeGenerating(fn() => null);
+    }
+
+    /** @test */
     public function skips_methods_and_classes_with_hidefromapidocumentation_tag()
     {
         RouteFacade::get('/api/skip', [TestController::class, 'skip']);
