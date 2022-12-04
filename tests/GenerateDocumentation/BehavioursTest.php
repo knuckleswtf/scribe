@@ -3,6 +3,7 @@
 namespace Knuckles\Scribe\Tests\GenerateDocumentation;
 
 use Illuminate\Support\Facades\Route as RouteFacade;
+use Knuckles\Scribe\Commands\GenerateDocumentation;
 use Knuckles\Scribe\Scribe;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
@@ -128,19 +129,19 @@ class BehavioursTest extends BaseLaravelTest
     /** @test */
     public function calls_beforeGenerating_hook()
     {
-        $called = false;
+        $commandInstance = null;
 
-        Scribe::beforeGenerating(function () use (&$called){
-            $called = true;
+        Scribe::beforeGenerateCommandStarts(function (GenerateDocumentation $command) use (&$commandInstance){
+            $commandInstance = $command;
         });
 
         RouteFacade::get('/api/test', [TestController::class, 'withEndpointDescription']);
 
         $this->generate();
 
-        $this->assertTrue($called);
+        $this->assertTrue($commandInstance instanceof GenerateDocumentation);
 
-        Scribe::beforeGenerating(fn() => null);
+        Scribe::beforeGenerateCommandStarts(fn() => null);
     }
 
     /** @test */
