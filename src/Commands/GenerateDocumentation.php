@@ -40,8 +40,6 @@ class GenerateDocumentation extends Command
 
     public function handle(RouteMatcherInterface $routeMatcher, GroupedEndpointsFactory $groupedEndpointsFactory): void
     {
-        $this->runBeforeGeneratingHook();
-
         $this->bootstrap();
 
         if (!empty($this->docConfig->get("default_group"))) {
@@ -88,11 +86,16 @@ class GenerateDocumentation extends Command
         return $this->docConfig;
     }
 
-    protected function runBeforeGeneratingHook()
+    public function setDocConfig(DocumentationConfig $config)
     {
-        if (is_callable(Globals::$__beforeGenerating)) {
+        $this->docConfig = $config;
+    }
+
+    protected function runBeforeGenerateCommandStartsHook()
+    {
+        if (is_callable(Globals::$__beforeGenerateCommandStarts)) {
             c::info("Running `beforeGenerating()` hook...");
-            call_user_func_array(Globals::$__beforeGenerating, []);
+            call_user_func_array(Globals::$__beforeGenerateCommandStarts, [$this]);
         }
     }
 
@@ -120,6 +123,8 @@ class GenerateDocumentation extends Command
         if ($this->forcing && !$this->shouldExtract) {
             throw new \InvalidArgumentException("Can't use --force and --no-extraction together.");
         }
+
+        $this->runBeforeGenerateCommandStartsHook();
     }
 
     protected function mergeUserDefinedEndpoints(array $groupedEndpoints, array $userDefinedEndpoints): array
