@@ -402,8 +402,27 @@ class Extractor
     /**
      * Transform body parameters such that object fields have a `fields` property containing a list of all subfields
      * Subfields will be removed from the main parameter map
-     * For instance, if $parameters is ['dad' => [], 'dad.cars' => [], 'dad.age' => []],
-     * normalise this into ['dad' => [..., '__fields' => ['dad.cars' => [], 'dad.age' => []]]
+     * For instance, if $parameters is [
+     *   'dad' => new Parameter(...),
+     *   'dad.age' => new Parameter(...),
+     *   'dad.cars[]' => new Parameter(...),
+     *   'dad.cars[].model' => new Parameter(...),
+     *   'dad.cars[].price' => new Parameter(...),
+     * ],
+     * normalise this into [
+     *   'dad' => [
+     *     ...,
+     *     '__fields' => [
+     *       'dad.age' => [...],
+     *       'dad.cars' => [
+     *         ...,
+     *         '__fields' => [
+     *           'model' => [...],
+     *           'price' => [...],
+     *         ],
+     *       ],
+     *   ],
+     * ]]
      *
      * @param array $parameters
      *
@@ -429,13 +448,17 @@ class Extractor
                 }
 
                 if (empty($normalisedParameters[$parentName])) {
-                    $normalisedParameters[$parentName] = new Parameter([
+                    $details = [
                         "name" => $parentName,
                         "type" => $parentName === '[]' ? "object[]" : "object",
                         "description" => "",
                         "required" => true,
-                        "example" => [$fieldName => $parameter->example],
-                    ]);
+                    ];
+
+                    if (!$parameter instanceof ResponseField)
+                        $details["example"] = [$fieldName => $parameter->example];
+
+                    $normalisedParameters[$parentName] = new Parameter($details);
                 }
             }
             $normalisedParameters[$name] = $parameter;

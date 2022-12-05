@@ -6,6 +6,7 @@ use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Illuminate\Routing\Route;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Camel\Extraction\Parameter;
+use Knuckles\Camel\Extraction\ResponseField;
 use Knuckles\Scribe\Extracting\Extractor;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
@@ -80,7 +81,7 @@ class ExtractorTest extends TestCase
             'object.key3' => [
                 'name' => 'object.key3',
                 'type' => 'object',
-                'example'=> [],
+                'example' => [],
             ],
             'object.key3.key1' => [
                 'name' => 'object.key3.key1',
@@ -118,8 +119,8 @@ class ExtractorTest extends TestCase
                 'key1' => '43',
                 'key2' => 77,
                 'key3' => [
-                    'key1' => 'hoho'
-                ]
+                    'key1' => 'hoho',
+                ],
             ],
             'list' => [4],
             'list_of_objects' => [
@@ -245,7 +246,7 @@ class ExtractorTest extends TestCase
          * @queryParam location_id required The id of the location.
          * @bodyParam name required Name of the location
          */
-        $handler = fn () =>  'hi';
+        $handler = fn() => 'hi';
         $route = $this->createClosureRoute('POST', '/api/closure/test', $handler);
 
         $parsed = $this->extractor->processRoute($route);
@@ -292,6 +293,54 @@ class ExtractorTest extends TestCase
         $this->assertArraySubset(["type" => "string"], $inherited->queryParameters["queryThing"]->toArray());
     }
 
+    /** @test */
+    public function can_nest_array_and_object_parameters_correctly()
+    {
+        $parameters = [
+            "dad" => Parameter::create([
+                "name" => 'dad',
+            ]),
+            "dad.age" => ResponseField::create([
+                "name" => 'dad.age',
+            ]),
+            "dad.cars[]" => Parameter::create([
+                "name" => 'dad.cars[]',
+            ]),
+            "dad.cars[].model" => Parameter::create([
+                "name" => 'dad.cars[].model',
+            ]),
+            "dad.cars[].price" => ResponseField::create([
+                "name" => 'dad.cars[].price',
+            ]),
+        ];
+        $cleanParameters = [];
+
+        $nested = Extractor::nestArrayAndObjectFields($parameters, $cleanParameters);
+
+        $this->assertEquals(["dad"], array_keys($nested));
+        $this->assertArraySubset([
+            "dad" => [
+                "__fields" => [
+                    "age" => [
+                        "name" => "dad.age",
+                    ],
+                    "cars" => [
+                        "name" => "dad.cars",
+                        "__fields" => [
+                            "model" => [
+                                "name" => "dad.cars[].model",
+                            ],
+                            "price" => [
+                                "name" => "dad.cars[].price",
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ], $nested);
+
+    }
+
     public function createRoute(string $httpMethod, string $path, string $controllerMethod, $class = TestController::class)
     {
         return new Route([$httpMethod], $path, ['uses' => [$class, $controllerMethod]]);
@@ -316,12 +365,12 @@ class ExtractorTest extends TestCase
                         'enabled' => true,
                         'in' => 'bearer',
                         'name' => 'dfadb',
-                    ]
+                    ],
                 ],
                 [
                     'name' => 'Authorization',
                     'where' => 'headers',
-                ]
+                ],
             ],
             [
                 [
@@ -329,12 +378,12 @@ class ExtractorTest extends TestCase
                         'enabled' => true,
                         'in' => 'basic',
                         'name' => 'efwr',
-                    ]
+                    ],
                 ],
                 [
                     'name' => 'Authorization',
                     'where' => 'headers',
-                ]
+                ],
             ],
             [
                 [
@@ -342,12 +391,12 @@ class ExtractorTest extends TestCase
                         'enabled' => true,
                         'in' => 'header',
                         'name' => 'Api-Key',
-                    ]
+                    ],
                 ],
                 [
                     'name' => 'Api-Key',
                     'where' => 'headers',
-                ]
+                ],
             ],
             [
                 [
@@ -355,12 +404,12 @@ class ExtractorTest extends TestCase
                         'enabled' => true,
                         'in' => 'query',
                         'name' => 'apiKey',
-                    ]
+                    ],
                 ],
                 [
                     'name' => 'apiKey',
                     'where' => 'queryParameters',
-                ]
+                ],
             ],
             [
                 [
@@ -368,12 +417,12 @@ class ExtractorTest extends TestCase
                         'enabled' => true,
                         'in' => 'body',
                         'name' => 'access_token',
-                    ]
+                    ],
                 ],
                 [
                     'name' => 'access_token',
                     'where' => 'bodyParameters',
-                ]
+                ],
             ],
         ];
     }
