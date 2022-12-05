@@ -7,7 +7,7 @@
 @if($isInput && empty($hasChildren))
     @php
         $isList = Str::endsWith($type, '[]');
-        $fullName =str_replace('[]', '.0', $name);
+        $fullName = str_replace('[]', '.0', $fullName ?? $name);
         $baseType = $isList ? substr($type, 0, -2) : $type;
         // Ignore the first '[]': the frontend will take care of it
         while (\Str::endsWith($baseType, '[]')) {

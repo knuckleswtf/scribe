@@ -19,7 +19,8 @@
                 @else
                     <div style="margin-left: {{ ($level + 2) * 14 }}px; clear: unset;">
                         @component('scribe::components.field-details', [
-                          'name' => $subfield['name'],
+                          'name' => $subfieldName,
+                          'fullName' => $subfield['name'],
                           'type' => $subfield['type'] ?? 'string',
                           'required' => $subfield['required'] ?? false,
                           'description' => $subfield['description'] ?? '',
@@ -38,7 +39,8 @@
         <details>
             <summary style="padding-bottom: 10px;">
                 @component('scribe::components.field-details', [
-                  'name' => $field['name'],
+                  'name' => $name,
+                  'fullName' => $field['name'],
                   'type' => $field['type'] ?? 'string',
                   'required' => $field['required'] ?? false,
                   'description' => $field['description'] ?? '',
@@ -58,7 +60,8 @@
                 @else
                     <div style="margin-left: {{ ($level + 1) * 14 }}px; clear: unset;">
                         @component('scribe::components.field-details', [
-                          'name' => $subfield['name'],
+                          'name' => $subfieldName,
+                          'fullName' => $subfield['name'],
                           'type' => $subfield['type'] ?? 'string',
                           'required' => $subfield['required'] ?? false,
                           'description' => $subfield['description'] ?? '',
@@ -77,7 +80,8 @@
     @else
         <div style="@if($level) margin-left: {{ ($level + 1) * 14 }}px;@else padding-left: 28px; @endif clear: unset;">
             @component('scribe::components.field-details', [
-              'name' => $field['name'],
+              'name' => $name,
+              'fullName' => $field['name'],
               'type' => $field['type'] ?? 'string',
               'required' => $field['required'] ?? false,
               'description' => $field['description'] ?? '',
