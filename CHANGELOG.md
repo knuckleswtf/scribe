@@ -12,6 +12,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.9.0 (5 December 2022)
+## Modified
+- `default` theme: Show nested fields short names in UI, since we now indent
+
+## Fixed
+- Don't error when nesting params for response fields (closes #578) ([f0a3205](https://github.com/knuckleswtf/scribe/commit/f0a320584713e9e01332d1294dc5d08965cfeea4))
+
+
 # 4.8.0 (2 December 2022)
 ## Added
 - Support nested `MorphToMany` with pivot values ([#575](https://github.com/knuckleswtf/scribe/pull/575))
