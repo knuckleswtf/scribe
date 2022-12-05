@@ -438,5 +438,13 @@ INTRO
      * Tell Scribe which connections should be transacted here.
      * If you only use one db connection, you can leave this as is.
      */
-    'database_connections_to_transact' => [config('database.default')]
+    'database_connections_to_transact' => [config('database.default')],
+
+    /**
+     * @see voku\helper
+     * INFO: https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+     * Language converted to ASCII
+     * Example:"zh"
+     */
+    'language'    =>  'en'
 ];

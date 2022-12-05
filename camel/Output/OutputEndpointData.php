@@ -154,7 +154,7 @@ class OutputEndpointData extends BaseDTO
 
     public function fullSlug(): string
     {
-        $groupSlug = Str::slug($this->metadata->groupName);
+        $groupSlug = Str::slug($this->metadata->groupName, config('scribe.language', 'en'));
         $endpointId = $this->endpointId();
         return "$groupSlug-$endpointId";
     }

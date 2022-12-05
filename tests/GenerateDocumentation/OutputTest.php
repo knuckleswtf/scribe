@@ -328,16 +328,16 @@ class OutputTest extends BaseLaravelTest
         $this->assertEquals('13. Group 13', $thirdGroup->textContent);
         $this->assertEquals('2. Group 2', $fourthGroup->textContent);
 
-        $firstGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($firstGroup->textContent).'"]');
+        $firstGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($firstGroup->textContent, config('scribe.language', 'en')).'"]');
         $this->assertEquals(1, $firstGroupEndpointsAndSubgroups->count());
         $this->assertEquals("GET api/action10", $firstGroupEndpointsAndSubgroups->getNode(0)->textContent);
 
-        $secondGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($secondGroup->textContent).'"]');
+        $secondGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($secondGroup->textContent, config('scribe.language', 'en')).'"]');
         $this->assertEquals(2, $secondGroupEndpointsAndSubgroups->count());
         $this->assertEquals("GET api/action1b", $secondGroupEndpointsAndSubgroups->getNode(0)->textContent);
         $this->assertEquals("GET api/action1", $secondGroupEndpointsAndSubgroups->getNode(1)->textContent);
 
-        $thirdGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($thirdGroup->textContent).'"]');
+        $thirdGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($thirdGroup->textContent, config('scribe.language', 'en')).'"]');
         $this->assertEquals(8, $thirdGroupEndpointsAndSubgroups->count());
         $this->assertEquals("SG B", $thirdGroupEndpointsAndSubgroups->getNode(0)->textContent);
         $this->assertEquals("POST api/action13d", $thirdGroupEndpointsAndSubgroups->getNode(1)->textContent);
@@ -377,21 +377,21 @@ class OutputTest extends BaseLaravelTest
         $this->assertEquals('4. Group 4', $thirdGroup->textContent);
         $this->assertEquals('2. Group 2', $fourthGroup->textContent);
 
-        $firstGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($firstGroup->textContent).'"]');
+        $firstGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($firstGroup->textContent, config('scribe.language', 'en')).'"]');
         $this->assertEquals(2, $firstGroupEndpointsAndSubgroups->count());
         $this->assertEquals("GET api/action1", $firstGroupEndpointsAndSubgroups->getNode(0)->textContent);
         $this->assertEquals("User defined", $firstGroupEndpointsAndSubgroups->getNode(1)->textContent);
 
-        $secondGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($secondGroup->textContent).'"]');
+        $secondGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($secondGroup->textContent, config('scribe.language', 'en')).'"]');
         $this->assertEquals(2, $secondGroupEndpointsAndSubgroups->count());
         $this->assertEquals("GET group5", $secondGroupEndpointsAndSubgroups->getNode(0)->textContent);
         $this->assertEquals("GET alsoGroup5", $secondGroupEndpointsAndSubgroups->getNode(1)->textContent);
 
-        $thirdGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($thirdGroup->textContent).'"]');
+        $thirdGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($thirdGroup->textContent, config('scribe.language', 'en')).'"]');
         $this->assertEquals(1, $thirdGroupEndpointsAndSubgroups->count());
-        $this->assertEquals("GET group4", $thirdGroupEndpointsAndSubgroups->getNode(0)->textContent);
+        $this->assertEquals("GET group4", $thirdGroupEndpointsAndSubgroups->getNode(0)->textContent, config('scribe.language', 'en'));
 
-        $fourthGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($fourthGroup->textContent).'"]');
+        $fourthGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($fourthGroup->textContent, config('scribe.language', 'en')).'"]');
         $this->assertEquals(1, $fourthGroupEndpointsAndSubgroups->count());
         $this->assertEquals("GET api/action2", $fourthGroupEndpointsAndSubgroups->getNode(0)->textContent);
     }

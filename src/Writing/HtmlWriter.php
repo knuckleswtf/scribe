@@ -188,7 +188,7 @@ class HtmlWriter
         }
 
         $headings = array_merge($headings, array_values(array_map(function ($group) {
-            $groupSlug = Str::slug($group['name']);
+            $groupSlug = Str::slug($group['name'], config('scribe.language', 'en'));
 
             return [
                 'slug' => $groupSlug,
@@ -204,7 +204,7 @@ class HtmlWriter
 
                     return [
                         [
-                            'slug' => "$groupSlug-" . Str::slug($subgroupName),
+                            'slug' => "$groupSlug-" . Str::slug($subgroupName, config('scribe.language', 'en')),
                             'name' => $subgroupName,
                             'subheadings' => $endpoints->map(fn($endpoint) => [
                                 'slug' => $endpoint->fullSlug(),
