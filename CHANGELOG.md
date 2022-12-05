@@ -14,10 +14,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 # 4.9.0 (5 December 2022)
 ## Modified
-- `default` theme: Show nested fields short names in UI, since we now indent
+- `default` theme: Show nested fields short names in UI, since we now indent. ([dbe8492a](https://github.com/knuckleswtf/scribe/commit/dbe8492a6915698b0801b44712441e2a58e0614a))
 
 ## Fixed
-- Don't error when nesting params for response fields (closes #578) ([f0a3205](https://github.com/knuckleswtf/scribe/commit/f0a320584713e9e01332d1294dc5d08965cfeea4))
+- Don't error when nesting params for response fields (closes #578) ([42df1b15](https://github.com/knuckleswtf/scribe/commit/42df1b1597d36e4aeae62320f1c33fe5a4793cc5))
 
 
 # 4.8.0 (2 December 2022)
