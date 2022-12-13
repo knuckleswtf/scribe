@@ -378,22 +378,7 @@ class OpenAPISpecWriter
 
             case 'object':
                 $properties = collect($decoded)->mapWithKeys(function ($value, $key) use ($endpoint) {
-                    $spec = [
-                        // Note that we aren't recursing for nested objects. We stop at one level.
-                        'type' => $this->convertScribeOrPHPTypeToOpenAPIType(gettype($value)),
-                        'example' => $value,
-
-                    ];
-                    if (isset($endpoint->responseFields[$key]->description)) {
-                        $spec['description'] = $endpoint->responseFields[$key]->description;
-                    }
-                    if ($spec['type'] === 'array' && !empty($value)) {
-                        $spec['items']['type'] = $this->convertScribeOrPHPTypeToOpenAPIType(gettype($value[0]));
-                    }
-
-                    return [
-                        $key => $spec,
-                    ];
+                    return $this->generateObjectPropertiesResponseSpec($value, $endpoint, $key);
                 })->toArray();
 
                 if (!count($properties)) {
@@ -542,5 +527,45 @@ class OpenAPISpecWriter
 
         $parts = preg_split('/[^\w+]/', $endpoint->uri, -1, PREG_SPLIT_NO_EMPTY);
         return Str::lower($endpoint->httpMethods[0]) . join('', array_map(fn ($part) => ucfirst($part), $parts));
+    }
+
+
+    public function generateObjectPropertiesResponseSpec($value, OutputEndpointData $endpoint, $key): array
+    {
+        //Field is object
+        if ($value instanceof \stdClass) {
+            $value = (array)$value;
+            $fieldObjectSpec = [];
+            $fieldObjectSpec['type'] = 'object';
+            $fieldObjectSpec['properties']= [];
+            foreach($value as $subKey => $subValue){
+                $newKey = sprintf('%s.%s', $key, $subKey);
+                $generateResponseContentFieldSpec = $this->generateObjectPropertiesResponseSpec(
+                    $subValue,
+                    $endpoint,
+                    $newKey
+                );
+                $fieldObjectSpec['properties'][$subKey] = $generateResponseContentFieldSpec[$newKey];
+
+            }
+            return  [$key => $fieldObjectSpec];
+        }
+
+        $spec = [
+            'type' => $this->convertScribeOrPHPTypeToOpenAPIType(gettype($value)),
+            'example' => $value,
+
+        ];
+        if (isset($endpoint->responseFields[$key]->description)) {
+            $spec['description'] = $endpoint->responseFields[$key]->description;
+        }
+        if ($spec['type'] === 'array' && !empty($value)) {
+            $spec['items']['type'] = $this->convertScribeOrPHPTypeToOpenAPIType(gettype($value[0]));
+            $spec['example'] = json_decode(json_encode($spec['example']), true);//Convert stdClass to array
+        }
+
+        return [
+            $key => $spec,
+        ];
     }
 }

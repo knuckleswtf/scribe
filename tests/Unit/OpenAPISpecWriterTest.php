@@ -431,7 +431,7 @@ class OpenAPISpecWriterTest extends TestCase
                 [
                     'status' => 201,
                     'description' => '',
-                    'content' => '{"this": "shouldn\'t be ignored", "and this": "too"}',
+                    'content' => '{"this": "shouldn\'t be ignored", "and this": "too", "sub level 0": { "sub level 1 key 1": "sl0_sl1k1", "sub level 1 key 2": [ { "sub level 2 key 1": "sl0_sl1k2_sl2k1", "sub level 2 key 2": { "sub level 3 key 1": "sl0_sl1k2_sl2k2_sl3k1" } } ], "sub level 1 key 3": { "sub level 2 key 1": "sl0_sl1k3_sl2k2", "sub level 2 key 2": { "sub level 3 key 1": "sl0_sl1k3_sl2k2_sl3k1", "sub level 3 key null": null, "sub level 3 key integer": 99 } } } }',
                 ],
             ],
             'responseFields' => [
@@ -440,6 +440,9 @@ class OpenAPISpecWriterTest extends TestCase
                     'type' => 'string',
                     'description' => 'Parameter description, ha!',
                 ],
+                'sub level 0.sub level 1 key 3.sub level 2 key 1'=> [
+                    'description' => 'This is description of nested object',
+                ]
             ],
         ]);
         $endpointData2 = $this->createMockEndpointData([
@@ -477,6 +480,56 @@ class OpenAPISpecWriterTest extends TestCase
                                     'example' => "too",
                                     'type' => 'string',
                                 ],
+                                'sub level 0' => [
+                                    'type' => 'object',
+                                    'properties' => [
+                                        'sub level 1 key 1' => [
+                                            'type' => 'string',
+                                            'example' => 'sl0_sl1k1'
+                                        ],
+                                        'sub level 1 key 2' => [
+                                            'type' => 'array',
+                                            'example' => [
+                                                [
+                                                    'sub level 2 key 1' => 'sl0_sl1k2_sl2k1',
+                                                    'sub level 2 key 2' => [
+                                                        'sub level 3 key 1' => 'sl0_sl1k2_sl2k2_sl3k1'
+                                                    ]
+                                                ]
+                                            ],
+                                            'items' => [
+                                                'type' => 'object'
+                                            ]
+                                        ],
+                                        'sub level 1 key 3' => [
+                                            'type' => 'object',
+                                            'properties' => [
+                                                'sub level 2 key 1' => [
+                                                    'type' => 'string',
+                                                    'example' => 'sl0_sl1k3_sl2k2',
+                                                    'description' => 'This is description of nested object'
+                                                ],
+                                                'sub level 2 key 2' => [
+                                                    'type' => 'object',
+                                                    'properties' => [
+                                                        'sub level 3 key 1' => [
+                                                            'type' => 'string',
+                                                            'example' => 'sl0_sl1k3_sl2k2_sl3k1'
+                                                        ],
+                                                        'sub level 3 key null' => [
+                                                            'type' => 'string',
+                                                            'example' => null
+                                                        ],
+                                                        'sub level 3 key integer' => [
+                                                            'type' => 'integer',
+                                                            'example' => 99
+                                                        ]
+                                                    ]
+                                                ]
+                                            ]
+                                        ]
+                                    ]
+                                ]
                             ],
                         ],
                     ],
