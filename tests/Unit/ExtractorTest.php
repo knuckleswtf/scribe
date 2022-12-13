@@ -320,6 +320,7 @@ class ExtractorTest extends TestCase
         $this->assertEquals(["dad"], array_keys($nested));
         $this->assertArraySubset([
             "dad" => [
+                "name" => "dad",
                 "__fields" => [
                     "age" => [
                         "name" => "dad.age",
@@ -338,7 +339,55 @@ class ExtractorTest extends TestCase
                 ],
             ],
         ], $nested);
+    }
 
+    /** @test */
+    public function sets_missing_ancestors_for_object_fields_properly()
+    {
+        $parameters = [
+            "dad.cars[]" => Parameter::create([
+                "name" => 'dad.cars[]',
+            ]),
+            "dad.cars[].model" => Parameter::create([
+                "name" => 'dad.cars[].model',
+            ]),
+            "parent.not.specified" => Parameter::create([
+                "name" => "parent.not.specified",
+            ]),
+        ];
+        $cleanParameters = [];
+
+        $nested = Extractor::nestArrayAndObjectFields($parameters, $cleanParameters);
+
+        $this->assertEquals(["dad", "parent"], array_keys($nested));
+        $this->assertArraySubset([
+            "dad" => [
+                "name" => "dad",
+                "__fields" => [
+                    "cars" => [
+                        "name" => "dad.cars",
+                        "__fields" => [
+                            "model" => [
+                                "name" => "dad.cars[].model",
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            "parent" => [
+                "name" => "parent",
+                "__fields" => [
+                    "not" => [
+                        "name" => "parent.not",
+                        "__fields" => [
+                            "specified" => [
+                                "name" => "parent.not.specified",
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ], $nested);
     }
 
     public function createRoute(string $httpMethod, string $path, string $controllerMethod, $class = TestController::class)

@@ -434,11 +434,11 @@ class Extractor
         $normalisedParameters = [];
         foreach ($parameters as $name => $parameter) {
             if (Str::contains($name, '.')) {
-                // Get the various pieces of the name
+                // If the user didn't add a parent field, we'll helpfully add it for them
+                $ancestors = [];
+
                 $parts = explode('.', $name);
                 $fieldName = array_pop($parts);
-
-                // If the user didn't add a parent field, we'll helpfully add it for them
                 $parentName = rtrim(join('.', $parts), '[]');
 
                 // When the body is an array, param names will be "[].paramname",
@@ -447,21 +447,38 @@ class Extractor
                     $parentName = '[]';
                 }
 
-                if (empty($normalisedParameters[$parentName])) {
+                while ($parentName) {
+                    if (!empty($normalisedParameters[$parentName])) {
+                        break;
+                    }
+
                     $details = [
                         "name" => $parentName,
                         "type" => $parentName === '[]' ? "object[]" : "object",
                         "description" => "",
-                        "required" => true,
+                        "required" => false,
                     ];
 
-                    if (!$parameter instanceof ResponseField)
-                        $details["example"] = [$fieldName => $parameter->example];
+                    if ($parameter instanceof ResponseField) {
+                        $ancestors[] = [$parentName, new ResponseField($details)];
+                    } else {
+                        $lastParentExample = $details["example"] =
+                            [$fieldName => $lastParentExample ?? $parameter->example];
+                        $ancestors[] = [$parentName, new Parameter($details)];
+                    }
 
-                    $normalisedParameters[$parentName] = new Parameter($details);
+                    $fieldName = array_pop($parts);
+                    $parentName = rtrim(join('.', $parts), '[]');
+                }
+
+                // We add ancestors in reverse so we can iterate over parents first in the next section
+                foreach (array_reverse($ancestors) as [$ancestorName, $ancestor]) {
+                    $normalisedParameters[$ancestorName] = $ancestor;
                 }
             }
+
             $normalisedParameters[$name] = $parameter;
+            unset($lastParentExample);
         }
 
         $finalParameters = [];
