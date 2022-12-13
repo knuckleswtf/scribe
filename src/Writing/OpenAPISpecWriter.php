@@ -8,7 +8,6 @@ use Illuminate\Support\Str;
 use Knuckles\Camel\Camel;
 use Knuckles\Camel\Extraction\Response;
 use Knuckles\Camel\Output\OutputEndpointData;
-use Knuckles\Camel\Output\Group;
 use Knuckles\Camel\Output\Parameter;
 use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Tools\DocumentationConfig;

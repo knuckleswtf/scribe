@@ -7,8 +7,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Knuckles\Camel\Camel;
-use Knuckles\Camel\Output\OutputEndpointData;
-use Knuckles\Scribe\Exceptions\GroupNotFound;
 use Knuckles\Scribe\GroupedEndpoints\GroupedEndpointsFactory;
 use Knuckles\Scribe\Matching\RouteMatcherInterface;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
@@ -86,6 +84,13 @@ class GenerateDocumentation extends Command
         return $this->docConfig;
     }
 
+    protected function runBootstrapHook()
+    {
+        if (is_callable(Globals::$__bootstrap)) {
+            call_user_func_array(Globals::$__bootstrap, [$this]);
+        }
+    }
+
     public function bootstrap(): void
     {
         // The --verbose option is included with all Artisan commands.
@@ -110,6 +115,8 @@ class GenerateDocumentation extends Command
         if ($this->forcing && !$this->shouldExtract) {
             throw new \InvalidArgumentException("Can't use --force and --no-extraction together.");
         }
+
+        $this->runBootstrapHook();
     }
 
     protected function mergeUserDefinedEndpoints(array $groupedEndpoints, array $userDefinedEndpoints): array

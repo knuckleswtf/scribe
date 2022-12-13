@@ -38,6 +38,7 @@ class GetFromResponseFieldAttribute extends PhpAttributeStrategy
 
         return collect([...$attributesOnController, ...$attributesOnMethod, ...$attributesOnApiResourceMethods])
             ->mapWithKeys(function ($attributeInstance) use ($endpointData) {
+                /** @var ResponseField $attributeInstance */
                 $data = $attributeInstance->toArray();
 
                 $data['type'] = ResponseFieldTools::inferTypeOfResponseField($data, $endpointData);
