@@ -3,6 +3,7 @@
 namespace Knuckles\Scribe;
 
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
+use Knuckles\Scribe\Commands\GenerateDocumentation;
 use Knuckles\Scribe\Tools\Globals;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -19,6 +20,16 @@ class Scribe
     public static function beforeResponseCall(callable $callable)
     {
         Globals::$__beforeResponseCall = $callable;
+    }
+
+    /**
+     * Specify a callback that will be executed just before the generate command is executed
+     *
+     * @param callable(GenerateDocumentation): mixed $callable
+     */
+    public static function bootstrap(callable $callable)
+    {
+        Globals::$__bootstrap = $callable;
     }
 
     /**

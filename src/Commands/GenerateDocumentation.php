@@ -84,6 +84,13 @@ class GenerateDocumentation extends Command
         return $this->docConfig;
     }
 
+    protected function runBootstrapHook()
+    {
+        if (is_callable(Globals::$__bootstrap)) {
+            call_user_func_array(Globals::$__bootstrap, [$this]);
+        }
+    }
+
     public function bootstrap(): void
     {
         // The --verbose option is included with all Artisan commands.
@@ -108,6 +115,8 @@ class GenerateDocumentation extends Command
         if ($this->forcing && !$this->shouldExtract) {
             throw new \InvalidArgumentException("Can't use --force and --no-extraction together.");
         }
+
+        $this->runBootstrapHook();
     }
 
     protected function mergeUserDefinedEndpoints(array $groupedEndpoints, array $userDefinedEndpoints): array
