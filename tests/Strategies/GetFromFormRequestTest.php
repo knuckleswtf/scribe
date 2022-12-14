@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Tests\Strategies;
 
+use Illuminate\Routing\Route;
 use Knuckles\Scribe\Extracting\Strategies\BodyParameters;
 use Knuckles\Scribe\Extracting\Strategies\QueryParameters;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
@@ -228,9 +229,8 @@ class GetFromFormRequestTest extends BaseLaravelTest
     {
         $controllerMethod = new \ReflectionMethod(TestController::class, 'withFormRequestParameter');
 
-        Globals::$__instantiateFormRequestUsing = function ($className, $route, $method) use (&$controllerMethod) {
+        Globals::$__instantiateFormRequestUsing = function (string $className, Route $route, string $method) use (&$controllerMethod) {
             Assert::assertEquals(TestRequest::class, $className);
-            Assert::assertEquals(null, $route);
             Assert::assertEquals($controllerMethod, $method);
             return new TestRequestQueryParams;
         };
@@ -243,12 +243,14 @@ class GetFromFormRequestTest extends BaseLaravelTest
     protected function fetchViaBodyParams(\ReflectionMethod $method): array
     {
         $strategy = new BodyParameters\GetFromFormRequest(new DocumentationConfig([]));
-        return $strategy->getParametersFromFormRequest($method);
+        $route = new Route(['POST'], "/test", ['uses' => [TestController::class, 'dummy']]);
+        return $strategy->getParametersFromFormRequest($method, $route);
     }
 
     protected function fetchViaQueryParams(\ReflectionMethod $method): array
     {
         $strategy = new QueryParameters\GetFromFormRequest(new DocumentationConfig([]));
-        return $strategy->getParametersFromFormRequest($method);
+        $route = new Route(['POST'], "/test", ['uses' => [TestController::class, 'dummy']]);
+        return $strategy->getParametersFromFormRequest($method, $route);
     }
 }

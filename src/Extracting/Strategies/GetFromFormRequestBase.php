@@ -25,7 +25,7 @@ class GetFromFormRequestBase extends Strategy
         return $this->getParametersFromFormRequest($endpointData->method, $endpointData->route);
     }
 
-    public function getParametersFromFormRequest(ReflectionFunctionAbstract $method, ?Route $route = null): array
+    public function getParametersFromFormRequest(ReflectionFunctionAbstract $method, Route $route): array
     {
         if (!$formRequestReflectionClass = $this->getFormRequestReflectionClass($method)) {
             return [];
