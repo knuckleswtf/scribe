@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.10.1 (14 December 2022)
+## Fixed
+- Set HTTP method correctly for FormRequests (fixes #532, #585). ([e8098714](https://github.com/knuckleswtf/scribe/commit/e80987145f50719156d1497a74f68139e9602593))
+
 # 4.10.0 (14 December 2022)
 ## Added
 - `bootstrap` hook ([#576](https://github.com/knuckleswtf/scribe/pull/576))
