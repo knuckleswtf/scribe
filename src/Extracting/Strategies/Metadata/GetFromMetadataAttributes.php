@@ -27,8 +27,8 @@ class GetFromMetadataAttributes extends PhpAttributeStrategy
     ];
 
     protected function extractFromAttributes(
-        array $attributesOnMethod, array $attributesOnController,
-        ExtractedEndpointData $endpointData
+        ExtractedEndpointData $endpointData,
+        array $attributesOnMethod, array $attributesOnFormRequest = [], array $attributesOnController = []
     ): ?array
     {
         $metadata = [
@@ -39,7 +39,7 @@ class GetFromMetadataAttributes extends PhpAttributeStrategy
             "title" => "",
             "description" => "",
         ];
-        foreach ([...$attributesOnController, ...$attributesOnMethod] as $attributeInstance) {
+        foreach ([...$attributesOnController, ...$attributesOnFormRequest, ...$attributesOnMethod] as $attributeInstance) {
             $metadata = array_merge($metadata, $attributeInstance->toArray());
         }
 

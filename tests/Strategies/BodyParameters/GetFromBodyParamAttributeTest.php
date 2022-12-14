@@ -3,6 +3,7 @@
 namespace Knuckles\Scribe\Tests\Strategies\BodyParameters;
 
 use Closure;
+use Illuminate\Foundation\Http\FormRequest;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Attributes\BodyParam;
 use Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromBodyParamAttribute;
@@ -108,6 +109,37 @@ class GetFromBodyParamAttributeTest extends TestCase
         ], $results);
     }
 
+
+    /** @test */
+    public function can_fetch_from_bodyparam_attribute_on_formrequest()
+    {
+        $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
+            $e->controller = new ReflectionClass(BodyParamAttributeTestController::class);
+            $e->method = $e->controller->getMethod('methodWithFormRequest');
+        });
+        $results = $this->fetch($endpoint);
+
+        $this->assertArraySubset([
+            'user_id' => [
+                'type' => 'integer',
+                'required' => true,
+                'description' => 'The id of the user.',
+                'example' => 9,
+            ],
+            'room_id' => [
+                'type' => 'string',
+                'required' => false,
+                'description' => 'The id of the room.',
+            ],
+            'param' => [
+                'type' => 'integer',
+                'required' => true,
+                'description' => 'A parameter.',
+                'example' => 19,
+            ],
+        ], $results);
+    }
+
     /** @test */
     public function can_fetch_from_bodyparam_attribute_for_array_body()
     {
@@ -190,6 +222,21 @@ class BodyParamAttributeTestController
     public function methodWithAttributes()
     {
 
+    }
+
+    public function methodWithFormRequest(BodyParamAttributeTestFormRequest $request)
+    {
+
+    }
+}
+
+#[BodyParam("user_id", description: "The id of the user.", example: 9, type: "int")]
+#[BodyParam('param', 'integer', 'A parameter.', example: 19)]
+class BodyParamAttributeTestFormRequest extends FormRequest
+{
+    public function rules()
+    {
+        return [];
     }
 }
 

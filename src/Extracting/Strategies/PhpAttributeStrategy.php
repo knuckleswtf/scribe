@@ -3,7 +3,9 @@
 namespace Knuckles\Scribe\Extracting\Strategies;
 
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
+use Knuckles\Scribe\Extracting\FindsFormRequestForMethod;
 use Knuckles\Scribe\Extracting\ParamHelpers;
+use Mpociot\Reflection\DocBlock;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionFunctionAbstract;
@@ -14,6 +16,7 @@ use ReflectionFunctionAbstract;
 abstract class PhpAttributeStrategy extends Strategy
 {
     use ParamHelpers;
+    use FindsFormRequestForMethod;
 
     /**
      * @var string[]
@@ -23,17 +26,17 @@ abstract class PhpAttributeStrategy extends Strategy
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules = []): array
     {
         $this->endpointData = $endpointData;
-        [$attributesOnMethod, $attributesOnController] =
+        [$attributesOnMethod, $attributesOnFormRequest, $attributesOnController] =
             $this->getAttributes($endpointData->method, $endpointData->controller);
 
-        return $this->extractFromAttributes($attributesOnMethod, $attributesOnController, $endpointData);
+        return $this->extractFromAttributes($endpointData, $attributesOnMethod, $attributesOnFormRequest, $attributesOnController);
     }
 
     /**
      * @param \ReflectionFunctionAbstract $method
      * @param \ReflectionClass|null $class
      *
-     * @return array{array<T>, array<T>}
+     * @return array{array<T>, array<T>, array<T>}
      */
     protected function getAttributes(ReflectionFunctionAbstract $method, ?ReflectionClass $class = null): array
     {
@@ -41,13 +44,20 @@ abstract class PhpAttributeStrategy extends Strategy
             ->flatMap(fn(string $name) => $method->getAttributes($name))
             ->map(fn(ReflectionAttribute $a) => $a->newInstance())->all();
 
+        // If there's a FormRequest, we check there.
+        if ($formRequestClass = $this->getFormRequestReflectionClass($method)) {
+            $attributesOnFormRequest = collect(static::$attributeNames)
+                ->flatMap(fn(string $name) => $formRequestClass->getAttributes($name))
+                ->map(fn(ReflectionAttribute $a) => $a->newInstance())->all();
+        }
+
         if ($class) {
             $attributesOnController = collect(static::$attributeNames)
                 ->flatMap(fn(string $name) => $class->getAttributes($name))
                 ->map(fn(ReflectionAttribute $a) => $a->newInstance())->all();
         }
 
-        return [$attributesOnMethod, $attributesOnController ?? []];
+        return [$attributesOnMethod, $attributesOnFormRequest ?? [], $attributesOnController ?? [], ];
     }
 
     /**
@@ -58,7 +68,7 @@ abstract class PhpAttributeStrategy extends Strategy
      * @return array|null
      */
     abstract protected function extractFromAttributes(
-        array $attributesOnMethod, array $attributesOnController,
-        ExtractedEndpointData $endpointData
+        ExtractedEndpointData $endpointData,
+        array $attributesOnMethod, array $attributesOnFormRequest = [], array $attributesOnController = [],
     ): ?array;
 }

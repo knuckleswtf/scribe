@@ -18,8 +18,8 @@ class GetFromResponseFieldAttribute extends PhpAttributeStrategy
     protected static array $attributeNames = [ResponseField::class];
 
     protected function extractFromAttributes(
-        array $attributesOnMethod, array $attributesOnController,
-        ExtractedEndpointData $endpointData
+        ExtractedEndpointData $endpointData,
+        array $attributesOnMethod, array $attributesOnFormRequest = [], array $attributesOnController = []
     ): ?array
     {
         $attributesOnApiResourceMethods = [];
@@ -36,7 +36,7 @@ class GetFromResponseFieldAttribute extends PhpAttributeStrategy
         }
 
 
-        return collect([...$attributesOnController, ...$attributesOnMethod, ...$attributesOnApiResourceMethods])
+        return collect([...$attributesOnController, ...$attributesOnFormRequest, ...$attributesOnMethod, ...$attributesOnApiResourceMethods])
             ->mapWithKeys(function ($attributeInstance) use ($endpointData) {
                 /** @var ResponseField $attributeInstance */
                 $data = $attributeInstance->toArray();

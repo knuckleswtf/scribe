@@ -15,17 +15,14 @@ class GetParamsFromAttributeStrategy extends PhpAttributeStrategy
     use ParamHelpers;
 
     protected function extractFromAttributes(
-        array $attributesOnMethod, array $attributesOnController,
-        ExtractedEndpointData $endpointData): ?array
+        ExtractedEndpointData $endpointData,
+        array $attributesOnMethod, array $attributesOnFormRequest = [], array $attributesOnController = []
+    ): ?array
     {
         $parameters = [];
-        foreach ($attributesOnController as $attributeInstance) {
+        foreach ([...$attributesOnController, ...$attributesOnFormRequest, ...$attributesOnMethod] as $attributeInstance) {
             $parameters[$attributeInstance->name] = $attributeInstance->toArray();
         }
-        foreach ($attributesOnMethod as $attributeInstance) {
-            $parameters[$attributeInstance->name] = $attributeInstance->toArray();
-        }
-
         return array_map([$this, 'normalizeParameterData'], $parameters);
     }
 
