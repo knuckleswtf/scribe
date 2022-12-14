@@ -12,6 +12,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.10.0 (14 December 2022)
+## Added
+- `bootstrap` hook ([#576](https://github.com/knuckleswtf/scribe/pull/576))
+- Support PHP 8 attributes in FormRequests. ([e8098714](https://github.com/knuckleswtf/scribe/commit/e80987145f50719156d1497a74f68139e9602593))
+
+## Modified
+- Generate properties for nested objects in OpenAPI spec ([#587](https://github.com/knuckleswtf/scribe/pull/587))
+
 # 4.9.0 (5 December 2022)
 ## Modified
 - `default` theme: Show nested fields short names in UI, since we now indent. ([dbe8492a](https://github.com/knuckleswtf/scribe/commit/dbe8492a6915698b0801b44712441e2a58e0614a))
