@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies;
 
+use Illuminate\Routing\Route;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Dingo\Api\Http\FormRequest as DingoFormRequest;
 use Illuminate\Foundation\Http\FormRequest as LaravelFormRequest;
@@ -24,7 +25,7 @@ class GetFromFormRequestBase extends Strategy
         return $this->getParametersFromFormRequest($endpointData->method, $endpointData->route);
     }
 
-    public function getParametersFromFormRequest(ReflectionFunctionAbstract $method, $route = null): array
+    public function getParametersFromFormRequest(ReflectionFunctionAbstract $method, ?Route $route = null): array
     {
         if (!$formRequestReflectionClass = $this->getFormRequestReflectionClass($method)) {
             return [];
@@ -41,12 +42,14 @@ class GetFromFormRequestBase extends Strategy
         } else {
             $formRequest = new $className;
         }
-        /** @var LaravelFormRequest|DingoFormRequest $formRequest */
         // Set the route properly so it works for users who have code that checks for the route.
+        /** @var LaravelFormRequest|DingoFormRequest $formRequest */
         $formRequest->setRouteResolver(function () use ($formRequest, $route) {
             // Also need to bind the request to the route in case their code tries to inspect current request
             return $route->bind($formRequest);
         });
+        $formRequest->server->set('REQUEST_METHOD', $route->methods()[0]);
+
         $parametersFromFormRequest = $this->getParametersFromValidationRules(
             $this->getRouteValidationRules($formRequest),
             $this->getCustomParameterData($formRequest)

@@ -86,7 +86,7 @@ class ResponseCalls extends Strategy
             $bodyParameters, $queryParameters, $fileParameters, $headers
         );
 
-        $request = $this->runPreRequestHook($request, $endpointData);
+        $this->runPreRequestHook($request, $endpointData);
 
         try {
             $response = $this->makeApiCall($request, $endpointData->route);
@@ -154,22 +154,19 @@ class ResponseCalls extends Strategy
             "$rootUrl/$uri", $method, [], $cookies, $fileParameters,
             $this->transformHeadersToServerVars($headers), json_encode($bodyParams)
         );
-        // Doing it again to catch any ones we didn't transform properly.
-        $request = $this->addHeaders($request, $route, $headers);
-
-        $request = $this->addQueryParameters($request, $queryParams);
-        $request = $this->addBodyParameters($request, $bodyParams);
+        // Add headers again to catch any ones we didn't transform properly.
+        $this->addHeaders($request, $route, $headers);
+        $this->addQueryParameters($request, $queryParams);
+        $this->addBodyParameters($request, $bodyParams);
 
         return $request;
     }
 
-    protected function runPreRequestHook(Request $request, ExtractedEndpointData $endpointData): Request
+    protected function runPreRequestHook(Request $request, ExtractedEndpointData $endpointData): void
     {
         if (is_callable(Globals::$__beforeResponseCall)) {
             call_user_func_array(Globals::$__beforeResponseCall, [$request, $endpointData]);
         }
-
-        return $request;
     }
 
     private function setLaravelConfigs(array $config)
@@ -243,9 +240,9 @@ class ResponseCalls extends Strategy
         return array_diff($route->methods(), ['HEAD']);
     }
 
-    private function addHeaders(Request $request, Route $route, ?array $headers): Request
+    private function addHeaders(Request $request, Route $route, ?array $headers): void
     {
-        // set the proper domain
+        // Set the proper domain
         if ($route->getDomain()) {
             $request->headers->add([
                 'HOST' => $route->getDomain(),
@@ -261,21 +258,17 @@ class ResponseCalls extends Strategy
         if (($headers->get('Accept') ?: $headers->get('accept')) === 'application/json') {
             $request->setRequestFormat('json');
         }
-
-        return $request;
     }
 
-    private function addQueryParameters(Request $request, array $query): Request
+    private function addQueryParameters(Request $request, array $query): void
     {
         $request->query->add($query);
         $request->server->add(['QUERY_STRING' => http_build_query($query)]);
-        return $request;
     }
 
-    private function addBodyParameters(Request $request, array $body): Request
+    private function addBodyParameters(Request $request, array $body): void
     {
         $request->request->add($body);
-        return $request;
     }
 
     /**
