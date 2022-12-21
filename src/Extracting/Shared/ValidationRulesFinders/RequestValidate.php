@@ -17,7 +17,9 @@ class RequestValidate
 {
     public static function find(Node $node)
     {
-        if (!($node instanceof Node\Stmt\Expression)) return;
+        if (!($node instanceof Node\Stmt\Expression)) {
+            return;
+        }
 
         $expr = $node->expr;
         if ($expr instanceof Node\Expr\Assign) {
