@@ -13,7 +13,6 @@ use Knuckles\Scribe\Extracting\Extractor;
 use Knuckles\Scribe\Tools\Utils as u;
 use Knuckles\Scribe\Tools\WritingUtils;
 
-
 /**
  * Endpoint DTO, optimized for generating HTML output.
  * Unneeded properties removed, extra properties and helper methods added.
@@ -95,10 +94,10 @@ class OutputEndpointData extends BaseDTO
     {
         // spatie/dto currently doesn't auto-cast nested DTOs like that
         $parameters['responses'] = new ResponseCollection($parameters['responses'] ?? []);
-        $parameters['bodyParameters'] = array_map(fn($param) => new Parameter($param), $parameters['bodyParameters'] ?? []);
-        $parameters['queryParameters'] = array_map(fn($param) => new Parameter($param), $parameters['queryParameters'] ?? []);
-        $parameters['urlParameters'] = array_map(fn($param) => new Parameter($param), $parameters['urlParameters'] ?? []);
-        $parameters['responseFields'] = array_map(fn($param) => new ResponseField($param), $parameters['responseFields'] ?? []);
+        $parameters['bodyParameters'] = array_map(fn ($param) => new Parameter($param), $parameters['bodyParameters'] ?? []);
+        $parameters['queryParameters'] = array_map(fn ($param) => new Parameter($param), $parameters['queryParameters'] ?? []);
+        $parameters['urlParameters'] = array_map(fn ($param) => new Parameter($param), $parameters['urlParameters'] ?? []);
+        $parameters['responseFields'] = array_map(fn ($param) => new ResponseField($param), $parameters['responseFields'] ?? []);
 
         parent::__construct($parameters);
 
@@ -187,8 +186,9 @@ class OutputEndpointData extends BaseDTO
 
     public function hasJsonBody(): bool
     {
-        if ($this->hasFiles() || empty($this->nestedBodyParameters))
+        if ($this->hasFiles() || empty($this->nestedBodyParameters)) {
             return false;
+        }
 
         $contentType = data_get($this->headers, "Content-Type", data_get($this->headers, "content-type", ""));
         return str_contains($contentType, "json");
@@ -213,7 +213,7 @@ class OutputEndpointData extends BaseDTO
         foreach ($parameters as $name => $example) {
             if ($example instanceof UploadedFile) {
                 $files[$name] = $example;
-            } else if (is_array($example) && !empty($example)) {
+            } elseif (is_array($example) && !empty($example)) {
                 [$subFiles, $subRegulars] = static::splitIntoFileAndRegularParameters($example);
                 foreach ($subFiles as $subName => $subExample) {
                     $files[$name][$subName] = $subExample;
