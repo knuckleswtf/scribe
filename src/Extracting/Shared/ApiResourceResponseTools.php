@@ -17,13 +17,20 @@ use Knuckles\Scribe\Tools\Utils;
 class ApiResourceResponseTools
 {
     public static function fetch(
-        string $apiResourceClass, bool $isCollection, $modelInstantiator,
-        ExtractedEndpointData $endpointData, array $pagination, array $additionalData
-    )
-    {
+        string $apiResourceClass,
+        bool $isCollection,
+        $modelInstantiator,
+        ExtractedEndpointData $endpointData,
+        array $pagination,
+        array $additionalData
+    ) {
         try {
             $resource = ApiResourceResponseTools::getApiResourceOrCollectionInstance(
-                $apiResourceClass, $isCollection, $modelInstantiator, $pagination, $additionalData
+                $apiResourceClass,
+                $isCollection,
+                $modelInstantiator,
+                $pagination,
+                $additionalData
             );
             $response = ApiResourceResponseTools::getApiResourceResponse($resource, $endpointData);
             return $response->getContent();
@@ -41,19 +48,21 @@ class ApiResourceResponseTools
         $method = $endpointData->route->methods()[0];
         $request = Request::create($uri, $method);
         $request->headers->add(['Accept' => 'application/json']);
-        app()->bind('request', fn() => $request);
+        app()->bind('request', fn () => $request);
 
         // Set the route properly, so it works for users who have code that checks for the route.
         return $resource->toResponse(
-            $request->setRouteResolver(fn() => $endpointData->route)
+            $request->setRouteResolver(fn () => $endpointData->route)
         );
     }
 
     public static function getApiResourceOrCollectionInstance(
-        string $apiResourceClass, bool $isCollection, $modelInstantiator,
-        array  $paginationStrategy = [], array $additionalData = []
-    ): JsonResource
-    {
+        string $apiResourceClass,
+        bool $isCollection,
+        $modelInstantiator,
+        array  $paginationStrategy = [],
+        array $additionalData = []
+    ): JsonResource {
         $modelInstance = $modelInstantiator();
         try {
             $resource = new $apiResourceClass($modelInstance);
@@ -74,8 +83,10 @@ class ApiResourceResponseTools
             if (count($paginationStrategy) == 1) {
                 $perPage = $paginationStrategy[0];
                 $paginator = new LengthAwarePaginator(
-                // For some reason, the LengthAware paginator needs only first page items to work correctly
-                    collect($models)->slice(0, $perPage), count($models), $perPage
+                    // For some reason, the LengthAware paginator needs only first page items to work correctly
+                    collect($models)->slice(0, $perPage),
+                    count($models),
+                    $perPage
                 );
                 $list = $paginator;
             } elseif (count($paginationStrategy) == 2 && $paginationStrategy[1] == 'simple') {

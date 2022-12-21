@@ -19,7 +19,7 @@ class ResponseFieldTools
 
         // Try to get a type from first 2xx response
         $validResponse = collect($endpointData->responses)->first(
-            fn(Response $r) => $r->status >= 200 && $r->status < 300
+            fn (Response $r) => $r->status >= 200 && $r->status < 300
         );
         if ($validResponse && ($validResponseContent = json_decode($validResponse->content, true))) {
             $nonexistent = new stdClass();

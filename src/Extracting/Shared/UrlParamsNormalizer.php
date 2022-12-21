@@ -56,7 +56,10 @@ class UrlParamsNormalizer
                 ];
 
                 $binding = self::getRouteKeyForUrlParam(
-                    $route, $singularResource, $typeHintedEloquentModels, 'id'
+                    $route,
+                    $singularResource,
+                    $typeHintedEloquentModels,
+                    'id'
                 );
 
                 if (!$alreadyFoundResourceParam) {
@@ -115,7 +118,9 @@ class UrlParamsNormalizer
         $arguments = [];
         foreach ($method->getParameters() as $argument) {
             $argumentType = $argument->getType();
-            if (!($argumentType instanceof \ReflectionNamedType)) continue;
+            if (!($argumentType instanceof \ReflectionNamedType)) {
+                continue;
+            }
             try {
                 $reflectionEnum = new ReflectionEnum($argumentType->getName());
                 $arguments[$argument->getName()] = $reflectionEnum;
@@ -145,9 +150,11 @@ class UrlParamsNormalizer
      * @return string|null
      */
     protected static function getRouteKeyForUrlParam(
-        Route $route, string $paramName, array $typeHintedEloquentModels = [], string $default = null
-    ): ?string
-    {
+        Route $route,
+        string $paramName,
+        array $typeHintedEloquentModels = [],
+        string $default = null
+    ): ?string {
         if ($binding = self::getInlineRouteKey($route, $paramName)) {
             return $binding;
         }
@@ -213,12 +220,14 @@ class UrlParamsNormalizer
     {
         $argumentType = $argument->getType();
         // No type-hint, or primitive type
-        if (!($argumentType instanceof \ReflectionNamedType)) return null;
+        if (!($argumentType instanceof \ReflectionNamedType)) {
+            return null;
+        }
 
         $argumentClassName = $argumentType->getName();
         if (class_exists($argumentClassName)) {
             try {
-                return new $argumentClassName;
+                return new $argumentClassName();
             } catch (\Throwable $e) {
                 return null;
             }
