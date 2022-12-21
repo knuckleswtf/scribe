@@ -28,7 +28,7 @@ cache:
 install:
   - if [[ $SETUP = 'stable' ]]; then travis_retry composer install; fi
   - if [[ $SETUP = 'lowest' ]]; then travis_retry composer require laravel/framework:^$LOWEST; composer require laravel/lumen-framework:^$LOWEST; fi
-  - if [[ $SETUP = 'lint' ]]; then travis_retry composer install; composer lint; fi
+  - if [[ $SETUP = 'lint' ]]; then travis_retry composer install; composer static-analyse; fi
 
 script:
   - if [[ $SETUP = 'lint' ]]; then exit 0; fi; composer test-parallel-ci;

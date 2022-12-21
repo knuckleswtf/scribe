@@ -62,7 +62,7 @@
     }
   },
   "scripts": {
-    "lint": "phpstan analyse -c ./phpstan.neon src camel --memory-limit 1G",
+    "static-analyse": "phpstan analyse -c ./phpstan.neon src camel --memory-limit 1G",
     "cs-check": "./vendor/bin/php-cs-fixer fix --dry-run --diff --stop-on-violation",
     "test": "pest --stop-on-failure --exclude-group dingo --coverage --colors",
     "test-ci": "pest --exclude-group dingo --coverage --min=80",

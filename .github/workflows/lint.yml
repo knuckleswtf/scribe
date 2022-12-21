@@ -35,7 +35,7 @@ jobs:
       - name: Lint code
         env:
           COMPOSER_MEMORY_LIMIT: "-1"
-        run: composer lint
+        run: composer static-analyse
 
       - name: Code style check
         env:
