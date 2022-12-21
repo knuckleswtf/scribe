@@ -5,7 +5,6 @@ namespace Knuckles\Camel;
 use Illuminate\Contracts\Support\Arrayable;
 use Spatie\DataTransferObject\DataTransferObject;
 
-
 class BaseDTO extends DataTransferObject implements Arrayable, \ArrayAccess
 {
     /**

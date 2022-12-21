@@ -20,7 +20,7 @@ class BaseDTOCollection extends Collection
     {
         // Manually cast nested arrays
         $items = array_map(
-            fn($item) => is_array($item) ? new static::$base($item) : $item,
+            fn ($item) => is_array($item) ? new static::$base($item) : $item,
             $items instanceof Collection ? $items->toArray() : $items
         );
 
@@ -43,7 +43,7 @@ class BaseDTOCollection extends Collection
     public function toArray(): array
     {
         return array_map(
-            fn($item) => $item instanceof Arrayable ? $item->toArray() : $item,
+            fn ($item) => $item instanceof Arrayable ? $item->toArray() : $item,
             $this->items
         );
     }

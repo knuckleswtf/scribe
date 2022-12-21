@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Knuckles\Camel;
 
 use Illuminate\Support\Arr;
@@ -8,7 +7,6 @@ use Illuminate\Support\Str;
 use Knuckles\Camel\Output\OutputEndpointData;
 use Knuckles\Scribe\Tools\Utils;
 use Symfony\Component\Yaml\Yaml;
-
 
 class Camel
 {
@@ -178,7 +176,8 @@ class Camel
                 'name' => $group['name'],
                 'description' => $group['description'],
                 'endpoints' => array_map(
-                    fn(array $endpoint) => OutputEndpointData::fromExtractedEndpointArray($endpoint), $group['endpoints']
+                    fn (array $endpoint) => OutputEndpointData::fromExtractedEndpointArray($endpoint),
+                    $group['endpoints']
                 ),
             ];
         }, $groupedEndpoints);
