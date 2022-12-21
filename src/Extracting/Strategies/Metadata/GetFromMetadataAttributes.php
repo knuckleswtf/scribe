@@ -28,9 +28,10 @@ class GetFromMetadataAttributes extends PhpAttributeStrategy
 
     protected function extractFromAttributes(
         ExtractedEndpointData $endpointData,
-        array $attributesOnMethod, array $attributesOnFormRequest = [], array $attributesOnController = []
-    ): ?array
-    {
+        array $attributesOnMethod,
+        array $attributesOnFormRequest = [],
+        array $attributesOnController = []
+    ): ?array {
         $metadata = [
             "groupName" => "",
             "groupDescription" => "",
@@ -45,5 +46,4 @@ class GetFromMetadataAttributes extends PhpAttributeStrategy
 
         return $metadata;
     }
-
 }
