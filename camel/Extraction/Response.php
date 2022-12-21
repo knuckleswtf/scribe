@@ -2,7 +2,6 @@
 
 namespace Knuckles\Camel\Extraction;
 
-
 use Knuckles\Camel\BaseDTO;
 
 class Response extends BaseDTO
@@ -53,7 +52,9 @@ class Response extends BaseDTO
     public function fullDescription()
     {
         $description = $this->status;
-        if ($this->description) $description .= ", {$this->description}";
+        if ($this->description) {
+            $description .= ", {$this->description}";
+        }
         return $description;
     }
 }

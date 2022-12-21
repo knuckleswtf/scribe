@@ -9,7 +9,6 @@ use Knuckles\Scribe\Tools\Globals;
 use Knuckles\Scribe\Tools\Utils as u;
 use ReflectionClass;
 
-
 class ExtractedEndpointData extends BaseDTO
 {
     /**
@@ -82,14 +81,16 @@ class ExtractedEndpointData extends BaseDTO
 
     public function __construct(array $parameters = [])
     {
-        $parameters['metadata'] = $parameters['metadata'] ?? new Metadata([]);
-        $parameters['responses'] = $parameters['responses'] ?? new ResponseCollection([]);
+        $parameters['metadata'] ??= new Metadata([]);
+        $parameters['responses'] ??= new ResponseCollection([]);
 
         parent::__construct($parameters);
 
         $this->uri = match (is_callable(Globals::$__normalizeEndpointUrlUsing)) {
-            true => call_user_func_array(Globals::$__normalizeEndpointUrlUsing,
-                [$this->route->uri, $this->route, $this->method, $this->controller]),
+            true => call_user_func_array(
+                Globals::$__normalizeEndpointUrlUsing,
+                [$this->route->uri, $this->route, $this->method, $this->controller]
+            ),
             default => UrlParamsNormalizer::normalizeParameterNamesInRouteUri($this->route, $this->method),
         };
     }
@@ -144,9 +145,15 @@ class ExtractedEndpointData extends BaseDTO
     {
         $copy = $this->except(
             // Get rid of all duplicate data
-            'cleanQueryParameters', 'cleanUrlParameters', 'fileParameters', 'cleanBodyParameters',
+            'cleanQueryParameters',
+            'cleanUrlParameters',
+            'fileParameters',
+            'cleanBodyParameters',
             // and objects used only in extraction
-            'route', 'controller', 'method', 'auth',
+            'route',
+            'controller',
+            'method',
+            'auth',
         );
         // Remove these, since they're on the parent group object
         $copy->metadata = $copy->metadata->except('groupName', 'groupDescription');
