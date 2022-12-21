@@ -21,7 +21,8 @@ use ReflectionFunctionAbstract;
  */
 class UseTransformerTags extends Strategy
 {
-    use DatabaseTransactionHelpers, InstantiatesExampleModels;
+    use DatabaseTransactionHelpers;
+    use InstantiatesExampleModels;
 
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules = []): ?array
     {
@@ -42,13 +43,18 @@ class UseTransformerTags extends Strategy
         [$statusCode, $transformerClass, $isCollection] = $this->getStatusCodeAndTransformerClass($transformerTag);
         [$model, $factoryStates, $relations, $resourceKey] = $this->getClassToBeTransformed($allTags);
 
-        $modelInstantiator = fn() => $this->instantiateExampleModel($model, $factoryStates, $relations, (new ReflectionClass($transformerClass))->getMethod('transform'));
+        $modelInstantiator = fn () => $this->instantiateExampleModel($model, $factoryStates, $relations, (new ReflectionClass($transformerClass))->getMethod('transform'));
         $pagination = $this->getTransformerPaginatorData($allTags);
         $serializer = $this->config->get('fractal.serializer');
 
         $this->startDbTransaction();
         $content = TransformerResponseTools::fetch(
-            $transformerClass, $isCollection, $modelInstantiator, $pagination, $resourceKey, $serializer
+            $transformerClass,
+            $isCollection,
+            $modelInstantiator,
+            $pagination,
+            $resourceKey,
+            $serializer
         );
         $this->endDbTransaction();
 
@@ -133,5 +139,4 @@ class UseTransformerTags extends Strategy
 
         return $this->getTransformerResponseFromTag($transformerTag, $tags);
     }
-
 }

@@ -27,7 +27,9 @@ class UseResponseTag extends Strategy
     {
         $responseTags = Utils::filterDocBlockTags($tags, 'response');
 
-        if (empty($responseTags)) return null;
+        if (empty($responseTags)) {
+            return null;
+        }
 
         $responses = array_map(function (Tag $responseTag) {
             // Status code (optional) followed by response

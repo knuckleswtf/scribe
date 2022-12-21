@@ -26,7 +26,8 @@ use Knuckles\Scribe\Tools\Utils;
  */
 class ResponseCalls extends Strategy
 {
-    use ParamHelpers, DatabaseTransactionHelpers;
+    use ParamHelpers;
+    use DatabaseTransactionHelpers;
 
     protected array $previousConfigs = [];
 
@@ -76,14 +77,24 @@ class ResponseCalls extends Strategy
         $hardcodedFileParams = collect($hardcodedFileParams)->map(function ($filePath) {
             $fileName = basename($filePath);
             return new UploadedFile(
-                $filePath, $fileName, mime_content_type($filePath), 0, false
+                $filePath,
+                $fileName,
+                mime_content_type($filePath),
+                0,
+                false
             );
         })->toArray();
         $fileParameters = array_merge($endpointData->fileParameters, $hardcodedFileParams);
 
         $request = $this->prepareRequest(
-            $endpointData->route, $endpointData->uri, $rulesToApply, $urlParameters,
-            $bodyParameters, $queryParameters, $fileParameters, $headers
+            $endpointData->route,
+            $endpointData->uri,
+            $rulesToApply,
+            $urlParameters,
+            $bodyParameters,
+            $queryParameters,
+            $fileParameters,
+            $headers
         );
 
         $this->runPreRequestHook($request, $endpointData);
@@ -132,8 +143,16 @@ class ResponseCalls extends Strategy
      *
      * @return Request
      */
-    protected function prepareRequest(Route $route, string $url, array $rulesToApply, array $urlParams,
-        array $bodyParams, array $queryParams, array $fileParameters, array $headers): Request
+    protected function prepareRequest(
+        Route $route,
+        string $url,
+        array $rulesToApply,
+        array $urlParams,
+        array $bodyParams,
+        array $queryParams,
+        array $fileParameters,
+        array $headers
+    ): Request
     {
         $uri = Utils::getUrlWithBoundParameters($url, $urlParams);
         $routeMethods = $this->getMethods($route);
@@ -151,8 +170,13 @@ class ResponseCalls extends Strategy
         // Always use the current app domain for response calls
         $rootUrl = config('app.url');
         $request = Request::create(
-            "$rootUrl/$uri", $method, [], $cookies, $fileParameters,
-            $this->transformHeadersToServerVars($headers), json_encode($bodyParams)
+            "$rootUrl/$uri",
+            $method,
+            [],
+            $cookies,
+            $fileParameters,
+            $this->transformHeadersToServerVars($headers),
+            json_encode($bodyParams)
         );
         // Add headers again to catch any ones we didn't transform properly.
         $this->addHeaders($request, $route, $headers);

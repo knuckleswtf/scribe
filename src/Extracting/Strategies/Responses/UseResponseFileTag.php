@@ -28,7 +28,9 @@ class UseResponseFileTag extends Strategy
     {
         $responseFileTags = Utils::filterDocBlockTags($tags, 'responsefile');
 
-        if (empty($responseFileTags)) return null;
+        if (empty($responseFileTags)) {
+            return null;
+        }
 
         $responses = array_map(function (Tag $responseFileTag) {
             preg_match('/^(\d{3})?\s*(.*?)({.*})?$/', $responseFileTag->getContent(), $result);

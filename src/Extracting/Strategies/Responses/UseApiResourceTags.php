@@ -19,7 +19,8 @@ use Mpociot\Reflection\DocBlock\Tag;
  */
 class UseApiResourceTags extends Strategy
 {
-    use DatabaseTransactionHelpers, InstantiatesExampleModels;
+    use DatabaseTransactionHelpers;
+    use InstantiatesExampleModels;
 
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules = []): ?array
     {
@@ -49,12 +50,16 @@ class UseApiResourceTags extends Strategy
         [$modelClass, $factoryStates, $relations, $pagination] = $this->getClassToBeTransformedAndAttributes($allTags);
         $additionalData = $this->getAdditionalData($allTags);
 
-        $modelInstantiator = fn() => $this->instantiateExampleModel($modelClass, $factoryStates, $relations);
+        $modelInstantiator = fn () => $this->instantiateExampleModel($modelClass, $factoryStates, $relations);
 
         $this->startDbTransaction();
         $content = ApiResourceResponseTools::fetch(
-            $apiResourceClass, $isCollection, $modelInstantiator,
-            $endpointData, $pagination, $additionalData,
+            $apiResourceClass,
+            $isCollection,
+            $modelInstantiator,
+            $endpointData,
+            $pagination,
+            $additionalData,
         );
         $this->endDbTransaction();
 
