@@ -21,4 +21,3 @@ class GetFromFormRequest extends GetFromFormRequestBase
         return parent::isFormRequestMeantForThisStrategy($formRequestReflectionClass);
     }
 }
-

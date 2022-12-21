@@ -51,7 +51,7 @@ class GetFromQueryParamTag extends GetFieldsFromTagStrategy
                         $type = '';
                     }
                 }
-            } else if ($this->isSupportedTypeInDocBlocks($description)) {
+            } elseif ($this->isSupportedTypeInDocBlocks($description)) {
                 // Only type was supplied
                 $type = $description;
                 $description = '';
@@ -60,7 +60,6 @@ class GetFromQueryParamTag extends GetFieldsFromTagStrategy
             $type = empty($type)
                 ? (Str::contains(strtolower($description), ['number', 'count', 'page']) ? 'integer' : 'string')
                 : static::normalizeTypeName($type);
-
         }
 
         [$description, $example] = $this->getDescriptionAndExample($description, $type, $tagContent, $name);
