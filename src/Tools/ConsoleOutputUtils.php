@@ -25,7 +25,7 @@ class ConsoleOutputUtils
     public static function deprecated($feature, $inVersion, $should = null)
     {
         if (!self::$clara) {
-            self::bootstrapOutput(new ConsoleOutput);
+            self::bootstrapOutput(new ConsoleOutput());
         }
 
         $message = "You're using $feature. This is deprecated and will be removed in the next major version.";
@@ -40,7 +40,7 @@ class ConsoleOutputUtils
     public static function warn($message)
     {
         if (!self::$clara) {
-            self::bootstrapOutput(new ConsoleOutput);
+            self::bootstrapOutput(new ConsoleOutput());
         }
         self::$clara->warn($message);
     }
@@ -48,7 +48,7 @@ class ConsoleOutputUtils
     public static function info($message)
     {
         if (!self::$clara) {
-            self::bootstrapOutput(new ConsoleOutput);
+            self::bootstrapOutput(new ConsoleOutput());
         }
         self::$clara->info($message);
     }
@@ -56,7 +56,7 @@ class ConsoleOutputUtils
     public static function debug($message)
     {
         if (!self::$clara) {
-            self::bootstrapOutput(new ConsoleOutput);
+            self::bootstrapOutput(new ConsoleOutput());
         }
         self::$clara->debug($message);
     }
@@ -64,7 +64,7 @@ class ConsoleOutputUtils
     public static function success($message)
     {
         if (!self::$clara) {
-            self::bootstrapOutput(new ConsoleOutput);
+            self::bootstrapOutput(new ConsoleOutput());
         }
         self::$clara->success($message);
     }
@@ -72,7 +72,7 @@ class ConsoleOutputUtils
     public static function error($message)
     {
         if (!self::$clara) {
-            self::bootstrapOutput(new ConsoleOutput);
+            self::bootstrapOutput(new ConsoleOutput());
         }
         self::$clara->error($message);
     }

@@ -2,7 +2,6 @@
 
 namespace Knuckles\Scribe\Tools;
 
-
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\View\Compilers\CompilerInterface;
 use Illuminate\View\Engines\CompilerEngine;
@@ -14,7 +13,7 @@ class BladeMarkdownEngine extends CompilerEngine
 
     public function __construct(CompilerInterface $compiler, Filesystem $files = null)
     {
-        parent::__construct($compiler, $files ?: new Filesystem);
+        parent::__construct($compiler, $files ?: new Filesystem());
         $this->markdown = Parsedown::instance();
     }
 

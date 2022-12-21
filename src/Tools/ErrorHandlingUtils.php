@@ -29,7 +29,6 @@ class ErrorHandlingUtils
         $message = "$exceptionType in $file at line $line: $message";
         ConsoleOutputUtils::error($message);
         ConsoleOutputUtils::error('Run this again with the --verbose flag to see the full stack trace.');
-
     }
 
     public static function dumpException(\Throwable $e): void
@@ -39,6 +38,5 @@ class ErrorHandlingUtils
         $handler->setInspector(new \Whoops\Exception\Inspector($e));
         $handler->setException($e);
         $handler->handle();
-
     }
 }

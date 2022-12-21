@@ -95,8 +95,7 @@ class WritingUtils
         int $closingBraceIndentation = 0,
         string $startLinesWith = '',
         string $endLinesWith = ','
-    ): string
-    {
+    ): string {
         $output = isset($braces[0]) ? "{$braces[0]}\n" : '';
         foreach ($cleanQueryParams as $parameter => $value) {
             if (!is_array($value)) {

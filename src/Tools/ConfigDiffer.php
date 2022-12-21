@@ -6,14 +6,12 @@ use Illuminate\Support\Str;
 
 class ConfigDiffer
 {
-
     public function __construct(
         protected array $defaultConfig,
         protected array $usersConfig,
         protected array $ignorePaths = [],
         protected array $asList = [],
-    )
-    {
+    ) {
     }
 
     public function getDiff()
@@ -27,7 +25,9 @@ class ConfigDiffer
 
         foreach ($new as $key => $value) {
             $fullKey = $prefix.$key;
-            if (Str::is($this->ignorePaths, $fullKey)) continue;
+            if (Str::is($this->ignorePaths, $fullKey)) {
+                continue;
+            }
 
             $oldValue = data_get($old, $key);
 
@@ -39,7 +39,8 @@ class ConfigDiffer
                     }
                 } else {
                     $diff = array_merge(
-                        $diff, $this->recursiveItemDiff($oldValue, $value, "$fullKey.")
+                        $diff,
+                        $this->recursiveItemDiff($oldValue, $value, "$fullKey.")
                     );
                 }
             } else {

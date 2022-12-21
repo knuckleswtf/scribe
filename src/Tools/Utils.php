@@ -66,7 +66,7 @@ class Utils
 
         if (self::isLumen()) {
             $boundUri = '';
-            $possibilities = (new Std)->parse($uri);
+            $possibilities = (new Std())->parse($uri);
             // See https://github.com/nikic/FastRoute#overriding-the-route-parser-and-dispatcher
             $possibilityWithAllSegmentsPresent = end($possibilities);
             foreach ($possibilityWithAllSegmentsPresent as $part) {
@@ -156,7 +156,9 @@ class Utils
 
     public static function copyDirectory(string $src, string $dest): void
     {
-        if (!is_dir($src)) return;
+        if (!is_dir($src)) {
+            return;
+        }
 
         // If the destination directory does not exist create it
         if (!is_dir($dest)) {
@@ -171,7 +173,7 @@ class Utils
         foreach ($i as $f) {
             if ($f->isFile()) {
                 copy($f->getRealPath(), "$dest/" . $f->getFilename());
-            } else if (!$f->isDot() && $f->isDir()) {
+            } elseif (!$f->isDot() && $f->isDir()) {
                 self::copyDirectory($f->getRealPath(), "$dest/$f");
             }
         }
@@ -283,7 +285,7 @@ class Utils
                         : [];
 
                     $factory = $factory->hasAttached($factoryChain, $pivot, $relationVector);
-                } else if ($relationType === BelongsTo::class) {
+                } elseif ($relationType === BelongsTo::class) {
                     $factory = $factory->for($factoryChain, $relationVector);
                 } else {
                     $factory = $factory->has($factoryChain, $relationVector);
@@ -333,17 +335,16 @@ class Utils
     {
         // Avoid "holes" in the keys of the filtered array by using array_values
         return array_values(
-            array_filter($tags, fn($tag) => in_array(strtolower($tag->getName()),$names))
+            array_filter($tags, fn ($tag) => in_array(strtolower($tag->getName()), $names))
         );
     }
-
 }
 
 function getTopLevelItemsFromMixedOrderList(array $mixedList): array
 {
-  $topLevels = [];
-  foreach ($mixedList as $item => $value) {
-    $topLevels[] = is_int($item) ? $value : $item;
-  }
-  return $topLevels;
+    $topLevels = [];
+    foreach ($mixedList as $item => $value) {
+        $topLevels[] = is_int($item) ? $value : $item;
+    }
+    return $topLevels;
 }

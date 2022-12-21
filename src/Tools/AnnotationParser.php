@@ -30,7 +30,7 @@ class AnnotationParser
 
         return [
             'content' => trim($annotationContent),
-            'fields' => $parsedFields
+            'fields' => $parsedFields,
         ];
     }
 

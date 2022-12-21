@@ -43,6 +43,5 @@ class DocumentationConfig
         }
 
         return 'laravel';
-
     }
 }
