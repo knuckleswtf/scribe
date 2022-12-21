@@ -539,7 +539,7 @@ class OpenAPISpecWriter
             $value = (array)$value;
             $fieldObjectSpec = [];
             $fieldObjectSpec['type'] = 'object';
-            $fieldObjectSpec['properties']= [];
+            $fieldObjectSpec['properties'] = [];
             foreach ($value as $subKey => $subValue) {
                 $newKey = sprintf('%s.%s', $key, $subKey);
                 $generateResponseContentFieldSpec = $this->generateObjectPropertiesResponseSpec(
@@ -549,7 +549,7 @@ class OpenAPISpecWriter
                 );
                 $fieldObjectSpec['properties'][$subKey] = $generateResponseContentFieldSpec[$newKey];
             }
-            return  [$key => $fieldObjectSpec];
+            return [$key => $fieldObjectSpec];
         }
 
         $spec = [
