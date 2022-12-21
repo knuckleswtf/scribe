@@ -19,9 +19,8 @@ use Knuckles\Scribe\Tools\DocumentationConfig;
 
 class Extractor
 {
-    private DocumentationConfig $config;
-
     use ParamHelpers;
+    private DocumentationConfig $config;
 
     private static ?Route $routeBeingProcessed = null;
 
@@ -246,8 +245,8 @@ class Extractor
             if ($details->type === 'file') {
                 if (is_string($details->example)) {
                     $details->example = self::convertStringValueToUploadedFileInstance($details->example);
-                } else if (is_null($details->example)) {
-                    $details->example = (new self)->generateDummyValue($details->type);
+                } elseif (is_null($details->example)) {
+                    $details->example = (new self())->generateDummyValue($details->type);
                 }
             }
 
@@ -317,7 +316,7 @@ class Extractor
                 if (empty($exampleFromParent)) {
                     Arr::set($results, $dotPath, $value);
                 }
-            } else if ($parentData->type === 'object[]') {
+            } elseif ($parentData->type === 'object[]') {
                 // When the body is an array, param names will be  "[].paramname", so dot paths won't work correctly with "[]"
                 if (Str::startsWith($path, '[].')) {
                     $valueDotPath = substr($dotPath, 3); // Remove initial '.0.'
@@ -510,7 +509,6 @@ class Extractor
                 $parameter['__fields'] = [];
                 $finalParameters[$name] = $parameter;
             }
-
         }
 
         // Finally, if the body is an array, remove any other items.
@@ -529,7 +527,7 @@ class Extractor
     protected function mergeInheritedMethodsData(string $stage, ExtractedEndpointData $endpointData, array $inheritedDocsOverrides = []): void
     {
         $overrides = $inheritedDocsOverrides[$stage] ?? [];
-        $normalizeParamData = fn($data, $key) => array_merge($data, ["name" => $key]);
+        $normalizeParamData = fn ($data, $key) => array_merge($data, ["name" => $key]);
         if (is_array($overrides)) {
             foreach ($overrides as $key => $item) {
                 switch ($stage) {
@@ -549,13 +547,13 @@ class Extractor
                         $endpointData->$stage[$key] = $item;
                 }
             }
-        } else if (is_callable($overrides)) {
+        } elseif (is_callable($overrides)) {
             $results = $overrides($endpointData);
 
             $endpointData->$stage = match ($stage) {
                 "responses" => ResponseCollection::make($results),
-                "urlParameters", "bodyParameters", "queryParameters" => collect($results)->map(fn($param, $name) => Parameter::make($normalizeParamData($param, $name)))->all(),
-                "responseFields" => collect($results)->map(fn($field, $name) => ResponseField::make($normalizeParamData($field, $name)))->all(),
+                "urlParameters", "bodyParameters", "queryParameters" => collect($results)->map(fn ($param, $name) => Parameter::make($normalizeParamData($param, $name)))->all(),
+                "responseFields" => collect($results)->map(fn ($field, $name) => ResponseField::make($normalizeParamData($field, $name)))->all(),
                 default => $results,
             };
         }

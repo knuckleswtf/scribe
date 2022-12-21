@@ -43,7 +43,7 @@ class MethodAstParser
      */
     protected static function parseClassSourceCode(string $sourceCode): ?array
     {
-        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
+        $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
         try {
             $ast = $parser->parse($sourceCode);
         } catch (Throwable $error) {
@@ -61,9 +61,9 @@ class MethodAstParser
      */
     protected static function findMethodInClassAst(array $ast, string $methodName)
     {
-        $nodeFinder = new NodeFinder;
+        $nodeFinder = new NodeFinder();
 
-        return $nodeFinder->findFirst($ast, function(Node $node) use ($methodName) {
+        return $nodeFinder->findFirst($ast, function (Node $node) use ($methodName) {
             // Todo handle closures
             return $node instanceof Node\Stmt\ClassMethod
                 && $node->name->toString() === $methodName;

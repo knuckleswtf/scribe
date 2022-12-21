@@ -8,7 +8,6 @@ use Illuminate\Support\Str;
 
 trait ParamHelpers
 {
-
     protected function getFakeFactoryByName(string $name): ?\Closure
     {
         $faker = $this->getFaker();
@@ -24,13 +23,13 @@ trait ParamHelpers
         };
 
         return match ($normalizedName) {
-            'email' => fn() => $faker->safeEmail(),
-            'password', 'pwd' => fn() => $faker->password(),
-            'url' => fn() => $faker->url(),
-            'description' => fn() => $faker->sentence(),
-            'uuid' => fn() => $faker->uuid(),
-            'locale' => fn() => $faker->locale(),
-            'timezone' => fn() => $faker->timezone(),
+            'email' => fn () => $faker->safeEmail(),
+            'password', 'pwd' => fn () => $faker->password(),
+            'url' => fn () => $faker->url(),
+            'description' => fn () => $faker->sentence(),
+            'uuid' => fn () => $faker->uuid(),
+            'locale' => fn () => $faker->locale(),
+            'timezone' => fn () => $faker->timezone(),
             default => null,
         };
     }
@@ -65,13 +64,15 @@ trait ParamHelpers
         if ($isListType) {
             // Return a one-array item for a list by default.
             return $size
-                ? fn() => [$this->generateDummyValue($baseType, range(0, min($size - 1, 5)))]
-                : fn() => [$this->generateDummyValue($baseType, $hints)];
+                ? fn () => [$this->generateDummyValue($baseType, range(0, min($size - 1, 5)))]
+                : fn () => [$this->generateDummyValue($baseType, $hints)];
         }
 
         if (($hints['name'] ?? false) && $baseType != 'file') {
             $fakeFactoryByName = $this->getFakeFactoryByName($hints['name']);
-            if ($fakeFactoryByName) return $fakeFactoryByName;
+            if ($fakeFactoryByName) {
+                return $fakeFactoryByName;
+            }
         }
 
         $faker = $this->getFaker();
@@ -82,17 +83,21 @@ trait ParamHelpers
 
         $fakeFactoriesByType = [
             'integer' => function () use ($size, $isExactSize, $max, $faker, $min) {
-                if ($isExactSize) return $size;
+                if ($isExactSize) {
+                    return $size;
+                }
                 return $max ? $faker->numberBetween((int)$min, (int)$max) : $faker->numberBetween(1, 20);
             },
             'number' => function () use ($size, $isExactSize, $max, $faker, $min) {
-                if ($isExactSize) return $size;
+                if ($isExactSize) {
+                    return $size;
+                }
                 return $max ? $faker->numberBetween((int)$min, (int)$max) : $faker->randomFloat();
             },
-            'boolean' => fn() => $faker->boolean(),
-            'string' => fn() => $size ? $faker->lexify(str_repeat("?", $size)) : $faker->word(),
-            'object' => fn() => [],
-            'file' => fn() => UploadedFile::fake()->create('test.jpg')->size($size ?: 10),
+            'boolean' => fn () => $faker->boolean(),
+            'string' => fn () => $size ? $faker->lexify(str_repeat("?", $size)) : $faker->word(),
+            'object' => fn () => [],
+            'file' => fn () => UploadedFile::fake()->create('test.jpg')->size($size ?: 10),
         ];
 
         return $fakeFactoriesByType[$baseType] ?? $fakeFactoriesByType['string'];

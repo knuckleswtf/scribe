@@ -20,10 +20,11 @@ trait InstantiatesExampleModels
      * @return \Illuminate\Database\Eloquent\Model|object
      */
     protected function instantiateExampleModel(
-        ?string $type = null, array $factoryStates = [],
-        array   $relations = [], ?ReflectionFunctionAbstract $transformationMethod = null
-    )
-    {
+        ?string $type = null,
+        array $factoryStates = [],
+        array   $relations = [],
+        ?ReflectionFunctionAbstract $transformationMethod = null
+    ) {
         if ($type == null) {
             $parameter = Arr::first($transformationMethod->getParameters());
             if ($parameter->hasType() && !$parameter->getType()->isBuiltin() && class_exists($parameter->getType()->getName())) {
@@ -38,22 +39,24 @@ trait InstantiatesExampleModels
         $configuredStrategies = $this->config->get('examples.models_source', ['factoryCreate', 'factoryMake', 'databaseFirst']);
 
         $strategies = [
-            'factoryCreate' => fn() => $this->getExampleModelFromFactoryCreate($type, $factoryStates, $relations),
-            'factoryMake' => fn() => $this->getExampleModelFromFactoryMake($type, $factoryStates, $relations),
-            'databaseFirst' => fn() => $this->getExampleModelFromDatabaseFirst($type, $relations),
+            'factoryCreate' => fn () => $this->getExampleModelFromFactoryCreate($type, $factoryStates, $relations),
+            'factoryMake' => fn () => $this->getExampleModelFromFactoryMake($type, $factoryStates, $relations),
+            'databaseFirst' => fn () => $this->getExampleModelFromDatabaseFirst($type, $relations),
         ];
 
         foreach ($configuredStrategies as $strategyName) {
             try {
                 $model = $strategies[$strategyName]();
-                if ($model) return $model;
+                if ($model) {
+                    return $model;
+                }
             } catch (Throwable $e) {
                 c::warn("Couldn't get example model for {$type} via $strategyName.");
                 e::dumpExceptionIfVerbose($e, true);
             }
         }
 
-        return new $type;
+        return new $type();
     }
 
     /**
@@ -90,5 +93,4 @@ trait InstantiatesExampleModels
     {
         return $type::with($relations)->first();
     }
-
 }

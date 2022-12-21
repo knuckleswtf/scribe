@@ -130,7 +130,7 @@ class ApiDetails
         $content = "# GENERATED. YOU SHOULDN'T MODIFY OR DELETE THIS FILE.\n";
         $content .= "# Scribe uses this file to know when you change something manually in your docs.\n";
         $content .= collect($this->lastKnownFileContentHashes)
-            ->map(fn($hash, $filePath) => "$filePath=$hash")->implode("\n");
+            ->map(fn ($hash, $filePath) => "$filePath=$hash")->implode("\n");
         file_put_contents($this->fileHashesTrackingFile, $content);
     }
 
