@@ -16,9 +16,10 @@ class GetParamsFromAttributeStrategy extends PhpAttributeStrategy
 
     protected function extractFromAttributes(
         ExtractedEndpointData $endpointData,
-        array $attributesOnMethod, array $attributesOnFormRequest = [], array $attributesOnController = []
-    ): ?array
-    {
+        array $attributesOnMethod,
+        array $attributesOnFormRequest = [],
+        array $attributesOnController = []
+    ): ?array {
         $parameters = [];
         foreach ([...$attributesOnController, ...$attributesOnFormRequest, ...$attributesOnMethod] as $attributeInstance) {
             $parameters[$attributeInstance->name] = $attributeInstance->toArray();
@@ -31,7 +32,7 @@ class GetParamsFromAttributeStrategy extends PhpAttributeStrategy
         $data['type'] = static::normalizeTypeName($data['type']);
         if (is_null($data['example'])) {
             $data['example'] = $this->generateDummyValue($data['type'], ['name' => $data['name']]);
-        } else if ($data['example'] == 'No-example' || $data['example'] == 'No-example.') {
+        } elseif ($data['example'] == 'No-example' || $data['example'] == 'No-example.') {
             $data['example'] = null;
         }
 

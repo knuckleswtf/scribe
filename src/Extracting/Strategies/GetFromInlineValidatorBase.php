@@ -74,14 +74,13 @@ class GetFromInlineValidatorBase extends Strategy
             // For now, let's focus on simple strings and arrays of strings
             if ($item->value instanceof Node\Scalar\String_) {
                 $rules[$paramName] = $item->value->value;
-            } else if ($item->value instanceof Node\Expr\Array_) {
+            } elseif ($item->value instanceof Node\Expr\Array_) {
                 $rulesList = [];
                 foreach ($item->value->items as $arrayItem) {
                     /** @var Node\Expr\ArrayItem $arrayItem */
                     if ($arrayItem->value instanceof Node\Scalar\String_) {
                         $rulesList[] = $arrayItem->value->value;
                     }
-
                 }
                 $rules[$paramName] = join('|', $rulesList);
             } else {
@@ -90,10 +89,12 @@ class GetFromInlineValidatorBase extends Strategy
             }
 
             $description = $example = null;
-            $comments = join("\n", array_map(
-                    fn($comment) => ltrim(ltrim($comment->getReformattedText(), "/")),
-                    $item->getComments()
-                )
+            $comments = join(
+                "\n",
+                array_map(
+                fn ($comment) => ltrim(ltrim($comment->getReformattedText(), "/")),
+                $item->getComments()
+            )
             );
 
             if ($comments) {

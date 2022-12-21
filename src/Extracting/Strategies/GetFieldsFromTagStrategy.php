@@ -15,14 +15,18 @@ abstract class GetFieldsFromTagStrategy extends TagStrategyWithFormRequestFallba
         $fields = [];
 
         foreach ($tagsOnClass as $tag) {
-            if (strtolower($tag->getName()) !== strtolower($this->tagName)) continue;
+            if (strtolower($tag->getName()) !== strtolower($this->tagName)) {
+                continue;
+            }
 
             $fieldData = $this->parseTag(trim($tag->getContent()));
             $fields[$fieldData['name']] = $fieldData;
         }
 
         foreach ($tagsOnMethod as $tag) {
-            if (strtolower($tag->getName()) !== strtolower($this->tagName)) continue;
+            if (strtolower($tag->getName()) !== strtolower($this->tagName)) {
+                continue;
+            }
 
             $fieldData = $this->parseTag(trim($tag->getContent()));
             $fields[$fieldData['name']] = $fieldData;
