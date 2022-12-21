@@ -32,7 +32,7 @@ jobs:
       - name: Install dependencies
         run: composer install
 
-      - name: Lint code
+      - name: Code static analyse
         env:
           COMPOSER_MEMORY_LIMIT: "-1"
         run: composer static-analyse
