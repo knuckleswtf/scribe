@@ -22,4 +22,3 @@ class GetFromFormRequest extends GetFromFormRequestBase
         return true;
     }
 }
-
