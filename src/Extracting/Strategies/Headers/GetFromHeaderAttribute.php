@@ -15,9 +15,10 @@ class GetFromHeaderAttribute extends PhpAttributeStrategy
 
     protected function extractFromAttributes(
         ExtractedEndpointData $endpointData,
-        array $attributesOnMethod, array $attributesOnFormRequest = [], array $attributesOnController = []
-    ): ?array
-    {
+        array $attributesOnMethod,
+        array $attributesOnFormRequest = [],
+        array $attributesOnController = []
+    ): ?array {
         $headers = [];
         foreach ([...$attributesOnController, ...$attributesOnFormRequest, ...$attributesOnMethod] as $attributeInstance) {
             $data = $attributeInstance->toArray();
@@ -26,5 +27,4 @@ class GetFromHeaderAttribute extends PhpAttributeStrategy
         }
         return $headers;
     }
-
 }
