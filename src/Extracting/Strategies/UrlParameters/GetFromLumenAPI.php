@@ -22,7 +22,7 @@ class GetFromLumenAPI extends Strategy
         $path = $endpointData->uri;
 
         $parameters = [];
-        $possibilities = (new Std)->parse($path);
+        $possibilities = (new Std())->parse($path);
         // See https://github.com/nikic/FastRoute#overriding-the-route-parser-and-dispatcher
         $possibilityWithAllSegmentsPresent = end($possibilities);
 
@@ -36,13 +36,13 @@ class GetFromLumenAPI extends Strategy
             $isThisParameterOptional = Arr::first($possibilities, function ($possibility) use ($name) {
                 // This function checks if this parameter is present in the current possibility
                 return (function () use ($possibility, $name) {
-                        foreach ($possibility as $part) {
-                            if (is_array($part) && $part[0] === $name) {
-                                return true;
-                            }
+                    foreach ($possibility as $part) {
+                        if (is_array($part) && $part[0] === $name) {
+                            return true;
                         }
-                        return false;
-                    })() === false;
+                    }
+                    return false;
+                })() === false;
             }, false);
             $type = 'string';
             $parameters[$name] = [

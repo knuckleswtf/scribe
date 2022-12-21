@@ -17,7 +17,9 @@ class GetFromLaravelAPI extends Strategy
 
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules = []): ?array
     {
-        if (Utils::isLumen()) return null;
+        if (Utils::isLumen()) {
+            return null;
+        }
 
         $parameters = [];
 
@@ -58,7 +60,7 @@ class GetFromLaravelAPI extends Strategy
                 if ($paramName == $name) {
                     $thing = $this->getNameOfUrlThing($url, $paramName);
                     return "The $friendlyName of the $thing.";
-                } else if (Str::is("*_$name", $paramName)) {
+                } elseif (Str::is("*_$name", $paramName)) {
                     $thing = str_replace(["_", "-"], " ", str_replace("_$name", '', $paramName));
                     return "The $friendlyName of the $thing.";
                 }
@@ -97,9 +99,9 @@ class GetFromLaravelAPI extends Strategy
             // Find the param name. In our normalized URL, argument $user might be param {user}, or {user_id}, or {id},
             if (isset($parameters[$argumentName])) {
                 $paramName = $argumentName;
-            } else if (isset($parameters["{$argumentName}_$routeKey"])) {
+            } elseif (isset($parameters["{$argumentName}_$routeKey"])) {
                 $paramName = "{$argumentName}_$routeKey";
-            } else if (isset($parameters[$routeKey])) {
+            } elseif (isset($parameters[$routeKey])) {
                 $paramName = $routeKey;
             } else {
                 continue;
@@ -110,7 +112,9 @@ class GetFromLaravelAPI extends Strategy
 
         // Next, non-Eloquent-bound parameters. They might still be Eloquent models, but model binding wasn't used.
         foreach ($parameters as $name => $data) {
-            if (isset($data['type'])) continue;
+            if (isset($data['type'])) {
+                continue;
+            }
 
             // If the url is /things/{id}, try to find a Thing model
             $urlThing = $this->getNameOfUrlThing($endpointData->uri, $name);
@@ -133,7 +137,6 @@ class GetFromLaravelAPI extends Strategy
             } catch (Throwable) {
                 $parameters[$paramName]['example'] = null;
             }
-
         }
         return $parameters;
     }
@@ -187,7 +190,9 @@ class GetFromLaravelAPI extends Strategy
     protected function getNameOfUrlThing(string $url, string $paramName, string $alternateParamName = null): ?string
     {
         $parts = explode("/", $url);
-        if (count($parts) === 1) return null; // URL was "/{thing}"
+        if (count($parts) === 1) {
+            return null;
+        } // URL was "/{thing}"
 
         $paramIndex = array_search("{{$paramName}}", $parts);
 
@@ -195,7 +200,9 @@ class GetFromLaravelAPI extends Strategy
             $paramIndex = array_search("{{$alternateParamName}}", $parts);
         }
 
-        if ($paramIndex === false || $paramIndex === 0) return null;
+        if ($paramIndex === false || $paramIndex === 0) {
+            return null;
+        }
 
         $things = $parts[$paramIndex - 1];
         // Replace underscores/hyphens, so "side_projects" becomes "side project"
@@ -218,7 +225,7 @@ class GetFromLaravelAPI extends Strategy
             // For the heathens that don't use a Models\ directory
             || class_exists($class = $rootNamespace . $className)) {
             try {
-                $instance = new $class;
+                $instance = new $class();
             } catch (\Error) { // It might be an enum or some other non-instantiable class
                 return null;
             }
