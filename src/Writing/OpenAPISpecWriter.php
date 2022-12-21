@@ -12,13 +12,14 @@ use Knuckles\Camel\Output\Parameter;
 use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\Utils;
+
 use function array_map;
 
 class OpenAPISpecWriter
 {
     use ParamHelpers;
 
-    const SPEC_VERSION = '3.0.3';
+    public const SPEC_VERSION = '3.0.3';
 
     private DocumentationConfig $config;
 
@@ -248,7 +249,6 @@ class OpenAPISpecWriter
             }
 
             $body['content'][$contentType]['schema'] = $schema;
-
         }
 
         // return object rather than empty array, so can get properly serialised as object
@@ -290,7 +290,7 @@ class OpenAPISpecWriter
         // Don't include the status code in description; see https://github.com/knuckleswtf/scribe/issues/271
         if (preg_match("/\d{3},\s+(.+)/", $description, $matches)) {
             $description = $matches[1];
-        } else if ($description === strval($response->status)) {
+        } elseif ($description === strval($response->status)) {
             $description = '';
         }
         return $description;
@@ -466,7 +466,7 @@ class OpenAPISpecWriter
                 'format' => 'binary',
                 'description' => $field->description ?: '',
             ];
-        } else if (Utils::isArrayType($field->type)) {
+        } elseif (Utils::isArrayType($field->type)) {
             $baseType = Utils::getBaseTypeFromArrayType($field->type);
             $baseItem = ($baseType === 'file') ? [
                 'type' => 'string',
@@ -503,7 +503,7 @@ class OpenAPISpecWriter
             }
 
             return $fieldData;
-        } else if ($field->type === 'object') {
+        } elseif ($field->type === 'object') {
             return [
                 'type' => 'object',
                 'description' => $field->description ?: '',
@@ -521,9 +521,11 @@ class OpenAPISpecWriter
         }
     }
 
-    function operationId(OutputEndpointData $endpoint): string
+    public function operationId(OutputEndpointData $endpoint): string
     {
-        if ($endpoint->metadata->title) return preg_replace('/[^\w+]/', '', Str::camel($endpoint->metadata->title));
+        if ($endpoint->metadata->title) {
+            return preg_replace('/[^\w+]/', '', Str::camel($endpoint->metadata->title));
+        }
 
         $parts = preg_split('/[^\w+]/', $endpoint->uri, -1, PREG_SPLIT_NO_EMPTY);
         return Str::lower($endpoint->httpMethods[0]) . join('', array_map(fn ($part) => ucfirst($part), $parts));
@@ -538,7 +540,7 @@ class OpenAPISpecWriter
             $fieldObjectSpec = [];
             $fieldObjectSpec['type'] = 'object';
             $fieldObjectSpec['properties']= [];
-            foreach($value as $subKey => $subValue){
+            foreach ($value as $subKey => $subValue) {
                 $newKey = sprintf('%s.%s', $key, $subKey);
                 $generateResponseContentFieldSpec = $this->generateObjectPropertiesResponseSpec(
                     $subValue,
@@ -546,7 +548,6 @@ class OpenAPISpecWriter
                     $newKey
                 );
                 $fieldObjectSpec['properties'][$subKey] = $generateResponseContentFieldSpec[$newKey];
-
             }
             return  [$key => $fieldObjectSpec];
         }

@@ -15,7 +15,7 @@ class PostmanCollectionWriter
      * Postman collection schema version
      * https://schema.getpostman.com/json/collection/v2.1.0/collection.json
      */
-    const SPEC_VERSION = '2.1.0';
+    public const SPEC_VERSION = '2.1.0';
 
     protected DocumentationConfig $config;
 
@@ -181,7 +181,9 @@ class PostmanCollectionWriter
             case 'formdata':
             case 'urlencoded':
                 $body[$inputMode] = $this->getFormDataParams(
-                    $endpoint->cleanBodyParameters, null, $endpoint->bodyParameters
+                    $endpoint->cleanBodyParameters,
+                    null,
+                    $endpoint->bodyParameters
                 );
                 foreach ($endpoint->fileParameters as $key => $value) {
                     while (is_array($value)) {
@@ -379,7 +381,7 @@ class PostmanCollectionWriter
         // Don't include the status code in description; see https://github.com/knuckleswtf/scribe/issues/271
         if (preg_match("/\d{3},\s+(.+)/", $description, $matches)) {
             $description = $matches[1];
-        } else if ($description === strval($response->status)) {
+        } elseif ($description === strval($response->status)) {
             $description = '';
         }
         return $description;

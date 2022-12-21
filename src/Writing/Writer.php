@@ -226,7 +226,9 @@ class Writer
 
     protected function getLaravelTypeOutputPath(): ?string
     {
-        if ($this->isStatic) return null;
+        if ($this->isStatic) {
+            return null;
+        }
 
         return config('view.paths.0', function_exists('base_path') ? base_path("resources/views") : "resources/views")."/$this->docsName";
     }
@@ -241,5 +243,4 @@ class Writer
     {
         return str_replace("\\", "/", str_replace(getcwd() . DIRECTORY_SEPARATOR, "", $path));
     }
-
 }

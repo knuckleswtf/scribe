@@ -48,7 +48,7 @@ class HtmlWriter
         $headingsAfterEndpoints = $this->markdownParser->headings;
 
         foreach ($groupedEndpoints as &$group) {
-                $group['subgroups'] = collect($group['endpoints'])->groupBy('metadata.subgroup')->all();
+            $group['subgroups'] = collect($group['endpoints'])->groupBy('metadata.subgroup')->all();
         }
         $theme = $this->config->get('theme') ?? 'default';
         $output = View::make("scribe::themes.$theme.index", [
@@ -150,8 +150,8 @@ class HtmlWriter
         $lastUpdated = $this->config->get('last_updated', 'Last updated: {date:F j, Y}');
 
         $tokens = [
-            "date" => fn($format) => date($format),
-            "git" => fn($format) => match ($format) {
+            "date" => fn ($format) => date($format),
+            "git" => fn ($format) => match ($format) {
                 "short" => trim(shell_exec('git rev-parse --short HEAD')),
                 "long" => trim(shell_exec('git rev-parse HEAD')),
                 default => throw new InvalidArgumentException("The `git` token only supports formats 'short' and 'long', but you specified $format"),
@@ -160,7 +160,7 @@ class HtmlWriter
 
         foreach ($tokens as $token => $resolver) {
             $matches = [];
-            if(preg_match('#(\{'.$token.':(.+?)})#', $lastUpdated, $matches)) {
+            if (preg_match('#(\{'.$token.':(.+?)})#', $lastUpdated, $matches)) {
                 $lastUpdated = str_replace($matches[1], $resolver($matches[2]), $lastUpdated);
             }
         }
@@ -178,7 +178,8 @@ class HtmlWriter
                 'slug' => $heading['slug'],
                 'name' => $heading['text'],
                 'subheadings' => [],
-            ];;
+            ];
+            ;
             if ($heading['level'] === 1) {
                 $headings[] = $element;
                 $lastL1ElementIndex = count($headings) - 1;
@@ -195,10 +196,10 @@ class HtmlWriter
                 'name' => $group['name'],
                 'subheadings' => collect($group['subgroups'])->flatMap(function ($endpoints, $subgroupName) use ($groupSlug) {
                     if ($subgroupName === "") {
-                        return $endpoints->map(fn(OutputEndpointData $endpoint) => [
+                        return $endpoints->map(fn (OutputEndpointData $endpoint) => [
                             'slug' => $endpoint->fullSlug(),
                             'name' => $endpoint->name(),
-                            'subheadings' => []
+                            'subheadings' => [],
                         ])->values();
                     }
 
@@ -206,10 +207,10 @@ class HtmlWriter
                         [
                             'slug' => "$groupSlug-" . Str::slug($subgroupName),
                             'name' => $subgroupName,
-                            'subheadings' => $endpoints->map(fn($endpoint) => [
+                            'subheadings' => $endpoints->map(fn ($endpoint) => [
                                 'slug' => $endpoint->fullSlug(),
                                 'name' => $endpoint->name(),
-                                'subheadings' => []
+                                'subheadings' => [],
                             ])->values(),
                         ],
                     ];
@@ -223,7 +224,8 @@ class HtmlWriter
                 'slug' => $heading['slug'],
                 'name' => $heading['text'],
                 'subheadings' => [],
-            ];;
+            ];
+            ;
             if ($heading['level'] === 1) {
                 $headings[] = $element;
                 $lastL1ElementIndex = count($headings) - 1;
