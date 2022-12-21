@@ -31,5 +31,4 @@ class MakeStrategy extends GeneratorCommand
 
         return $stub;
     }
-
 }

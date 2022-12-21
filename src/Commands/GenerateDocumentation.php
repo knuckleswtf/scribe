@@ -151,14 +151,22 @@ class GenerateDocumentation extends Command
 
     protected function upgradeConfigFileIfNeeded(): void
     {
-        if ($this->option('no-upgrade-check')) return;
+        if ($this->option('no-upgrade-check')) {
+            return;
+        }
 
         $this->info("Checking for any pending upgrades to your config file...");
         try {
             $upgrader = Upgrader::ofConfigFile("config/{$this->configName}.php", __DIR__ . '/../../config/scribe.php')
                 ->dontTouch(
-                    'routes', 'example_languages', 'database_connections_to_transact', 'strategies', 'laravel.middleware',
-                    'postman.overrides', 'openapi.overrides', 'groups'
+                    'routes',
+                    'example_languages',
+                    'database_connections_to_transact',
+                    'strategies',
+                    'laravel.middleware',
+                    'postman.overrides',
+                    'openapi.overrides',
+                    'groups'
                 );
             $changes = $upgrader->dryRun();
             if (!empty($changes)) {
@@ -186,7 +194,6 @@ class GenerateDocumentation extends Command
             e::dumpExceptionIfVerbose($e);
             $this->warn("This did not affect your docs. Please report this issue in the project repo: https://github.com/knuckleswtf/scribe");
         }
-
     }
 
     protected function sayGoodbye(bool $errored = false): void
@@ -196,7 +203,7 @@ class GenerateDocumentation extends Command
             if ($this->docConfig->get('laravel.add_routes')) {
                 $message .= 'Visit your docs at ' . url($this->docConfig->get('laravel.docs_url'));
             }
-        } else if (Str::endsWith(base_path('public'), 'public') && Str::startsWith($this->docConfig->get('static.output_path'), 'public/')) {
+        } elseif (Str::endsWith(base_path('public'), 'public') && Str::startsWith($this->docConfig->get('static.output_path'), 'public/')) {
             $message = 'Visit your docs at ' . url(str_replace('public/', '', $this->docConfig->get('static.output_path')));
         }
 

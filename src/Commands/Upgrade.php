@@ -37,17 +37,27 @@ class Upgrade extends Command
 
         $isMajorUpgrade = array_key_exists("default_group", $oldConfig) || array_key_exists("faker_seed", $oldConfig);
 
-        if ($isMajorUpgrade) $this->info("Welcome to the Scribe v3 to v4 upgrader.");
+        if ($isMajorUpgrade) {
+            $this->info("Welcome to the Scribe v3 to v4 upgrader.");
+        }
         $this->line("Checking for config file changes...");
 
         $upgrader = Upgrader::ofConfigFile("config/$this->configName.php", __DIR__ . '/../../config/scribe.php')
-            ->dontTouch('routes', 'laravel.middleware', 'postman.overrides', 'openapi.overrides',
-                'example_languages', 'database_connections_to_transact', 'strategies')
+            ->dontTouch(
+                'routes',
+                'laravel.middleware',
+                'postman.overrides',
+                'openapi.overrides',
+                'example_languages',
+                'database_connections_to_transact',
+                'strategies'
+            )
             ->move('default_group', 'groups.default')
             ->move('faker_seed', 'examples.faker_seed');
 
-        if (!$isMajorUpgrade)
+        if (!$isMajorUpgrade) {
             $upgrader->dontTouch('groups');
+        }
 
         $changes = $upgrader->dryRun();
         if (empty($changes)) {
@@ -124,7 +134,7 @@ class Upgrade extends Command
                     if (($nextGroup = $endpoint['metadata']['beforeGroup'] ?? null)) {
                         $index = $keyIndices[$nextGroup];
                         array_splice($groupsOrder, $index, 0, [$groupName]);
-                    } else if (($previousGroup = $endpoint['metadata']['afterGroup'] ?? null)) {
+                    } elseif (($previousGroup = $endpoint['metadata']['afterGroup'] ?? null)) {
                         $index = $keyIndices[$previousGroup];
                         array_splice($groupsOrder, $index + 1, 0, [$groupName]);
                     } else {
@@ -160,5 +170,4 @@ class Upgrade extends Command
             $this->info($output);
         }
     }
-
 }

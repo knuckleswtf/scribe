@@ -31,5 +31,4 @@ class DiffConfig extends Command
             $this->line("$key => $item");
         }
     }
-
 }
