@@ -36,3 +36,8 @@ jobs:
         env:
           COMPOSER_MEMORY_LIMIT: "-1"
         run: composer lint
+
+      - name: Code style check
+        env:
+          COMPOSER_MEMORY_LIMIT: "-1"
+        run: composer cs-check
