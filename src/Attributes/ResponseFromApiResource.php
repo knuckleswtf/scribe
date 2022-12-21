@@ -17,11 +17,9 @@ class ResponseFromApiResource
         public bool    $collection = false,
         public array   $factoryStates = [],
         public array   $with = [],
-
         public ?int    $paginate = null,
         public ?int    $simplePaginate = null,
         public array   $additional = [],
-    )
-    {
+    ) {
     }
 }

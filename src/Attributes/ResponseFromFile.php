@@ -21,7 +21,7 @@ class ResponseFromFile
         return  [
             "status" => $this->status,
             "description" => $this->description,
-            "content" => ResponseFileTools::getResponseContents($this->file, $this->merge)
+            "content" => ResponseFileTools::getResponseContents($this->file, $this->merge),
         ];
     }
 }

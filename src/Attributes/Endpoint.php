@@ -12,8 +12,7 @@ class Endpoint
         public ?string $description = '',
         /** You can use the separate #[Authenticated] attribute, or pass authenticated: false to this. */
         public ?bool   $authenticated = null,
-    )
-    {
+    ) {
     }
 
     public function toArray()

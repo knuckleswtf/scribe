@@ -9,8 +9,7 @@ class Authenticated
 {
     public function __construct(
         public ?bool $authenticated = true,
-    )
-    {
+    ) {
     }
 
     public function toArray()
