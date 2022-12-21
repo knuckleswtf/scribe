@@ -32,10 +32,11 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
     public static string $cacheDir;
 
     public function __construct(
-        private GenerateDocumentation $command, private RouteMatcherInterface $routeMatcher,
-        private bool $preserveUserChanges = true, protected string $docsName = 'scribe'
-    )
-    {
+        private GenerateDocumentation $command,
+        private RouteMatcherInterface $routeMatcher,
+        private bool $preserveUserChanges = true,
+        protected string $docsName = 'scribe'
+    ) {
         $this->docConfig = $command->getDocConfig();
 
         static::$camelDir = Camel::camelDir($this->docsName);
@@ -71,11 +72,11 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
         $groupedEndpoints = collect($endpoints)->groupBy('metadata.groupName')->map(function (Collection $endpointsInGroup) {
             return [
                 'name' => $endpointsInGroup->first(function (ExtractedEndpointData $endpointData) {
-                        return !empty($endpointData->metadata->groupName);
-                    })->metadata->groupName ?? '',
+                    return !empty($endpointData->metadata->groupName);
+                })->metadata->groupName ?? '',
                 'description' => $endpointsInGroup->first(function (ExtractedEndpointData $endpointData) {
-                        return !empty($endpointData->metadata->groupDescription);
-                    })->metadata->groupDescription ?? '',
+                    return !empty($endpointData->metadata->groupDescription);
+                })->metadata->groupDescription ?? '',
                 'endpoints' => $endpointsInGroup->toArray(),
             ];
         })->all();
@@ -203,7 +204,9 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
         $fileNameIndex = 0;
         foreach ($grouped as $group) {
             $yaml = Yaml::dump(
-                $group, 20, 2,
+                $group,
+                20,
+                2,
                 Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP | Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK
             );
 
