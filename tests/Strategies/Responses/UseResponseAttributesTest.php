@@ -32,7 +32,7 @@ class UseResponseAttributesTest extends BaseLaravelTest
             ScribeServiceProvider::class,
         ];
         if (class_exists(\Illuminate\Database\Eloquent\LegacyFactoryServiceProvider::class)) {
-            $providers[] = \Illuminate\Database\Eloquent\LegacyFactoryServiceProvider ::class;
+            $providers[] = \Illuminate\Database\Eloquent\LegacyFactoryServiceProvider::class;
         }
         return $providers;
     }
@@ -72,7 +72,7 @@ class UseResponseAttributesTest extends BaseLaravelTest
             [
                 'status' => 200,
                 'content' => json_encode(["all" => "good"]),
-                "description" => "Success"
+                "description" => "Success",
             ],
             [
                 'status' => 201,
@@ -185,8 +185,10 @@ class UseResponseAttributesTest extends BaseLaravelTest
 
     protected function endpoint(string $method): ExtractedEndpointData
     {
-        $endpoint = new class extends ExtractedEndpointData {
-            public function __construct(array $parameters = []) {}
+        $endpoint = new class () extends ExtractedEndpointData {
+            public function __construct(array $parameters = [])
+            {
+            }
         };
         $endpoint->controller = new ReflectionClass(ResponseAttributesTestController::class);
         $endpoint->method = $endpoint->controller->getMethod($method);
@@ -201,26 +203,32 @@ class ResponseAttributesTestController
     #[Response('{"all":"good"}', 201)]
     public function plainResponseAttributes()
     {
-
     }
 
     #[ResponseFromFile("tests/Fixtures/response_error_test.json", 401, ["merge" => "this"])]
     public function responseFileAttributes()
     {
-
     }
 
-    #[ResponseFromApiResource(TestUserApiResource::class, TestUser::class, collection: true,
-        factoryStates: ["state1", "random-state"], simplePaginate: 1, additional: ["a" => "b"])]
+    #[ResponseFromApiResource(
+        TestUserApiResource::class,
+        TestUser::class,
+        collection: true,
+        factoryStates: ["state1", "random-state"],
+        simplePaginate: 1,
+        additional: ["a" => "b"]
+    )]
     public function apiResourceAttributes()
     {
-
     }
 
-    #[ResponseFromTransformer(TestTransformer::class, TestModel::class, collection: true,
-        paginate: [IlluminatePaginatorAdapter::class, 1])]
+    #[ResponseFromTransformer(
+        TestTransformer::class,
+        TestModel::class,
+        collection: true,
+        paginate: [IlluminatePaginatorAdapter::class, 1]
+    )]
     public function transformerAttributes()
     {
-
     }
 }

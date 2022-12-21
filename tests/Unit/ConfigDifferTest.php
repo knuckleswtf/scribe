@@ -58,7 +58,7 @@ class ConfigDifferTest extends TestCase
             'description' => 'Details',
             'test' => [
                 'string' => 'value',
-                'array' => [ 'new-item' ]
+                'array' => [ 'new-item' ],
             ],
         ];
         $differ = new ConfigDiffer($default, $user, ignorePaths: ['description', 'test.array']);

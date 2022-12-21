@@ -57,7 +57,7 @@ class GetFromQueryParamAttributeTest extends TestCase
                 'type' => 'string[]',
                 'required' => false,
                 'description' => 'The fields.',
-                'example' => ['age', 'name']
+                'example' => ['age', 'name'],
             ],
             'filters' => [
                 'type' => 'object',
@@ -68,7 +68,7 @@ class GetFromQueryParamAttributeTest extends TestCase
                 'type' => 'number',
                 'required' => false,
                 'description' => 'Class.',
-                'example' => 11.0
+                'example' => 11.0,
             ],
             'filters.other' => [
                 'type' => 'string',
@@ -79,13 +79,13 @@ class GetFromQueryParamAttributeTest extends TestCase
                 'type' => 'string',
                 'required' => true,
                 'description' => '',
-                'example' => null
+                'example' => null,
             ],
             'noExample' => [
                 'type' => 'string',
                 'required' => true,
                 'description' => 'Something',
-                'example' => null
+                'example' => null,
             ],
         ], $results);
     }
@@ -98,8 +98,10 @@ class GetFromQueryParamAttributeTest extends TestCase
 
     protected function endpoint(Closure $configure): ExtractedEndpointData
     {
-        $endpoint = new class extends ExtractedEndpointData {
-            public function __construct(array $parameters = []) {}
+        $endpoint = new class () extends ExtractedEndpointData {
+            public function __construct(array $parameters = [])
+            {
+            }
         };
         $configure($endpoint);
         return $endpoint;
@@ -123,6 +125,5 @@ class QueryParamAttributeTestController
     #[QueryParam("noExample", description: "Something", example: "No-example")]
     public function methodWithAttributes()
     {
-
     }
 }

@@ -121,7 +121,6 @@ class UseTransformerTagsTest extends BaseLaravelTest
                 ]),
             ],
         ], $results);
-
     }
 
     /** @test */
@@ -152,13 +151,11 @@ class UseTransformerTagsTest extends BaseLaravelTest
                 ]),
             ],
         ], $results);
-
     }
 
     /** @test */
     public function can_parse_transformercollection_tag_with_model()
     {
-
         $strategy = new UseTransformerTags(new DocumentationConfig([]));
         $tags = [
             new Tag('transformercollection', '\Knuckles\Scribe\Tests\Fixtures\TestTransformer'),
@@ -190,7 +187,6 @@ class UseTransformerTagsTest extends BaseLaravelTest
     /** @test */
     public function can_parse_transformercollection_tag_with_model_and_paginator_data()
     {
-
         $strategy = new UseTransformerTags(new DocumentationConfig([]));
         $tags = [
             new Tag('transformercollection', '\Knuckles\Scribe\Tests\Fixtures\TestTransformer'),

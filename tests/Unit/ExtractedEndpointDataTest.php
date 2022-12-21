@@ -33,9 +33,13 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
     public function allows_user_specified_normalization()
     {
         Scribe::normalizeEndpointUrlUsing(function (string $url, LaravelRoute $route, \ReflectionFunctionAbstract $method, ?\ReflectionClass $controller) {
-            if ($url == 'things/{thing}') return 'things/{the_id_of_the_thing}';
+            if ($url == 'things/{thing}') {
+                return 'things/{the_id_of_the_thing}';
+            }
 
-            if ($route->named('things.otherthings.destroy')) return 'things/{thing-id}/otherthings/{other_thing-id}';
+            if ($route->named('things.otherthings.destroy')) {
+                return 'things/{thing-id}/otherthings/{other_thing-id}';
+            }
         });
 
         Route::apiResource('things', TestController::class)->only('show');
@@ -100,7 +104,7 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
     protected function getRoute(array $matchRules): LaravelRoute
     {
         $routeRules[0]['match'] = array_merge($matchRules, ['domains' => '*']);
-        $matchedRoutes = (new RouteMatcher)->getRoutes($routeRules);
+        $matchedRoutes = (new RouteMatcher())->getRoutes($routeRules);
         $this->assertCount(1, $matchedRoutes);
         return $matchedRoutes[0]->getRoute();
     }

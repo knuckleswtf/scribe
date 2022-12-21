@@ -77,21 +77,20 @@ class GetFromUrlParamTagTest extends TestCase
                 'type' => 'integer',
                 'required' => false,
                 'description' => '',
-                'example' => 12
+                'example' => 12,
             ],
             'noExampleNoDescription' => [
                 'type' => 'string',
                 'required' => false,
                 'description' => '',
-                'example' => null
+                'example' => null,
             ],
             'noExample' => [
                 'type' => 'string',
                 'required' => false,
                 'description' => 'Something',
-                'example' => null
+                'example' => null,
             ],
         ], $results);
     }
-
 }

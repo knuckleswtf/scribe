@@ -55,7 +55,8 @@ class GetFromLaravelAPITest extends BaseLaravelTest
             "type" => "string",
         ], $results['cat_id']);
 
-        $endpoint->route = app(Router::class)->addRoute(['GET'], 'dogs/{id}', ['uses' => [TestController::class, 'dummy']]);;
+        $endpoint->route = app(Router::class)->addRoute(['GET'], 'dogs/{id}', ['uses' => [TestController::class, 'dummy']]);
+        ;
         $endpoint->uri = $endpoint->route->uri;
         $results = $this->fetch($endpoint);
 
@@ -152,7 +153,7 @@ class GetFromLaravelAPITest extends BaseLaravelTest
 
     protected function endpoint(Closure $configure): ExtractedEndpointData
     {
-        $endpoint = new class extends ExtractedEndpointData {
+        $endpoint = new class () extends ExtractedEndpointData {
             public function __construct(array $parameters = [])
             {
             }

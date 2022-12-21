@@ -104,14 +104,14 @@ class UseMetadataAttributesTest extends TestCase
     protected function fetch($endpoint): array
     {
         $strategy = new GetFromMetadataAttributes(new DocumentationConfig([
-            "auth" => ["default" => true]
+            "auth" => ["default" => true],
         ]));
         return $strategy($endpoint, []);
     }
 
     protected function endpoint(Closure $configure): ExtractedEndpointData
     {
-        $endpoint = new class extends ExtractedEndpointData {
+        $endpoint = new class () extends ExtractedEndpointData {
             public function __construct(array $parameters = [])
             {
             }

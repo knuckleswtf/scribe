@@ -29,5 +29,4 @@ class GetFromHeaderTagTest extends TestCase
         $this->assertArrayHasKey('Some-Custom', $results);
         $this->assertNotEmpty($results['Some-Custom']);
     }
-
 }

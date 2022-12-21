@@ -150,16 +150,20 @@ class OutputTest extends BaseLaravelTest
 
         $output = $this->generate(["--config" => "scribe_admin"]);
         $this->assertStringContainsString(
-            "Wrote Blade docs to: vendor/orchestra/testbench-core/laravel/resources/views/scribe_admin", $output
+            "Wrote Blade docs to: vendor/orchestra/testbench-core/laravel/resources/views/scribe_admin",
+            $output
         );
         $this->assertStringContainsString(
-            "Wrote Laravel assets to: vendor/orchestra/testbench-core/laravel/public/vendor/scribe_admin", $output
+            "Wrote Laravel assets to: vendor/orchestra/testbench-core/laravel/public/vendor/scribe_admin",
+            $output
         );
         $this->assertStringContainsString(
-            "Wrote Postman collection to: vendor/orchestra/testbench-core/laravel/storage/app/scribe_admin/collection.json", $output
+            "Wrote Postman collection to: vendor/orchestra/testbench-core/laravel/storage/app/scribe_admin/collection.json",
+            $output
         );
         $this->assertStringContainsString(
-            "Wrote OpenAPI specification to: vendor/orchestra/testbench-core/laravel/storage/app/scribe_admin/openapi.yaml", $output
+            "Wrote OpenAPI specification to: vendor/orchestra/testbench-core/laravel/storage/app/scribe_admin/openapi.yaml",
+            $output
         );
 
         $paths = collect([
@@ -167,8 +171,8 @@ class OutputTest extends BaseLaravelTest
             Storage::disk('local')->path('scribe_admin/openapi.yaml'),
             View::getFinder()->find('scribe_admin/index'),
         ]);
-        $paths->each(fn($path) => $this->assertFileContainsString($path, $title));
-        $paths->each(fn($path) => unlink($path));
+        $paths->each(fn ($path) => $this->assertFileContainsString($path, $title));
+        $paths->each(fn ($path) => unlink($path));
 
         $this->assertDirectoryExists(".scribe_admin");
         Utils::deleteDirectoryAndContents(".scribe_admin");
@@ -284,7 +288,6 @@ class OutputTest extends BaseLaravelTest
         $this->assertEquals('1. Group 1', $firstGroup->textContent);
         $this->assertEquals('2. Group 2', $secondGroup->textContent);
         $this->assertEquals('10. Group 10', $thirdGroup->textContent);
-
     }
 
     /** @test */
@@ -362,7 +365,9 @@ class OutputTest extends BaseLaravelTest
             '2. Group 2',
         ]]);
 
-        if (!is_dir('.scribe/endpoints')) mkdir('.scribe/endpoints', 0777, true);
+        if (!is_dir('.scribe/endpoints')) {
+            mkdir('.scribe/endpoints', 0777, true);
+        }
         copy(__DIR__ . '/../Fixtures/custom.0.yaml', '.scribe/endpoints/custom.0.yaml');
 
         $this->generate();
@@ -421,7 +426,9 @@ class OutputTest extends BaseLaravelTest
         ];
         $group['endpoints'][0]['urlParameters']['a_param'] = $extraParam;
         file_put_contents($firstGroupFilePath, Yaml::dump(
-            $group, 20, 2,
+            $group,
+            20,
+            2,
             Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP
         ));
         file_put_contents($authFilePath, 'Some other useful stuff.', FILE_APPEND);
@@ -479,7 +486,7 @@ class OutputTest extends BaseLaravelTest
     /** @test */
     public function generates_correct_url_params_from_resource_routes_and_model_binding_with_bound_interfaces()
     {
-        $this->app->bind(TestPostBoundInterface::class, fn() => new TestPost());
+        $this->app->bind(TestPostBoundInterface::class, fn () => new TestPost());
 
         RouteFacade::resource('posts', TestPostBoundInterfaceController::class)->only('update');
 
@@ -534,17 +541,17 @@ class OutputTest extends BaseLaravelTest
         /**
          * @bodyParam param string required
          */
-        RouteFacade::post('no-file', fn() => null);
+        RouteFacade::post('no-file', fn () => null);
         /**
          * @bodyParam a_file file required
          */
-        RouteFacade::post('top-level-file', fn() => null);
+        RouteFacade::post('top-level-file', fn () => null);
         /**
          * @bodyParam data object
          * @bodyParam data.thing string
          * @bodyParam data.a_file file
          */
-        RouteFacade::post('nested-file', fn() => null);
+        RouteFacade::post('nested-file', fn () => null);
         config(['scribe.routes.0.match.prefixes' => ['*']]);
         config(['scribe.routes.0.apply.response_calls.methods' => []]);
 
@@ -557,7 +564,6 @@ class OutputTest extends BaseLaravelTest
         $this->assertEquals('multipart/form-data', $group['endpoints'][1]['headers']['Content-Type']);
         $this->assertEquals('nested-file', $group['endpoints'][2]['uri']);
         $this->assertEquals('multipart/form-data', $group['endpoints'][2]['headers']['Content-Type']);
-
     }
 
     protected function postmanOutputPath(bool $laravelType = false): string

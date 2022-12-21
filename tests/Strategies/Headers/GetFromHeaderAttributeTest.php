@@ -17,8 +17,10 @@ class GetFromHeaderAttributeTest extends TestCase
     /** @test */
     public function can_fetch_from_header_attribute()
     {
-        $endpoint = new class extends ExtractedEndpointData {
-            public function __construct(array $parameters = []) {}
+        $endpoint = new class () extends ExtractedEndpointData {
+            public function __construct(array $parameters = [])
+            {
+            }
         };
         $endpoint->controller = new ReflectionClass(\Knuckles\Scribe\Tests\Strategies\Headers\HeaderAttributeTestController::class);
         $endpoint->method = $endpoint->controller->getMethod('methodWithAttributes');
@@ -32,7 +34,6 @@ class GetFromHeaderAttributeTest extends TestCase
         $this->assertArrayHasKey('Some-Custom', $results);
         $this->assertNotEmpty($results['Some-Custom']);
     }
-
 }
 
 #[Header("Api-Version", "v1")]
@@ -41,6 +42,5 @@ class HeaderAttributeTestController
     #[Header("Some-Custom")]
     public function methodWithAttributes()
     {
-
     }
 }

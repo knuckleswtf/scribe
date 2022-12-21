@@ -518,7 +518,6 @@ class TestController extends Controller
 
         // Do stuff
         if ($validator->fails()) {
-
         }
     }
 

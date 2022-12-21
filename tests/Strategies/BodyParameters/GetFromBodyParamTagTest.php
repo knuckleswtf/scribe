@@ -228,5 +228,4 @@ class GetFromBodyParamTagTest extends TestCase
             ],
         ], $results);
     }
-
 }

@@ -17,12 +17,12 @@ class GetFromDocBlocksTest extends TestCase
     {
         $strategy = new GetFromDocBlocks(new DocumentationConfig([]));
         $methodDocblock = <<<DOCBLOCK
-/**
-  * Endpoint title.
-  * Endpoint description.
-  * Multiline.
-  */
-DOCBLOCK;
+            /**
+              * Endpoint title.
+              * Endpoint description.
+              * Multiline.
+              */
+            DOCBLOCK;
         $classDocblock = '';
         $results = $strategy->getMetadataFromDocBlock(new DocBlock($methodDocblock), new DocBlock($classDocblock));
 
@@ -37,18 +37,18 @@ DOCBLOCK;
     {
         $strategy = new GetFromDocBlocks(new DocumentationConfig([]));
         $methodDocblock = <<<DOCBLOCK
-/**
-  * Endpoint title.
-  * Endpoint description.
-  * Multiline.
-  */
-DOCBLOCK;
+            /**
+              * Endpoint title.
+              * Endpoint description.
+              * Multiline.
+              */
+            DOCBLOCK;
         $classDocblock = <<<DOCBLOCK
-/**
-  * @group Group A
-  * Group description.
-  */
-DOCBLOCK;
+            /**
+              * @group Group A
+              * Group description.
+              */
+            DOCBLOCK;
         $results = $strategy->getMetadataFromDocBlock(new DocBlock($methodDocblock), new DocBlock($classDocblock));
 
         $this->assertArrayNotHasKey('authenticated', $results);
@@ -59,18 +59,18 @@ DOCBLOCK;
         $this->assertSame("Endpoint description.\nMultiline.", $results['description']);
 
         $methodDocblock = <<<DOCBLOCK
-/**
-  * Endpoint title.
-  * @authenticated
-  */
-DOCBLOCK;
+            /**
+              * Endpoint title.
+              * @authenticated
+              */
+            DOCBLOCK;
         $classDocblock = <<<DOCBLOCK
-/**
-  * @authenticated
-  * @subgroup Scheiße
-  * @subgroupDescription Heilige Scheiße
-  */
-DOCBLOCK;
+            /**
+              * @authenticated
+              * @subgroup Scheiße
+              * @subgroupDescription Heilige Scheiße
+              */
+            DOCBLOCK;
         $results = $strategy->getMetadataFromDocBlock(new DocBlock($methodDocblock), new DocBlock($classDocblock));
 
         $this->assertTrue($results['authenticated']);
@@ -87,19 +87,19 @@ DOCBLOCK;
     {
         $strategy = new GetFromDocBlocks(new DocumentationConfig([]));
         $methodDocblock = <<<DOCBLOCK
-/**
-  * Endpoint title.
-  * This is the endpoint description.
-  * @authenticated
-  * @group Group from method
-  */
-DOCBLOCK;
+            /**
+              * Endpoint title.
+              * This is the endpoint description.
+              * @authenticated
+              * @group Group from method
+              */
+            DOCBLOCK;
         $classDocblock = <<<DOCBLOCK
-/**
-  * @group Group from controller
-  * This is the group description.
-  */
-DOCBLOCK;
+            /**
+              * @group Group from controller
+              * This is the group description.
+              */
+            DOCBLOCK;
         $results = $strategy->getMetadataFromDocBlock(new DocBlock($methodDocblock), new DocBlock($classDocblock));
 
         $this->assertTrue($results['authenticated']);
@@ -107,6 +107,5 @@ DOCBLOCK;
         $this->assertSame("", $results['groupDescription']);
         $this->assertSame("This is the endpoint description.", $results['description']);
         $this->assertSame("Endpoint title.", $results['title']);
-
     }
 }

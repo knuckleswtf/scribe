@@ -84,7 +84,7 @@ class GetFromResponseFieldAttributesTest extends TestCase
 
     protected function endpoint(Closure $configure): ExtractedEndpointData
     {
-        $endpoint = new class extends ExtractedEndpointData {
+        $endpoint = new class () extends ExtractedEndpointData {
             public function __construct(array $parameters = [])
             {
             }

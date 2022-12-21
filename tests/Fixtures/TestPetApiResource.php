@@ -27,7 +27,7 @@ class TestPetApiResource extends JsonResource
             }),
             'ownership' => $this->whenPivotLoaded('pet_user', function () {
                 return $this->pivot;
-            })
+            }),
         ];
 
         return $result;

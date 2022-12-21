@@ -442,7 +442,7 @@ class OpenAPISpecWriterTest extends TestCase
                 ],
                 'sub level 0.sub level 1 key 3.sub level 2 key 1'=> [
                     'description' => 'This is description of nested object',
-                ]
+                ],
             ],
         ]);
         $endpointData2 = $this->createMockEndpointData([
@@ -485,7 +485,7 @@ class OpenAPISpecWriterTest extends TestCase
                                     'properties' => [
                                         'sub level 1 key 1' => [
                                             'type' => 'string',
-                                            'example' => 'sl0_sl1k1'
+                                            'example' => 'sl0_sl1k1',
                                         ],
                                         'sub level 1 key 2' => [
                                             'type' => 'array',
@@ -493,13 +493,13 @@ class OpenAPISpecWriterTest extends TestCase
                                                 [
                                                     'sub level 2 key 1' => 'sl0_sl1k2_sl2k1',
                                                     'sub level 2 key 2' => [
-                                                        'sub level 3 key 1' => 'sl0_sl1k2_sl2k2_sl3k1'
-                                                    ]
-                                                ]
+                                                        'sub level 3 key 1' => 'sl0_sl1k2_sl2k2_sl3k1',
+                                                    ],
+                                                ],
                                             ],
                                             'items' => [
-                                                'type' => 'object'
-                                            ]
+                                                'type' => 'object',
+                                            ],
                                         ],
                                         'sub level 1 key 3' => [
                                             'type' => 'object',
@@ -507,29 +507,29 @@ class OpenAPISpecWriterTest extends TestCase
                                                 'sub level 2 key 1' => [
                                                     'type' => 'string',
                                                     'example' => 'sl0_sl1k3_sl2k2',
-                                                    'description' => 'This is description of nested object'
+                                                    'description' => 'This is description of nested object',
                                                 ],
                                                 'sub level 2 key 2' => [
                                                     'type' => 'object',
                                                     'properties' => [
                                                         'sub level 3 key 1' => [
                                                             'type' => 'string',
-                                                            'example' => 'sl0_sl1k3_sl2k2_sl3k1'
+                                                            'example' => 'sl0_sl1k3_sl2k2_sl3k1',
                                                         ],
                                                         'sub level 3 key null' => [
                                                             'type' => 'string',
-                                                            'example' => null
+                                                            'example' => null,
                                                         ],
                                                         'sub level 3 key integer' => [
                                                             'type' => 'integer',
-                                                            'example' => 99
-                                                        ]
-                                                    ]
-                                                ]
-                                            ]
-                                        ]
-                                    ]
-                                ]
+                                                            'example' => 99,
+                                                        ],
+                                                    ],
+                                                ],
+                                            ],
+                                        ],
+                                    ],
+                                ],
                             ],
                         ],
                     ],

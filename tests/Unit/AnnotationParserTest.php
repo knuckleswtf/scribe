@@ -72,19 +72,19 @@ class AnnotationParserTest extends TestCase
                     'title' => 'This',
                     'message' => "everything good",
                     'dummy field' => 'dummy data',
-                    'snaked_data' => 'value'
-                ]
+                    'snaked_data' => 'value',
+                ],
             ],
             "no fields" => [
                 '{"message": "failed"}',
-                []
+                [],
             ],
             "fields with empty values" => [
                 'title= message="everything good"',
                 [
-                    'message' => 'everything good'
-                ]
-            ]
+                    'message' => 'everything good',
+                ],
+            ],
         ];
     }
 }

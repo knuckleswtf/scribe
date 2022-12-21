@@ -15,7 +15,7 @@ class TestUserApiResource extends JsonResource
      */
     public function toArray($request)
     {
-        if($request->route()->named('someone')) {
+        if ($request->route()->named('someone')) {
             return ['someone' => true];
         }
 

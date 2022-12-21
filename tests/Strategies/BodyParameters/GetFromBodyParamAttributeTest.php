@@ -191,13 +191,14 @@ class GetFromBodyParamAttributeTest extends TestCase
 
     protected function endpoint(Closure $configure): ExtractedEndpointData
     {
-        $endpoint = new class extends ExtractedEndpointData {
-            public function __construct(array $parameters = []) {}
+        $endpoint = new class () extends ExtractedEndpointData {
+            public function __construct(array $parameters = [])
+            {
+            }
         };
         $configure($endpoint);
         return $endpoint;
     }
-
 }
 
 
@@ -221,12 +222,10 @@ class BodyParamAttributeTestController
     #[BodyParam("users[].last_name", "string", "The last name of the user.", example: "Doe", required: false)]
     public function methodWithAttributes()
     {
-
     }
 
     public function methodWithFormRequest(BodyParamAttributeTestFormRequest $request)
     {
-
     }
 }
 
@@ -245,6 +244,6 @@ class BodyParamAttributeTestFormRequest extends FormRequest
 #[BodyParam('[].contacts[].first_name', 'string', 'The first name of the contact.', example: 'John', required: false)]
 #[BodyParam('[].contacts[].last_name', 'string', 'The last name of the contact.', example: 'Doe', required: false)]
 #[BodyParam('[].roles', 'string[]', 'The name of the role.', example: ["Admin"])]
-function functionWithAttributes() {
-
+function functionWithAttributes()
+{
 }

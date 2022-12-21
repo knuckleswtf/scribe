@@ -17,7 +17,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
     public function __construct(?string $name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
-        $this->strategy = new class {
+        $this->strategy = new class () {
             use ParsesValidationRules;
 
             public function parse($validationRules, $customParameterData = []): array
@@ -61,7 +61,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
     public function can_parse_rule_objects()
     {
         $results = $this->strategy->parse([
-            'in_param' => ['numeric', Rule::in([3,5,6])]
+            'in_param' => ['numeric', Rule::in([3,5,6])],
         ]);
         $this->assertEquals(
             'Must be one of <code>3</code>, <code>5</code>, or <code>6</code>.',
@@ -423,7 +423,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ],
         ];
         yield 'unsupported' => [
-            ['unsupported_param' => [new DummyValidationRule, 'bail']],
+            ['unsupported_param' => [new DummyValidationRule(), 'bail']],
             ['unsupported_param' => ['description' => $description]],
             ['description' => "$description."],
         ];

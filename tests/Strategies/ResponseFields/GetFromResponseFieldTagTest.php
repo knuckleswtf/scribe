@@ -121,8 +121,10 @@ class GetFromResponseFieldTagTest extends TestCase
 
     protected function endpoint(Closure $configure): ExtractedEndpointData
     {
-        $endpoint = new class extends ExtractedEndpointData {
-            public function __construct(array $parameters = []) {}
+        $endpoint = new class () extends ExtractedEndpointData {
+            public function __construct(array $parameters = [])
+            {
+            }
         };
         $configure($endpoint);
         return $endpoint;

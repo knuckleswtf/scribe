@@ -71,19 +71,19 @@ class GetFromUrlParamAttributeTest extends TestCase
                 'type' => 'integer',
                 'required' => true,
                 'description' => '',
-                'example' => 12
+                'example' => 12,
             ],
             'noExampleNoDescription' => [
                 'type' => 'string',
                 'required' => true,
                 'description' => '',
-                'example' => null
+                'example' => null,
             ],
             'noExample' => [
                 'type' => 'string',
                 'required' => true,
                 'description' => 'Something',
-                'example' => null
+                'example' => null,
             ],
         ], $results);
     }
@@ -115,13 +115,14 @@ class GetFromUrlParamAttributeTest extends TestCase
 
     protected function endpoint(Closure $configure): ExtractedEndpointData
     {
-        $endpoint = new class extends ExtractedEndpointData {
-            public function __construct(array $parameters = []) {}
+        $endpoint = new class () extends ExtractedEndpointData {
+            public function __construct(array $parameters = [])
+            {
+            }
         };
         $configure($endpoint);
         return $endpoint;
     }
-
 }
 
 
@@ -141,12 +142,10 @@ class UrlParamAttributeTestController
     #[UrlParam("noExample", description: "Something", example: "No-example")]
     public function methodWithAttributes()
     {
-
     }
 }
 
 #[UrlParam("a_parameter", required: false, type: "string", description: "Described", example: "en")]
 function functionWithAttributes()
 {
-
 }

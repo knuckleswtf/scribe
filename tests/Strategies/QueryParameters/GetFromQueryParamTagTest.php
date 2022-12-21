@@ -66,7 +66,7 @@ class GetFromQueryParamTagTest extends TestCase
                 'type' => 'string[]',
                 'required' => false,
                 'description' => 'The fields.',
-                'example' => ['age', 'name']
+                'example' => ['age', 'name'],
             ],
             'filters' => [
                 'type' => 'object',
@@ -77,7 +77,7 @@ class GetFromQueryParamTagTest extends TestCase
                 'type' => 'number',
                 'required' => false,
                 'description' => 'Class.',
-                'example' => 11.0
+                'example' => 11.0,
             ],
             'filters.other' => [
                 'type' => 'string',
@@ -88,13 +88,13 @@ class GetFromQueryParamTagTest extends TestCase
                 'type' => 'string',
                 'required' => false,
                 'description' => '',
-                'example' => null
+                'example' => null,
             ],
             'noExample' => [
                 'type' => 'string',
                 'required' => false,
                 'description' => 'Something',
-                'example' => null
+                'example' => null,
             ],
         ], $results);
     }
@@ -126,5 +126,4 @@ class GetFromQueryParamTagTest extends TestCase
             ],
         ], $results);
     }
-
 }

@@ -185,7 +185,7 @@ class ResponseCallsTest extends BaseLaravelTest
         $this->assertEquals('overridden_Bearer bearerToken', $responseContent['auth']);
         $this->assertEquals('overridden_echo/{id}bodyValue', $responseContent['bodyParam']);
 
-        Scribe::beforeResponseCall(fn() => null);
+        Scribe::beforeResponseCall(fn () => null);
     }
 
     /**

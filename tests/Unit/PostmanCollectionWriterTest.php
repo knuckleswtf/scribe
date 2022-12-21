@@ -281,8 +281,8 @@ class PostmanCollectionWriterTest extends TestCase
         $collection = $this->generate($config, [$endpoints]);
 
         $this->assertEquals('Group A', $collection['item'][0]['name']);
-        $this->assertEquals(['Subgroup A', 'POST endpoint2'], array_map(fn($i) => $i['name'], $collection['item'][0]['item']));
-        $this->assertEquals(['POST endpoint1', 'POST endpoint3'], array_map(fn($i) => $i['name'], $collection['item'][0]['item'][0]['item']));
+        $this->assertEquals(['Subgroup A', 'POST endpoint2'], array_map(fn ($i) => $i['name'], $collection['item'][0]['item']));
+        $this->assertEquals(['POST endpoint1', 'POST endpoint3'], array_map(fn ($i) => $i['name'], $collection['item'][0]['item'][0]['item']));
         $this->assertEquals('Subgroup A description', $collection['item'][0]['item'][0]['description']);
     }
 
@@ -318,9 +318,9 @@ class PostmanCollectionWriterTest extends TestCase
     }
 
     protected function generate(
-        array $config = ['base_url' => 'fake.localhost', 'title' => 'Test API'], array $endpoints = []
-    ): array
-    {
+        array $config = ['base_url' => 'fake.localhost', 'title' => 'Test API'],
+        array $endpoints = []
+    ): array {
         $writer = new PostmanCollectionWriter(new DocumentationConfig($config));
         return $writer->generatePostmanCollection($endpoints);
     }

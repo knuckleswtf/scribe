@@ -30,7 +30,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
             $providers[] = \Dingo\Api\Provider\LaravelServiceProvider::class;
         }
         if (class_exists(\Illuminate\Database\Eloquent\LegacyFactoryServiceProvider::class)) {
-            $providers[] = \Illuminate\Database\Eloquent\LegacyFactoryServiceProvider ::class;
+            $providers[] = \Illuminate\Database\Eloquent\LegacyFactoryServiceProvider::class;
         }
         return $providers;
     }
@@ -118,7 +118,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
                     'data' => [
                         'id' => 1,
                         'name' => 'Testy Testes',
-                        'email' => 'um'
+                        'email' => 'um',
                     ],
                 ]),
             ],
@@ -138,7 +138,10 @@ class UseApiResourceTagsTest extends BaseLaravelTest
             new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser'),
         ];
         $results = $strategy->getApiResourceResponseFromTags(
-            $strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route), false
+            $strategy->getApiResourceTag($tags),
+            $tags,
+            ExtractedEndpointData::fromRoute($route),
+            false
         );
 
         $this->assertArraySubset([
@@ -341,8 +344,8 @@ class UseApiResourceTagsTest extends BaseLaravelTest
                                         'id' => 6,
                                         'name' => 'Tested Again',
                                         'email' => 'a@b.com',
-                                    ]
-                                ]
+                                    ],
+                                ],
                             ],
                         ],
                     ],
@@ -383,7 +386,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
                             [
                                 'id' => 1,
                                 'name' => 'Mephistopheles',
-                                'species' => 'dog'
+                                'species' => 'dog',
                             ],
                         ],
                     ],
@@ -434,11 +437,11 @@ class UseApiResourceTagsTest extends BaseLaravelTest
                                     [
                                         'id' => 1,
                                         'name' => 'Mephistopheles',
-                                        'species' => 'dog'
+                                        'species' => 'dog',
                                     ],
                                 ],
-                            ]
-                        ]
+                            ],
+                        ],
 
                     ],
                 ]),
@@ -456,7 +459,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
             $pivot = $pet->newPivot($user, [
                 'pet_id' => $pet->id,
                 'user_id' => $user->id,
-                'duration' => 2
+                'duration' => 2,
             ], 'pet_user', true);
 
             $pet->setRelation('pivot', $pivot);
@@ -491,8 +494,8 @@ class UseApiResourceTagsTest extends BaseLaravelTest
                                 'ownership' => [
                                     'pet_id' => 1,
                                     'user_id' => 4,
-                                    'duration' => 2
-                                ]
+                                    'duration' => 2,
+                                ],
                             ],
                         ],
                     ],
@@ -548,7 +551,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
                             [
                                 'id' => 1,
                                 'name' => 'tag 1',
-                                'priority' => "high"
+                                'priority' => "high",
                             ],
                         ],
                     ],
@@ -685,7 +688,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
         $tags = [
             new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
             new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser'),
-            new Tag('apiResourceAdditional', 'a=b "custom field"=c e="custom value" "another field"="true value"')
+            new Tag('apiResourceAdditional', 'a=b "custom field"=c e="custom value" "another field"="true value"'),
         ];
         $results = $strategy->getApiResourceResponseFromTags($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
 

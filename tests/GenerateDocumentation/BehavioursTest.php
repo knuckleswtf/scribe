@@ -123,7 +123,7 @@ class BehavioursTest extends BaseLaravelTest
             ],
         ], $paths);
 
-        Scribe::afterGenerating(fn() => null);
+        Scribe::afterGenerating(fn () => null);
     }
 
     /** @test */
@@ -131,7 +131,7 @@ class BehavioursTest extends BaseLaravelTest
     {
         $commandInstance = null;
 
-        Scribe::bootstrap(function (GenerateDocumentation $command) use (&$commandInstance){
+        Scribe::bootstrap(function (GenerateDocumentation $command) use (&$commandInstance) {
             $commandInstance = $command;
         });
 
@@ -141,7 +141,7 @@ class BehavioursTest extends BaseLaravelTest
 
         $this->assertTrue($commandInstance instanceof GenerateDocumentation);
 
-        Scribe::bootstrap(fn() => null);
+        Scribe::bootstrap(fn () => null);
     }
 
     /** @test */

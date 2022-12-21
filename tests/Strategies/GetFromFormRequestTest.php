@@ -232,7 +232,7 @@ class GetFromFormRequestTest extends BaseLaravelTest
         Globals::$__instantiateFormRequestUsing = function (string $className, Route $route, string $method) use (&$controllerMethod) {
             Assert::assertEquals(TestRequest::class, $className);
             Assert::assertEquals($controllerMethod, $method);
-            return new TestRequestQueryParams;
+            return new TestRequestQueryParams();
         };
 
         $this->fetchViaBodyParams($controllerMethod);

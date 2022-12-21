@@ -17,7 +17,7 @@ class TestPostApiResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'title' => $this->title ,
+            'title' => $this->title,
             'body' => $this->body,
             'tags' => $this->whenLoaded('tags', function () {
                 return TestTagApiResource::collection($this->tags);

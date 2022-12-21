@@ -246,7 +246,7 @@ class ExtractorTest extends TestCase
          * @queryParam location_id required The id of the location.
          * @bodyParam name required Name of the location
          */
-        $handler = fn() => 'hi';
+        $handler = fn () => 'hi';
         $route = $this->createClosureRoute('POST', '/api/closure/test', $handler);
 
         $parsed = $this->extractor->processRoute($route);
@@ -492,7 +492,6 @@ class TestParentController
      */
     public function endpoint()
     {
-
     }
 }
 
