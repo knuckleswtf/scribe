@@ -19,9 +19,10 @@ class GetFromResponseFieldAttribute extends PhpAttributeStrategy
 
     protected function extractFromAttributes(
         ExtractedEndpointData $endpointData,
-        array $attributesOnMethod, array $attributesOnFormRequest = [], array $attributesOnController = []
-    ): ?array
-    {
+        array $attributesOnMethod,
+        array $attributesOnFormRequest = [],
+        array $attributesOnController = []
+    ): ?array {
         $attributesOnApiResourceMethods = [];
         $apiResourceAttributes = $endpointData->method->getAttributes(ResponseFromApiResource::class);
 
