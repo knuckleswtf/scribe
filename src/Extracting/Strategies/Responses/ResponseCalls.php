@@ -152,8 +152,7 @@ class ResponseCalls extends Strategy
         array $queryParams,
         array $fileParameters,
         array $headers
-    ): Request
-    {
+    ): Request {
         $uri = Utils::getUrlWithBoundParameters($url, $urlParams);
         $routeMethods = $this->getMethods($route);
         $method = array_shift($routeMethods);

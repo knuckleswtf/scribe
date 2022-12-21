@@ -92,9 +92,9 @@ class GetFromInlineValidatorBase extends Strategy
             $comments = join(
                 "\n",
                 array_map(
-                fn ($comment) => ltrim(ltrim($comment->getReformattedText(), "/")),
-                $item->getComments()
-            )
+                    fn ($comment) => ltrim(ltrim($comment->getReformattedText(), "/")),
+                    $item->getComments()
+                )
             );
 
             if ($comments) {

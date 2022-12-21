@@ -64,6 +64,7 @@
   "scripts": {
     "static-analyse": "phpstan analyse -c ./phpstan.neon src camel --memory-limit 1G",
     "cs-check": "./vendor/bin/php-cs-fixer fix --dry-run --diff --stop-on-violation",
+    "cs-fix": "./vendor/bin/php-cs-fixer fix",
     "test": "pest --stop-on-failure --exclude-group dingo --coverage --colors",
     "test-ci": "pest --exclude-group dingo --coverage --min=80",
     "test-parallel": "paratest -p16 --stop-on-failure --exclude-group dingo",
