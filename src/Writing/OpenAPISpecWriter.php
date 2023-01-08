@@ -560,8 +560,16 @@ class OpenAPISpecWriter
             $spec['description'] = $endpoint->responseFields[$key]->description;
         }
         if ($spec['type'] === 'array' && !empty($value)) {
-            $spec['items']['type'] = $this->convertScribeOrPHPTypeToOpenAPIType(gettype($value[0]));
+            $handle = $value[0];
+            $type = $this->convertScribeOrPHPTypeToOpenAPIType(gettype($handle));
+            $spec['items']['type'] = $type;
             $spec['example'] = json_decode(json_encode($spec['example']), true);//Convert stdClass to array
+
+            if ($type === 'object') {
+                $spec['items']['properties'] = collect($handle)->mapWithKeys(function ($v, $k) use ($endpoint) {
+                    return $this->generateObjectPropertiesResponseSpec($v, $endpoint, $k);
+                })->toArray();
+            }
         }
 
         return [
