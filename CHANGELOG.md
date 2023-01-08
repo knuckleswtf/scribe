@@ -12,6 +12,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.11.0 (8 December 2023)
+## Added
+- Pass `$default` parameter to URL normalizer callback ([8fe91d86](https://github.com/knuckleswtf/scribe/commit/8fe91d86e63e227873d7d37ad1677f622d9b7ef8))
+- OpenAPI spec: set `properties` of objects nested in arrays ([#600](https://github.com/knuckleswtf/scribe/pull/600))
+
+
 # 4.10.1 (14 December 2022)
 ## Fixed
 - Set HTTP method correctly for FormRequests (fixes #532, #585). ([e8098714](https://github.com/knuckleswtf/scribe/commit/e80987145f50719156d1497a74f68139e9602593))

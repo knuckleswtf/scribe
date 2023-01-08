@@ -378,7 +378,7 @@ class OpenAPISpecWriter
 
             case 'object':
                 $properties = collect($decoded)->mapWithKeys(function ($value, $key) use ($endpoint) {
-                    return $this->generateObjectPropertiesResponseSpec($value, $endpoint, $key);
+                    return [$key => $this->generateSchemaForValue($value, $endpoint, $key)];
                 })->toArray();
 
                 if (!count($properties)) {
@@ -521,7 +521,7 @@ class OpenAPISpecWriter
         }
     }
 
-    function operationId(OutputEndpointData $endpoint): string
+    protected function operationId(OutputEndpointData $endpoint): string
     {
         if ($endpoint->metadata->title) return preg_replace('/[^\w+]/', '', Str::camel($endpoint->metadata->title));
 
@@ -529,51 +529,50 @@ class OpenAPISpecWriter
         return Str::lower($endpoint->httpMethods[0]) . join('', array_map(fn ($part) => ucfirst($part), $parts));
     }
 
-
-    public function generateObjectPropertiesResponseSpec($value, OutputEndpointData $endpoint, $key): array
+    /**
+     * Given a value, generate the schema for it. The schema consists of: {type:, example:, properties: (if value is an object)},
+     * and possibly a description for each property.
+     * The $endpoint and $path are used for looking up response field descriptions.
+     */
+    public function generateSchemaForValue(mixed $value, OutputEndpointData $endpoint, string $path): array
     {
-        //Field is object
         if ($value instanceof \stdClass) {
-            $value = (array)$value;
-            $fieldObjectSpec = [];
-            $fieldObjectSpec['type'] = 'object';
-            $fieldObjectSpec['properties']= [];
-            foreach($value as $subKey => $subValue){
-                $newKey = sprintf('%s.%s', $key, $subKey);
-                $generateResponseContentFieldSpec = $this->generateObjectPropertiesResponseSpec(
-                    $subValue,
-                    $endpoint,
-                    $newKey
-                );
-                $fieldObjectSpec['properties'][$subKey] = $generateResponseContentFieldSpec[$newKey];
-
+            $value = (array) $value;
+            $schema = [
+                'type' => 'object',
+                'properties' => [],
+            ];
+            // Recurse into the object
+            foreach($value as $subField => $subValue){
+                $subFieldPath = sprintf('%s.%s', $path, $subField);
+                $schema['properties'][$subField] = $this->generateSchemaForValue($subValue, $endpoint, $subFieldPath);
             }
-            return  [$key => $fieldObjectSpec];
+
+            return $schema;
         }
 
-        $spec = [
+        $schema = [
             'type' => $this->convertScribeOrPHPTypeToOpenAPIType(gettype($value)),
             'example' => $value,
-
         ];
-        if (isset($endpoint->responseFields[$key]->description)) {
-            $spec['description'] = $endpoint->responseFields[$key]->description;
+        if (isset($endpoint->responseFields[$path]->description)) {
+            $schema['description'] = $endpoint->responseFields[$path]->description;
         }
-        if ($spec['type'] === 'array' && !empty($value)) {
-            $handle = $value[0];
-            $type = $this->convertScribeOrPHPTypeToOpenAPIType(gettype($handle));
-            $spec['items']['type'] = $type;
-            $spec['example'] = json_decode(json_encode($spec['example']), true);//Convert stdClass to array
 
-            if ($type === 'object') {
-                $spec['items']['properties'] = collect($handle)->mapWithKeys(function ($v, $k) use ($endpoint) {
-                    return $this->generateObjectPropertiesResponseSpec($v, $endpoint, $k);
+        if ($schema['type'] === 'array' && !empty($value)) {
+            $schema['example'] = json_decode(json_encode($schema['example']), true); // Convert stdClass to array
+
+            $sample = $value[0];
+            $typeOfEachItem = $this->convertScribeOrPHPTypeToOpenAPIType(gettype($sample));
+            $schema['items']['type'] = $typeOfEachItem;
+
+            if ($typeOfEachItem === 'object') {
+                $schema['items']['properties'] = collect($sample)->mapWithKeys(function ($v, $k) use ($endpoint, $path) {
+                    return [$k => $this->generateSchemaForValue($v, $endpoint, "$path.$k")];
                 })->toArray();
             }
         }
 
-        return [
-            $key => $spec,
-        ];
+        return $schema;
     }
 }
