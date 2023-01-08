@@ -32,7 +32,7 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
     /** @test */
     public function allows_user_specified_normalization()
     {
-        Scribe::normalizeEndpointUrlUsing(function (string $url, LaravelRoute $route, \ReflectionFunctionAbstract $method, ?\ReflectionClass $controller) {
+        Scribe::normalizeEndpointUrlUsing(function (string $url, LaravelRoute $route) {
             if ($url == 'things/{thing}') return 'things/{the_id_of_the_thing}';
 
             if ($route->named('things.otherthings.destroy')) return 'things/{thing-id}/otherthings/{other_thing-id}';
@@ -42,6 +42,29 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
         $route = $this->getRoute(['prefixes' => '*']);
         $this->assertEquals('things/{thing}', $this->originalUri($route));
         $this->assertEquals('things/{the_id_of_the_thing}', $this->expectedUri($route));
+
+        Route::apiResource('things.otherthings', TestController::class)->only('destroy');
+        $route = $this->getRoute(['prefixes' => '*/otherthings/*']);
+        $this->assertEquals('things/{thing}/otherthings/{otherthing}', $this->originalUri($route));
+        $this->assertEquals('things/{thing-id}/otherthings/{other_thing-id}', $this->expectedUri($route));
+
+        Scribe::normalizeEndpointUrlUsing(null);
+    }
+
+    /** @test */
+    public function allows_user_specified_normalization_fallback_to_default()
+    {
+        Scribe::normalizeEndpointUrlUsing(function (string $url, LaravelRoute $route,
+            \ReflectionFunctionAbstract $method, ?\ReflectionClass $controller, callable $default) {
+            if ($route->named('things.otherthings.destroy')) return 'things/{thing-id}/otherthings/{other_thing-id}';
+
+            return $default();
+        });
+
+        Route::apiResource('things', TestController::class)->only('show');
+        $route = $this->getRoute(['prefixes' => '*']);
+        $this->assertEquals('things/{thing}', $this->originalUri($route));
+        $this->assertEquals('things/{id}', $this->expectedUri($route));
 
         Route::apiResource('things.otherthings', TestController::class)->only('destroy');
         $route = $this->getRoute(['prefixes' => '*/otherthings/*']);
