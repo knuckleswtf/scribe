@@ -116,7 +116,7 @@ class WritingUtils
      * @param string $endLinesWith
      * @return string
      */
-    private static function printSingleQueryParamAsKeyValue(
+    protected static function printSingleQueryParamAsKeyValue(
         mixed $value, int $spacesIndentation, string $startLinesWith, string $quote,
         string $parameter, string $delimiter, string $endLinesWith
     ): string {
