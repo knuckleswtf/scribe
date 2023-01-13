@@ -72,8 +72,8 @@ class WritingUtils
      *   custom braces (eg "[]", default: "{}"),
      *   custom quotes (eg ', default: "),
      *   custom indentation, line endings etc.
-     * Expands/simplifies arrays {key: [1, 2,]} becomes {"key[]": "1"}
-     * Expands hashes {key: {a: 1, b: 2}} becomes {"key[a]": "1", "key[b]": "2"}
+     * Expands/simplifies arrays {key: [1, 2,]} becomes {"key[0]": "1","key[1]": "2"}
+     * Expands hashes {key: {a: 1, b: 2, c: {e: 3}}} becomes {"key[a]": "1", "key[b]": "2", "key[c][e]": "3"}
      *
      * @param array $cleanQueryParams
      * @param string $quote
@@ -95,35 +95,59 @@ class WritingUtils
         int $closingBraceIndentation = 0,
         string $startLinesWith = '',
         string $endLinesWith = ','
-    ): string
-    {
+    ): string {
         $output = isset($braces[0]) ? "{$braces[0]}\n" : '';
         foreach ($cleanQueryParams as $parameter => $value) {
-            if (!is_array($value)) {
-                $output .= str_repeat(" ", $spacesIndentation);
-                // Example: -----"param_name": "value"----
-                $formattedValue = gettype($value) === "boolean" ? ($value ? 1 : 0) : $value;
-                $output .= "$startLinesWith$quote$parameter$quote$delimiter $quote$formattedValue$quote$endLinesWith\n";
-            } else {
-                if (count($value) == 0) {
-                    continue;
-                }
-                if (array_keys($value)[0] === 0) {
-                    // List query param (eg filter[]=haha should become "filter[]": "haha")
-                    $output .= str_repeat(" ", $spacesIndentation);
-                    $output .= "$startLinesWith$quote$parameter" . "[]$quote$delimiter $quote$value[0]$quote$endLinesWith\n";
-                } else {
-                    // Hash query param (eg filter[name]=john should become "filter[name]": "john")
-                    foreach ($value as $item => $itemValue) {
-                        $output .= str_repeat(" ", $spacesIndentation);
-                        $output .= "$startLinesWith$quote$parameter" . "[$item]$quote$delimiter $quote$itemValue$quote$endLinesWith\n";
-                    }
-                }
-            }
+            $output .= self::printSingleQueryParamAsKeyValue($value, $spacesIndentation, $startLinesWith, $quote,
+                $parameter, $delimiter, $endLinesWith);
         }
 
         $closing = isset($braces[1]) ? str_repeat(" ", $closingBraceIndentation) . "{$braces[1]}" : '';
         return $output . $closing;
+    }
+
+    /**
+     * @param mixed $value
+     * @param int $spacesIndentation
+     * @param string $startLinesWith
+     * @param string $quote
+     * @param string $parameter
+     * @param string $delimiter
+     * @param string $endLinesWith
+     * @return string
+     */
+    private static function printSingleQueryParamAsKeyValue(
+        mixed $value, int $spacesIndentation, string $startLinesWith, string $quote,
+        string $parameter, string $delimiter, string $endLinesWith
+    ): string {
+
+        if (!is_array($value)) {
+            $output = str_repeat(" ", $spacesIndentation);
+            // Example: -----"param_name": "value"----
+            $formattedValue = is_bool($value) ? ($value ? 1 : 0) : $value;
+            $output .= "$startLinesWith$quote$parameter$quote$delimiter $quote$formattedValue$quote$endLinesWith\n";
+        } else {
+            $output = '';
+            if (count($value) == 0) {
+                return $output;
+            }
+
+            // List query param (eg filter[]=haha should become "filter[0]": "haha")
+            // Hash query param (eg filter[name]=john should become "filter[name]": "john")
+            // Hash query param (eg filter[info][name]=john should become "filter[info][name]": "john")
+            foreach ($value as $item => $itemValue) {
+                $parameterString = sprintf('%s[%s]', $parameter, $item);
+                if (is_array($itemValue)) {
+                    $output .= static::printSingleQueryParamAsKeyValue($itemValue, $spacesIndentation, $startLinesWith,
+                        $quote, $parameterString, $delimiter, $endLinesWith);
+                } else {
+                    $output .= str_repeat(" ", $spacesIndentation);
+                    $output .= sprintf("%s%s%s%s%s %s%s%s%s\n", $startLinesWith, $quote, $parameterString, $quote,
+                        $delimiter, $quote, $itemValue, $quote, $endLinesWith);
+                }
+            }
+        }
+        return $output;
     }
 
     /**
@@ -151,12 +175,12 @@ class WritingUtils
                 $params = [];
                 $expanded = self::getParameterNamesAndValuesForFormData('', $value[0]);
                 foreach ($expanded as $fieldName => $itemValue) {
-                    $paramName = $parameter.'[]'.$fieldName;
+                    $paramName = $parameter . '[]' . $fieldName;
                     $params[$paramName] = $itemValue;
                 }
                 return $params;
             }
-            return [$parameter.'[]' => $value[0]];
+            return [$parameter . '[]' => $value[0]];
         }
 
         // Transform hashes
@@ -165,7 +189,7 @@ class WritingUtils
             if (is_array($itemValue)) {
                 $expanded = self::getParameterNamesAndValuesForFormData('', $itemValue);
                 foreach ($expanded as $fieldName => $subItemValue) {
-                    $paramName = $parameter . "[$item]".$fieldName;
+                    $paramName = $parameter . "[$item]" . $fieldName;
                     $params[$paramName] = $subItemValue;
                 }
             } else {
@@ -219,6 +243,6 @@ class WritingUtils
     public static function getVersionedAsset(string $assetPath): string
     {
         $index = strrpos($assetPath, ".");
-        return substr_replace($assetPath, '-'.Scribe::VERSION, $index, 0);
+        return substr_replace($assetPath, '-' . Scribe::VERSION, $index, 0);
     }
 }
