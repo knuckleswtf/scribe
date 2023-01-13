@@ -4,7 +4,7 @@ namespace Knuckles\Scribe\Attributes;
 
 use Attribute;
 
-#[Attribute(Attribute::TARGET_FUNCTION | Attribute::TARGET_METHOD)]
+#[Attribute(Attribute::TARGET_FUNCTION | Attribute::TARGET_METHOD | Attribute::TARGET_CLASS)]
 class Endpoint
 {
     public function __construct(

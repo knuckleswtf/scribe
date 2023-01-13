@@ -14,6 +14,7 @@ use Knuckles\Scribe\Tools\DocumentationConfig;
 use PHPUnit\Framework\TestCase;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use ReflectionClass;
+use ReflectionMethod;
 
 class UseMetadataAttributesTest extends TestCase
 {
@@ -99,6 +100,15 @@ class UseMetadataAttributesTest extends TestCase
         $this->assertArraySubset([
             "authenticated" => false,
         ], $results);
+
+        $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
+            $e->controller = new ReflectionClass(MetadataAttributesTestController3::class);
+            $e->method = $e->controller->getMethod('c1');
+        });
+        $results = $this->fetch($endpoint);
+        $this->assertArraySubset([
+            "title" => "Endpoint C"
+        ], $results);
     }
 
     protected function fetch($endpoint): array
@@ -160,6 +170,15 @@ class MetadataAttributesTestController2
 
     #[Unauthenticated]
     public function c2()
+    {
+    }
+}
+
+
+#[Endpoint("Endpoint C")]
+class MetadataAttributesTestController3
+{
+    public function c1()
     {
     }
 }
