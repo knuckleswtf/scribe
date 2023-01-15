@@ -12,7 +12,7 @@ $response = $client->{{ strtolower($endpoint->httpMethods[0]) }}(
         'headers' => {!! u::printPhpValue($endpoint->headers, 8) !!},
 @endif
 @if(!empty($endpoint->cleanQueryParameters))
-        'query' => {!! u::printQueryParamsAsKeyValue($endpoint->cleanQueryParameters, "'", "=>", 12, "[]", 8) !!},
+        'query' => {!! u::printQueryParamsAsKeyValue($endpoint->cleanQueryParameters, "'", " =>", 12, "[]", 8) !!},
 @endif
 @if($endpoint->hasFiles())
         'multipart' => [
