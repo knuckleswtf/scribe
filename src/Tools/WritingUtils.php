@@ -57,7 +57,14 @@ class WritingUtils
                 } else {
                     // Hash query param (eg filter[name]=john should become "filter[name]": "john")
                     foreach ($value as $item => $itemValue) {
-                        $qs .= "$paramName" . '[' . urlencode($item) . ']=' . urlencode($itemValue) . '&';
+                        if (is_array($itemValue)) {
+                            // Handle arrays (eg filter[category][]=1&filter[category][]=5 should become filter[category]: [1,5])
+                            foreach ($itemValue as $itemValueEntry) {
+                                $qs .= "$paramName" . '[' . urlencode($item) . '][]=' . urlencode($itemValueEntry) . '&';
+                            }
+                        } else {
+                            $qs .= "$paramName" . '[' . urlencode($item) . ']=' . urlencode($itemValue) . '&';
+                        }
                     }
                 }
             }
