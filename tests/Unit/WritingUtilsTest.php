@@ -61,6 +61,17 @@ class WritingUtilsTest extends BaseLaravelTest
 
     }
 
+    /** @test */
+    public function print_query_params_as_string_bash()
+    {
+        $queryParams = WritingUtils::printQueryParamsAsString($this->queryParams());
+
+        $this->assertEquals(
+            'name+query=name+value&list+query[]=list+element+1&list+query[]=list+element+2&nested+query[nested+query+level+1+array][nested+query+level+2+list][]=nested+level+2+list+element+1&nested+query[nested+query+level+1+array][nested+query+level+2+list][]=nested+level+2+list+element+2&nested+query[nested+query+level+1+array][nested+query+level+2+query]=name+nested+2&nested+query[nested+query+level+1+query]=name+nested+1',
+            $queryParams
+        );
+    }
+    
     private function queryParams(): array
     {
         return [

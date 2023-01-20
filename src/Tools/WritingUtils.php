@@ -45,32 +45,36 @@ class WritingUtils
     {
         $qs = '';
         foreach ($cleanQueryParams as $paramName => $value) {
-            if (!is_array($value)) {
-                $qs .= "$paramName=" . urlencode($value) . "&";
-            } else {
-                if (count($value) == 0) {
-                    continue;
-                }
-                if (array_keys($value)[0] === 0) {
-                    // List query param (eg filter[]=haha should become "filter[]": "haha")
-                    $qs .= "$paramName" . '[]=' . urlencode($value[0]) . '&';
-                } else {
-                    // Hash query param (eg filter[name]=john should become "filter[name]": "john")
-                    foreach ($value as $item => $itemValue) {
-                        if (is_array($itemValue)) {
-                            // Handle arrays (eg filter[category][]=1&filter[category][]=5 should become filter[category]: [1,5])
-                            foreach ($itemValue as $itemValueEntry) {
-                                $qs .= "$paramName" . '[' . urlencode($item) . '][]=' . urlencode($itemValueEntry) . '&';
-                            }
-                        } else {
-                            $qs .= "$paramName" . '[' . urlencode($item) . ']=' . urlencode($itemValue) . '&';
-                        }
-                    }
-                }
-            }
+            $qs .= static::printSingleQueryParamsAsString('', $paramName, $value, true);
         }
 
         return rtrim($qs, '&');
+    }
+
+    public static function printSingleQueryParamsAsString(string $prefix, string|int $key, mixed $parameters, bool $firstLevel): string
+    {
+        if (!is_array($parameters)) {
+            if ($firstLevel) {
+                return sprintf("%s=%s&", urlencode($key), urlencode($parameters));
+            } else {
+                if (is_string($key)) {
+                    return sprintf("%s[%s]=%s&", $prefix, urlencode($key), urlencode($parameters));
+                } else {
+                    return sprintf("%s[]=%s&", $prefix, urlencode($parameters));
+                }
+            }
+        } else {
+            if ($firstLevel) {
+                $newPrefix = urlencode($key);
+            } else {
+                $newPrefix = sprintf("%s[%s]", $prefix, urlencode($key));
+            }
+            $query = '';
+            foreach ($parameters as $item => $itemValue) {
+                $query .= static::printSingleQueryParamsAsString($newPrefix, $item, $itemValue, false);
+            }
+        }
+        return $query;
     }
 
     /**
