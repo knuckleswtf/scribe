@@ -12,6 +12,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.13.0 (22 January 2023)
+## Added
+- Support for Laravel Actions package ([#606](https://github.com/knuckleswtf/scribe/pull/606))
+- Support nested query parameters in example requests - Bash ([#603](https://github.com/knuckleswtf/scribe/pull/605))
+
+
 # 4.12.0 (15 January 2023)
 ## Added
 - Allow `Endpoint` attribute to be used at the class level ([#602](https://github.com/knuckleswtf/scribe/pull/602))
