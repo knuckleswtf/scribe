@@ -105,7 +105,15 @@ class Utils
             if (is_array($uses)) {
                 return $uses;
             } elseif (is_string($uses)) {
-                return explode('@', $uses);
+                [$class, $method] = explode('@', $uses);
+                
+                // Support for the Laravel Actions package, docblock should be put on the asController method
+                if ($method === '__invoke' && method_exists($class, 'asController'))
+                {
+                    return [$class, 'asController'];
+                }
+
+                return [$class, $method];
             } elseif (static::isInvokableObject($uses)) {
                 return [$uses, '__invoke'];
             }
