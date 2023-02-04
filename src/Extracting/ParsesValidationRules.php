@@ -11,6 +11,7 @@ use Knuckles\Scribe\Exceptions\ProblemParsingValidationRules;
 use Knuckles\Scribe\Exceptions\ScribeException;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\WritingUtils as w;
+use ReflectionClass;
 use Throwable;
 
 trait ParsesValidationRules
@@ -164,300 +165,322 @@ trait ParsesValidationRules
      */
     protected function parseRule($rule, array &$parameterData, bool $independentOnly, array $allParameters = []): bool
     {
-        try {
-            if (!(is_string($rule) || $rule instanceof Rule)) {
-                return true;
+        if ($rule instanceof Rule) {
+            if (method_exists($rule, 'docs')) {
+                $customData = call_user_func_array([$rule, 'docs'], []) ?: [];
+
+                if (isset($customData['description'])) {
+                    $parameterData['description'] .= ' ' . $customData['description'];
+                    unset($customData['description']);
+                }
+
+                $parameterData = array_merge($parameterData, $customData);
             }
+        } elseif ($rule instanceof \Closure) {
+            $reflection = new \ReflectionFunction($rule);
 
-            // Convert string rules into rule + arguments (eg "in:1,2" becomes ["in", ["1", "2"]])
-            $parsedRule = $this->parseStringRuleIntoRuleAndArguments($rule);
-            [$rule, $arguments] = $parsedRule;
+            if (is_string($description = $reflection->getDocComment())) {
+                $finalDescription = '';
+                // Cleanup comment block and extract just the description
+                foreach (explode("\n", $description) as $line) {
+                    $cleaned = preg_replace(['/^\/\*+\s*/', '/^\*+\s*/', '/\*+\/$/'], '', trim($line));
+                    if ($cleaned != '') $finalDescription .= ' ' . $cleaned;
+                }
 
-            $dependentRules = ['between', 'max', 'min', 'size', 'gt', 'gte', 'lt', 'lte', 'before', 'after', 'before_or_equal', 'after_or_equal'];
-            if ($independentOnly && in_array($rule, $dependentRules)) {
-                return false;
+                $parameterData['description'] .= $finalDescription;
             }
+        } elseif (is_string($rule)) {
+            try {
+                // Convert string rules into rule + arguments (eg "in:1,2" becomes ["in", ["1", "2"]])
+                $parsedRule = $this->parseStringRuleIntoRuleAndArguments($rule);
+                [$rule, $arguments] = $parsedRule;
 
-            // Reminders:
-            // 1. Append to the description (with a leading space); don't overwrite.
-            // 2. Avoid testing on the value of $parameterData['type'],
-            // as that may not have been set yet, since the rules can be in any order.
-            // For this reason, only deterministic rules are supported
-            // 3. All rules supported must be rules that we can generate a valid dummy value for.
-            switch ($rule) {
-                case 'required':
-                    $parameterData['required'] = true;
-                    break;
-                case 'accepted':
-                    $parameterData['required'] = true;
-                    $parameterData['type'] = 'boolean';
-                    $parameterData['description'] .= ' Must be accepted.';
-                    $parameterData['setter'] = fn() => true;
-                    break;
+                $dependentRules = ['between', 'max', 'min', 'size', 'gt', 'gte', 'lt', 'lte', 'before', 'after', 'before_or_equal', 'after_or_equal'];
+                if ($independentOnly && in_array($rule, $dependentRules)) {
+                    return false;
+                }
 
-                /*
-                 * Primitive types. No description should be added
-                */
-                case 'bool':
-                case 'boolean':
-                    $parameterData['setter'] = function () {
-                        return Arr::random([true, false]);
-                    };
-                    $parameterData['type'] = 'boolean';
-                    break;
-                case 'string':
-                    $parameterData['setter'] = function () use ($parameterData) {
-                        return $this->generateDummyValue('string', ['name' => $parameterData['name']]);
-                    };
-                    $parameterData['type'] = 'string';
-                    break;
-                case 'int':
-                case 'integer':
-                    $parameterData['setter'] = function () {
-                        return $this->generateDummyValue('integer');
-                    };
-                    $parameterData['type'] = 'integer';
-                    break;
-                case 'numeric':
-                    $parameterData['setter'] = function () {
-                        return $this->generateDummyValue('number');
-                    };
-                    $parameterData['type'] = 'number';
-                    break;
-                case 'array':
-                    $parameterData['setter'] = function () {
-                        return [$this->generateDummyValue('string')];
-                    };
-                    $parameterData['type'] = 'array'; // The cleanup code in normaliseArrayAndObjectParameters() will set this to a valid type (x[] or object)
-                    break;
-                case 'file':
-                    $parameterData['type'] = 'file';
-                    $parameterData['description'] .= ' Must be a file.';
-                    $parameterData['setter'] = function () {
-                        return $this->generateDummyValue('file');
-                    };
-                    break;
+                // Reminders:
+                // 1. Append to the description (with a leading space); don't overwrite.
+                // 2. Avoid testing on the value of $parameterData['type'],
+                // as that may not have been set yet, since the rules can be in any order.
+                // For this reason, only deterministic rules are supported
+                // 3. All rules supported must be rules that we can generate a valid dummy value for.
+                switch ($rule) {
+                    case 'required':
+                        $parameterData['required'] = true;
+                        break;
+                    case 'accepted':
+                        $parameterData['required'] = true;
+                        $parameterData['type'] = 'boolean';
+                        $parameterData['description'] .= ' Must be accepted.';
+                        $parameterData['setter'] = fn() => true;
+                        break;
 
-                /**
-                 * Special string types
-                 */
-                case 'alpha':
-                    $parameterData['description'] .= " Must contain only letters.";
-                    $parameterData['setter'] = function () {
-                        return $this->getFaker()->lexify('??????');
-                    };
-                    break;
-                case 'alpha_dash':
-                    $parameterData['description'] .= " Must contain only letters, numbers, dashes and underscores.";
-                    $parameterData['setter'] = function () {
-                        return $this->getFaker()->lexify('???-???_?');
-                    };
-                    break;
-                case 'alpha_num':
-                    $parameterData['description'] .= " Must contain only letters and numbers.";
-                    $parameterData['setter'] = function () {
-                        return $this->getFaker()->bothify('#?#???#');
-                    };
-                    break;
-                case 'timezone':
-                    // Laravel's message merely says "The value must be a valid zone"
-                    $parameterData['description'] .= " Must be a valid time zone, such as <code>Africa/Accra</code>.";
-                    $parameterData['setter'] = $this->getFakeFactoryByName('timezone');
-                    break;
-                case 'email':
-                    $parameterData['description'] .= ' ' . $this->getDescription($rule);
-                    $parameterData['setter'] = $this->getFakeFactoryByName('email');
-                    $parameterData['type'] = 'string';
-                    break;
-                case 'url':
-                    $parameterData['setter'] = $this->getFakeFactoryByName('url');
-                    $parameterData['type'] = 'string';
-                    // Laravel's message is "The value format is invalid". Ugh.🤮
-                    $parameterData['description'] .= " Must be a valid URL.";
-                    break;
-                case 'ip':
-                    $parameterData['description'] .= ' ' . $this->getDescription($rule);
-                    $parameterData['type'] = 'string';
-                    $parameterData['setter'] = function () {
-                        return $this->getFaker()->ipv4();
-                    };
-                    break;
-                case 'json':
-                    $parameterData['type'] = 'string';
-                    $parameterData['description'] .= ' ' . $this->getDescription($rule);
-                    $parameterData['setter'] = function () {
-                        return json_encode([$this->getFaker()->word(), $this->getFaker()->word(),]);
-                    };
-                    break;
-                case 'date':
-                    $parameterData['type'] = 'string';
-                    $parameterData['description'] .= ' ' . $this->getDescription($rule);
-                    $parameterData['setter'] = fn() => date('Y-m-d\TH:i:s', time());
-                    break;
-                case 'date_format':
-                    $parameterData['type'] = 'string';
-                    // Laravel description here is "The value must match the format Y-m-d". Not descriptive enough.
-                    $parameterData['description'] .= " Must be a valid date in the format <code>{$arguments[0]}</code>.";
-                    $parameterData['setter'] = function () use ($arguments) {
-                        return date($arguments[0], time());
-                    };
-                    break;
-                case 'after':
-                case 'after_or_equal':
-                    $parameterData['type'] = 'string';
-                    $parameterData['description'] .= ' ' . $this->getDescription($rule, [':date' => "<code>{$arguments[0]}</code>"]);
-                    // TODO introduce the concept of "modifiers", like date_format
-                    // The startDate may refer to another field, in which case, we just ignore it for now.
-                    $startDate = isset($allParameters[$arguments[0]]) ? 'today' : $arguments[0];
-                    $parameterData['setter'] = fn() => $this->getFaker()->dateTimeBetween($startDate, '+100 years')->format('Y-m-d');
-                    break;
-                case 'before':
-                case 'before_or_equal':
-                    $parameterData['type'] = 'string';
-                    // The argument can be either another field or a date
-                    // The endDate may refer to another field, in which case, we just ignore it for now.
-                    $endDate = isset($allParameters[$arguments[0]]) ? 'today' : $arguments[0];
-                    $parameterData['description'] .= ' ' . $this->getDescription($rule, [':date' => "<code>{$arguments[0]}</code>"]);
-                    $parameterData['setter'] = fn() => $this->getFaker()->dateTimeBetween('-30 years', $endDate)->format('Y-m-d');
-                    break;
-                case 'starts_with':
-                    $parameterData['description'] .= ' Must start with one of ' . w::getListOfValuesAsFriendlyHtmlString($arguments);
-                    $parameterData['setter'] = fn() => $this->getFaker()->lexify("{$arguments[0]}????");;
-                    break;
-                case 'ends_with':
-                    $parameterData['description'] .= ' Must end with one of ' . w::getListOfValuesAsFriendlyHtmlString($arguments);
-                    $parameterData['setter'] = fn() => $this->getFaker()->lexify("????{$arguments[0]}");;
-                    break;
-                case 'uuid':
-                    $parameterData['description'] .= ' ' . $this->getDescription($rule) . ' ';
-                    $parameterData['setter'] = $this->getFakeFactoryByName('uuid');
-                    break;
-                case 'regex':
-                    $parameterData['description'] .= ' ' . $this->getDescription($rule, [':regex' => $arguments[0]]);
-                    $parameterData['setter'] = fn() => $this->getFaker()->regexify($arguments[0]);;
-                    break;
+                    /*
+                    * Primitive types. No description should be added
+                    */
+                    case 'bool':
+                    case 'boolean':
+                        $parameterData['setter'] = function () {
+                            return Arr::random([true, false]);
+                        };
+                        $parameterData['type'] = 'boolean';
+                        break;
+                    case 'string':
+                        $parameterData['setter'] = function () use ($parameterData) {
+                            return $this->generateDummyValue('string', ['name' => $parameterData['name']]);
+                        };
+                        $parameterData['type'] = 'string';
+                        break;
+                    case 'int':
+                    case 'integer':
+                        $parameterData['setter'] = function () {
+                            return $this->generateDummyValue('integer');
+                        };
+                        $parameterData['type'] = 'integer';
+                        break;
+                    case 'numeric':
+                        $parameterData['setter'] = function () {
+                            return $this->generateDummyValue('number');
+                        };
+                        $parameterData['type'] = 'number';
+                        break;
+                    case 'array':
+                        $parameterData['setter'] = function () {
+                            return [$this->generateDummyValue('string')];
+                        };
+                        $parameterData['type'] = 'array'; // The cleanup code in normaliseArrayAndObjectParameters() will set this to a valid type (x[] or object)
+                        break;
+                    case 'file':
+                        $parameterData['type'] = 'file';
+                        $parameterData['description'] .= ' Must be a file.';
+                        $parameterData['setter'] = function () {
+                            return $this->generateDummyValue('file');
+                        };
+                        break;
 
-                /**
-                 * Special number types.
-                 */
-                case 'digits':
-                    $parameterData['description'] .= ' ' . $this->getDescription($rule, [':digits' => $arguments[0]]);
-                    $parameterData['setter'] = fn() => $this->getFaker()->numerify(str_repeat("#", $arguments[0]));
-                    $parameterData['type'] = 'string';
-                    break;
-                case 'digits_between':
-                    $parameterData['description'] .= ' ' . $this->getDescription($rule, [':min' => $arguments[0], ':max' => $arguments[1]]);
-                    $parameterData['setter'] = fn() => $this->getFaker()->numerify(str_repeat("#", rand($arguments[0], $arguments[1])));
-                    $parameterData['type'] = 'string';
-                    break;
+                    /**
+                     * Special string types
+                     */
+                    case 'alpha':
+                        $parameterData['description'] .= " Must contain only letters.";
+                        $parameterData['setter'] = function () {
+                            return $this->getFaker()->lexify('??????');
+                        };
+                        break;
+                    case 'alpha_dash':
+                        $parameterData['description'] .= " Must contain only letters, numbers, dashes and underscores.";
+                        $parameterData['setter'] = function () {
+                            return $this->getFaker()->lexify('???-???_?');
+                        };
+                        break;
+                    case 'alpha_num':
+                        $parameterData['description'] .= " Must contain only letters and numbers.";
+                        $parameterData['setter'] = function () {
+                            return $this->getFaker()->bothify('#?#???#');
+                        };
+                        break;
+                    case 'timezone':
+                        // Laravel's message merely says "The value must be a valid zone"
+                        $parameterData['description'] .= " Must be a valid time zone, such as <code>Africa/Accra</code>.";
+                        $parameterData['setter'] = $this->getFakeFactoryByName('timezone');
+                        break;
+                    case 'email':
+                        $parameterData['description'] .= ' ' . $this->getDescription($rule);
+                        $parameterData['setter'] = $this->getFakeFactoryByName('email');
+                        $parameterData['type'] = 'string';
+                        break;
+                    case 'url':
+                        $parameterData['setter'] = $this->getFakeFactoryByName('url');
+                        $parameterData['type'] = 'string';
+                        // Laravel's message is "The value format is invalid". Ugh.🤮
+                        $parameterData['description'] .= " Must be a valid URL.";
+                        break;
+                    case 'ip':
+                        $parameterData['description'] .= ' ' . $this->getDescription($rule);
+                        $parameterData['type'] = 'string';
+                        $parameterData['setter'] = function () {
+                            return $this->getFaker()->ipv4();
+                        };
+                        break;
+                    case 'json':
+                        $parameterData['type'] = 'string';
+                        $parameterData['description'] .= ' ' . $this->getDescription($rule);
+                        $parameterData['setter'] = function () {
+                            return json_encode([$this->getFaker()->word(), $this->getFaker()->word(),]);
+                        };
+                        break;
+                    case 'date':
+                        $parameterData['type'] = 'string';
+                        $parameterData['description'] .= ' ' . $this->getDescription($rule);
+                        $parameterData['setter'] = fn() => date('Y-m-d\TH:i:s', time());
+                        break;
+                    case 'date_format':
+                        $parameterData['type'] = 'string';
+                        // Laravel description here is "The value must match the format Y-m-d". Not descriptive enough.
+                        $parameterData['description'] .= " Must be a valid date in the format <code>{$arguments[0]}</code>.";
+                        $parameterData['setter'] = function () use ($arguments) {
+                            return date($arguments[0], time());
+                        };
+                        break;
+                    case 'after':
+                    case 'after_or_equal':
+                        $parameterData['type'] = 'string';
+                        $parameterData['description'] .= ' ' . $this->getDescription($rule, [':date' => "<code>{$arguments[0]}</code>"]);
+                        // TODO introduce the concept of "modifiers", like date_format
+                        // The startDate may refer to another field, in which case, we just ignore it for now.
+                        $startDate = isset($allParameters[$arguments[0]]) ? 'today' : $arguments[0];
+                        $parameterData['setter'] = fn() => $this->getFaker()->dateTimeBetween($startDate, '+100 years')->format('Y-m-d');
+                        break;
+                    case 'before':
+                    case 'before_or_equal':
+                        $parameterData['type'] = 'string';
+                        // The argument can be either another field or a date
+                        // The endDate may refer to another field, in which case, we just ignore it for now.
+                        $endDate = isset($allParameters[$arguments[0]]) ? 'today' : $arguments[0];
+                        $parameterData['description'] .= ' ' . $this->getDescription($rule, [':date' => "<code>{$arguments[0]}</code>"]);
+                        $parameterData['setter'] = fn() => $this->getFaker()->dateTimeBetween('-30 years', $endDate)->format('Y-m-d');
+                        break;
+                    case 'starts_with':
+                        $parameterData['description'] .= ' Must start with one of ' . w::getListOfValuesAsFriendlyHtmlString($arguments);
+                        $parameterData['setter'] = fn() => $this->getFaker()->lexify("{$arguments[0]}????");;
+                        break;
+                    case 'ends_with':
+                        $parameterData['description'] .= ' Must end with one of ' . w::getListOfValuesAsFriendlyHtmlString($arguments);
+                        $parameterData['setter'] = fn() => $this->getFaker()->lexify("????{$arguments[0]}");;
+                        break;
+                    case 'uuid':
+                        $parameterData['description'] .= ' ' . $this->getDescription($rule) . ' ';
+                        $parameterData['setter'] = $this->getFakeFactoryByName('uuid');
+                        break;
+                    case 'regex':
+                        $parameterData['description'] .= ' ' . $this->getDescription($rule, [':regex' => $arguments[0]]);
+                        $parameterData['setter'] = fn() => $this->getFaker()->regexify($arguments[0]);;
+                        break;
 
-                /**
-                 * These rules can apply to numbers, strings, arrays or files
-                 */
-                case 'size':
-                    $parameterData['description'] .= ' ' . $this->getDescription(
-                            $rule, [':size' => $arguments[0]], $this->getLaravelValidationBaseTypeMapping($parameterData['type'])
-                        );
-                    $parameterData['setter'] = $this->getDummyValueGenerator($parameterData['type'], ['size' => $arguments[0]]);
-                    break;
-                case 'min':
-                    $parameterData['description'] .= ' ' . $this->getDescription(
-                            $rule, [':min' => $arguments[0]], $this->getLaravelValidationBaseTypeMapping($parameterData['type'])
-                        );
-                    $parameterData['setter'] = $this->getDummyDataGeneratorBetween($parameterData['type'], floatval($arguments[0]), fieldName: $parameterData['name']);
-                    break;
-                case 'max':
-                    $parameterData['description'] .= ' ' . $this->getDescription(
-                            $rule, [':max' => $arguments[0]], $this->getLaravelValidationBaseTypeMapping($parameterData['type'])
-                        );
-                    $max = min($arguments[0], 25);
-                    $parameterData['setter'] = $this->getDummyDataGeneratorBetween($parameterData['type'], 1, $max, $parameterData['name']);
-                    break;
-                case 'between':
-                    $parameterData['description'] .= ' ' . $this->getDescription(
-                            $rule, [':min' => $arguments[0], ':max' => $arguments[1]], $this->getLaravelValidationBaseTypeMapping($parameterData['type'])
-                        );
-                    // Avoid exponentially complex operations by using the minimum length
-                    $parameterData['setter'] = $this->getDummyDataGeneratorBetween($parameterData['type'], floatval($arguments[0]), floatval($arguments[0]) + 1, $parameterData['name']);
-                    break;
+                    /**
+                     * Special number types.
+                     */
+                    case 'digits':
+                        $parameterData['description'] .= ' ' . $this->getDescription($rule, [':digits' => $arguments[0]]);
+                        $parameterData['setter'] = fn() => $this->getFaker()->numerify(str_repeat("#", $arguments[0]));
+                        $parameterData['type'] = 'string';
+                        break;
+                    case 'digits_between':
+                        $parameterData['description'] .= ' ' . $this->getDescription($rule, [':min' => $arguments[0], ':max' => $arguments[1]]);
+                        $parameterData['setter'] = fn() => $this->getFaker()->numerify(str_repeat("#", rand($arguments[0], $arguments[1])));
+                        $parameterData['type'] = 'string';
+                        break;
 
-                /**
-                 * Special file types.
-                 */
-                case 'image':
-                    $parameterData['type'] = 'file';
-                    $parameterData['description'] .= ' ' . $this->getDescription($rule) . ' ';
-                    $parameterData['setter'] = function () {
-                        // This is fine because the file example generator generates an image
-                        return $this->generateDummyValue('file');
-                    };
-                    break;
+                    /**
+                     * These rules can apply to numbers, strings, arrays or files
+                     */
+                    case 'size':
+                        $parameterData['description'] .= ' ' . $this->getDescription(
+                                $rule, [':size' => $arguments[0]], $this->getLaravelValidationBaseTypeMapping($parameterData['type'])
+                            );
+                        $parameterData['setter'] = $this->getDummyValueGenerator($parameterData['type'], ['size' => $arguments[0]]);
+                        break;
+                    case 'min':
+                        $parameterData['description'] .= ' ' . $this->getDescription(
+                                $rule, [':min' => $arguments[0]], $this->getLaravelValidationBaseTypeMapping($parameterData['type'])
+                            );
+                        $parameterData['setter'] = $this->getDummyDataGeneratorBetween($parameterData['type'], floatval($arguments[0]), fieldName: $parameterData['name']);
+                        break;
+                    case 'max':
+                        $parameterData['description'] .= ' ' . $this->getDescription(
+                                $rule, [':max' => $arguments[0]], $this->getLaravelValidationBaseTypeMapping($parameterData['type'])
+                            );
+                        $max = min($arguments[0], 25);
+                        $parameterData['setter'] = $this->getDummyDataGeneratorBetween($parameterData['type'], 1, $max, $parameterData['name']);
+                        break;
+                    case 'between':
+                        $parameterData['description'] .= ' ' . $this->getDescription(
+                                $rule, [':min' => $arguments[0], ':max' => $arguments[1]], $this->getLaravelValidationBaseTypeMapping($parameterData['type'])
+                            );
+                        // Avoid exponentially complex operations by using the minimum length
+                        $parameterData['setter'] = $this->getDummyDataGeneratorBetween($parameterData['type'], floatval($arguments[0]), floatval($arguments[0]) + 1, $parameterData['name']);
+                        break;
 
-                /**
-                 * Other rules.
-                 */
-                case 'in':
-                    // Not using the rule description here because it only says "The attribute is invalid"
-                    $parameterData['description'] .= ' Must be one of ' . w::getListOfValuesAsFriendlyHtmlString($arguments) . ' ';
-                    $parameterData['setter'] = function () use ($arguments) {
-                        return Arr::random($arguments);
-                    };
-                    break;
+                    /**
+                     * Special file types.
+                     */
+                    case 'image':
+                        $parameterData['type'] = 'file';
+                        $parameterData['description'] .= ' ' . $this->getDescription($rule) . ' ';
+                        $parameterData['setter'] = function () {
+                            // This is fine because the file example generator generates an image
+                            return $this->generateDummyValue('file');
+                        };
+                        break;
 
-                /**
-                 * These rules only add a description. Generating valid examples is too complex.
-                 */
-                case 'not_in':
-                    $parameterData['description'] .= ' Must not be one of ' . w::getListOfValuesAsFriendlyHtmlString($arguments) . ' ';
-                    break;
-                case 'required_if':
-                    $parameterData['description'] .= ' ' . $this->getDescription(
-                            $rule, [':other' => "<code>{$arguments[0]}</code>", ':value' => w::getListOfValuesAsFriendlyHtmlString(array_slice($arguments, 1))]
-                        ) . ' ';
-                    break;
-                case 'required_unless':
-                    $parameterData['description'] .= ' ' . $this->getDescription(
-                            $rule, [':other' => "<code>" . array_shift($arguments) . "</code>", ':values' => w::getListOfValuesAsFriendlyHtmlString($arguments)]
-                        ) . ' ';
-                    break;
-                case 'required_with':
-                    $parameterData['description'] .= ' ' . $this->getDescription(
-                            $rule, [':values' => w::getListOfValuesAsFriendlyHtmlString($arguments)]
-                        ) . ' ';
-                    break;
-                case 'required_without':
-                    $description = $this->getDescription(
-                            $rule, [':values' => w::getListOfValuesAsFriendlyHtmlString($arguments)]
-                        ) . ' ';
-                    $parameterData['description'] .= str_replace('must be present', 'is not present', $description);
-                    break;
-                case 'required_with_all':
-                case 'required_without_all':
-                    $parameterData['description'] .= ' ' . $this->getDescription(
-                            $rule, [':values' => w::getListOfValuesAsFriendlyHtmlString($arguments, "and")]
-                        ) . ' ';
-                    break;
-                case 'accepted_if':
-                    $parameterData['type'] = 'boolean';
-                    $parameterData['description'] .= " Must be accepted when <code>$arguments[0]</code> is " . w::getListOfValuesAsFriendlyHtmlString(array_slice($arguments, 1));
-                    $parameterData['setter'] = fn() => true;
-                    break;
-                case 'same':
-                case 'different':
-                    $parameterData['description'] .= ' ' . $this->getDescription(
-                            $rule, [':other' => "<code>{$arguments[0]}</code>"]
-                        ) . ' ';
-                    break;
+                    /**
+                     * Other rules.
+                     */
+                    case 'in':
+                        // Not using the rule description here because it only says "The attribute is invalid"
+                        $parameterData['description'] .= ' Must be one of ' . w::getListOfValuesAsFriendlyHtmlString($arguments) . ' ';
+                        $parameterData['setter'] = function () use ($arguments) {
+                            return Arr::random($arguments);
+                        };
+                        break;
 
-                default:
-                    // Other rules not supported
-                    break;
+                    /**
+                     * These rules only add a description. Generating valid examples is too complex.
+                     */
+                    case 'not_in':
+                        $parameterData['description'] .= ' Must not be one of ' . w::getListOfValuesAsFriendlyHtmlString($arguments) . ' ';
+                        break;
+                    case 'required_if':
+                        $parameterData['description'] .= ' ' . $this->getDescription(
+                                $rule, [':other' => "<code>{$arguments[0]}</code>", ':value' => w::getListOfValuesAsFriendlyHtmlString(array_slice($arguments, 1))]
+                            ) . ' ';
+                        break;
+                    case 'required_unless':
+                        $parameterData['description'] .= ' ' . $this->getDescription(
+                                $rule, [':other' => "<code>" . array_shift($arguments) . "</code>", ':values' => w::getListOfValuesAsFriendlyHtmlString($arguments)]
+                            ) . ' ';
+                        break;
+                    case 'required_with':
+                        $parameterData['description'] .= ' ' . $this->getDescription(
+                                $rule, [':values' => w::getListOfValuesAsFriendlyHtmlString($arguments)]
+                            ) . ' ';
+                        break;
+                    case 'required_without':
+                        $description = $this->getDescription(
+                                $rule, [':values' => w::getListOfValuesAsFriendlyHtmlString($arguments)]
+                            ) . ' ';
+                        $parameterData['description'] .= str_replace('must be present', 'is not present', $description);
+                        break;
+                    case 'required_with_all':
+                    case 'required_without_all':
+                        $parameterData['description'] .= ' ' . $this->getDescription(
+                                $rule, [':values' => w::getListOfValuesAsFriendlyHtmlString($arguments, "and")]
+                            ) . ' ';
+                        break;
+                    case 'accepted_if':
+                        $parameterData['type'] = 'boolean';
+                        $parameterData['description'] .= " Must be accepted when <code>$arguments[0]</code> is " . w::getListOfValuesAsFriendlyHtmlString(array_slice($arguments, 1));
+                        $parameterData['setter'] = fn() => true;
+                        break;
+                    case 'same':
+                    case 'different':
+                        $parameterData['description'] .= ' ' . $this->getDescription(
+                                $rule, [':other' => "<code>{$arguments[0]}</code>"]
+                            ) . ' ';
+                        break;
+
+                    default:
+                        // Other rules not supported
+                        break;
+                }
+            } catch (Throwable $e) {
+                throw CouldntProcessValidationRule::forParam($parameterData['name'], $rule, $e);
             }
-
-            return true;
-        } catch (Throwable $e) {
-            throw CouldntProcessValidationRule::forParam($parameterData['name'], $rule, $e);
         }
+
+        return true;
     }
 
     /**
@@ -473,12 +496,6 @@ trait ParsesValidationRules
     protected function parseStringRuleIntoRuleAndArguments($rule): array
     {
         $ruleArguments = [];
-
-        // Convert any custom Rule objects to strings
-        if ($rule instanceof Rule) {
-            $className = substr(strrchr(get_class($rule), "\\"), 1);
-            return [$className, []];
-        }
 
         if (strpos($rule, ':') !== false) {
             [$rule, $argumentsString] = explode(':', $rule, 2);
