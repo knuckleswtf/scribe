@@ -451,6 +451,61 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         $this->assertCount(2, $results);
         $this->assertEquals(true, $results['array_param']['required']);
     }
+
+    /** @test */
+    public function can_parse_custom_closure_rules()
+    {
+        // Single line DocComment
+        $ruleset = [
+            'closure' => [
+                'bail', 'required',
+                /** This is a single line parsed closure rule. */
+                function ($attribute, $value, $fail) {
+                    $fail('Always fail.');
+                },
+            ],
+        ];
+
+        $results = $this->strategy->parse($ruleset);
+        $this->assertEquals(
+            'This is a single line parsed closure rule.',
+            $results['closure']['description']
+        );
+
+        // Block DocComment
+        $ruleset = [
+            'closure' => [
+                'bail', 'required',
+                /**
+                 * This is a block DocComment
+                 * parsed on a closure rule.
+                 * Extra info.
+                 */
+                function ($attribute, $value, $fail) {
+                    $fail('Always fail.');
+                },
+            ],
+        ];
+
+        $results = $this->strategy->parse($ruleset);
+        $this->assertEquals(
+            'This is a block DocComment parsed on a closure rule. Extra info.',
+            $results['closure']['description']
+        );
+    }
+
+    /** @test */
+    public function can_parse_custom_rule_classes()
+    {
+        $ruleset = [
+            // The page number. Example: 1
+            'custom_rule' => ['bail', 'required', new DummyWithDocsValidationRule],
+        ];
+
+        $results = $this->strategy->parse($ruleset);
+        $this->assertEquals(true, $results['custom_rule']['required']);
+        $this->assertEquals('This is a dummy test rule.', $results['custom_rule']['description']);
+    }
 }
 
 class DummyValidationRule implements \Illuminate\Contracts\Validation\Rule
@@ -463,5 +518,26 @@ class DummyValidationRule implements \Illuminate\Contracts\Validation\Rule
     public function message()
     {
         return '.';
+    }
+}
+
+class DummyWithDocsValidationRule implements \Illuminate\Contracts\Validation\Rule
+{
+    public function passes($attribute, $value)
+    {
+        return true;
+    }
+
+    public function message()
+    {
+        return '.';
+    }
+
+    public static function docs()
+    {
+        return [
+            'description' => 'This is a dummy test rule.',
+            'example' => 'Default example, only added if none other give.',
+        ];
     }
 }

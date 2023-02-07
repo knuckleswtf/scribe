@@ -6,11 +6,13 @@ use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ClosureValidationRule;
 use Knuckles\Scribe\Exceptions\CouldntProcessValidationRule;
 use Knuckles\Scribe\Exceptions\ProblemParsingValidationRules;
 use Knuckles\Scribe\Exceptions\ScribeException;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\WritingUtils as w;
+use ReflectionClass;
 use Throwable;
 
 trait ParsesValidationRules
@@ -164,11 +166,56 @@ trait ParsesValidationRules
      */
     protected function parseRule($rule, array &$parameterData, bool $independentOnly, array $allParameters = []): bool
     {
-        try {
-            if (!(is_string($rule) || $rule instanceof Rule)) {
-                return true;
+        // Reminders:
+        // 1. Append to the description (with a leading space); don't overwrite.
+        // 2. Avoid testing on the value of $parameterData['type'],
+        // as that may not have been set yet, since the rules can be in any order.
+        // For this reason, only deterministic rules are supported
+        // 3. All rules supported must be rules that we can generate a valid dummy value for.
+
+        if ($rule instanceof ClosureValidationRule || $rule instanceof \Closure) {
+            $reflection = new \ReflectionFunction($rule instanceof ClosureValidationRule ? $rule->callback : $rule);
+
+            if (is_string($description = $reflection->getDocComment())) {
+                $finalDescription = '';
+                // Cleanup comment block and extract just the description
+                foreach (explode("\n", $description) as $line) {
+                    $cleaned = preg_replace(['/\*+\/$/', '/^\/\*+\s*/', '/^\*+\s*/'], '', trim($line));
+                    if ($cleaned != '') $finalDescription .= ' ' . $cleaned;
+                }
+
+                $parameterData['description'] .= $finalDescription;
             }
 
+            return true;
+        }
+
+        if ($rule instanceof Rule) {
+            if (method_exists($rule, 'docs')) {
+                $customData = call_user_func_array([$rule, 'docs'], []) ?: [];
+
+                if (isset($customData['description'])) {
+                    $parameterData['description'] .= ' ' . $customData['description'];
+                }
+                if (isset($customData['example'])) {
+                    $parameterData['setter'] = fn() => $customData['example'];
+                } elseif (isset($customData['setter'])) {
+                    $parameterData['setter'] = $customData['setter'];
+                }
+
+                $parameterData = array_merge($parameterData, Arr::except($customData, [
+                    'description', 'example', 'setter',
+                ]));
+            }
+
+            return true;
+        }
+
+        if (!is_string($rule)) {
+            return false;
+        }
+
+        try {
             // Convert string rules into rule + arguments (eg "in:1,2" becomes ["in", ["1", "2"]])
             $parsedRule = $this->parseStringRuleIntoRuleAndArguments($rule);
             [$rule, $arguments] = $parsedRule;
@@ -178,12 +225,6 @@ trait ParsesValidationRules
                 return false;
             }
 
-            // Reminders:
-            // 1. Append to the description (with a leading space); don't overwrite.
-            // 2. Avoid testing on the value of $parameterData['type'],
-            // as that may not have been set yet, since the rules can be in any order.
-            // For this reason, only deterministic rules are supported
-            // 3. All rules supported must be rules that we can generate a valid dummy value for.
             switch ($rule) {
                 case 'required':
                     $parameterData['required'] = true;
@@ -196,7 +237,7 @@ trait ParsesValidationRules
                     break;
 
                 /*
-                 * Primitive types. No description should be added
+                * Primitive types. No description should be added
                 */
                 case 'bool':
                 case 'boolean':
@@ -453,11 +494,11 @@ trait ParsesValidationRules
                     // Other rules not supported
                     break;
             }
-
-            return true;
         } catch (Throwable $e) {
             throw CouldntProcessValidationRule::forParam($parameterData['name'], $rule, $e);
         }
+
+        return true;
     }
 
     /**
@@ -473,12 +514,6 @@ trait ParsesValidationRules
     protected function parseStringRuleIntoRuleAndArguments($rule): array
     {
         $ruleArguments = [];
-
-        // Convert any custom Rule objects to strings
-        if ($rule instanceof Rule) {
-            $className = substr(strrchr(get_class($rule), "\\"), 1);
-            return [$className, []];
-        }
 
         if (strpos($rule, ':') !== false) {
             [$rule, $argumentsString] = explode(':', $rule, 2);
