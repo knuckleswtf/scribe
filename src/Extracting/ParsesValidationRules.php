@@ -166,6 +166,13 @@ trait ParsesValidationRules
      */
     protected function parseRule($rule, array &$parameterData, bool $independentOnly, array $allParameters = []): bool
     {
+        // Reminders:
+        // 1. Append to the description (with a leading space); don't overwrite.
+        // 2. Avoid testing on the value of $parameterData['type'],
+        // as that may not have been set yet, since the rules can be in any order.
+        // For this reason, only deterministic rules are supported
+        // 3. All rules supported must be rules that we can generate a valid dummy value for.
+
         if ($rule instanceof ClosureValidationRule || $rule instanceof \Closure) {
             $reflection = new \ReflectionFunction($rule instanceof ClosureValidationRule ? $rule->callback : $rule);
 
@@ -179,7 +186,11 @@ trait ParsesValidationRules
 
                 $parameterData['description'] .= $finalDescription;
             }
-        } elseif ($rule instanceof Rule) {
+
+            return true;
+        }
+
+        if ($rule instanceof Rule) {
             if (method_exists($rule, 'docs')) {
                 $customData = call_user_func_array([$rule, 'docs'], []) ?: [];
 
@@ -187,7 +198,7 @@ trait ParsesValidationRules
                     $parameterData['description'] .= ' ' . $customData['description'];
                 }
                 if (isset($customData['example'])) {
-                    $parameterData['setter'] = fn () => $customData['example'];
+                    $parameterData['setter'] = fn() => $customData['example'];
                 } elseif (isset($customData['setter'])) {
                     $parameterData['setter'] = $customData['setter'];
                 }
@@ -196,7 +207,11 @@ trait ParsesValidationRules
                     'description', 'example', 'setter',
                 ]));
             }
-        } elseif (is_string($rule)) {
+
+            return true;
+        }
+
+        if (is_string($rule)) {
             try {
                 // Convert string rules into rule + arguments (eg "in:1,2" becomes ["in", ["1", "2"]])
                 $parsedRule = $this->parseStringRuleIntoRuleAndArguments($rule);
@@ -207,12 +222,6 @@ trait ParsesValidationRules
                     return false;
                 }
 
-                // Reminders:
-                // 1. Append to the description (with a leading space); don't overwrite.
-                // 2. Avoid testing on the value of $parameterData['type'],
-                // as that may not have been set yet, since the rules can be in any order.
-                // For this reason, only deterministic rules are supported
-                // 3. All rules supported must be rules that we can generate a valid dummy value for.
                 switch ($rule) {
                     case 'required':
                         $parameterData['required'] = true;
