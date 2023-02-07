@@ -225,7 +225,7 @@ class UseTransformerTagsTest extends BaseLaravelTest
         ], $results);
     }
 
-    public function serializerAndExpected()
+    public static function serializerAndExpected()
     {
         return [
             [

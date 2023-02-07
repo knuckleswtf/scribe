@@ -18,7 +18,7 @@ class AnnotationParserTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function annotationsWithContentAndFields()
+    public static function annotationsWithContentAndFields()
     {
         return [
             "when fields come first" => [
@@ -63,7 +63,7 @@ class AnnotationParserTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function annotationsWithFields()
+    public static function annotationsWithFields()
     {
         return [
             "with or without quotes" => [

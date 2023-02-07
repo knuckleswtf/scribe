@@ -108,7 +108,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         $this->assertEquals('number', $results['array_of_objects_with_array[].another[].two.field2']['type']);
     }
 
-    public function supportedRules()
+    public static function supportedRules()
     {
         $description = 'A description';
         // Key is just an identifier

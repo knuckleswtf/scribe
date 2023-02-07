@@ -38,7 +38,7 @@ class UseResponseFileTagTest extends TestCase
         ], $results);
     }
 
-    public function responseFileTags()
+    public static function responseFileTags()
     {
         return [
             "with status as initial position" => [

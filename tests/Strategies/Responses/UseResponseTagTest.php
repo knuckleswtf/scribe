@@ -29,7 +29,7 @@ class UseResponseTagTest extends TestCase
         $this->assertEquals($expected[1]['content'], json_decode($results[1]['content'], true));
     }
 
-    public function responseTags()
+    public static function responseTags()
     {
         $response1 = '{
        "id": 4,

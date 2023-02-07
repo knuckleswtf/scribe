@@ -405,7 +405,7 @@ class ExtractorTest extends TestCase
         return new Route([$httpMethod], $path, ['uses' => $handler]);
     }
 
-    public function authRules()
+    public static function authRules()
     {
         return [
             [
