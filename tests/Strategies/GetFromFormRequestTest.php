@@ -240,6 +240,27 @@ class GetFromFormRequestTest extends BaseLaravelTest
         Globals::$__instantiateFormRequestUsing = null;
     }
 
+    /** @test */
+    public function custom_rule_example_doesnt_override_form_request_example()
+    {
+        $strategy = new BodyParameters\GetFromFormRequest(new DocumentationConfig([]));
+        $parametersFromFormRequest = $strategy->getParametersFromValidationRules(
+            [
+                'dummy' => ['required', new DummyValidationRule],
+            ],
+            [
+                'dummy' => [
+                    'description' => 'New description.',
+                    'example' => 'Overrided example.',
+                ],
+            ],
+        );
+
+        $parsed = $strategy->normaliseArrayAndObjectParameters($parametersFromFormRequest);
+        $this->assertEquals('Overrided example.', $parsed['dummy']['example']);
+        $this->assertEquals('New description. This is a dummy test rule.', $parsed['dummy']['description']);
+    }
+
     protected function fetchViaBodyParams(\ReflectionMethod $method): array
     {
         $strategy = new BodyParameters\GetFromFormRequest(new DocumentationConfig([]));
@@ -252,5 +273,26 @@ class GetFromFormRequestTest extends BaseLaravelTest
         $strategy = new QueryParameters\GetFromFormRequest(new DocumentationConfig([]));
         $route = new Route(['POST'], "/test", ['uses' => [TestController::class, 'dummy']]);
         return $strategy->getParametersFromFormRequest($method, $route);
+    }
+}
+
+class DummyValidationRule implements \Illuminate\Contracts\Validation\Rule
+{
+    public function passes($attribute, $value)
+    {
+        return true;
+    }
+
+    public function message()
+    {
+        return '.';
+    }
+
+    public static function docs()
+    {
+        return [
+            'description' => 'This is a dummy test rule.',
+            'example' => 'Default example, only added if none other give.',
+        ];
     }
 }

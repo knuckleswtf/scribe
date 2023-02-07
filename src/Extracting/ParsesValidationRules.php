@@ -6,6 +6,7 @@ use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ClosureValidationRule;
 use Knuckles\Scribe\Exceptions\CouldntProcessValidationRule;
 use Knuckles\Scribe\Exceptions\ProblemParsingValidationRules;
 use Knuckles\Scribe\Exceptions\ScribeException;
@@ -165,29 +166,35 @@ trait ParsesValidationRules
      */
     protected function parseRule($rule, array &$parameterData, bool $independentOnly, array $allParameters = []): bool
     {
-        if ($rule instanceof Rule) {
-            if (method_exists($rule, 'docs')) {
-                $customData = call_user_func_array([$rule, 'docs'], []) ?: [];
-
-                if (isset($customData['description'])) {
-                    $parameterData['description'] .= ' ' . $customData['description'];
-                    unset($customData['description']);
-                }
-
-                $parameterData = array_merge($parameterData, $customData);
-            }
-        } elseif ($rule instanceof \Closure) {
-            $reflection = new \ReflectionFunction($rule);
+        if ($rule instanceof ClosureValidationRule || $rule instanceof \Closure) {
+            $reflection = new \ReflectionFunction($rule instanceof ClosureValidationRule ? $rule->callback : $rule);
 
             if (is_string($description = $reflection->getDocComment())) {
                 $finalDescription = '';
                 // Cleanup comment block and extract just the description
                 foreach (explode("\n", $description) as $line) {
-                    $cleaned = preg_replace(['/^\/\*+\s*/', '/^\*+\s*/', '/\*+\/$/'], '', trim($line));
+                    $cleaned = preg_replace(['/\*+\/$/', '/^\/\*+\s*/', '/^\*+\s*/'], '', trim($line));
                     if ($cleaned != '') $finalDescription .= ' ' . $cleaned;
                 }
 
                 $parameterData['description'] .= $finalDescription;
+            }
+        } elseif ($rule instanceof Rule) {
+            if (method_exists($rule, 'docs')) {
+                $customData = call_user_func_array([$rule, 'docs'], []) ?: [];
+
+                if (isset($customData['description'])) {
+                    $parameterData['description'] .= ' ' . $customData['description'];
+                }
+                if (isset($customData['example'])) {
+                    $parameterData['setter'] = fn () => $customData['example'];
+                } elseif (isset($customData['setter'])) {
+                    $parameterData['setter'] = $customData['setter'];
+                }
+
+                $parameterData = array_merge($parameterData, Arr::except($customData, [
+                    'description', 'example', 'setter',
+                ]));
             }
         } elseif (is_string($rule)) {
             try {
