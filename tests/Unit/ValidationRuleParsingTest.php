@@ -438,6 +438,19 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ];
         }
     }
+
+    /** @test */
+    public function child_does_not_overwrite_parent_status()
+    {
+        $ruleset = [
+            'array_param' => 'array|required',
+            'array_param.*' => 'array|required',
+            'array_param.*.an_item' => 'string|required',
+        ];
+        $results = $this->strategy->parse($ruleset);
+        $this->assertCount(2, $results);
+        $this->assertEquals(true, $results['array_param']['required']);
+    }
 }
 
 class DummyValidationRule implements \Illuminate\Contracts\Validation\Rule

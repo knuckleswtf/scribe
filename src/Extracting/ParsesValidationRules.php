@@ -658,6 +658,10 @@ trait ParsesValidationRules
                         $parentPath = substr($parentPath, 0, -2);
                         $normalisedParentPath = str_replace('.*.', '[].', $parentPath);
 
+                        if (!empty($results[$normalisedParentPath])) {
+                            break;
+                        }
+
                         $type = 'object[]';
                         $example = [[]];
                     } else {
