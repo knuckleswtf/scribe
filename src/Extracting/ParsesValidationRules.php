@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting;
 
+use Illuminate\Contracts\Validation\InvokableRule;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
@@ -190,7 +191,7 @@ trait ParsesValidationRules
             return true;
         }
 
-        if ($rule instanceof Rule) {
+        if ($rule instanceof Rule || $rule instanceof InvokableRule) {
             if (method_exists($rule, 'docs')) {
                 $customData = call_user_func_array([$rule, 'docs'], []) ?: [];
 
