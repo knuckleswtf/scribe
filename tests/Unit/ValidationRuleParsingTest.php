@@ -506,6 +506,43 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         $this->assertEquals(true, $results['custom_rule']['required']);
         $this->assertEquals('This is a dummy test rule.', $results['custom_rule']['description']);
     }
+
+    /** @test */
+    public function can_parse_enum_rules()
+    {
+        $ruleset = [
+            'enum' => ['required', new \Illuminate\Validation\Rules\Enum(Color::class)],
+        ];
+
+        $results = $this->strategy->parse($ruleset);
+        $this->assertEquals('string', $results['enum']['type']);
+        $this->assertEquals(
+            'Must be one of <code>red</code>, <code>green</code>, or <code>blue</code>.',
+            $results['enum']['description']
+        );
+        $this->assertTrue(in_array($results['enum']['example'], array_map(fn ($case) => $case->value, Color::cases())));
+
+        $ruleset = [
+            'enum' => ['required', new \Illuminate\Validation\Rules\Enum(Type::class)],
+        ];
+
+        $results = $this->strategy->parse($ruleset);
+        $this->assertEquals('integer', $results['enum']['type']);
+    }
+}
+
+enum Color: string
+{
+    case Red = 'red';
+    case Green = 'green';
+    case Blue = 'blue';
+}
+
+enum Type: int
+{
+    case One = 1;
+    case Two = 2;
+    case Three = 3;
 }
 
 class DummyValidationRule implements \Illuminate\Contracts\Validation\Rule
