@@ -510,8 +510,14 @@ class ValidationRuleParsingTest extends BaseLaravelTest
     /** @test */
     public function can_parse_enum_rules()
     {
+        if (phpversion() < 8.1) {
+            $this->markTestSkipped('Enums are only supported in PHP 8.1 or later');
+        }
+
         $ruleset = [
-            'enum' => ['required', new \Illuminate\Validation\Rules\Enum(Color::class)],
+            'enum' => ['required', new \Illuminate\Validation\Rules\Enum(
+                \Knuckles\Scribe\Tests\Fixtures\TestStringBackedEnum::class
+            )],
         ];
 
         $results = $this->strategy->parse($ruleset);
@@ -520,29 +526,21 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             'Must be one of <code>red</code>, <code>green</code>, or <code>blue</code>.',
             $results['enum']['description']
         );
-        $this->assertTrue(in_array($results['enum']['example'], array_map(fn ($case) => $case->value, Color::cases())));
+        $this->assertTrue(in_array(
+            $results['enum']['example'],
+            array_map(fn ($case) => $case->value,
+            \Knuckles\Scribe\Tests\Fixtures\TestStringBackedEnum::cases()
+        )));
 
         $ruleset = [
-            'enum' => ['required', new \Illuminate\Validation\Rules\Enum(Type::class)],
+            'enum' => ['required', new \Illuminate\Validation\Rules\Enum(
+                \Knuckles\Scribe\Tests\Fixtures\TestIntegerBackedEnum::class
+            )],
         ];
 
         $results = $this->strategy->parse($ruleset);
         $this->assertEquals('integer', $results['enum']['type']);
     }
-}
-
-enum Color: string
-{
-    case Red = 'red';
-    case Green = 'green';
-    case Blue = 'blue';
-}
-
-enum Type: int
-{
-    case One = 1;
-    case Two = 2;
-    case Three = 3;
 }
 
 class DummyValidationRule implements \Illuminate\Contracts\Validation\Rule
