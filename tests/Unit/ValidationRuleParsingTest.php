@@ -9,6 +9,7 @@ use Illuminate\Validation\ValidationException;
 use Knuckles\Scribe\Extracting\ParsesValidationRules;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tools\DocumentationConfig;
+use Knuckles\Scribe\Tests\Fixtures;
 
 class ValidationRuleParsingTest extends BaseLaravelTest
 {
@@ -514,13 +515,9 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             $this->markTestSkipped('Enums are only supported in PHP 8.1 or later');
         }
 
-        $ruleset = [
-            'enum' => ['required', new \Illuminate\Validation\Rules\Enum(
-                \Knuckles\Scribe\Tests\Fixtures\TestStringBackedEnum::class
-            )],
-        ];
-
-        $results = $this->strategy->parse($ruleset);
+        $results = $this->strategy->parse($[
+            'enum' => ['required', Rule::enum(Fixtures\TestStringBackedEnum::class)],
+        ]);
         $this->assertEquals('string', $results['enum']['type']);
         $this->assertEquals(
             'Must be one of <code>red</code>, <code>green</code>, or <code>blue</code>.',
@@ -528,18 +525,22 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         );
         $this->assertTrue(in_array(
             $results['enum']['example'],
-            array_map(fn ($case) => $case->value,
-            \Knuckles\Scribe\Tests\Fixtures\TestStringBackedEnum::cases()
-        )));
+            array_map(fn ($case) => $case->value, Fixtures\TestStringBackedEnum::cases())
+        ));
 
-        $ruleset = [
-            'enum' => ['required', new \Illuminate\Validation\Rules\Enum(
-                \Knuckles\Scribe\Tests\Fixtures\TestIntegerBackedEnum::class
-            )],
-        ];
 
-        $results = $this->strategy->parse($ruleset);
+        $results = $this->strategy->parse($[
+            'enum' => ['required', Rule::enum(Fixtures\TestIntegerBackedEnum::class)],
+        ]);
         $this->assertEquals('integer', $results['enum']['type']);
+        $this->assertEquals(
+            'Must be one of <code>1</code>, <code>2</code>, or <code>3</code>.',
+            $results['enum']['description']
+        );
+        $this->assertTrue(in_array(
+            $results['enum']['example'],
+            array_map(fn ($case) => $case->value, Fixtures\TestIntegerBackedEnum::cases())
+        ));
     }
 }
 
