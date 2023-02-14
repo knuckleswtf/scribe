@@ -12,6 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.15.0 (14 February 2023)
+## Added
+- Support for Laravel enum validation rule ([#614](https://github.com/knuckleswtf/scribe/pull/614))
+
+
 # 4.14.0 (07 February 2023)
 ## Added
 - Support for Laravel 10 ([#610](https://github.com/knuckleswtf/scribe/pull/610))
