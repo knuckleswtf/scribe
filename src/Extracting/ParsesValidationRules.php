@@ -191,6 +191,22 @@ trait ParsesValidationRules
             return true;
         }
 
+        if (function_exists('enum_exists') && $rule instanceof \Illuminate\Validation\Rules\Enum) {
+            $reflection = new \ReflectionClass($rule);
+            $property = $reflection->getProperty('type');
+            $property->setAccessible(true);
+            $type = $property->getValue($rule);
+
+            if (enum_exists($type) && method_exists($type, 'tryFrom')) {
+                $cases = array_map(fn ($case) => $case->value, $type::cases());
+                $parameterData['type'] = gettype($cases[0]);
+                $parameterData['description'] = ' Must be one of ' . w::getListOfValuesAsFriendlyHtmlString($cases) . ' ';
+                $parameterData['setter'] = fn () => Arr::random($cases);
+            }
+
+            return true;
+        }
+
         if ($rule instanceof Rule || $rule instanceof InvokableRule) {
             if (method_exists($rule, 'docs')) {
                 $customData = call_user_func_array([$rule, 'docs'], []) ?: [];

@@ -9,6 +9,7 @@ use Illuminate\Validation\ValidationException;
 use Knuckles\Scribe\Extracting\ParsesValidationRules;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tools\DocumentationConfig;
+use Knuckles\Scribe\Tests\Fixtures;
 
 class ValidationRuleParsingTest extends BaseLaravelTest
 {
@@ -505,6 +506,41 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         $results = $this->strategy->parse($ruleset);
         $this->assertEquals(true, $results['custom_rule']['required']);
         $this->assertEquals('This is a dummy test rule.', $results['custom_rule']['description']);
+    }
+
+    /** @test */
+    public function can_parse_enum_rules()
+    {
+        if (phpversion() < 8.1) {
+            $this->markTestSkipped('Enums are only supported in PHP 8.1 or later');
+        }
+
+        $results = $this->strategy->parse([
+            'enum' => ['required', Rule::enum(Fixtures\TestStringBackedEnum::class)],
+        ]);
+        $this->assertEquals('string', $results['enum']['type']);
+        $this->assertEquals(
+            'Must be one of <code>red</code>, <code>green</code>, or <code>blue</code>.',
+            $results['enum']['description']
+        );
+        $this->assertTrue(in_array(
+            $results['enum']['example'],
+            array_map(fn ($case) => $case->value, Fixtures\TestStringBackedEnum::cases())
+        ));
+
+
+        $results = $this->strategy->parse([
+            'enum' => ['required', Rule::enum(Fixtures\TestIntegerBackedEnum::class)],
+        ]);
+        $this->assertEquals('integer', $results['enum']['type']);
+        $this->assertEquals(
+            'Must be one of <code>1</code>, <code>2</code>, or <code>3</code>.',
+            $results['enum']['description']
+        );
+        $this->assertTrue(in_array(
+            $results['enum']['example'],
+            array_map(fn ($case) => $case->value, Fixtures\TestIntegerBackedEnum::cases())
+        ));
     }
 }
 
