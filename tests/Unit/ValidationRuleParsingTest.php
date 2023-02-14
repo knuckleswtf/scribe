@@ -515,7 +515,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             $this->markTestSkipped('Enums are only supported in PHP 8.1 or later');
         }
 
-        $results = $this->strategy->parse($[
+        $results = $this->strategy->parse([
             'enum' => ['required', Rule::enum(Fixtures\TestStringBackedEnum::class)],
         ]);
         $this->assertEquals('string', $results['enum']['type']);
@@ -529,7 +529,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         ));
 
 
-        $results = $this->strategy->parse($[
+        $results = $this->strategy->parse([
             'enum' => ['required', Rule::enum(Fixtures\TestIntegerBackedEnum::class)],
         ]);
         $this->assertEquals('integer', $results['enum']['type']);
