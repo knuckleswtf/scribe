@@ -82,6 +82,29 @@ class GetFromInlineValidatorBase extends Strategy
                         $rulesList[] = $arrayItem->value->value;
                     }
 
+                    // Try to extract Enum rule
+                    else if (
+                        function_exists('enum_exists') &&
+                        $arrayItem->value instanceof Node\Expr\New_ &&
+                        $arrayItem->value->class instanceof Node\Name &&
+                        last($arrayItem->value->class->parts) === 'Enum' &&
+                        count($arrayItem->value->args) === 1 &&
+                        ($arg = $arrayItem->value->args[0]) instanceof Node\Arg
+                    ) {
+                        $enum = null;
+
+                        if ($arg->value instanceof Node\Expr\ClassConstFetch &&
+                            $arg->value->class instanceof Node\Name
+                        ) {
+                            $enum = '\\' . implode('\\', $arg->value->class->parts);
+                        } else if ($arg->value instanceof Node\Scalar\String_) {
+                            $enum = $arg->value->value;
+                        }
+
+                        if ($enum !== null && enum_exists($enum) && method_exists($enum, 'tryFrom')) {
+                            $rulesList[] = 'in:' . implode(',', array_map(fn ($case) => $case->value, $enum::cases()));
+                        }
+                    }
                 }
                 $rules[$paramName] = join('|', $rulesList);
             } else {

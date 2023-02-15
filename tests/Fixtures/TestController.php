@@ -4,6 +4,7 @@ namespace Knuckles\Scribe\Tests\Fixtures;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Validation\Rules;
 use Knuckles\Scribe\Tools\Utils;
 
 /**
@@ -576,6 +577,16 @@ class TestController extends Controller
     public function withInjectedModel(TestUser $user)
     {
         return null;
+    }
+
+    public function withEnumRule(Request $request)
+    {
+        $request->validate([
+            'enum_class' => ['required', new Rules\Enum(\Knuckles\Scribe\Tests\Fixtures\TestStringBackedEnum::class), 'nullable'],
+            'enum_string' => ['required', new Rules\Enum('\Knuckles\Scribe\Tests\Fixtures\TestIntegerBackedEnum'), 'nullable'],
+            // Not full path class call won't work
+            'enum_inexistent' => ['required', new Rules\Enum(TestStringBackedEnum::class)],
+        ]);
     }
 
     /**
