@@ -104,7 +104,7 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
             $route = $routeItem->getRoute();
 
             $routeControllerAndMethod = u::getRouteClassAndMethodNames($route);
-            if (!$this->isValidRoute($routeControllerAndMethod, $route)) {
+            if (!$this->isValidRoute($routeControllerAndMethod)) {
                 c::warn('Skipping invalid route: ' . c::getRouteRepresentation($route));
                 continue;
             }
@@ -219,11 +219,11 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
         }
     }
 
-    private function isValidRoute(?array $routeControllerAndMethod, Route $route): bool
+    private function isValidRoute(?array $routeControllerAndMethod): bool
     {
         if (is_array($routeControllerAndMethod)) {
             if (count($routeControllerAndMethod) < 2) {
-                throw CouldntGetRouteDetails::forRoute(c::getRouteRepresentation($route));
+                throw CouldntGetRouteDetails::new();
             }
             [$classOrObject, $method] = $routeControllerAndMethod;
             if (u::isInvokableObject($classOrObject)) {
@@ -237,6 +237,9 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
 
     private function doesControllerMethodExist(array $routeControllerAndMethod): bool
     {
+        if (count($routeControllerAndMethod) < 2) {
+            throw CouldntGetRouteDetails::new();
+        }
         [$class, $method] = $routeControllerAndMethod;
         $reflection = new ReflectionClass($class);
 
