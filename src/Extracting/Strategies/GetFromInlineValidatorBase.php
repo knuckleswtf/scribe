@@ -82,6 +82,14 @@ class GetFromInlineValidatorBase extends Strategy
                         $rulesList[] = $arrayItem->value->value;
                     }
 
+                    // Try to extract Enum rule
+                    else if (
+                        function_exists('enum_exists') &&
+                        ($enum = $this->extractEnumClassFromArrayItem($arrayItem)) &&
+                        enum_exists($enum) && method_exists($enum, 'tryFrom')
+                    ) {
+                        $rulesList[] = 'in:' . implode(',', array_map(fn ($case) => $case->value, $enum::cases()));
+                    }
                 }
                 $rules[$paramName] = join('|', $rulesList);
             } else {
@@ -109,6 +117,42 @@ class GetFromInlineValidatorBase extends Strategy
         }
 
         return [$rules, $customParameterData];
+    }
+
+    protected function extractEnumClassFromArrayItem(Node\Expr\ArrayItem $arrayItem): ?string
+    {
+        $args = [];
+
+        // Enum rule with the form "new Enum(...)"
+        if ($arrayItem->value instanceof Node\Expr\New_ &&
+            $arrayItem->value->class instanceof Node\Name &&
+            last($arrayItem->value->class->parts) === 'Enum'
+        ) {
+            $args = $arrayItem->value->args;
+        }
+
+        // Enum rule with the form "Rule::enum(...)"
+        else if ($arrayItem->value instanceof Node\Expr\StaticCall &&
+            $arrayItem->value->class instanceof Node\Name &&
+            last($arrayItem->value->class->parts) === 'Rule' &&
+            $arrayItem->value->name instanceof Node\Identifier &&
+            $arrayItem->value->name->name === 'enum'
+        ) {
+            $args = $arrayItem->value->args;
+        }
+
+        if (count($args) !== 1 || !$args[0] instanceof Node\Arg) return null;
+
+        $arg = $args[0];
+        if ($arg->value instanceof Node\Expr\ClassConstFetch &&
+            $arg->value->class instanceof Node\Name
+        ) {
+            return '\\' . implode('\\', $arg->value->class->parts);
+        } else if ($arg->value instanceof Node\Scalar\String_) {
+            return $arg->value->value;
+        }
+
+        return null;
     }
 
     protected function getMissingCustomDataMessage($parameterName)

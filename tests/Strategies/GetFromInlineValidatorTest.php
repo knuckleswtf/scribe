@@ -7,6 +7,7 @@ use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Extracting\Strategies\BodyParameters;
 use Knuckles\Scribe\Extracting\Strategies\QueryParameters;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
+use Knuckles\Scribe\Tests\Fixtures;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
@@ -173,6 +174,50 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
         });
         $results = $this->fetchViaQueryParams($bodyParamsEndpoint);
         $this->assertEquals([], $results);
+    }
+
+    /** @test */
+    public function can_fetch_inline_enum_rules()
+    {
+        if (phpversion() < 8.1) {
+            $this->markTestSkipped('Enums are only supported in PHP 8.1 or later');
+        }
+
+        $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
+            $e->method = new \ReflectionMethod(TestController::class, 'withEnumRule');
+        });
+
+        $results = $this->fetchViaBodyParams($endpoint);
+
+        $expected = [
+            'enum_class' => [
+                'type' => 'string',
+                'description' => 'Must be one of <code>red</code>, <code>green</code>, or <code>blue</code>.',
+                'required' => true,
+            ],
+            'enum_string' => [
+                'type' => 'string',
+                'description' => 'Must be one of <code>1</code>, <code>2</code>, or <code>3</code>.',
+                'required' => true,
+            ],
+            'enum_inexistent' => [
+                'type' => 'string',
+                'description' => 'Not full path class call won\'t work.',
+                'required' => true,
+            ],
+        ];
+
+        $getCase = fn ($case) => $case->value;
+
+        $this->assertArraySubset($expected, $results);
+        $this->assertTrue(in_array(
+            $results['enum_class']['example'],
+            array_map($getCase, Fixtures\TestStringBackedEnum::cases())
+        ));
+        $this->assertTrue(in_array(
+            $results['enum_string']['example'],
+            array_map($getCase, Fixtures\TestIntegerBackedEnum::cases())
+        ));
     }
 
     protected function endpoint(Closure $configure): ExtractedEndpointData
