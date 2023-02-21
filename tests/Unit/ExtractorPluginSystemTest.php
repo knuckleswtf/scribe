@@ -2,9 +2,9 @@
 
 namespace Knuckles\Scribe\Tests\Unit;
 
-use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Illuminate\Routing\Route;
+use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Extracting\Extractor;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\ScribeServiceProvider;
@@ -129,6 +129,36 @@ class ExtractorPluginSystemTest extends TestCase
         $this->assertArraySubset($expectedMetadata, $parsed->metadata->toArray());
     }
 
+    public function responsesToSort(): array
+    {
+        return [
+            '400, 200, 201' => [[DummyResponseStrategy400::class, DummyResponseStrategy200::class, DummyResponseStrategy201::class]],
+            '201, 400, 200' => [[DummyResponseStrategy201::class, DummyResponseStrategy400::class, DummyResponseStrategy200::class]],
+            '400, 201, 200' => [[DummyResponseStrategy400::class, DummyResponseStrategy201::class, DummyResponseStrategy200::class]],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider responsesToSort
+     */
+    public function sort_responses_by_status_code(array $responses)
+    {
+        $config = [
+            'strategies' => [
+                'bodyParameters' => [],
+                'responses' => $responses,
+            ],
+        ];
+        $parsed = $this->processRoute($config);
+
+        [$first, $second, $third] = $parsed->responses;
+
+        self::assertEquals(200, $first->status);
+        self::assertEquals(201, $second->status);
+        self::assertEquals(400, $third->status);
+    }
+
     /** @test */
     public function overwrites_metadata_from_previous_strategies_in_same_stage()
     {
@@ -233,6 +263,14 @@ class DummyResponseStrategy200 extends Strategy
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules = []): ?array
     {
         return [['status' => 200, 'content' => 'dummy']];
+    }
+}
+
+class DummyResponseStrategy201 extends Strategy
+{
+    public function __invoke(ExtractedEndpointData $endpointData, array $routeRules = []): ?array
+    {
+        return [['status' => 201, 'content' => 'dummy2']];
     }
 }
 
