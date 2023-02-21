@@ -165,7 +165,7 @@ class Extractor
             $endpointData->responses->concat($results);
         });
         // Ensure 200 responses come first
-        $endpointData->responses->sortBy('status');
+        $endpointData->responses = $endpointData->responses->sortBy('status');
     }
 
     protected function fetchResponseFields(ExtractedEndpointData $endpointData, array $rulesToApply): void
