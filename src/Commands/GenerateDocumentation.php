@@ -155,6 +155,10 @@ class GenerateDocumentation extends Command
 
         $this->info("Checking for any pending upgrades to your config file...");
         try {
+            if (! $this->laravel['files']->exists($this->laravel->configPath("{$this->configName}.php"))) {
+                return;
+            }
+
             $upgrader = Upgrader::ofConfigFile("config/{$this->configName}.php", __DIR__ . '/../../config/scribe.php')
                 ->dontTouch(
                     'routes', 'example_languages', 'database_connections_to_transact', 'strategies', 'laravel.middleware',
