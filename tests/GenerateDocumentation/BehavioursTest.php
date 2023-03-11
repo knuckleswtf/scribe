@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Tests\GenerateDocumentation;
 
+use Illuminate\Support\Facades\File as FileFacade;
 use Illuminate\Support\Facades\Route as RouteFacade;
 use Knuckles\Scribe\Commands\GenerateDocumentation;
 use Knuckles\Scribe\Scribe;
@@ -213,8 +214,13 @@ class BehavioursTest extends BaseLaravelTest
         config(["scribe_test" => require "config/scribe_test.php"]);
 
         $output = $this->artisan('scribe:generate', ['--config' => 'scribe_test']);
-        $this->assertStringContainsString("Checking for any pending upgrades to your config file...", $output);
-        $this->assertStringContainsString("`logo` will be added", $output);
+
+        if (! FileFacade::exists(config_path("scribe.php"))) {
+            $this->assertStringContainsString("No config file to upgrade.", $output);
+        } else {
+            $this->assertStringContainsString("Checking for any pending upgrades to your config file...", $output);
+            $this->assertStringContainsString("`logo` will be added", $output);
+        }
 
         $output = $this->artisan('scribe:generate', ['--config' => 'scribe_test', '--no-upgrade-check' => true]);
         $this->assertStringNotContainsString("Checking for any pending upgrades to your config file...", $output);
