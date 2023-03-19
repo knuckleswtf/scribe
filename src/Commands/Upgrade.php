@@ -42,7 +42,7 @@ class Upgrade extends Command
 
         $upgrader = Upgrader::ofConfigFile("config/$this->configName.php", __DIR__ . '/../../config/scribe.php')
             ->dontTouch('routes', 'laravel.middleware', 'postman.overrides', 'openapi.overrides',
-                'example_languages', 'database_connections_to_transact', 'strategies')
+                'example_languages', 'database_connections_to_transact', 'strategies', 'examples.models_source')
             ->move('default_group', 'groups.default')
             ->move('faker_seed', 'examples.faker_seed');
 
