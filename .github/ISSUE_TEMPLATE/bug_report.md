@@ -9,7 +9,7 @@ assignees: ''
 
 !!IMPORTANT!!
 
-READ BEFORE OPENING AN ISSUE:
+READ BEFORE OPENING AN ISSUE (and then DELETE before writing your issue):
 
 - If you don't provide enough information in your issue for me to reproduce (such as version and any custom configuration), I will close it. I can't keep wasting my time investigating issues which no longer exist.
 - Check the Troubleshooting Guide! https://scribe.knuckles.wtf/laravel/troubleshooting Some solutions to common problems are detailed there.

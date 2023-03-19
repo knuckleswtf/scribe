@@ -2,8 +2,8 @@
 
 namespace Knuckles\Scribe\Extracting;
 
-use Illuminate\Contracts\Validation\InvokableRule;
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -207,7 +207,13 @@ trait ParsesValidationRules
             return true;
         }
 
-        if ($rule instanceof Rule || $rule instanceof InvokableRule) {
+        if ($rule instanceof Rule || $rule instanceof ValidationRule) {
+            if (method_exists($rule, 'invokable')) {
+                // Laravel wraps InvokableRule instances in an InvokableValidationRule class,
+                // so we must retrieve the original rule
+                $rule = $rule->invokable();
+            }
+
             if (method_exists($rule, 'docs')) {
                 $customData = call_user_func_array([$rule, 'docs'], []) ?: [];
 
@@ -469,31 +475,40 @@ trait ParsesValidationRules
                     $parameterData['description'] .= ' Must not be one of ' . w::getListOfValuesAsFriendlyHtmlString($arguments) . ' ';
                     break;
                 case 'required_if':
-                    $parameterData['description'] .= ' ' . $this->getDescription(
-                            $rule, [':other' => "<code>{$arguments[0]}</code>", ':value' => w::getListOfValuesAsFriendlyHtmlString(array_slice($arguments, 1))]
-                        ) . ' ';
+                    $parameterData['description'] .= sprintf(
+                        " This field is required when <code>{$arguments[0]}</code> is %s. ",
+                        w::getListOfValuesAsFriendlyHtmlString(array_slice($arguments, 1))
+                    );
                     break;
                 case 'required_unless':
-                    $parameterData['description'] .= ' ' . $this->getDescription(
-                            $rule, [':other' => "<code>" . array_shift($arguments) . "</code>", ':values' => w::getListOfValuesAsFriendlyHtmlString($arguments)]
-                        ) . ' ';
+                    $parameterData['description'] .= sprintf(
+                        " This field is required unless <code>{$arguments[0]}</code> is in %s. ",
+                        w::getListOfValuesAsFriendlyHtmlString(array_slice($arguments, 1))
+                    );
                     break;
                 case 'required_with':
-                    $parameterData['description'] .= ' ' . $this->getDescription(
-                            $rule, [':values' => w::getListOfValuesAsFriendlyHtmlString($arguments)]
-                        ) . ' ';
+                    $parameterData['description'] .= sprintf(
+                        " This field is required when %s is present. ",
+                        w::getListOfValuesAsFriendlyHtmlString($arguments)
+                    );
                     break;
                 case 'required_without':
-                    $description = $this->getDescription(
-                            $rule, [':values' => w::getListOfValuesAsFriendlyHtmlString($arguments)]
-                        ) . ' ';
-                    $parameterData['description'] .= str_replace('must be present', 'is not present', $description);
+                    $parameterData['description'] .= sprintf(
+                        " This field is required when %s is not present. ",
+                        w::getListOfValuesAsFriendlyHtmlString($arguments)
+                    );
                     break;
                 case 'required_with_all':
+                    $parameterData['description'] .= sprintf(
+                        " This field is required when %s are present. ",
+                        w::getListOfValuesAsFriendlyHtmlString($arguments, "and")
+                    );
+                    break;
                 case 'required_without_all':
-                    $parameterData['description'] .= ' ' . $this->getDescription(
-                            $rule, [':values' => w::getListOfValuesAsFriendlyHtmlString($arguments, "and")]
-                        ) . ' ';
+                    $parameterData['description'] .= sprintf(
+                    " This field is required when none of %s are present. ",
+                    w::getListOfValuesAsFriendlyHtmlString($arguments, "and")
+                    );
                     break;
                 case 'accepted_if':
                     $parameterData['type'] = 'boolean';
@@ -501,10 +516,10 @@ trait ParsesValidationRules
                     $parameterData['setter'] = fn() => true;
                     break;
                 case 'same':
+                    $parameterData['description'] .= " The value and <code>{$arguments[0]}</code> must match.";
+                    break;
                 case 'different':
-                    $parameterData['description'] .= ' ' . $this->getDescription(
-                            $rule, [':other' => "<code>{$arguments[0]}</code>"]
-                        ) . ' ';
+                    $parameterData['description'] .= " The value and <code>{$arguments[0]}</code> must be different.";
                     break;
 
                 default:
@@ -769,8 +784,8 @@ trait ParsesValidationRules
             $description = str_replace($placeholder, $argument, $description);
         }
 
-        // For rules that validate subfields
-        $description = str_replace("The :attribute field ", "This field ", $description);
+        // Laravel 10 added `field` to its messages: https://github.com/laravel/framework/pull/45974
+        $description = str_replace("The :attribute field ", "The value ", $description);
 
         $description = preg_replace("/(?!<\W):attribute\b/", "value", $description);
 

@@ -11,6 +11,9 @@ use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tests\Fixtures;
 
+$invokableRulesSupported = interface_exists(\Illuminate\Contracts\Validation\InvokableRule::class);
+$laravel10Rules = version_compare(Application::VERSION, '10.0', '>=');
+
 class ValidationRuleParsingTest extends BaseLaravelTest
 {
     private $strategy;
@@ -499,13 +502,23 @@ class ValidationRuleParsingTest extends BaseLaravelTest
     public function can_parse_custom_rule_classes()
     {
         $ruleset = [
-            // The page number. Example: 1
-            'custom_rule' => ['bail', 'required', new DummyWithDocsValidationRule],
+            'param1' => ['bail', 'required', new DummyWithDocsValidationRule],
         ];
 
+        global $invokableRulesSupported;
+        if ($invokableRulesSupported) {
+            $ruleset['param2'] = [new DummyInvokableValidationRule];
+        }
+        global $laravel10Rules;
+        if ($laravel10Rules) {
+            $ruleset['param3'] = [new DummyL10ValidationRule];
+        }
+
         $results = $this->strategy->parse($ruleset);
-        $this->assertEquals(true, $results['custom_rule']['required']);
-        $this->assertEquals('This is a dummy test rule.', $results['custom_rule']['description']);
+        $this->assertEquals(true, $results['param1']['required']);
+        $this->assertEquals('This is a dummy test rule.', $results['param1']['description']);
+        if (isset($results['param2'])) $this->assertEquals('This rule is invokable.', $results['param2']['description']);
+       if (isset($results['param3'])) $this->assertEquals('This is a custom rule.', $results['param3']['description']);
     }
 
     /** @test */
@@ -575,5 +588,46 @@ class DummyWithDocsValidationRule implements \Illuminate\Contracts\Validation\Ru
             'description' => 'This is a dummy test rule.',
             'example' => 'Default example, only added if none other give.',
         ];
+    }
+}
+
+if ($invokableRulesSupported) {
+    class DummyInvokableValidationRule implements \Illuminate\Contracts\Validation\InvokableRule
+    {
+        public function __invoke($attribute, $value, $fail)
+        {
+            if (strtoupper($value) !== $value) {
+                $fail(':attribute must be uppercase.');
+            }
+        }
+
+        public function docs()
+        {
+
+            return [
+                'description' => 'This rule is invokable.',
+            ];
+        }
+    }
+}
+
+if ($laravel10Rules) {
+// Laravel 10 deprecated the previous Rule and InvokableRule classes for a single interface
+    // (https://github.com/laravel/framework/pull/45954)
+    class DummyL10ValidationRule implements \Illuminate\Contracts\Validation\ValidationRule
+    {
+        public function validate(string $attribute, mixed $value, \Closure $fail): void
+        {
+            if (strtoupper($value) !== $value) {
+                $fail('The :attribute must be an attribute.');
+            }
+        }
+
+        public static function docs()
+        {
+            return [
+                'description' => 'This is a custom rule.',
+            ];
+        }
     }
 }
