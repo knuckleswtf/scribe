@@ -772,9 +772,11 @@ trait ParsesValidationRules
         // For rules that validate subfields
         $description = str_replace("The :attribute field ", "This field ", $description);
 
+        $description = preg_replace("/(?!<\W):attribute\b/", "value", $description);
+
         return str_replace(
-            [" :attribute ", "The value must ", " 1 characters", " 1 digits", " 1 kilobytes"],
-            [" value ", "Must ", " 1 character", " 1 digit", " 1 kilobyte"],
+            ["The value must ", " 1 characters", " 1 digits", " 1 kilobytes"],
+            ["Must ", " 1 character", " 1 digit", " 1 kilobyte"],
             $description
         );
     }
