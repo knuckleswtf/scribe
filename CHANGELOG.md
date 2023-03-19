@@ -12,9 +12,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.16.1 (19 March 2023)
+## Fixed
+- Fix sorting of responses by status code ([#623](https://github.com/knuckleswtf/scribe/pull/623))
+- Skip upgrade check if user hasn't published config yet ([#628](https://github.com/knuckleswtf/scribe/pull/628))
+- Upgrade: Ignore `examples.models_source` ([#631](https://github.com/knuckleswtf/scribe/pull/631))
+- More robust replacement of `:attribute` in validation rule descriptions (closes #633)
+- Remove invalid JS file request (closes #634)
+
 # 4.16.0 (16 February 2023)
 ## Added
-- Support for Laravel enum validation rule in line validators ([#616](https://github.com/knuckleswtf/scribe/pull/616))
+- Support for Laravel enum validation rule in inline validators ([#616](https://github.com/knuckleswtf/scribe/pull/616))
 
 
 # 4.15.0 (14 February 2023)
