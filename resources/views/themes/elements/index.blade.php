@@ -152,8 +152,6 @@
         </script>
     @endif
 
-    <script src="{{ u::getVersionedAsset($assetPathPrefix.'js/theme-elements.js') }}"></script>
-
 </head>
 
 <body>
