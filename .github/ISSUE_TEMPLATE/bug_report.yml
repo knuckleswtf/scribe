@@ -1,0 +1,58 @@
+name: Bug Report
+description: Something didn't work as expected? Create a report to help us improve.
+title: 
+labels: ["bug", "triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before submitting an issue, try updating your Scribe version and other common solutions mentioned in the [Troubleshooting Guide](https://scribe.knuckles.wtf/laravel/troubleshooting).
+        Also search the docs and existing issues for any related problems or solutions.
+  - type: input
+    id: scribe_version
+    attributes:
+      label: Scribe version
+      description: Run `composer show knuckleswtf/scribe`.
+      placeholder: "example: 4.8.0"
+    validations:
+      required: true
+  - type: input
+    id: php_version
+    attributes:
+      label: PHP version
+      description: Run `php -v`.
+      placeholder: "example: 8.1"
+    validations:
+      required: true
+  - type: input
+    id: framework_version
+    attributes:
+      label: Framework and version
+      description: Run `composer show laravel/framework` or `composer show laravel/lumen-framework`
+      placeholder: "example: Laravel 10.0.1"
+    validations:
+      required: true
+  - type: textarea
+    id: scribe_config
+    attributes:
+      label: Scribe config
+      description: Run `php artisan scribe:config:diff` and paste it here
+      render: yaml
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe what happened and what you expected to happen instead. IMPORTANT: please provide enough information so I can reproduce, or I may close the issue.
+      placeholder: I ran `php artisan scribe:generate`, and then...
+    validations:
+      required: true
+  - type: checkboxes
+    id: docs
+    attributes:
+      label: Docs
+      options:
+        - label: I've checked [the docs](https://scribe.knuckles.wtf/laravel) and existing issues, but I didn't find a solution
+          required: true
