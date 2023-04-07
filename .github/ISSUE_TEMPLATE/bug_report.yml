@@ -1,6 +1,5 @@
-name: Bug Report
+name: Bug report
 description: Something didn't work as expected? Create a report to help us improve.
-title: ""
 labels: ["bug", "triage"]
 assignees: []
 body:
