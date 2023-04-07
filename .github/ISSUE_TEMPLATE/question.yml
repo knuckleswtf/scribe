@@ -6,6 +6,8 @@ body:
   - type: markdown
     attributes:
       value: |
+        NOTE: If this is a bug report, please go back and use the Bug report template.
+        
         Before submitting an issue, first try updating your Scribe version and other common solutions mentioned in the [troubleshooting guide](https://scribe.knuckles.wtf/laravel/troubleshooting).
         
         Also search [the docs](https://scribe.knuckles.wtf/laravel) and [existing issues](https://github.com/knuckleswtf/scribe/issues?q=is%3Aissue+) (both open and closed) for any related problems or solutions.
