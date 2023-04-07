@@ -45,7 +45,8 @@ body:
     id: what-happened
     attributes:
       label: What happened?
-      description: Describe what happened and what you expected to happen instead. IMPORTANT: please provide enough information so I can reproduce, or I may close the issue.
+      description: |
+        Describe what happened and what you expected to happen instead. IMPORTANT: please provide enough information so I can reproduce, or I may close the issue.
       placeholder: I ran `php artisan scribe:generate`, and then...
     validations:
       required: true
