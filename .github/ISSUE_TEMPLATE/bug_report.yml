@@ -6,8 +6,9 @@ body:
   - type: markdown
     attributes:
       value: |
-        Before submitting an issue, try updating your Scribe version and other common solutions mentioned in the [Troubleshooting Guide](https://scribe.knuckles.wtf/laravel/troubleshooting).
-        Also search the docs and existing issues for any related problems or solutions.
+        Before submitting an issue, first try updating your Scribe version and other common solutions mentioned in the [troubleshooting guide](https://scribe.knuckles.wtf/laravel/troubleshooting).
+        
+        Also search [the docs](https://scribe.knuckles.wtf/laravel) and [existing issues](https://github.com/knuckleswtf/scribe/issues?q=is%3Aissue+) (both open and closed) for any related problems or solutions.
   - type: input
     id: scribe_version
     attributes:
@@ -28,7 +29,8 @@ body:
     id: framework_version
     attributes:
       label: Framework and version
-      description: Run `composer show laravel/framework` or `composer show laravel/lumen-framework`
+      description: |
+        Run `composer show -v | grep laravel/framework` or `composer show -v | grep laravel/lumen-framework`
       placeholder: "example: Laravel 10.0.1"
     validations:
       required: true
@@ -54,5 +56,5 @@ body:
     attributes:
       label: Docs
       options:
-        - label: I've checked [the docs](https://scribe.knuckles.wtf/laravel) and existing issues, but I didn't find a solution
+        - label: I've checked [the docs](https://scribe.knuckles.wtf/laravel), the [troubleshooting guide](https://scribe.knuckles.wtf/laravel/troubleshooting), and [existing issues](https://github.com/knuckleswtf/scribe/issues?q=is%3Aissue+_, but I didn't find a solution
           required: true
