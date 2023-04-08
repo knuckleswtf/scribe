@@ -97,23 +97,23 @@ class GetFromInlineValidatorBase extends Strategy
                 continue;
             }
 
-            $description = $example = null;
+            $dataFromComment = [];
             $comments = join("\n", array_map(
                     fn($comment) => ltrim(ltrim($comment->getReformattedText(), "/")),
                     $item->getComments()
-                )
-            );
+                ));
 
             if ($comments) {
-                $description = trim(str_replace(['No-example.', 'No-example'], '', $comments));
-                $example = null;
-                if (preg_match('/(.*\s+|^)Example:\s*([\s\S]+)\s*/s', $description, $matches)) {
-                    $description = trim($matches[1]);
-                    $example = $matches[2];
+                if (str_contains($comments, 'No-example')) $dataFromComment['example'] = null;
+
+                $dataFromComment['description'] = trim(str_replace(['No-example.', 'No-example'], '', $comments));
+                if (preg_match('/(.*\s+|^)Example:\s*([\s\S]+)\s*/s', $dataFromComment['description'], $matches)) {
+                    $dataFromComment['description'] = trim($matches[1]);
+                    $dataFromComment['example'] = $matches[2];
                 }
             }
 
-            $customParameterData[$paramName] = compact('description', 'example');
+            $customParameterData[$paramName] = $dataFromComment;
         }
 
         return [$rules, $customParameterData];

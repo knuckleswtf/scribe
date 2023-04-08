@@ -88,8 +88,8 @@ trait ParsesValidationRules
                 }
 
                 // Make sure the user-specified example overwrites others.
-                if (isset($userSpecifiedParameterInfo['example'])) {
-                    if ($this->shouldCastUserExample()) {
+                if (array_key_exists('example', $userSpecifiedParameterInfo)) {
+                    if ($userSpecifiedParameterInfo['example'] != null && $this->shouldCastUserExample()) {
                         // Examples in comments are strings, we need to cast them properly
                         $parameterData['example'] = $this->castToType($userSpecifiedParameterInfo['example'], $parameterData['type'] ?? 'string');
                     } else {

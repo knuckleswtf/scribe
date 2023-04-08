@@ -38,6 +38,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
             'type' => 'number',
             'required' => false,
             'description' => 'Just need something here.',
+            'example' => null,
         ],
         'even_more_param' => [
             'type' => 'object',

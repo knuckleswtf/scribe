@@ -427,7 +427,7 @@ class TestController extends Controller
             'room_id' => ['string', 'in:3,5,6'],
             // Whether to ban the user forever. Example: false
             'forever' => 'boolean',
-            // Just need something here
+            // Just need something here. No-example
             'another_one' => 'numeric',
             'even_more_param' => 'array',
             'book.name' => 'string',
@@ -452,7 +452,7 @@ class TestController extends Controller
             'room_id' => ['string', 'in:3,5,6'],
             // Whether to ban the user forever. Example: false
             'forever' => 'boolean',
-            // Just need something here
+            // Just need something here. No-example
             'another_one' => 'numeric',
             'even_more_param' => 'array',
             'book.name' => 'string',
@@ -478,7 +478,7 @@ class TestController extends Controller
             'room_id' => ['string', 'in:3,5,6'],
             // Whether to ban the user forever. Example: false
             'forever' => 'boolean',
-            // Just need something here
+            // Just need something here. No-example
             'another_one' => 'numeric',
             'even_more_param' => 'array',
             'book.name' => 'string',
@@ -504,7 +504,7 @@ class TestController extends Controller
             'room_id' => ['string', 'in:3,5,6'],
             // Whether to ban the user forever. Example: false
             'forever' => 'boolean',
-            // Just need something here
+            // Just need something here. No-example
             'another_one' => 'numeric',
             'even_more_param' => 'array',
             'book.name' => 'string',
@@ -532,7 +532,7 @@ class TestController extends Controller
             'room_id' => ['string', 'in:3,5,6'],
             // Whether to ban the user forever. Example: false
             'forever' => 'boolean',
-            // Just need something here
+            // Just need something here. No-example
             'another_one' => 'numeric',
             'even_more_param' => 'array',
             'book.name' => 'string',
@@ -548,7 +548,6 @@ class TestController extends Controller
         // Do stuff
     }
 
-
     public function withInlineThisValidate(Request $request)
     {
         $this->validate($request, [
@@ -558,7 +557,7 @@ class TestController extends Controller
             'room_id' => ['string', 'in:3,5,6'],
             // Whether to ban the user forever. Example: false
             'forever' => 'boolean',
-            // Just need something here
+            // Just need something here. No-example
             'another_one' => 'numeric',
             'even_more_param' => 'array',
             'book.name' => 'string',
