@@ -12,18 +12,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.18.0 (8 April 2023)
+## Fixed
+- Upgrader: Ignore `examples.models_source` ([#636](https://github.com/knuckleswtf/scribe/pull/636))
+- OpenAPI spec: Don't include forbidden headers (fixes #625) ([56d589a48](https://github.com/knuckleswtf/scribe/commit/56d589a484263119bebbb4ca1a26f60fa10ea87f))
+- Correctly support No-example in inline validators  (fixes #637) ([5fbe5fcab](https://github.com/knuckleswtf/scribe/commit/5fbe5fcab009139809c8a3e316ca753b23eb18ce))
+- FormRequest: Don't emit warning message if subfields are present in extra data (fixes #643) ([112bba0ec](https://github.com/knuckleswtf/scribe/commit/112bba0ec883b59c4879682670823bc7c7a5ca63))
+
+## Modified
+- Remove`auth description randomisation ([#639](https://github.com/knuckleswtf/scribe/pull/639))
+
+
 # 4.17.0 (19 March 2023)
 ## Added
 - Proper support for invokable rules and Laravel 10 validation rules changes ([ea3418](https://github.com/knuckleswtf/scribe/commit/ea341869b4062c9303507cae06fe1da1e12d7ccc))
 
 ## Modified
 - Experimental: don't URL-encode Postman query parameters (closes #442) ([df4d86fa1](https://github.com/knuckleswtf/scribe/commit/df4d86fa1df06e9d2a2a294d39ee258ac94f02de))
+- Replace ":attribute" at the start of validation messages (closes #633) ([ea122486d](https://github.com/knuckleswtf/scribe/commit/ea122486daa4168e612a5c40f8d385bb38fb8ae7))
 
 # 4.16.1 (19 March 2023)
 ## Fixed
 - Fix sorting of responses by status code ([#623](https://github.com/knuckleswtf/scribe/pull/623))
 - Skip upgrade check if user hasn't published config yet ([#628](https://github.com/knuckleswtf/scribe/pull/628))
-- Upgrade: Ignore `examples.models_source` ([#631](https://github.com/knuckleswtf/scribe/pull/631))
+- Upgrader: Ignore `examples.models_source` ([#631](https://github.com/knuckleswtf/scribe/pull/631))
 - More robust replacement of `:attribute` in validation rule descriptions (closes #633)
 - Remove invalid JS file request (closes #634)
 
