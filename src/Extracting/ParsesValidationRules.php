@@ -31,7 +31,10 @@ trait ParsesValidationRules
         $dependentRules = [];
         foreach ($validationRules as $parameter => $ruleset) {
             try {
-                if (count($customParameterData) && !isset($customParameterData[$parameter])) {
+                $parameterPlusDot = $parameter . '.';
+                if (count($customParameterData) && !isset($customParameterData[$parameter])
+                    && ! Arr::first(array_keys($customParameterData), fn ($key) => str_starts_with($key, $parameterPlusDot))
+                ) {
                     c::debug($this->getMissingCustomDataMessage($parameter));
                 }
                 $userSpecifiedParameterInfo = $customParameterData[$parameter] ?? [];
