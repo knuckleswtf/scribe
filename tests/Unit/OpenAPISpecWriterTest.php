@@ -174,21 +174,14 @@ class OpenAPISpecWriterTest extends TestCase
         $results = $this->generate($groups);
 
         $this->assertEquals([], $results['paths']['/path1']['get']['parameters']);
-        $this->assertCount(2, $results['paths']['/path1']['post']['parameters']);
-        $this->assertEquals([
-            'in' => 'header',
-            'name' => 'Content-Type',
-            'description' => '',
-            'example' => 'application/json',
-            'schema' => ['type' => 'string'],
-        ], $results['paths']['/path1']['post']['parameters'][0]);
+        $this->assertCount(1, $results['paths']['/path1']['post']['parameters']);
         $this->assertEquals([
             'in' => 'header',
             'name' => 'Extra-Header',
             'description' => '',
             'example' => 'Some-example',
             'schema' => ['type' => 'string'],
-        ], $results['paths']['/path1']['post']['parameters'][1]);
+        ], $results['paths']['/path1']['post']['parameters'][0]);
     }
 
     /** @test */

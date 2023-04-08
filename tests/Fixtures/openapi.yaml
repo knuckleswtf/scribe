@@ -20,13 +20,6 @@ paths:
                     example: NotSoCustom
                     schema:
                         type: string
-                -
-                    in: header
-                    name: Content-Type
-                    description: ''
-                    example: multipart/form-data
-                    schema:
-                        type: string
             responses: {  }
             tags:
                 - 'Group A'
@@ -278,12 +271,6 @@ paths:
                   name: Custom-Header
                   description: ''
                   example: NotSoCustom
-                  schema:
-                      type: string
-                - in: header
-                  name: Content-Type
-                  description: ''
-                  example: application/json
                   schema:
                       type: string
             responses: {}
