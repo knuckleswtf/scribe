@@ -1,6 +1,6 @@
 name: Question
 description: Ask or suggest something.
-labels: []
+labels: ["question", "triage"]
 assignees: []
 body:
   - type: markdown
