@@ -2,7 +2,6 @@
 
 namespace Knuckles\Scribe\Extracting;
 
-use Illuminate\Support\Arr;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 
@@ -91,11 +90,7 @@ class ApiDetails
         if ($isAuthed) {
             $strategy = $this->config->get('auth.in');
             $parameterName = $this->config->get('auth.name');
-            $authDescription = Arr::random([
-                "This API is authenticated by sending ",
-                "To authenticate requests, include ",
-                "Authenticate requests to this API's endpoints by sending ",
-            ]);
+            $authDescription = "To authenticate requests, include ";
             $authDescription .= match ($strategy) {
                 'query' => "a query parameter **`$parameterName`** in the request.",
                 'body' => "a parameter **`$parameterName`** in the body of the request.",
