@@ -132,5 +132,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.addEventListener('hashchange', hashChange, false);
 
+    const divs = document.querySelectorAll('.content h1[id], .content h2[id]');
+
+    document.addEventListener('scroll', () => {
+        divs.forEach(item => {
+            const rect = item.getBoundingClientRect();
+            if (rect.top > 0 && rect.top < 150) {
+                const location = window.location.toString().split('#')[0];
+                history.replaceState(null, null, location + '#' + item.id);
+                hashChange();
+            }
+        });
+    });
+
     hashChange();
 });
