@@ -26,7 +26,7 @@ class GenerateDocumentation extends Command
                             {--config=scribe : choose which config file to use}
     ";
 
-    protected $description = 'Generate API documentation from your Laravel/Dingo routes.';
+    protected $description = 'Generate API documentation from your Laravel/Lumen/Dingo routes.';
 
     protected DocumentationConfig $docConfig;
 
