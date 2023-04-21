@@ -2,7 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting;
 
-use Knuckles\Scribe\Tools\ConsoleOutputUtils;
+use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 
 /**
@@ -36,7 +36,7 @@ class ApiDetails
 
     public function writeMarkdownFiles(): void
     {
-        ConsoleOutputUtils::info('Extracting intro and auth Markdown files to: ' . $this->markdownOutputPath);
+        c::info('Extracting intro and auth Markdown files to: ' . $this->markdownOutputPath);
 
         if (!is_dir($this->markdownOutputPath)) {
             mkdir($this->markdownOutputPath, 0777, true);
@@ -49,7 +49,7 @@ class ApiDetails
 
         $this->writeContentsTrackingFile();
 
-        ConsoleOutputUtils::success('Extracted intro and auth Markdown files to: ' . $this->markdownOutputPath);
+        c::success('Extracted intro and auth Markdown files to: ' . $this->markdownOutputPath);
     }
 
     public function writeIntroMarkdownFile(): void
@@ -57,11 +57,11 @@ class ApiDetails
         $introMarkdownFile = $this->markdownOutputPath . '/intro.md';
         if ($this->hasFileBeenModified($introMarkdownFile)) {
             if ($this->preserveUserChanges) {
-                ConsoleOutputUtils::warn("Skipping modified file $introMarkdownFile");
+                c::warn("Skipping modified file $introMarkdownFile");
                 return;
             }
 
-            ConsoleOutputUtils::warn("Discarding manual changes for file $introMarkdownFile because you specified --force");
+            c::warn("Discarding manual changes for file $introMarkdownFile because you specified --force");
         }
 
         $introMarkdown = view('scribe::markdown.intro')
@@ -76,11 +76,11 @@ class ApiDetails
         $authMarkdownFile = $this->markdownOutputPath . '/auth.md';
         if ($this->hasFileBeenModified($authMarkdownFile)) {
             if ($this->preserveUserChanges) {
-                ConsoleOutputUtils::warn("Skipping modified file $authMarkdownFile");
+                c::warn("Skipping modified file $authMarkdownFile");
                 return;
             }
 
-            ConsoleOutputUtils::warn("Discarding manual changes for file $authMarkdownFile because you specified --force");
+            c::warn("Discarding manual changes for file $authMarkdownFile because you specified --force");
         }
 
         $isAuthed = $this->config->get('auth.enabled', false);
@@ -90,17 +90,11 @@ class ApiDetails
         if ($isAuthed) {
             $strategy = $this->config->get('auth.in');
             $parameterName = $this->config->get('auth.name');
-            $authDescription = "To authenticate requests, include ";
-            $authDescription .= match ($strategy) {
-                'query' => "a query parameter **`$parameterName`** in the request.",
-                'body' => "a parameter **`$parameterName`** in the body of the request.",
-                'query_or_body' => "a parameter **`$parameterName`** either in the query string or in the request body.",
-                'bearer' => sprintf('an **`Authorization`** header with the value **`"Bearer %s"`**.', $this->config->get('auth.placeholder') ?: 'your-token'),
-                'basic' => "an **`Authorization`** header in the form **`\"Basic {credentials}\"`**. The value of `{credentials}` should be your username/id and your password, joined with a colon (:), and then base64-encoded.",
-                'header' => sprintf('a **`%s`** header with the value **`"%s"`**.', $parameterName, $this->config->get('auth.placeholder') ?: 'your-token'),
-                default => '',
-            };
-            $authDescription .= "\n\nAll authenticated endpoints are marked with a `requires authentication` badge in the documentation below.";
+            $authDescription = __("scribe::auth.instruction.$strategy", [
+                'parameterName' => $parameterName,
+                'placeholder' => $this->config->get('auth.placeholder') ?: 'your-token']
+            );
+            $authDescription .= "\n\n".__("scribe::auth.details");
             $extraInfo = $this->config->get('auth.extra_info', '');
         }
 

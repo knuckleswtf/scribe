@@ -23,12 +23,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
 
     protected function getPackageProviders($app)
     {
-        $providers = [
-            ScribeServiceProvider::class,
-        ];
-        if (class_exists(\Dingo\Api\Provider\LaravelServiceProvider::class)) {
-            $providers[] = \Dingo\Api\Provider\LaravelServiceProvider::class;
-        }
+        $providers = parent::getPackageProviders($app);
         if (class_exists(\Illuminate\Database\Eloquent\LegacyFactoryServiceProvider::class)) {
             $providers[] = \Illuminate\Database\Eloquent\LegacyFactoryServiceProvider ::class;
         }

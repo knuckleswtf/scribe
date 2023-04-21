@@ -24,6 +24,11 @@ class ScribeServiceProvider extends ServiceProvider
 
         $this->registerCommands();
 
+        $this->loadJsonTranslationsFrom(__DIR__.'/../lang');
+        $this->publishes([
+            __DIR__.'/../lang' => $this->app->langPath('vendor/scribe'),
+        ], 'scribe-translations');
+
         // Bind the route matcher implementation
         $this->app->bind(RouteMatcherInterface::class, config('scribe.routeMatcher', RouteMatcher::class));
 

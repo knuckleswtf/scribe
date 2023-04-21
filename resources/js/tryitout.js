@@ -38,8 +38,9 @@ function getCookie(name) {
 
 function tryItOut(endpointId) {
     document.querySelector(`#btn-tryout-${endpointId}`).hidden = true;
-    document.querySelector(`#btn-executetryout-${endpointId}`).hidden = false;
     document.querySelector(`#btn-canceltryout-${endpointId}`).hidden = false;
+    const executeBtn = document.querySelector(`#btn-executetryout-${endpointId}`).hidden = false;
+    executeBtn.disabled = false;
 
     // Show all input fields
     document.querySelectorAll(`input[data-endpoint=${endpointId}],label[data-endpoint=${endpointId}]`)
@@ -177,6 +178,7 @@ function handleError(endpointId, err) {
 async function executeTryOut(endpointId, form) {
     const executeBtn = document.querySelector(`#btn-executetryout-${endpointId}`);
     executeBtn.textContent = "⏱ Sending...";
+    executeBtn.disabled = true;
     executeBtn.scrollIntoView({behavior: "smooth", block: "center"});
 
     let body;
@@ -266,6 +268,7 @@ async function executeTryOut(endpointId, form) {
             handleError(endpointId, err);
         })
         .finally(() => {
+            executeBtn.disabled = false;
             executeBtn.textContent = "Send Request 💥";
         });
 }

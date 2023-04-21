@@ -48,7 +48,7 @@
                     @if(count($endpoint->headers))
                         <div class="sl-stack sl-stack--vertical sl-stack--5 sl-flex sl-flex-col sl-items-stretch">
                             <h3 class="sl-text-2xl sl-leading-snug sl-font-prose">
-                                Headers
+                                {{ __("scribe::endpoint.headers") }}
                             </h3>
                             <div class="sl-text-sm">
                                 @foreach($endpoint->headers as $header => $value)
@@ -70,7 +70,7 @@
 
                     @if(count($endpoint->urlParameters))
                         <div class="sl-stack sl-stack--vertical sl-stack--6 sl-flex sl-flex-col sl-items-stretch">
-                            <h3 class="sl-text-2xl sl-leading-snug sl-font-prose">URL Parameters</h3>
+                            <h3 class="sl-text-2xl sl-leading-snug sl-font-prose">{{ __("scribe::endpoint.url_parameters") }}</h3>
 
                             <div class="sl-text-sm">
                                 @foreach($endpoint->urlParameters as $attribute => $parameter)
@@ -93,7 +93,7 @@
 
                     @if(count($endpoint->queryParameters))
                             <div class="sl-stack sl-stack--vertical sl-stack--6 sl-flex sl-flex-col sl-items-stretch">
-                                <h3 class="sl-text-2xl sl-leading-snug sl-font-prose">Query Parameters</h3>
+                                <h3 class="sl-text-2xl sl-leading-snug sl-font-prose">{{ __("scribe::endpoint.query_parameters") }}</h3>
 
                                 <div class="sl-text-sm">
                                     @foreach($endpoint->queryParameters as $attribute => $parameter)
@@ -115,7 +115,7 @@
 
                     @if(count($endpoint->nestedBodyParameters))
                         <div class="sl-stack sl-stack--vertical sl-stack--6 sl-flex sl-flex-col sl-items-stretch">
-                            <h3 class="sl-text-2xl sl-leading-snug sl-font-prose">Body Parameters</h3>
+                            <h3 class="sl-text-2xl sl-leading-snug sl-font-prose">{{ __("scribe::endpoint.body_parameters") }}</h3>
 
                                 <div class="sl-text-sm">
                                     @component('scribe::themes.elements.components.nested-fields', [
@@ -129,7 +129,7 @@
 
                     @if(count($endpoint->responseFields))
                             <div class="sl-stack sl-stack--vertical sl-stack--6 sl-flex sl-flex-col sl-items-stretch">
-                                <h3 class="sl-text-2xl sl-leading-snug sl-font-prose">Response Fields</h3>
+                                <h3 class="sl-text-2xl sl-leading-snug sl-font-prose">{{ __("scribe::endpoint.response_fields") }}</h3>
 
                                 <div class="sl-text-sm">
                                     @component('scribe::themes.elements.components.nested-fields', [
@@ -157,7 +157,7 @@
                             <div class="sl-panel__titlebar sl-flex sl-items-center sl-relative focus:sl-z-10 sl-text-base sl-leading-none sl-pr-3 sl-pl-4 sl-bg-canvas-200 sl-text-body sl-border-input focus:sl-border-primary sl-select-none">
                                 <div class="sl-flex sl-flex-1 sl-items-center sl-h-lg">
                                     <div class="sl--ml-2">
-                                        Request sample:
+                                        {{ __("scribe::example_request") }}:
                                         <select class="example-request-lang-toggle sl-text-base"
                                                 aria-label="Request Sample Language"
                                                 onchange="switchExampleLanguage(event.target.value);">
@@ -187,7 +187,7 @@
                                 <div class="sl-flex sl-flex-1 sl-items-center sl-py-2">
                                     <div class="sl--ml-2">
                                         <div class="sl-h-sm sl-text-base sl-font-medium sl-px-1.5 sl-text-muted sl-rounded sl-border-transparent sl-border">
-                                            <div class="sl-mb-2 sl-inline-block">Response sample:</div>
+                                            <div class="sl-mb-2 sl-inline-block">{{ __("scribe::example_response") }}:</div>
                                             <div class="sl-mb-2 sl-inline-block">
                                                 <select
                                                         class="example-response-{{ $endpoint->endpointId() }}-toggle sl-text-base"
@@ -240,9 +240,9 @@
                                             </details>
                                         @endif
                                         @if(is_string($response->content) && Str::startsWith($response->content, "<<binary>>"))
-                                            <pre><code>[Binary data] - {{ htmlentities(str_replace("<<binary>>", "", $response->content)) }}</code></pre>
+                                            <pre><code>[{{ __("scribe::example_response.binary") }}] - {{ htmlentities(str_replace("<<binary>>", "", $response->content)) }}</code></pre>
                                         @elseif($response->status == 204)
-                                            <pre><code>[Empty response]</code></pre>
+                                            <pre><code>[{{ __("scribe::example_response.empty") }}]</code></pre>
                                         @else
                                             @php($parsed = json_decode($response->content))
                                             {{-- If response is a JSON string, prettify it. Otherwise, just print it --}}

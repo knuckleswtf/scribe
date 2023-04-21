@@ -112,11 +112,11 @@ class HtmlWriter
 
         // NB:These paths are wrong for laravel type but will be set correctly by the Writer class
         if ($this->config->get('postman.enabled', true)) {
-            $links[] = "<a href=\"{$this->assetPathPrefix}collection.json\">View Postman collection</a>";
+            $links[] = "<a href=\"{$this->assetPathPrefix}collection.json\">".__("scribe::links.postman")."</a>";
             $postmanCollectionUrl = "{$this->assetPathPrefix}collection.json";
         }
         if ($this->config->get('openapi.enabled', false)) {
-            $links[] = "<a href=\"{$this->assetPathPrefix}openapi.yaml\">View OpenAPI spec</a>";
+            $links[] = "<a href=\"{$this->assetPathPrefix}openapi.yaml\">".__("scribe::links.openapi")."</a>";
             $openApiSpecUrl = "{$this->assetPathPrefix}openapi.yaml";
         }
 

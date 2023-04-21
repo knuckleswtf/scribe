@@ -19,7 +19,7 @@
     @endisset
 
     <div class="search">
-        <input type="text" class="search" id="input-search" placeholder="Search">
+        <input type="text" class="search" id="input-search" placeholder="{{ __("scribe::search") }}">
     </div>
 
     <div id="toc">
@@ -52,10 +52,10 @@
 
     <ul class="toc-footer" id="toc-footer">
         @if($metadata['postman_collection_url'])
-            <li style="padding-bottom: 5px;"><a href="{!! $metadata['postman_collection_url'] !!}">View Postman collection</a></li>
+            <li style="padding-bottom: 5px;"><a href="{!! $metadata['postman_collection_url'] !!}">{!! __("scribe::links.postman") !!}</a></li>
         @endif
         @if($metadata['openapi_spec_url'])
-            <li style="padding-bottom: 5px;"><a href="{!! $metadata['openapi_spec_url'] !!}">View OpenAPI spec</a></li>
+            <li style="padding-bottom: 5px;"><a href="{!! $metadata['openapi_spec_url'] !!}">{!! __("scribe::links.openapi") !!}</a></li>
         @endif
         <li><a href="http://github.com/knuckleswtf/scribe">Documentation powered by Scribe ✍</a></li>
     </ul>

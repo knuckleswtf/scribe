@@ -260,7 +260,7 @@
                     <button type="button" data-endpoint="{{ $endpoint->endpointId() }}"
                             class="tryItOut-btn sl-button sl-h-sm sl-text-base sl-font-medium sl-px-1.5 sl-bg-primary hover:sl-bg-primary-dark active:sl-bg-primary-darker disabled:sl-bg-canvas-100 sl-text-on-primary disabled:sl-text-body sl-rounded sl-border-transparent sl-border disabled:sl-opacity-70"
                     >
-                        Send API Request
+                        {{ __("scribe::try_it_out.send") }}
                     </button>
                 </div>
             </div>
