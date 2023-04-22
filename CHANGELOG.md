@@ -12,6 +12,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.19.0 (22 April 2023)
+## Added
+- Internationalization / Localization - You can now translate text in the Scribe-generated docs UI into your language, or just change the warning. To see the available strings to customise, run `php artisan vendor:publish --tag=scribe-translations`. [#647](https://github.com/knuckleswtf/scribe/pull/647)
+
+## Fixed
+- (In the default theme) Menu items now open when you scroll down. [#644](https://github.com/knuckleswtf/scribe/pull/644)
+
 # 4.18.0 (8 April 2023)
 ## Fixed
 - Upgrader: Ignore `examples.models_source` ([#636](https://github.com/knuckleswtf/scribe/pull/636))
@@ -21,7 +28,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Modified
 - Remove`auth description randomisation ([#639](https://github.com/knuckleswtf/scribe/pull/639))
-
 
 # 4.17.0 (19 March 2023)
 ## Added
