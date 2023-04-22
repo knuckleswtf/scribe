@@ -54,11 +54,12 @@
     <blockquote>{{ __("scribe::try_it_out.received_response") }}<span
                 id="execution-response-status-{{ $endpoint->endpointId() }}"></span>:
     </blockquote>
-    <pre class="json"><code id="execution-response-content-{{ $endpoint->endpointId() }}" style="max-height: 400px;"></code></pre>
+    <pre class="json"><code id="execution-response-content-{{ $endpoint->endpointId() }}"
+      data-empty-response-text="<{{ __("scribe::example_response.empty") }}>" style="max-height: 400px;"></code></pre>
 </span>
 <span id="execution-error-{{ $endpoint->endpointId() }}" hidden>
     <blockquote>{{ __("scribe::try_it_out.request_failed") }}:</blockquote>
-    <pre><code id="execution-error-message-{{ $endpoint->endpointId() }}"></code></pre>
+    <pre><code id="execution-error-message-{{ $endpoint->endpointId() }}">{{ "\n\n".__("scribe::try_it_out.error_help") }}</code></pre>
 </span>
 <form id="form-{{ $endpoint->endpointId() }}" data-method="{{ $endpoint->httpMethods[0] }}"
       data-path="{{ $endpoint->uri }}"
@@ -82,7 +83,10 @@
             </button>&nbsp;&nbsp;
             <button type="submit"
                     style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-{{ $endpoint->endpointId() }}" hidden>{{ __("scribe::try_it_out.send") }}
+                    id="btn-executetryout-{{ $endpoint->endpointId() }}"
+                    data-initial-text="{{ __("scribe::try_it_out.send") }}"
+                    data-loading-text="{{ __("scribe::try_it_out.loading") }}"
+                    hidden>{{ __("scribe::try_it_out.send") }}
             </button>
         @endif
     </h3>

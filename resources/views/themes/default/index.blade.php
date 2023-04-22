@@ -33,7 +33,7 @@
 
 @if($tryItOut['enabled'] ?? true)
     <script>
-        var baseUrl = "{{ $tryItOut['base_url'] ?? config('app.url') }}";
+        var tryItOutBaseUrl = "{{ $tryItOut['base_url'] ?? config('app.url') }}";
         var useCsrf = Boolean({{ $tryItOut['use_csrf'] ?? null }});
         var csrfUrl = "{{ $tryItOut['csrf_url'] ?? null }}";
     </script>
