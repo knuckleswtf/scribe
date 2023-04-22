@@ -28,9 +28,7 @@ class UseResponseAttributesTest extends BaseLaravelTest
 
     protected function getPackageProviders($app)
     {
-        $providers = [
-            ScribeServiceProvider::class,
-        ];
+        $providers = parent::getPackageProviders($app);
         if (class_exists(\Illuminate\Database\Eloquent\LegacyFactoryServiceProvider::class)) {
             $providers[] = \Illuminate\Database\Eloquent\LegacyFactoryServiceProvider ::class;
         }

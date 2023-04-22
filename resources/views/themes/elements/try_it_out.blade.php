@@ -260,7 +260,7 @@
                     <button type="button" data-endpoint="{{ $endpoint->endpointId() }}"
                             class="tryItOut-btn sl-button sl-h-sm sl-text-base sl-font-medium sl-px-1.5 sl-bg-primary hover:sl-bg-primary-dark active:sl-bg-primary-darker disabled:sl-bg-canvas-100 sl-text-on-primary disabled:sl-text-body sl-rounded sl-border-transparent sl-border disabled:sl-opacity-70"
                     >
-                        Send API Request
+                        {{ __("scribe::try_it_out.send") }}
                     </button>
                 </div>
             </div>
@@ -279,23 +279,13 @@
                                       d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
                             </svg>
                         </div>
-                        Error
+                        {{ __("scribe::try_it_out.request_failed") }}
                     </div>
                 </div>
                 <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
                     <div class="sl-panel__content sl-p-4">
-                        <p class="sl-pb-2"><strong
-                                    class="error-message"></strong></p>
-                        <p class="sl-pb-2">1. Double check that your computer is connected to
-                            the internet.</p>
-                        <p class="sl-pb-2">2. Make sure the API is actually running and
-                            available under the specified URL.</p>
-                        <p>3. If you've checked all of the above and still experiencing issues,
-                            check if the API supports <a target="_blank"
-                                                         rel="noopener noreferrer"
-                                                         href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS"
-                                                         class="sl-link sl-font-semibold">CORS</a>.
-                        </p>
+                        <p class="sl-pb-2"><strong class="error-message"></strong></p>
+                        <p class="sl-pb-2">{{ __("scribe::try_it_out.error_help") }}</p>
                     </div>
                 </div>
             </div>
@@ -314,13 +304,15 @@
                                           d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"></path>
                                 </svg>
                             </div>
-                            Response
+                            {{ __("scribe::try_it_out.received_response") }}
                         </div>
                     </div>
                     <div class="sl-panel__content-wrapper sl-bg-canvas-100 children" role="region">
                         <div class="sl-panel__content sl-p-4">
                             <p class="sl-pb-2 response-status"></p>
-                            <pre><code class="sl-pb-2 response-content language-json" style="max-height: 300px;"></code></pre>
+                            <pre><code class="sl-pb-2 response-content language-json"
+                                       data-empty-response-text="<{{ __("scribe::example_response.empty") }}>"
+                                       style="max-height: 300px;"></code></pre>
                         </div>
                     </div>
                 </div>

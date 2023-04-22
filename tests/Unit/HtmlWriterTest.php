@@ -2,11 +2,11 @@
 
 namespace Knuckles\Scribe\Tests\Unit;
 
+use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Writing\HtmlWriter;
-use PHPUnit\Framework\TestCase;
 
-class HtmlWriterTest extends TestCase
+class HtmlWriterTest extends BaseLaravelTest
 {
     /** @test */
     public function sets_last_updated_correctly()
