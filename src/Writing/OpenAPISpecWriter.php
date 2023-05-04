@@ -19,6 +19,7 @@ class OpenAPISpecWriter
     use ParamHelpers;
 
     const SPEC_VERSION = '3.0.3';
+    const MAX_DEPTH = 5;
 
     private DocumentationConfig $config;
 
@@ -337,7 +338,6 @@ class OpenAPISpecWriter
                 ],
             ];
         }
-
         switch ($type = gettype($decoded)) {
             case 'string':
             case 'boolean':
@@ -373,9 +373,7 @@ class OpenAPISpecWriter
                     'application/json' => [
                         'schema' => [
                             'type' => 'array',
-                            'items' => [
-                                'type' => $this->convertScribeOrPHPTypeToOpenAPIType(gettype($decoded[0])),
-                            ],
+                            'items' => $this->generateNestedSchema($decoded[0], $endpoint, null),
                             'example' => $decoded,
                         ],
                     ],
@@ -383,7 +381,7 @@ class OpenAPISpecWriter
 
             case 'object':
                 $properties = collect($decoded)->mapWithKeys(function ($value, $key) use ($endpoint) {
-                    return [$key => $this->generateSchemaForValue($value, $endpoint, $key)];
+                    return [$key => $this->generateNestedSchema($value, $endpoint, $key)];
                 })->toArray();
 
                 if (!count($properties)) {
@@ -579,5 +577,72 @@ class OpenAPISpecWriter
         }
 
         return $schema;
+    }
+
+    /**
+     * @param $value
+     * @param OutputEndpointData $endpoint
+     * @param string $key
+     * @param int $depth
+     * @return array|string[]
+     */
+    protected function generateNestedSchema($value, OutputEndpointData $endpoint, string $key, int $depth = 0)
+    {
+        $type = $this->convertScribeOrPHPTypeToOpenAPIType(gettype($value));
+
+        if (in_array($type, ['integer', 'number', 'boolean', 'string'])) {
+            return [
+                'type' => $type,
+                'example' => $value,
+            ];
+        }
+
+        if ($type === 'array') {
+            if (!count($value)) {
+                return [
+                    'type' => 'array',
+                    'items' => [
+                        'type' => 'object', // No better idea what to put here
+                    ],
+                    'example' => $value,
+                ];
+            }
+
+            if ($depth >= self::MAX_DEPTH) {
+                return [
+                    'type' => 'array',
+                    'items' => [
+                        'type' => 'object', // No better idea what to put here
+                    ],
+                    'example' => $value,
+                ];
+            }
+
+            return [
+                'type' => 'array',
+                'items' => $this->generateNestedSchema($value[0], $endpoint, $key, $depth + 1),
+                'example' => $value,
+            ];
+        }
+
+        if ($type === 'object') {
+            $properties = collect($value)->mapWithKeys(function ($nestedValue, $nestedKey) use ($endpoint, $depth) {
+                return [$nestedKey => $this->generateNestedSchema($nestedValue, $endpoint, $nestedKey, $depth + 1)];
+            })->toArray();
+
+            if (!count($properties)) {
+                $properties = $this->EMPTY;
+            }
+
+            return [
+                'type' => 'object',
+                'example' => $value,
+                'properties' => $properties,
+            ];
+        }
+
+        return [
+            'type' => $type,
+        ];
     }
 }
