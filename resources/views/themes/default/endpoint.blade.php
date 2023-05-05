@@ -1,4 +1,5 @@
 @php
+    use Knuckles\Scribe\Tools\Utils as u;
     /** @var  Knuckles\Camel\Output\OutputEndpointData $endpoint */
 @endphp
 
@@ -12,7 +13,7 @@
 {!! Parsedown::instance()->text($endpoint->metadata->description ?: '') !!}
 
 <span id="example-requests-{!! $endpoint->endpointId() !!}">
-<blockquote>{{ __("scribe::example_request") }}:</blockquote>
+<blockquote>{{ u::trans("scribe::example_request") }}:</blockquote>
 
 @foreach($metadata['example_languages'] as $language)
 
@@ -27,7 +28,7 @@
 @if($endpoint->isGet() || $endpoint->hasResponses())
     @foreach($endpoint->responses as $response)
         <blockquote>
-            <p>{{ __("scribe::example_response") }} ({{ $response->fullDescription() }}):</p>
+            <p>{{ u::trans("scribe::example_response") }} ({{ $response->fullDescription() }}):</p>
         </blockquote>
         @if(count($response->headers))
         <details class="annotation">
@@ -39,9 +40,9 @@
 @endforeach </code></pre></details> @endif
         <pre>
 @if(is_string($response->content) && Str::startsWith($response->content, "<<binary>>"))
-<code>{!! __("scribe::example_response.binary") !!} - {{ htmlentities(str_replace("<<binary>>", "", $response->content)) }}</code>
+<code>{!! u::trans("scribe::example_response.binary") !!} - {{ htmlentities(str_replace("<<binary>>", "", $response->content)) }}</code>
 @elseif($response->status == 204)
-<code>{!! __("scribe::example_response.empty") !!}</code>
+<code>{!! u::trans("scribe::example_response.empty") !!}</code>
 @else
 @php($parsed = json_decode($response->content))
 {{-- If response is a JSON string, prettify it. Otherwise, just print it --}}
@@ -51,15 +52,15 @@
 @endif
 </span>
 <span id="execution-results-{{ $endpoint->endpointId() }}" hidden>
-    <blockquote>{{ __("scribe::try_it_out.received_response") }}<span
+    <blockquote>{{ u::trans("scribe::try_it_out.received_response") }}<span
                 id="execution-response-status-{{ $endpoint->endpointId() }}"></span>:
     </blockquote>
     <pre class="json"><code id="execution-response-content-{{ $endpoint->endpointId() }}"
-      data-empty-response-text="<{{ __("scribe::example_response.empty") }}>" style="max-height: 400px;"></code></pre>
+      data-empty-response-text="<{{ u::trans("scribe::example_response.empty") }}>" style="max-height: 400px;"></code></pre>
 </span>
 <span id="execution-error-{{ $endpoint->endpointId() }}" hidden>
-    <blockquote>{{ __("scribe::try_it_out.request_failed") }}:</blockquote>
-    <pre><code id="execution-error-message-{{ $endpoint->endpointId() }}">{{ "\n\n".__("scribe::try_it_out.error_help") }}</code></pre>
+    <blockquote>{{ u::trans("scribe::try_it_out.request_failed") }}:</blockquote>
+    <pre><code id="execution-error-message-{{ $endpoint->endpointId() }}">{{ "\n\n".u::trans("scribe::try_it_out.error_help") }}</code></pre>
 </span>
 <form id="form-{{ $endpoint->endpointId() }}" data-method="{{ $endpoint->httpMethods[0] }}"
       data-path="{{ $endpoint->uri }}"
@@ -69,24 +70,24 @@
       autocomplete="off"
       onsubmit="event.preventDefault(); executeTryOut('{{ $endpoint->endpointId() }}', this);">
     <h3>
-        {{ __("scribe::endpoint.request") }}&nbsp;&nbsp;&nbsp;
+        {{ u::trans("scribe::endpoint.request") }}&nbsp;&nbsp;&nbsp;
         @if($metadata['try_it_out']['enabled'] ?? false)
             <button type="button"
                     style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
                     id="btn-tryout-{{ $endpoint->endpointId() }}"
-                    onclick="tryItOut('{{ $endpoint->endpointId() }}');">{{ __("scribe::try_it_out.open") }}
+                    onclick="tryItOut('{{ $endpoint->endpointId() }}');">{{ u::trans("scribe::try_it_out.open") }}
             </button>
             <button type="button"
                     style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
                     id="btn-canceltryout-{{ $endpoint->endpointId() }}"
-                    onclick="cancelTryOut('{{ $endpoint->endpointId() }}');" hidden>{{ __("scribe::try_it_out.cancel") }}
+                    onclick="cancelTryOut('{{ $endpoint->endpointId() }}');" hidden>{{ u::trans("scribe::try_it_out.cancel") }}
             </button>&nbsp;&nbsp;
             <button type="submit"
                     style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
                     id="btn-executetryout-{{ $endpoint->endpointId() }}"
-                    data-initial-text="{{ __("scribe::try_it_out.send") }}"
-                    data-loading-text="{{ __("scribe::try_it_out.loading") }}"
-                    hidden>{{ __("scribe::try_it_out.send") }}
+                    data-initial-text="{{ u::trans("scribe::try_it_out.send") }}"
+                    data-loading-text="{{ u::trans("scribe::try_it_out.loading") }}"
+                    hidden>{{ u::trans("scribe::try_it_out.send") }}
             </button>
         @endif
     </h3>
@@ -97,7 +98,7 @@
         </p>
     @endforeach
     @if(count($endpoint->headers))
-        <h4 class="fancy-heading-panel"><b>{{ __("scribe::endpoint.headers") }}</b></h4>
+        <h4 class="fancy-heading-panel"><b>{{ u::trans("scribe::endpoint.headers") }}</b></h4>
         @foreach($endpoint->headers as $name => $example)
             <?php
                 $htmlOptions = [];
@@ -122,7 +123,7 @@
         @endforeach
     @endif
     @if(count($endpoint->urlParameters))
-        <h4 class="fancy-heading-panel"><b>{{ __("scribe::endpoint.url_parameters") }}</b></h4>
+        <h4 class="fancy-heading-panel"><b>{{ u::trans("scribe::endpoint.url_parameters") }}</b></h4>
         @foreach($endpoint->urlParameters as $attribute => $parameter)
             <div style="padding-left: 28px; clear: unset;">
                 @component('scribe::components.field-details', [
@@ -140,7 +141,7 @@
         @endforeach
     @endif
     @if(count($endpoint->queryParameters))
-        <h4 class="fancy-heading-panel"><b>{{ __("scribe::endpoint.query_parameters") }}</b></h4>
+        <h4 class="fancy-heading-panel"><b>{{ u::trans("scribe::endpoint.query_parameters") }}</b></h4>
         @foreach($endpoint->queryParameters as $attribute => $parameter)
                 <?php
                 $htmlOptions = [];
@@ -165,7 +166,7 @@
         @endforeach
     @endif
     @if(count($endpoint->nestedBodyParameters))
-        <h4 class="fancy-heading-panel"><b>{{ __("scribe::endpoint.body_parameters") }}</b></h4>
+        <h4 class="fancy-heading-panel"><b>{{ u::trans("scribe::endpoint.body_parameters") }}</b></h4>
         <x-scribe::nested-fields
                 :fields="$endpoint->nestedBodyParameters" :endpointId="$endpoint->endpointId()"
         />
@@ -173,8 +174,8 @@
 </form>
 
 @if(count($endpoint->responseFields))
-    <h3>{{ __("scribe::endpoint.response") }}</h3>
-    <h4 class="fancy-heading-panel"><b>{{ __("scribe::endpoint.response_fields") }}</b></h4>
+    <h3>{{ u::trans("scribe::endpoint.response") }}</h3>
+    <h4 class="fancy-heading-panel"><b>{{ u::trans("scribe::endpoint.response_fields") }}</b></h4>
     <x-scribe::nested-fields
             :fields="$endpoint->nestedResponseFields" :endpointId="$endpoint->endpointId()"
             :isInput="false"

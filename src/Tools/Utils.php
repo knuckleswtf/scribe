@@ -353,6 +353,26 @@ class Utils
         );
     }
 
+    /**
+     * Like Laravel's trans/__ function, but will fallback to using the default translation if translation fails.
+     * For instance, if the user's locale is DE, but they have no DE strings defined,
+     * Laravel simply renders the translation key.
+     * Instead, we render the EN version.
+     */
+    public static function trans(string $key, array $replace = [])
+    {
+        $translation = trans($key, $replace);
+
+        if ($translation === $key) {
+            $translation = trans($key, $replace, config('app.fallback_locale'));
+        }
+
+        if ($translation === $key) {
+            return trans($key, $replace, 'en');
+        }
+
+        return $translation;
+    }
 }
 
 function getTopLevelItemsFromMixedOrderList(array $mixedList): array

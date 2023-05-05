@@ -3,6 +3,7 @@
 namespace Knuckles\Scribe\Extracting;
 
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
+use Knuckles\Scribe\Tools\Utils as u;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 
 /**
@@ -90,11 +91,11 @@ class ApiDetails
         if ($isAuthed) {
             $strategy = $this->config->get('auth.in');
             $parameterName = $this->config->get('auth.name');
-            $authDescription = __("scribe::auth.instruction.$strategy", [
+            $authDescription = u::trans("scribe::auth.instruction.$strategy", [
                 'parameterName' => $parameterName,
                 'placeholder' => $this->config->get('auth.placeholder') ?: 'your-token']
             );
-            $authDescription .= "\n\n".__("scribe::auth.details");
+            $authDescription .= "\n\n".u::trans("scribe::auth.details");
             $extraInfo = $this->config->get('auth.extra_info', '');
         }
 
