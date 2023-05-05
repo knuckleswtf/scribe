@@ -25,13 +25,22 @@ body:
       placeholder: "example: 8.1"
     validations:
       required: true
-  - type: input
-    id: framework_version
+  - type: dropdown
+    id: framework
     attributes:
-      label: Framework and version
+      label: Framework
+      options:
+      - Laravel
+      - Lumen
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Framework version
       description: |
         Run `composer show -v | grep laravel/framework` or `composer show -v | grep laravel/lumen-framework`
-      placeholder: "example: Laravel 10.0.1"
+      placeholder: "example: 10.0.1"
     validations:
       required: true
   - type: textarea
