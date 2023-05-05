@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.19.1 (5 May 2023)
+## Fixed
+- Fix translations when locale is not EN and no strings are defined ([8d2be2c6](https://github.com/knuckleswtf/scribe/commit/8d2be2c681f71ed31c6be5043d6b1a0761f0235e))
+
 # 4.19.0 (22 April 2023)
 ## Added
 - Internationalization / Localization - You can now translate text in the Scribe-generated docs UI into your language, or just change the warning. To see the available strings to customise, run `php artisan vendor:publish --tag=scribe-translations`. [#647](https://github.com/knuckleswtf/scribe/pull/647)
