@@ -54,7 +54,9 @@ class ApiResourceResponseTools
         array  $paginationStrategy = [], array $additionalData = []
     ): JsonResource
     {
-        $modelInstance = $modelInstantiator();
+        // If the JsonResource is working with empty $resource (such like an empty array), the $modelInstantiator will be null
+        // If $modelInstantiator is null set to an empty array as default
+        $modelInstance = $modelInstantiator() ?? [];
         try {
             $resource = new $apiResourceClass($modelInstance);
         } catch (Exception) {
