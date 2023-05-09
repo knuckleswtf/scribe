@@ -353,7 +353,7 @@ INTRO
      * - {git:short} => Short hash of the last Git commit
      *
      * Available tokens are `{date:<format>}` and `{git:<format>}`.
-     * The format you pass to `date` will be passed to PhP's `date()` function.
+     * The format you pass to `date` will be passed to PHP's `date()` function.
      * The format you pass to `git` can be either "short" or "long".
      */
     'last_updated' => 'Last updated: {date:F j, Y}',
