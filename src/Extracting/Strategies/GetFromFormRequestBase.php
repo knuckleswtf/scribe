@@ -70,9 +70,11 @@ class GetFromFormRequestBase extends Strategy
 
             return call_user_func_array([$formRequest, 'validator'], [$validationFactory])
                 ->getRules();
-        } else {
+        } elseif (method_exists($formRequest, 'rules')) {
             return call_user_func_array([$formRequest, 'rules'], []);
         }
+
+        return [];
     }
 
     /**
