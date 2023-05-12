@@ -205,7 +205,7 @@ class PostmanCollectionWriter
                 break;
             case 'raw':
             default:
-                $body[$inputMode] = json_encode($endpoint->cleanBodyParameters, JSON_UNESCAPED_UNICODE);
+                $body[$inputMode] = json_encode($endpoint->cleanBodyParameters, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT);
         }
         return $body;
     }
