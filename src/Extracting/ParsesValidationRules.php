@@ -203,7 +203,7 @@ trait ParsesValidationRules
             if (enum_exists($type) && method_exists($type, 'tryFrom')) {
                 $cases = array_map(fn ($case) => $case->value, $type::cases());
                 $parameterData['type'] = gettype($cases[0]);
-                $parameterData['description'] = ' Must be one of ' . w::getListOfValuesAsFriendlyHtmlString($cases) . ' ';
+                $parameterData['description'] .= ' Must be one of ' . w::getListOfValuesAsFriendlyHtmlString($cases) . ' ';
                 $parameterData['setter'] = fn () => Arr::random($cases);
             }
 

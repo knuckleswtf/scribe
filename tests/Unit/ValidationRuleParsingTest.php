@@ -554,6 +554,21 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             $results['enum']['example'],
             array_map(fn ($case) => $case->value, Fixtures\TestIntegerBackedEnum::cases())
         ));
+
+        $results = $this->strategy->parse([
+            'enum' => ['required', Rule::enum(Fixtures\TestStringBackedEnum::class)],
+        ], [
+            'enum' => ['description' => 'A description'],
+        ]);
+        $this->assertEquals('string', $results['enum']['type']);
+        $this->assertEquals(
+            'A description. Must be one of <code>red</code>, <code>green</code>, or <code>blue</code>.',
+            $results['enum']['description']
+        );
+        $this->assertTrue(in_array(
+            $results['enum']['example'],
+            array_map(fn ($case) => $case->value, Fixtures\TestStringBackedEnum::cases())
+        ));
     }
 }
 
