@@ -85,6 +85,31 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
+    public function can_parse_apiresource_tags_without_apiresourcemodel()
+    {
+        $config = new DocumentationConfig([]);
+
+        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+
+        $strategy = new UseApiResourceTags($config);
+        $tags = [
+            new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestEmptyApiResource')
+        ];
+        $results = $strategy->getApiResourceResponseFromTags($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+        $this->assertArraySubset([
+            [
+                'status' => 200,
+                'content' => json_encode([
+                    'data' => [],
+                    'request-id' => 'ea02ebc1-4e3c-497f-9ea8-7a1ac5008af2',
+                    'error_code' => 0,
+                    'messages' => []
+                ]),
+            ],
+        ], $results);
+    }
+
+    /** @test */
     public function respects_models_source_settings()
     {
         $config = new DocumentationConfig(['examples' => ['models_source' => ['databaseFirst', 'factoryMake']]]);
