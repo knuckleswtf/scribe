@@ -228,4 +228,14 @@ class BehavioursTest extends BaseLaravelTest
         unlink("config/scribe_test.php");
         Utils::deleteDirectoryAndContents(".scribe_test");
     }
+
+    /** @test */
+    public function can_generate_with_apiresource_tag_but_without_apiresourcemodel_tag()
+    {
+        RouteFacade::get('/api/test', [TestController::class, 'withEmptyApiResource']);
+        $this->generateAndExpectConsoleOutput(
+            "Couldn't detect an Eloquent API resource model from your docblock. Did you remember to specify a model using @apiResourceModel?",
+            'Processed route: [GET] api/test'
+        );
+    }
 }
