@@ -24,7 +24,7 @@ class ScribeServiceProvider extends ServiceProvider
 
         $this->registerCommands();
 
-        $this->loadJsonTranslationsFrom(__DIR__.'/../lang');
+        $this->loadTranslations();
         $this->publishes([
             __DIR__.'/../lang' => $this->app->langPath('vendor/scribe'),
         ], 'scribe-translations');
@@ -49,6 +49,27 @@ class ScribeServiceProvider extends ServiceProvider
         ) {
             $routesPath = Utils::isLumen() ? __DIR__ . '/../routes/lumen.php' : __DIR__ . '/../routes/laravel.php';
             $this->loadRoutesFrom($routesPath);
+        }
+    }
+
+    /**
+     * Try to laod translations from path lists.
+     *
+     * @return void
+     */
+    protected function loadTranslations(): void
+    {
+        $paths = [
+            $this->app->langPath('vendor/scribe'),
+            __DIR__.'/../lang'
+        ];
+
+        foreach($paths as $path)
+        {
+            if(file_exists($path)){
+                $this->loadJsonTranslationsFrom($path);
+                return;
+            }
         }
     }
 
