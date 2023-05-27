@@ -11,6 +11,7 @@ use Knuckles\Scribe\Matching\RouteMatcher;
 use Knuckles\Scribe\Matching\RouteMatcherInterface;
 use Knuckles\Scribe\Tools\BladeMarkdownEngine;
 use Knuckles\Scribe\Tools\Utils;
+use Knuckles\Scribe\Writing\CustomTranslationsLoader;
 
 class ScribeServiceProvider extends ServiceProvider
 {
@@ -24,10 +25,7 @@ class ScribeServiceProvider extends ServiceProvider
 
         $this->registerCommands();
 
-        $this->loadJsonTranslationsFrom(__DIR__.'/../lang');
-        $this->publishes([
-            __DIR__.'/../lang' => $this->app->langPath('vendor/scribe'),
-        ], 'scribe-translations');
+        $this->configureTranslations();
 
         // Bind the route matcher implementation
         $this->app->bind(RouteMatcherInterface::class, config('scribe.routeMatcher', RouteMatcher::class));
@@ -49,6 +47,22 @@ class ScribeServiceProvider extends ServiceProvider
         ) {
             $routesPath = Utils::isLumen() ? __DIR__ . '/../routes/lumen.php' : __DIR__ . '/../routes/laravel.php';
             $this->loadRoutesFrom($routesPath);
+        }
+    }
+
+    protected function configureTranslations(): void
+    {
+        $this->publishes([
+            __DIR__.'/../lang/' => $this->app->langPath(),
+        ], 'scribe-translations');
+
+        if ($this->app->runningInConsole()) {
+            $this->loadTranslationsFrom($this->app->langPath('scribe.php'), 'scribe');
+            $this->loadTranslationsFrom(realpath(__DIR__.'/../lang'), 'scribe');
+
+            $this->app->extend('translation.loader', function ($defaultFileLoader) {
+                return new CustomTranslationsLoader($defaultFileLoader);
+            });
         }
     }
 

@@ -312,7 +312,7 @@
                         <div class="sl-panel__content sl-p-4">
                             <p class="sl-pb-2 response-status"></p>
                             <pre><code class="sl-pb-2 response-content language-json"
-                                       data-empty-response-text="<{{ u::trans("scribe::example_response.empty") }}>"
+                                       data-empty-response-text="<{{ u::trans("scribe::endpoint.responses.empty") }}>"
                                        style="max-height: 300px;"></code></pre>
                         </div>
                     </div>
