@@ -8,7 +8,7 @@ use Knuckles\Scribe\Tools\Globals;
 class CustomTranslationsLoader extends FileLoader
 {
     protected FileLoader $defaultLoader;
-    protected mixed $path;
+    protected mixed $langPath;
 
     protected ?array $scribeTranslationsCache = null;
     protected ?array $userTranslationsCache = null;
@@ -17,7 +17,7 @@ class CustomTranslationsLoader extends FileLoader
     {
         $this->defaultLoader = $loader;
         $this->files = app('files');
-        $this->path = app('path.lang');
+        $this->langPath = app('path.lang');
     }
 
     public function load($locale, $group, $namespace = null)
@@ -44,7 +44,7 @@ class CustomTranslationsLoader extends FileLoader
 
     protected function loadScribeNamespaceOverrides(array $lines, $locale, $group, $namespace)
     {
-        $userTranslationsFile = "{$this->path}/scribe.php";
+        $userTranslationsFile = "{$this->langPath}/scribe.php";
 
         if ($this->files->exists($userTranslationsFile)) {
             if (!isset($this->userTranslationsCache)) {
