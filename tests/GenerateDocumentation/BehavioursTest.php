@@ -234,7 +234,7 @@ class BehavioursTest extends BaseLaravelTest
     {
         RouteFacade::get('/api/test', [TestController::class, 'withEmptyApiResource']);
         $this->generateAndExpectConsoleOutput(
-            "Couldn't detect an Eloquent API resource model from your docblock. Did you remember to specify a model using @apiResourceModel?",
+            "Couldn't detect an Eloquent API resource model",
             'Processed route: [GET] api/test'
         );
     }

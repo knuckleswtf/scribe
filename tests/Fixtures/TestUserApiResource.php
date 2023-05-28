@@ -4,6 +4,9 @@ namespace Knuckles\Scribe\Tests\Fixtures;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin \Knuckles\Scribe\Tests\Fixtures\TestUser
+ */
 class TestUserApiResource extends JsonResource
 {
     /**

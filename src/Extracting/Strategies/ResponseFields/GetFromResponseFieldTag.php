@@ -4,6 +4,8 @@ namespace Knuckles\Scribe\Extracting\Strategies\ResponseFields;
 
 use Knuckles\Scribe\Extracting\Shared\ResponseFieldTools;
 use Knuckles\Scribe\Extracting\Strategies\GetFieldsFromTagStrategy;
+use Knuckles\Scribe\Extracting\Strategies\Responses\UseApiResourceTags;
+use Knuckles\Scribe\Tools\AnnotationParser as a;
 use Mpociot\Reflection\DocBlock;
 use Knuckles\Scribe\Tools\Utils as u;
 
@@ -66,18 +68,9 @@ class GetFromResponseFieldTag extends GetFieldsFromTagStrategy
         return parent::getFromTags(array_merge($tagsOnMethod, $tagsOnApiResource ?? []), $tagsOnClass);
     }
 
-    /**
-     * An API resource tag may contain a status code before the class name,
-     * so this method parses out the class name.
-     */
     public function getClassNameFromApiResourceTag(string $apiResourceTag): string
     {
-        if (!str_contains($apiResourceTag, ' ')) {
-            return $apiResourceTag;
-        }
-
-        $exploded = explode(' ', $apiResourceTag);
-
-        return $exploded[count($exploded) - 1];
+        ['content' => $className] = a::parseIntoContentAndFields($apiResourceTag, UseApiResourceTags::apiResourceAllowedFields());
+        return $className;
     }
 }

@@ -62,7 +62,7 @@
     },
     "scripts": {
         "lint": "phpstan analyse -c ./phpstan.neon src camel --memory-limit 1G",
-        "test": "pest --stop-on-failure --exclude-group dingo --coverage --colors",
+        "test": "pest --stop-on-failure --exclude-group dingo --colors",
         "test-ci": "pest --exclude-group dingo --coverage --min=80",
         "test-parallel": "paratest -p16 --stop-on-failure --exclude-group dingo",
         "test-parallel-ci": "paratest -p16 --exclude-group dingo"
