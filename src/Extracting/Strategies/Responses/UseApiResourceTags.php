@@ -11,6 +11,7 @@ use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Knuckles\Scribe\Extracting\Shared\ApiResourceResponseTools;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\AnnotationParser as a;
+use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\Utils;
 use Mpociot\Reflection\DocBlock\Tag;
 
@@ -101,7 +102,7 @@ class UseApiResourceTags extends Strategy
         }
 
         if (empty($modelClass)) {
-            throw new Exception("Couldn't detect an Eloquent API resource model from your docblock. Did you remember to specify a model using @apiResourceModel?");
+            c::warn("Couldn't detect an Eloquent API resource model from your docblock. Did you remember to specify a model using @apiResourceModel?");
         }
 
         return [$modelClass, $states, $relations, $pagination];

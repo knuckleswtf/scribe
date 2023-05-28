@@ -17,13 +17,17 @@ trait InstantiatesExampleModels
      * @param string[] $relations
      * @param \ReflectionFunctionAbstract|null $transformationMethod A method which has the model as its first parameter. Useful if the `$type` is empty.
      *
-     * @return \Illuminate\Database\Eloquent\Model|object
+     * @return \Illuminate\Database\Eloquent\Model|object|null
      */
     protected function instantiateExampleModel(
         ?string $type = null, array $factoryStates = [],
         array   $relations = [], ?ReflectionFunctionAbstract $transformationMethod = null
     )
     {
+        // If the API Resource uses an empty resource, there won't be an example model
+        if($type == null && $transformationMethod == null)
+            return null;
+
         if ($type == null) {
             $parameter = Arr::first($transformationMethod->getParameters());
             if ($parameter->hasType() && !$parameter->getType()->isBuiltin() && class_exists($parameter->getType()->getName())) {
