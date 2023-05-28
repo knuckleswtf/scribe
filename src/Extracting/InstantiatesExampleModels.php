@@ -24,7 +24,7 @@ trait InstantiatesExampleModels
         array   $relations = [], ?ReflectionFunctionAbstract $transformationMethod = null
     )
     {
-        // Early return if JsonResource working with empty resource, there won't have an example model
+        // If the API Resource uses an empty resource, there won't be an example model
         if($type == null && $transformationMethod == null)
             return null;
 
