@@ -24,7 +24,7 @@ class TestEmptyApiResource extends JsonResource
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public function with(Request $request)
+    public function with($request)
     {
         return [
             'request-id' => 'ea02ebc1-4e3c-497f-9ea8-7a1ac5008af2',
