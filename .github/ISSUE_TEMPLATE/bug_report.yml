@@ -1,5 +1,8 @@
 name: Bug report
-description: Something didn't work as expected? Create a report to help us improve. NOTE: if your issue is about the spatie/data-transfer-object package, see [the pinned issue](https://github.com/knuckleswtf/scribe/issues/589). Don't open a new issue, or it will be closed.
+description: |
+  Something didn't work as expected? Create a report to help us improve.
+  NOTE: if your issue is about the spatie/data-transfer-object package, see [the pinned issue](https://github.com/knuckleswtf/scribe/issues/589).
+  Don't open a new issue, or it will be closed.
 labels: ["bug", "triage"]
 assignees: []
 body:
