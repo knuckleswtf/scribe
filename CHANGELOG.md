@@ -12,9 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
-# 4.21.0
+# 4.21.0 (29 May 2023)
 ## Added
-- API resources: Infer model name from @mixin ([f0ed9565](https://github.com/knuckleswtf/scribe/commit/f0ed95653b401b188e76e6ba9057406710f2cc2b))
+- API resources: Infer model name from `@mixin` ([f0ed9565](https://github.com/knuckleswtf/scribe/commit/f0ed95653b401b188e76e6ba9057406710f2cc2b))
+- New translation layer ([#673](https://github.com/knuckleswtf/scribe/pull/673))
+  - This fixes the problems with the recently introduced localization feature, by switching to a custom translation system. Docs:
 
 
 # 4.20.0 (28 May 2023)
