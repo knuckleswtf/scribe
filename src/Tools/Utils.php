@@ -367,6 +367,11 @@ class Utils
             $translation = trans($key, $replace, 'en');
         }
 
+
+        if ($translation === $key) {
+            throw new \Exception("Translation not found for $key. You can add a translation for this in your `lang/scribe.php`, but this is likely a problem with the package. Please open an issue.");
+        }
+
         return $translation;
     }
 }
