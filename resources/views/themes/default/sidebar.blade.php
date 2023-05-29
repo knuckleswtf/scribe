@@ -22,7 +22,7 @@
     @endisset
 
     <div class="search">
-        <input type="text" class="search" id="input-search" placeholder="{{ u::trans("scribe::search") }}">
+        <input type="text" class="search" id="input-search" placeholder="{{ u::trans("scribe::labels.search") }}">
     </div>
 
     <div id="toc">
