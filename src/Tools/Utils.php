@@ -363,12 +363,8 @@ class Utils
     {
         $translation = trans($key, $replace);
 
-        if ($translation === $key) {
-            $translation = trans($key, $replace, config('app.fallback_locale'));
-        }
-
-        if ($translation === $key) {
-            return trans($key, $replace, 'en');
+        if ($translation === $key || $translation === null) {
+            $translation = trans($key, $replace, 'en');
         }
 
         return $translation;

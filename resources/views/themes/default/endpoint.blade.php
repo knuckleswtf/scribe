@@ -13,7 +13,7 @@
 {!! Parsedown::instance()->text($endpoint->metadata->description ?: '') !!}
 
 <span id="example-requests-{!! $endpoint->endpointId() !!}">
-<blockquote>{{ u::trans("scribe::example_request") }}:</blockquote>
+<blockquote>{{ u::trans("scribe::endpoint.example_request") }}:</blockquote>
 
 @foreach($metadata['example_languages'] as $language)
 
@@ -28,7 +28,7 @@
 @if($endpoint->isGet() || $endpoint->hasResponses())
     @foreach($endpoint->responses as $response)
         <blockquote>
-            <p>{{ u::trans("scribe::example_response") }} ({{ $response->fullDescription() }}):</p>
+            <p>{{ u::trans("scribe::endpoint.example_response") }} ({{ $response->fullDescription() }}):</p>
         </blockquote>
         @if(count($response->headers))
         <details class="annotation">
@@ -40,9 +40,9 @@
 @endforeach </code></pre></details> @endif
         <pre>
 @if(is_string($response->content) && Str::startsWith($response->content, "<<binary>>"))
-<code>{!! u::trans("scribe::example_response.binary") !!} - {{ htmlentities(str_replace("<<binary>>", "", $response->content)) }}</code>
+<code>{!! u::trans("scribe::endpoint.responses.binary") !!} - {{ htmlentities(str_replace("<<binary>>", "", $response->content)) }}</code>
 @elseif($response->status == 204)
-<code>{!! u::trans("scribe::example_response.empty") !!}</code>
+<code>{!! u::trans("scribe::endpoint.responses.empty") !!}</code>
 @else
 @php($parsed = json_decode($response->content))
 {{-- If response is a JSON string, prettify it. Otherwise, just print it --}}
@@ -56,7 +56,7 @@
                 id="execution-response-status-{{ $endpoint->endpointId() }}"></span>:
     </blockquote>
     <pre class="json"><code id="execution-response-content-{{ $endpoint->endpointId() }}"
-      data-empty-response-text="<{{ u::trans("scribe::example_response.empty") }}>" style="max-height: 400px;"></code></pre>
+      data-empty-response-text="<{{ u::trans("scribe::endpoint.responses.empty") }}>" style="max-height: 400px;"></code></pre>
 </span>
 <span id="execution-error-{{ $endpoint->endpointId() }}" hidden>
     <blockquote>{{ u::trans("scribe::try_it_out.request_failed") }}:</blockquote>
