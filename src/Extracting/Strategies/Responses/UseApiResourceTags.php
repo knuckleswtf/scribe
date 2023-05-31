@@ -11,8 +11,11 @@ use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Knuckles\Scribe\Extracting\Shared\ApiResourceResponseTools;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\AnnotationParser as a;
+use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\Utils;
+use Mpociot\Reflection\DocBlock;
 use Mpociot\Reflection\DocBlock\Tag;
+use ReflectionClass;
 
 /**
  * Parse an Eloquent API resource response from the docblock ( @apiResource || @apiResourcecollection ).
@@ -45,8 +48,8 @@ class UseApiResourceTags extends Strategy
      */
     public function getApiResourceResponseFromTags(Tag $apiResourceTag, array $allTags, ExtractedEndpointData $endpointData): ?array
     {
-        [$statusCode, $description, $apiResourceClass, $isCollection] = $this->getStatusCodeAndApiResourceClass($apiResourceTag);
-        [$modelClass, $factoryStates, $relations, $pagination] = $this->getClassToBeTransformedAndAttributes($allTags);
+        [$statusCode, $description, $apiResourceClass, $isCollection, $extra] = $this->getStatusCodeAndApiResourceClass($apiResourceTag);
+        [$modelClass, $factoryStates, $relations, $pagination] = $this->getClassToBeTransformedAndAttributes($allTags, $apiResourceClass, $extra);
         $additionalData = $this->getAdditionalData($allTags);
 
         $modelInstantiator = fn() => $this->instantiateExampleModel($modelClass, $factoryStates, $relations);
@@ -74,34 +77,51 @@ class UseApiResourceTags extends Strategy
         $status = $result[1] ?: 0;
         $content = $result[2];
 
-        ['fields' => $fields, 'content' => $content] = a::parseIntoContentAndFields($content, ['status', 'scenario']);
+        [
+            'fields' => $fields,
+            'content' => $content
+        ] = a::parseIntoContentAndFields($content, static::apiResourceAllowedFields());
+
 
         $status = $fields['status'] ?: $status;
         $apiResourceClass = $content;
         $description = $fields['scenario'] ?: "";
 
         $isCollection = strtolower($tag->getName()) == 'apiresourcecollection';
-        return [(int)$status, $description, $apiResourceClass, $isCollection];
+        return [
+            (int)$status,
+            $description,
+            $apiResourceClass,
+            $isCollection,
+            collect($fields)->only(...static::apiResourceExtraFields())->toArray(),
+        ];
     }
 
-    private function getClassToBeTransformedAndAttributes(array $tags): array
+    protected function getClassToBeTransformedAndAttributes(array $tags, string $apiResourceClass, array $extra): array
     {
         $modelTag = Arr::first(Utils::filterDocBlockTags($tags, 'apiresourcemodel'));
 
         $modelClass = null;
-        $states = [];
-        $relations = [];
-        $pagination = [];
 
         if ($modelTag) {
-            ['content' => $modelClass, 'fields' => $fields] = a::parseIntoContentAndFields($modelTag->getContent(), ['states', 'with', 'paginate']);
-            $states = $fields['states'] ? explode(',', $fields['states']) : [];
-            $relations = $fields['with'] ? explode(',', $fields['with']) : [];
-            $pagination = $fields['paginate'] ? explode(',', $fields['paginate']) : [];
+            ['content' => $modelClass, 'fields' => $fields] = a::parseIntoContentAndFields($modelTag->getContent(), static::apiResourceModelAllowedFields());
+        }
+
+        $fields = array_merge($extra, $fields ?? []);
+        $states = $fields['states'] ? explode(',', $fields['states']) : [];
+        $relations = $fields['with'] ? explode(',', $fields['with']) : [];
+        $pagination = $fields['paginate'] ? explode(',', $fields['paginate']) : [];
+
+        if (empty($modelClass)) {
+            $modelClass = ApiResourceResponseTools::tryToInferApiResourceModel($apiResourceClass);
         }
 
         if (empty($modelClass)) {
-            throw new Exception("Couldn't detect an Eloquent API resource model from your docblock. Did you remember to specify a model using @apiResourceModel?");
+            c::warn(<<<WARN
+                Couldn't detect an Eloquent API resource model from your `@apiResource`.
+                Either specify a model using the `@apiResourceModel` annotation, or add an `@mixin` annotation in your resource's docblock.
+                WARN
+            );
         }
 
         return [$modelClass, $states, $relations, $pagination];
@@ -118,6 +138,22 @@ class UseApiResourceTags extends Strategy
     {
         $tag = Arr::first(Utils::filterDocBlockTags($tags, 'apiresourceadditional'));
         return $tag ? a::parseIntoFields($tag->getContent()) : [];
+    }
+
+    // These fields were originally only set on @apiResourceModel, but now we also support them on @apiResource
+    public static function apiResourceExtraFields()
+    {
+        return ['states', 'with', 'paginate'];
+    }
+
+    public static function apiResourceAllowedFields()
+    {
+        return ['status', 'scenario', ...static::apiResourceExtraFields()];
+    }
+
+    public static function apiResourceModelAllowedFields()
+    {
+        return ['states', 'with', 'paginate'];
     }
 
     public function getApiResourceTag(array $tags): ?Tag

@@ -13,6 +13,7 @@ use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\Shared\ApiResourceResponseTools;
 use Knuckles\Scribe\Extracting\Shared\TransformerResponseTools;
 use Knuckles\Scribe\Extracting\Strategies\PhpAttributeStrategy;
+use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use ReflectionClass;
 
 /**
@@ -50,7 +51,17 @@ class UseResponseAttributes extends PhpAttributeStrategy
 
     protected function getApiResourceResponse(ResponseFromApiResource $attributeInstance)
     {
-        $modelInstantiator = fn() => $this->instantiateExampleModel($attributeInstance->model, $attributeInstance->factoryStates, $attributeInstance->with);
+        $modelToBeTransformed = $attributeInstance->modelToBeTransformed();
+        if (empty($modelToBeTransformed)) {
+            c::warn(<<<WARN
+                Couldn't detect an Eloquent API resource model from your ResponseFromApiResource.
+                Either specify a model using the `model:` parameter, or add an `@mixin` annotation in your resource's docblock.
+                WARN
+            );
+            $modelInstantiator = null;
+        } else {
+            $modelInstantiator = fn() => $this->instantiateExampleModel($modelToBeTransformed, $attributeInstance->factoryStates, $attributeInstance->with);
+        }
 
         $pagination = [];
         if ($attributeInstance->paginate) {

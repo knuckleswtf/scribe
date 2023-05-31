@@ -12,6 +12,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.21.0 (29 May 2023)
+## Added
+- API resources: Infer model name from `@mixin` ([f0ed9565](https://github.com/knuckleswtf/scribe/commit/f0ed95653b401b188e76e6ba9057406710f2cc2b))
+- New translation layer ([#673](https://github.com/knuckleswtf/scribe/pull/673))
+  - This fixes the problems with the recently introduced localization feature, by switching to a custom translation system. Users should delete the `en.json` file, if they had previously published it. See [the docs](https://scribe.knuckles.wtf/laravel/advanced/localization) for details.
+
+
+# 4.20.0 (28 May 2023)
+## Modified
+- Support Laravel 10's optional `rules()` in Form Requests ([#664](https://github.com/knuckleswtf/scribe/pull/664))
+- Allow `@apiResource` without `@apiResourceModel` ([#662](https://github.com/knuckleswtf/scribe/pull/662))
+
+## Fixed
+- Don't autoload in `class_exists()` check ([#659](https://github.com/knuckleswtf/scribe/pull/659))
+- Don't override description in enum rules ([#667](https://github.com/knuckleswtf/scribe/pull/667))
+
 # 4.19.1 (5 May 2023)
 ## Fixed
 - Fix translations when locale is not EN and no strings are defined ([8d2be2c6](https://github.com/knuckleswtf/scribe/commit/8d2be2c681f71ed31c6be5043d6b1a0761f0235e))

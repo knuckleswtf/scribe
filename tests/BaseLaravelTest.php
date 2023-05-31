@@ -23,6 +23,7 @@ class BaseLaravelTest extends TestCase
             'database' => ':memory:',
             'prefix'   => '',
         ]);
+        ScribeServiceProvider::$customTranslationLayerLoaded = false;
     }
 
     /**

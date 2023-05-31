@@ -145,6 +145,58 @@ class UseResponseAttributesTest extends BaseLaravelTest
     }
 
     /** @test */
+    public function can_parse_apiresource_attributes_with_no_model_specified()
+    {
+        $factory = app(\Illuminate\Database\Eloquent\Factory::class);
+        $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
+            if ($user->id === 4) {
+                $child = Utils::getModelFactory(TestUser::class)->make(['id' => 5, 'parent_id' => 4]);
+                $user->setRelation('children', collect([$child]));
+            }
+        });
+
+        $results = $this->fetch($this->endpoint("apiResourceAttributesWithNoModel"));
+
+        $this->assertArraySubset([
+            [
+                'status' => 200,
+                'content' => json_encode([
+                    'data' => [
+                        [
+                            'id' => 4,
+                            'name' => 'Tested Again',
+                            'email' => 'a@b.com',
+                            'children' => [
+                                [
+                                    'id' => 5,
+                                    'name' => 'Tested Again',
+                                    'email' => 'a@b.com',
+                                ],
+                            ],
+                            'state1' => true,
+                            'random-state' => true,
+                        ],
+                    ],
+                    'links' => [
+                        "first" => '/?page=1',
+                        "last" => null,
+                        "prev" => null,
+                        "next" => '/?page=2',
+                    ],
+                    "meta" => [
+                        "current_page" => 1,
+                        "from" => 1,
+                        "path" => '/',
+                        "per_page" => 1,
+                        "to" => 1,
+                    ],
+                    "a" => "b",
+                ]),
+            ],
+        ], $results);
+    }
+
+    /** @test */
     public function can_parse_transformer_attributes()
     {
         $results = $this->fetch($this->endpoint("transformerAttributes"));
@@ -211,6 +263,13 @@ class ResponseAttributesTestController
     #[ResponseFromApiResource(TestUserApiResource::class, TestUser::class, collection: true,
         factoryStates: ["state1", "random-state"], simplePaginate: 1, additional: ["a" => "b"])]
     public function apiResourceAttributes()
+    {
+
+    }
+
+    #[ResponseFromApiResource(TestUserApiResource::class, collection: true,
+        factoryStates: ["state1", "random-state"], simplePaginate: 1, additional: ["a" => "b"])]
+    public function apiResourceAttributesWithNoModel()
     {
 
     }

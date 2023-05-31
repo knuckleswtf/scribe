@@ -197,6 +197,14 @@ class TestController extends Controller
     }
 
     /**
+     * @apiResource \Knuckles\Scribe\Tests\Fixtures\TestEmptyApiResource
+     */
+    public function withEmptyApiResource()
+    {
+        return new TestEmptyApiResource();
+    }
+
+    /**
      * @group Other😎
      *
      * @apiResourceCollection Knuckles\Scribe\Tests\Fixtures\TestUserApiResource

@@ -85,6 +85,31 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
+    public function can_parse_apiresource_tags_without_apiresourcemodel()
+    {
+        $config = new DocumentationConfig([]);
+
+        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+
+        $strategy = new UseApiResourceTags($config);
+        $tags = [
+            new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestEmptyApiResource')
+        ];
+        $results = $strategy->getApiResourceResponseFromTags($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+        $this->assertArraySubset([
+            [
+                'status' => 200,
+                'content' => json_encode([
+                    'data' => [],
+                    'request-id' => 'ea02ebc1-4e3c-497f-9ea8-7a1ac5008af2',
+                    'error_code' => 0,
+                    'messages' => []
+                ]),
+            ],
+        ], $results);
+    }
+
+    /** @test */
     public function respects_models_source_settings()
     {
         $config = new DocumentationConfig(['examples' => ['models_source' => ['databaseFirst', 'factoryMake']]]);
@@ -179,7 +204,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_parse_apiresource_tags_with_model_factory_states()
+    public function can_parse_apiresourcemodel_tags_with_factory_states()
     {
         $config = new DocumentationConfig([]);
 
@@ -189,6 +214,36 @@ class UseApiResourceTagsTest extends BaseLaravelTest
         $tags = [
             new Tag('apiResource', '201 \Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
             new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser states=state1,random-state'),
+        ];
+        $results = $strategy->getApiResourceResponseFromTags($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+
+        $this->assertArraySubset([
+            [
+                'status' => 201,
+                'content' => json_encode([
+                    'data' => [
+                        'id' => 4,
+                        'name' => 'Tested Again',
+                        'email' => 'a@b.com',
+                        'state1' => true,
+                        'random-state' => true,
+                    ],
+                ]),
+            ],
+        ], $results);
+    }
+
+
+    /** @test */
+    public function can_infer_model_from_mixin_tag_and_parse_apiresource_tags_with_factory_states()
+    {
+        $config = new DocumentationConfig([]);
+
+        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+
+        $strategy = new UseApiResourceTags($config);
+        $tags = [
+            new Tag('apiResource', '201 \Knuckles\Scribe\Tests\Fixtures\TestUserApiResource states=state1,random-state'),
         ];
         $results = $strategy->getApiResourceResponseFromTags($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
 

@@ -12,6 +12,7 @@ use Illuminate\Routing\Route;
 use Illuminate\Support\Str;
 use Knuckles\Scribe\Exceptions\CouldntFindFactory;
 use Knuckles\Scribe\Exceptions\CouldntGetRouteDetails;
+use Knuckles\Scribe\ScribeServiceProvider;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Local\LocalFilesystemAdapter;
@@ -361,14 +362,20 @@ class Utils
      */
     public static function trans(string $key, array $replace = [])
     {
-        $translation = trans($key, $replace);
-
-        if ($translation === $key) {
-            $translation = trans($key, $replace, config('app.fallback_locale'));
+        // We only load our custom translation layer if we really need it
+        if (!ScribeServiceProvider::$customTranslationLayerLoaded) {
+            (new ScribeServiceProvider(app()))->loadCustomTranslationLayer();
         }
 
+        $translation = trans($key, $replace);
+
+        if ($translation === $key || $translation === null) {
+            $translation = trans($key, $replace, 'en');
+        }
+
+
         if ($translation === $key) {
-            return trans($key, $replace, 'en');
+            throw new \Exception("Translation not found for $key. You can add a translation for this in your `lang/scribe.php`, but this is likely a problem with the package. Please open an issue.");
         }
 
         return $translation;
