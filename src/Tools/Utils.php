@@ -12,6 +12,7 @@ use Illuminate\Routing\Route;
 use Illuminate\Support\Str;
 use Knuckles\Scribe\Exceptions\CouldntFindFactory;
 use Knuckles\Scribe\Exceptions\CouldntGetRouteDetails;
+use Knuckles\Scribe\ScribeServiceProvider;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Local\LocalFilesystemAdapter;
@@ -361,6 +362,11 @@ class Utils
      */
     public static function trans(string $key, array $replace = [])
     {
+        // We only load our custom translation layer if we really need it
+        if (!ScribeServiceProvider::$customTranslationLayerLoaded) {
+            (new ScribeServiceProvider(app()))->loadCustomTranslationLayer();
+        }
+
         $translation = trans($key, $replace);
 
         if ($translation === $key || $translation === null) {

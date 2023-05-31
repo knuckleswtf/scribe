@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe;
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\ServiceProvider;
 use Knuckles\Scribe\Commands\DiffConfig;
 use Knuckles\Scribe\Commands\GenerateDocumentation;
@@ -15,6 +16,8 @@ use Knuckles\Scribe\Writing\CustomTranslationsLoader;
 
 class ScribeServiceProvider extends ServiceProvider
 {
+    public static bool $customTranslationLayerLoaded = false;
+
     public function boot()
     {
         $this->registerViews();
@@ -56,14 +59,8 @@ class ScribeServiceProvider extends ServiceProvider
             __DIR__.'/../lang/' => $this->app->langPath(),
         ], 'scribe-translations');
 
-        if ($this->app->runningInConsole()) {
-            $this->loadTranslationsFrom($this->app->langPath('scribe.php'), 'scribe');
-            $this->loadTranslationsFrom(realpath(__DIR__.'/../lang'), 'scribe');
-
-            $this->app->extend('translation.loader', function ($defaultFileLoader) {
-                return new CustomTranslationsLoader($defaultFileLoader);
-            });
-        }
+        $this->loadTranslationsFrom($this->app->langPath('scribe.php'), 'scribe');
+        $this->loadTranslationsFrom(realpath(__DIR__ . '/../lang'), 'scribe');
     }
 
     protected function registerViews(): void
@@ -108,5 +105,17 @@ class ScribeServiceProvider extends ServiceProvider
                 DiffConfig::class,
             ]);
         }
+    }
+
+    // Allows our custom translation layer to be loaded on demand,
+    // so we minimize issues with interference from framework/package/environment.
+    // ALso, Laravel's `app->runningInConsole()` isn't reliable enough. See issue #676
+    public function loadCustomTranslationLayer(): void
+    {
+        $this->app->extend('translation.loader', function ($defaultFileLoader) {
+            return new CustomTranslationsLoader($defaultFileLoader);
+        });
+        $this->app->forgetInstance('translator');
+        self::$customTranslationLayerLoaded = true;
     }
 }
