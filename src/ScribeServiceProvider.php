@@ -2,7 +2,6 @@
 
 namespace Knuckles\Scribe;
 
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\ServiceProvider;
 use Knuckles\Scribe\Commands\DiffConfig;
 use Knuckles\Scribe\Commands\GenerateDocumentation;
