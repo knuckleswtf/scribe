@@ -7,6 +7,7 @@ parameters:
         - '#Call to an undefined method ReflectionType::getName\(\).#'
         - '#.+Dingo.+#'
         - '#Call to an undefined method Illuminate\\Contracts\\Filesystem\\Filesystem::path\(\)#'
+        - '#Call to an undefined method Illuminate\\Contracts\\Foundation\\Application::forgetInstance\(\)#'
         - '#Access to an undefined property Illuminate\\Support\\HigherOrderCollectionProxy#'
         - '#Access to an undefined property Illuminate\\Contracts\\Foundation\\Application::\$view#'
         - '#Unsafe usage of new static#'
