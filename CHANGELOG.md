@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 # 4.21.1 (3 June 2023)
 ## Fixed
 - Load translations on demand to get around false negative for `runningInConsole()` ([963340f2](https://github.com/knuckleswtf/scribe/commit/963340f2bea654bb267286f807bcdf15b699d06e))
+- Correctly set pagination data on collections in `#[ResponseFromApiResource]` ([d53776bee](https://github.com/knuckleswtf/scribe/commit/d53776bee25daff8f0070e49a32b127b4de21c9c))
 
 # 4.21.0 (29 May 2023)
 ## Added
