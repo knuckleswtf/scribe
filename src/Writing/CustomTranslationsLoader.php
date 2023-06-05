@@ -4,16 +4,17 @@ namespace Knuckles\Scribe\Writing;
 
 use Illuminate\Translation\FileLoader;
 use Knuckles\Scribe\Tools\Globals;
+use Illuminate\Contracts\Translation\Loader as LoaderContract;
 
 class CustomTranslationsLoader extends FileLoader
 {
-    protected FileLoader $defaultLoader;
+    protected LoaderContract $defaultLoader;
     protected mixed $langPath;
 
     protected ?array $scribeTranslationsCache = null;
     protected ?array $userTranslationsCache = null;
 
-    public function __construct(FileLoader $loader)
+    public function __construct(LoaderContract $loader)
     {
         $this->defaultLoader = $loader;
         $this->files = app('files');
