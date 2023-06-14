@@ -24,7 +24,7 @@ const headers = {
 };
 @endif
 
-@if($endpoint->hasFiles())
+@if($endpoint->hasFiles() || (isset($endpoint->headers['Content-Type']) && $endpoint->headers['Content-Type'] == 'multipart/form-data' && count($endpoint->cleanBodyParameters)))
 const body = new FormData();
 @foreach($endpoint->cleanBodyParameters as $parameter => $value)
 @foreach( u::getParameterNamesAndValuesForFormData($parameter, $value) as $key => $actualValue)
@@ -49,7 +49,7 @@ fetch(url, {
 @if(count($endpoint->headers))
     headers,
 @endif
-@if($endpoint->hasFiles())
+@if($endpoint->hasFiles() || (isset($endpoint->headers['Content-Type']) && $endpoint->headers['Content-Type'] == 'multipart/form-data' && count($endpoint->cleanBodyParameters)))
     body,
 @elseif(count($endpoint->cleanBodyParameters))
 @if ($endpoint->headers['Content-Type'] == 'application/x-www-form-urlencoded')

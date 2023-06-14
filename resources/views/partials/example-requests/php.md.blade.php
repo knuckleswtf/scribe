@@ -14,7 +14,7 @@ $response = $client->{{ strtolower($endpoint->httpMethods[0]) }}(
 @if(!empty($endpoint->cleanQueryParameters))
         'query' => {!! u::printQueryParamsAsKeyValue($endpoint->cleanQueryParameters, "'", " =>", 12, "[]", 8) !!},
 @endif
-@if($endpoint->hasFiles())
+@if($endpoint->hasFiles() || (isset($endpoint->headers['Content-Type']) && $endpoint->headers['Content-Type'] == 'multipart/form-data' && !empty($endpoint->cleanBodyParameters)))
         'multipart' => [
 @foreach($endpoint->cleanBodyParameters as $parameter => $value)
 @foreach(u::getParameterNamesAndValuesForFormData($parameter, $value) as $key => $actualValue)
@@ -33,7 +33,7 @@ $response = $client->{{ strtolower($endpoint->httpMethods[0]) }}(
 @endforeach
 @endforeach
         ],
-@elseif(!empty($endpoint->cleanBodyParameters))
+@elseif(count($endpoint->cleanBodyParameters))
 @if ($endpoint->headers['Content-Type'] == 'application/x-www-form-urlencoded')
         'form_params' => {!! u::printPhpValue($endpoint->cleanBodyParameters, 8) !!},
 @else
