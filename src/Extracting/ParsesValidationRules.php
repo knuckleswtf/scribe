@@ -39,11 +39,9 @@ trait ParsesValidationRules
                 }
                 $userSpecifiedParameterInfo = $customParameterData[$parameter] ?? [];
 
-                // Make sure the user-specified description comes first (and add full stops where needed).
+                // Make sure the user-specified description comes first.
                 $description = $userSpecifiedParameterInfo['description'] ?? '';
-                if (!empty($description) && !Str::endsWith($description, '.')) {
-                    $description .= '.';
-                }
+
                 $parameterData = [
                     'name' => $parameter,
                     'required' => false,
@@ -100,11 +98,8 @@ trait ParsesValidationRules
                     }
                 }
 
-                // End descriptions with a full stop
+                // Trim description
                 $parameterData['description'] = trim($parameterData['description']);
-                if (!empty($parameterData['description']) && !Str::endsWith($parameterData['description'], '.')) {
-                    $parameterData['description'] .= '.';
-                }
 
                 $parameters[$parameter] = $parameterData;
             } catch (Throwable $e) {
