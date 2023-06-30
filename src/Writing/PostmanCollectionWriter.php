@@ -300,6 +300,7 @@ class PostmanCollectionWriter
                         'disabled' => !$parameterData->required && empty($parameterData->example),
                     ];
                 }
+                // If there are no values, add one entry so the parameter shows up in the Postman UI.
                 if (empty($values)) {
                     $query[] = [
                         'key' => "{$name}[]",
