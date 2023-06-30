@@ -9,6 +9,7 @@ use Knuckles\Scribe\Matching\RouteMatcher;
 use Knuckles\Scribe\Scribe;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
+use Knuckles\Scribe\Tools\Utils as u;
 
 class ExtractedEndpointDataTest extends BaseLaravelTest
 {
