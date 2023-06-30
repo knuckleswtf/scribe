@@ -108,12 +108,12 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
         $route = $this->getRoute(['prefixes' => '*']);
 
         $this->assertEquals('test-posts/{test_post}', $this->originalUri($route));
-        $this->assertEquals('test-posts/{test_post_slug}', $this->expectedUri($route));
+        $this->assertEquals('test-posts/{test_post_slug}', $this->expectedUri($route, withReflectedMethod: true));
     }
 
-    protected function expectedUri(LaravelRoute $route): string
+    protected function expectedUri(LaravelRoute $route, $withReflectedMethod = false): string
     {
-        return $this->endpoint($route)->uri;
+        return $this->endpoint($route, $withReflectedMethod)->uri;
     }
 
     protected function originalUri(LaravelRoute $route): string
@@ -121,10 +121,16 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
         return $route->uri;
     }
 
-    protected function endpoint(LaravelRoute $route): ExtractedEndpointData
+    protected function endpoint(LaravelRoute $route, $withReflectedMethod = false): ExtractedEndpointData
     {
-        [$controllerName, $methodName] = u::getRouteClassAndMethodNames($route);
-        $method = u::getReflectedRouteMethod([$controllerName, $methodName]);
+        if ($withReflectedMethod) {
+            [$controllerName, $methodName] = u::getRouteClassAndMethodNames($route);
+            $method = u::getReflectedRouteMethod([$controllerName, $methodName]);
+        } else {
+            // We're testing resource routes, and we may not have methods that exist for all of them (show, index, etc).
+            // Just use this dummy so we don't have null
+           $method = new \ReflectionFunction('dump'); 
+        }
         return new ExtractedEndpointData([
             'route' => $route,
             'uri' => $route->uri,
