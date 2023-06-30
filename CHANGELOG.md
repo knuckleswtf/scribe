@@ -12,6 +12,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.22.0 (1 July 2023)
+## Added
+- Make included package attributes extensible ([#680](https://github.com/knuckleswtf/scribe/pull/680))
+
+## Fixed
+- Ensure example code supports multipart/form-data without files ([#685](https://github.com/knuckleswtf/scribe/pull/685))
+- Fix path traversal on Laravel 10 ([#686](https://github.com/knuckleswtf/scribe/pull/686))
+- Properly support floats in docs UI ([#693](https://github.com/knuckleswtf/scribe/pull/693))
+- Properly normalise URLs with multi-word Eloquent parameters ([#670](https://github.com/knuckleswtf/scribe/pull/670))
+- Also show empty array query parameters in Postman ([#691](https://github.com/knuckleswtf/scribe/pull/691))
+
+
 # 4.21.2 (5 June 2023)
 ## Fixed
 - Typehint interface in CustomTranslationsLoader for maximum compatibility ([#679](https://github.com/knuckleswtf/scribe/pull/679))

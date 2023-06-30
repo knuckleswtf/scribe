@@ -23,6 +23,7 @@ class GetFromLaravelAPITest extends BaseLaravelTest
     public function can_infer_type_from_model_binding()
     {
         $endpoint = $this->endpointForRoute("users/{id}", TestController::class, 'withInjectedModel');
+        // Can only run on PHP 8.1
         // $endpoint = $this->endpointForRoute("categories/{category}/users/{id}/", TestController::class, 'withInjectedEnumAndModel');
         $results = $this->fetch($endpoint);
 
