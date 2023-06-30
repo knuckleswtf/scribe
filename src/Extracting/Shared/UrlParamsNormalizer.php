@@ -185,7 +185,7 @@ class UrlParamsNormalizer
      */
     protected static function getRouteKeyFromModel(string $paramName, array $typeHintedEloquentModels): ?string
     {
-        // Ensure param name is in camelCase so it matches the model name
+        // Ensure param name is in camelCase so it matches the argument name (e.g. The '$userAddress' in `function show(BigThing $userAddress`)
         $paramName = Str::camel($paramName);
 
         if (array_key_exists($paramName, $typeHintedEloquentModels)) {
