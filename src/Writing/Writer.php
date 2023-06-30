@@ -161,7 +161,7 @@ class Writer
         if (!is_dir($this->laravelTypeOutputPath)) {
             mkdir($this->laravelTypeOutputPath, 0777, true);
         }
-        $publicDirectory = app()->get('path.public');
+        $publicDirectory = public_path();
         if (!is_dir($publicDirectory . $this->laravelAssetsPath)) {
             mkdir($publicDirectory . $this->laravelAssetsPath, 0777, true);
         }
@@ -180,8 +180,8 @@ class Writer
         // Rewrite asset links to go through Laravel
         $contents = preg_replace('#href="\.\./docs/css/(.+?)"#', 'href="{{ asset("' . $this->laravelAssetsPath . '/css/$1") }}"', $contents);
         $contents = preg_replace('#src="\.\./docs/(js|images)/(.+?)"#', 'src="{{ asset("' . $this->laravelAssetsPath . '/$1/$2") }}"', $contents);
-        $contents = str_replace('href="../docs/collection.json"', 'href="{{ route("'.$this->docsName.'.postman") }}"', $contents);
-        $contents = str_replace('href="../docs/openapi.yaml"', 'href="{{ route("'.$this->docsName.'.openapi") }}"', $contents);
+        $contents = str_replace('href="../docs/collection.json"', 'href="{{ route("' . $this->docsName . '.postman") }}"', $contents);
+        $contents = str_replace('href="../docs/openapi.yaml"', 'href="{{ route("' . $this->docsName . '.openapi") }}"', $contents);
 
         file_put_contents("$this->laravelTypeOutputPath/index.blade.php", $contents);
     }
@@ -206,9 +206,9 @@ class Writer
             $assetsOutputPath = $outputPath;
         } else {
             $outputPath = rtrim($this->laravelTypeOutputPath, '/') . '/';
-            c::success("Wrote Blade docs to: ". $this->makePathFriendly($outputPath));
+            c::success("Wrote Blade docs to: " . $this->makePathFriendly($outputPath));
             $this->generatedFiles['blade'] = realpath("{$outputPath}index.blade.php");
-            $assetsOutputPath = app()->get('path.public') . $this->laravelAssetsPath . '/';
+            $assetsOutputPath = public_path() . $this->laravelAssetsPath . '/';
             c::success("Wrote Laravel assets to: " . $this->makePathFriendly($assetsOutputPath));
         }
         $this->generatedFiles['assets']['js'] = realpath("{$assetsOutputPath}js");
@@ -228,7 +228,7 @@ class Writer
     {
         if ($this->isStatic) return null;
 
-        return config('view.paths.0', function_exists('base_path') ? base_path("resources/views") : "resources/views")."/$this->docsName";
+        return config('view.paths.0', function_exists('base_path') ? base_path("resources/views") : "resources/views") . "/$this->docsName";
     }
 
     /**
@@ -241,5 +241,4 @@ class Writer
     {
         return str_replace("\\", "/", str_replace(getcwd() . DIRECTORY_SEPARATOR, "", $path));
     }
-
 }
