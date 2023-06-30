@@ -99,6 +99,16 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
         $this->assertEquals('things/{thing}', $this->originalUri($route));
         $this->assertEquals('things/{thing_slug}', $this->expectedUri($route));
     }
+    
+    /** @test */
+    public function normalizes_url_param_with_eloquent_model_binding()
+    {
+        Route::get("test-posts/{test_post}", [TestController::class, 'withInjectedModelFullParamName']);
+        $route = $this->getRoute(['prefixes' => '*']);
+
+        $this->assertEquals('test-posts/{test_post}', $this->originalUri($route));
+        $this->assertEquals('test-posts/{test_post_slug}', $this->expectedUri($route));
+    }
 
     protected function expectedUri(LaravelRoute $route): string
     {
@@ -112,11 +122,13 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
 
     protected function endpoint(LaravelRoute $route): ExtractedEndpointData
     {
+        [$controllerName, $methodName] = u::getRouteClassAndMethodNames($route);
+        $method = u::getReflectedRouteMethod([$controllerName, $methodName]);
         return new ExtractedEndpointData([
             'route' => $route,
             'uri' => $route->uri,
             'httpMethods' => $route->methods,
-            'method' => new \ReflectionFunction('dump'), // Just so we don't have null
+            'method' => $method,
         ]);
     }
 
