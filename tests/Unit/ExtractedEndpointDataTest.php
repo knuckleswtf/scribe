@@ -9,6 +9,7 @@ use Knuckles\Scribe\Matching\RouteMatcher;
 use Knuckles\Scribe\Scribe;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
+use Knuckles\Scribe\Tools\Utils as u;
 
 class ExtractedEndpointDataTest extends BaseLaravelTest
 {
@@ -99,10 +100,20 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
         $this->assertEquals('things/{thing}', $this->originalUri($route));
         $this->assertEquals('things/{thing_slug}', $this->expectedUri($route));
     }
-
-    protected function expectedUri(LaravelRoute $route): string
+    
+    /** @test */
+    public function normalizes_url_param_with_eloquent_model_binding()
     {
-        return $this->endpoint($route)->uri;
+        Route::get("test-posts/{test_post}", [TestController::class, 'withInjectedModelFullParamName']);
+        $route = $this->getRoute(['prefixes' => '*']);
+
+        $this->assertEquals('test-posts/{test_post}', $this->originalUri($route));
+        $this->assertEquals('test-posts/{test_post_slug}', $this->expectedUri($route, withReflectedMethod: true));
+    }
+
+    protected function expectedUri(LaravelRoute $route, $withReflectedMethod = false): string
+    {
+        return $this->endpoint($route, $withReflectedMethod)->uri;
     }
 
     protected function originalUri(LaravelRoute $route): string
@@ -110,13 +121,21 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
         return $route->uri;
     }
 
-    protected function endpoint(LaravelRoute $route): ExtractedEndpointData
+    protected function endpoint(LaravelRoute $route, $withReflectedMethod = false): ExtractedEndpointData
     {
+        if ($withReflectedMethod) {
+            [$controllerName, $methodName] = u::getRouteClassAndMethodNames($route);
+            $method = u::getReflectedRouteMethod([$controllerName, $methodName]);
+        } else {
+            // We're testing resource routes, and we may not have methods that exist for all of them (show, index, etc).
+            // Just use this dummy so we don't have null
+           $method = new \ReflectionFunction('dump'); 
+        }
         return new ExtractedEndpointData([
             'route' => $route,
             'uri' => $route->uri,
             'httpMethods' => $route->methods,
-            'method' => new \ReflectionFunction('dump'), // Just so we don't have null
+            'method' => $method,
         ]);
     }
 

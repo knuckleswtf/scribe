@@ -585,6 +585,11 @@ class TestController extends Controller
     {
         return null;
     }
+    
+    public function withInjectedModelFullParamName(TestPost $testPost)
+    {
+        return null;
+    }
 
     public function withEnumRule(Request $request)
     {
