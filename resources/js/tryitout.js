@@ -37,6 +37,7 @@ function getCookie(name) {
 }
 
 function tryItOut(endpointId) {
+    endpointId = endpointId.replaceAll('.', '\\.');
     document.querySelector(`#btn-tryout-${endpointId}`).hidden = true;
     document.querySelector(`#btn-canceltryout-${endpointId}`).hidden = false;
     const executeBtn = document.querySelector(`#btn-executetryout-${endpointId}`).hidden = false;
