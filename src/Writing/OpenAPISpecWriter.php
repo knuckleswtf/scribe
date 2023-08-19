@@ -233,6 +233,7 @@ class OpenAPISpecWriter
                 $schema['properties'][$name] = $fieldData;
             }
 
+            // We remove 'properties' if the request body is an array, so we need to check if it's still there
             if (array_key_exists('properties', $schema)) {
                 $schema['properties'] = $this->objectIfEmpty($schema['properties']);
             }
