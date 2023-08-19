@@ -144,7 +144,7 @@ class OutputEndpointData extends BaseDTO
 
     public function endpointId(): string
     {
-        return $this->httpMethods[0] . str_replace(['/', '?', '{', '}', ':', '\\', '+', '|'], '-', $this->uri);
+        return $this->httpMethods[0] . str_replace(['/', '?', '{', '}', ':', '\\', '+', '|', '.'], '-', $this->uri);
     }
 
     public function name(): string
