@@ -22,17 +22,9 @@ class OpenAPISpecWriter
 
     private DocumentationConfig $config;
 
-    /**
-     * Object to represent empty values, since empty arrays get serialised as objects.
-     * Can't use a constant because of initialisation expression.
-     *
-     */
-    public \stdClass $EMPTY;
-
     public function __construct(DocumentationConfig $config = null)
     {
         $this->config = $config ?: new DocumentationConfig(config('scribe', []));
-        $this->EMPTY = new \stdClass();
     }
 
     /**
@@ -241,6 +233,10 @@ class OpenAPISpecWriter
                 $schema['properties'][$name] = $fieldData;
             }
 
+            // We remove 'properties' if the request body is an array, so we need to check if it's still there
+            if (array_key_exists('properties', $schema)) {
+                $schema['properties'] = $this->objectIfEmpty($schema['properties']);
+            }
             $body['required'] = $hasRequiredParameter;
 
             if ($hasFileParameter) {
@@ -257,7 +253,7 @@ class OpenAPISpecWriter
         }
 
         // return object rather than empty array, so can get properly serialised as object
-        return count($body) > 0 ? $body : $this->EMPTY;
+        return $this->objectIfEmpty($body);
     }
 
     protected function generateEndpointResponsesSpec(OutputEndpointData $endpoint)
@@ -282,7 +278,7 @@ class OpenAPISpecWriter
         }
 
         // return object rather than empty array, so can get properly serialised as object
-        return count($responses) > 0 ? $responses : $this->EMPTY;
+        return $this->objectIfEmpty($responses);
     }
 
     protected function getResponseDescription(Response $response): string
@@ -386,16 +382,12 @@ class OpenAPISpecWriter
                     return [$key => $this->generateSchemaForValue($value, $endpoint, $key)];
                 })->toArray();
 
-                if (!count($properties)) {
-                    $properties = $this->EMPTY;
-                }
-
                 return [
                     'application/json' => [
                         'schema' => [
                             'type' => 'object',
                             'example' => $decoded,
-                            'properties' => $properties,
+                            'properties' => $this->objectIfEmpty($properties),
                         ],
                     ],
                 ];
@@ -513,9 +505,9 @@ class OpenAPISpecWriter
                 'type' => 'object',
                 'description' => $field->description ?: '',
                 'example' => $field->example,
-                'properties' => collect($field->__fields)->mapWithKeys(function ($subfield, $subfieldName) {
+                'properties' => $this->objectIfEmpty(collect($field->__fields)->mapWithKeys(function ($subfield, $subfieldName) {
                     return [$subfieldName => $this->generateFieldData($subfield)];
-                })->all(),
+                })->all()),
             ];
         } else {
             return [
@@ -535,6 +527,15 @@ class OpenAPISpecWriter
     }
 
     /**
+     * Given an array, return an object if the array is empty. To be used with fields that are
+     * required by OpenAPI spec to be objects, since empty arrays get serialised as [].
+     */
+    protected function objectIfEmpty(array $field): array | \stdClass
+    {
+        return count($field) > 0 ? $field : new \stdClass();
+    }
+
+    /**
      * Given a value, generate the schema for it. The schema consists of: {type:, example:, properties: (if value is an object)},
      * and possibly a description for each property.
      * The $endpoint and $path are used for looking up response field descriptions.
@@ -543,17 +544,17 @@ class OpenAPISpecWriter
     {
         if ($value instanceof \stdClass) {
             $value = (array) $value;
-            $schema = [
-                'type' => 'object',
-                'properties' => [],
-            ];
+            $properties = [];
             // Recurse into the object
             foreach($value as $subField => $subValue){
                 $subFieldPath = sprintf('%s.%s', $path, $subField);
-                $schema['properties'][$subField] = $this->generateSchemaForValue($subValue, $endpoint, $subFieldPath);
+                $properties[$subField] = $this->generateSchemaForValue($subValue, $endpoint, $subFieldPath);
             }
 
-            return $schema;
+            return [
+                'type' => 'object',
+                'properties' => $this->objectIfEmpty($properties),
+            ];
         }
 
         $schema = [
