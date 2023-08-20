@@ -26,7 +26,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
         'room_id' => [
             'type' => 'string',
             'required' => false,
-            'description' => 'The id of the room. Must be one of <code>3</code>, <code>5</code>, or <code>6</code>.',
+            'description' => 'The id of the room.',
         ],
         'forever' => [
             'type' => 'boolean',
@@ -193,12 +193,12 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
         $expected = [
             'enum_class' => [
                 'type' => 'string',
-                'description' => 'Must be one of <code>red</code>, <code>green</code>, or <code>blue</code>.',
+                'description' => '',
                 'required' => true,
             ],
             'enum_string' => [
                 'type' => 'string',
-                'description' => 'Must be one of <code>1</code>, <code>2</code>, or <code>3</code>.',
+                'description' => '',
                 'required' => true,
             ],
             'enum_inexistent' => [

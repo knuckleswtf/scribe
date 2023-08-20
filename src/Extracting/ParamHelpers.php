@@ -250,8 +250,8 @@ trait ParamHelpers
             $description = trim($content[1]);
 
             $enumValues = array_map(
-                fn ($value) => $this->castToType($value, $type),
-                explode($content[2], ',')
+                fn ($value) => $this->castToType(trim($value), $type),
+                explode(',', rtrim(trim($content[2]), '.'))
             );
         }
 

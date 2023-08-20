@@ -89,6 +89,12 @@ class GetFromBodyParamAttributeTest extends TestCase
                 'description' => '',
                 'required' => true,
             ],
+            'state' => [
+                'type' => 'string',
+                'description' => '',
+                'required' => true,
+                'enumValues' => ["active", "pending"]
+            ],
             'users' => [
                 'type' => 'object[]',
                 'description' => 'Users\' details',
@@ -216,6 +222,7 @@ class BodyParamAttributeTestController
     #[BodyParam("book.author_id", type: "integer")]
     #[BodyParam("book.pages_count", type: "integer")]
     #[BodyParam("ids", "integer[]")]
+    #[BodyParam("state", enum: ["active", "pending"])]
     #[BodyParam("users", "object[]", "Users' details", required: false)]
     #[BodyParam("users[].first_name", "string", "The first name of the user.", example: "John", required: false)]
     #[BodyParam("users[].last_name", "string", "The last name of the user.", example: "Doe", required: false)]

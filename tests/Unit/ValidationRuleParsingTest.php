@@ -68,8 +68,8 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             'in_param' => ['numeric', Rule::in([3,5,6])]
         ]);
         $this->assertEquals(
-            'Must be one of <code>3</code>, <code>5</code>, or <code>6</code>.',
-            $results['in_param']['description']
+            [3, 5, 6],
+            $results['in_param']['enumValues']
         );
     }
 
@@ -228,8 +228,9 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['in_param' => 'in:3,5,6'],
             ['in_param' => ['description' => $description]],
             [
-                'description' => "$description. Must be one of <code>3</code>, <code>5</code>, or <code>6</code>.",
+                'description' => $description.".",
                 'type' => 'string',
+                'enumValues' => [3,5,6]
             ],
         ];
         yield 'not_in' => [
@@ -533,8 +534,8 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         ]);
         $this->assertEquals('string', $results['enum']['type']);
         $this->assertEquals(
-            'Must be one of <code>red</code>, <code>green</code>, or <code>blue</code>.',
-            $results['enum']['description']
+            ['red', 'green', 'blue'],
+            $results['enum']['enumValues']
         );
         $this->assertTrue(in_array(
             $results['enum']['example'],
@@ -547,8 +548,8 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         ]);
         $this->assertEquals('integer', $results['enum']['type']);
         $this->assertEquals(
-            'Must be one of <code>1</code>, <code>2</code>, or <code>3</code>.',
-            $results['enum']['description']
+            [1, 2, 3],
+            $results['enum']['enumValues']
         );
         $this->assertTrue(in_array(
             $results['enum']['example'],
@@ -562,7 +563,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         ]);
         $this->assertEquals('string', $results['enum']['type']);
         $this->assertEquals(
-            'A description. Must be one of <code>red</code>, <code>green</code>, or <code>blue</code>.',
+            'A description.',
             $results['enum']['description']
         );
         $this->assertTrue(in_array(
