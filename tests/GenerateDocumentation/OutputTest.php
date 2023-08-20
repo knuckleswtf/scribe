@@ -417,6 +417,7 @@ class OutputTest extends BaseLaravelTest
             'required' => true,
             'example' => 6,
             'type' => 'integer',
+            'enumValues' => [],
             'custom' => [],
         ];
         $group['endpoints'][0]['urlParameters']['a_param'] = $extraParam;
