@@ -344,7 +344,6 @@
     "bearer": [
       {
         "key": "key",
-        "value": null,
         "type": "string"
       }
     ]

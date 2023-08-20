@@ -229,7 +229,6 @@ class PostmanCollectionWriterTest extends TestCase
             'bearer' => [
                 [
                     'key'   => null,
-                    'value' => null,
                     'type'  => 'string',
                 ],
             ],
