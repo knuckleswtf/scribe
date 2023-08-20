@@ -204,7 +204,6 @@ trait ParsesValidationRules
                 $cases = array_map(fn ($case) => $case->value, $type::cases());
                 $parameterData['type'] = gettype($cases[0]);
                 $parameterData['enumValues'] = $cases;
-                $parameterData['description'] .= ' Must be one of ' . w::getListOfValuesAsFriendlyHtmlString($cases) . ' ';
                 $parameterData['setter'] = fn () => Arr::random($cases);
             }
 
@@ -466,8 +465,6 @@ trait ParsesValidationRules
                  */
                 case 'in':
                     $parameterData['enumValues'] = $arguments;
-                    // Not using the rule description here because it only says "The attribute is invalid"
-                    $parameterData['description'] .= ' Must be one of ' . w::getListOfValuesAsFriendlyHtmlString($arguments) . ' ';
                     $parameterData['setter'] = function () use ($arguments) {
                         return Arr::random($arguments);
                     };

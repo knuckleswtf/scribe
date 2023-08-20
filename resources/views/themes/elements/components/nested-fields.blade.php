@@ -15,6 +15,7 @@
           'required' => $field['required'] ?? false,
           'description' => $field['description'] ?? '',
           'example' => $field['example'] ?? '',
+          'enumValues' => $field['enumValues'] ?? null,
           'endpointId' => $endpointId,
           'hasChildren' => !empty($field['__fields']),
           'component' => 'body',
