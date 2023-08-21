@@ -177,7 +177,7 @@ class OpenAPISpecWriter
 
         if (count($endpoint->headers)) {
             foreach ($endpoint->headers as $name => $value) {
-                if (in_array($name, ['Content-Type', 'content-type', 'Accept', 'accept']))
+                if (in_array(strtolower($name), ['content-type', 'accept', 'authorization']))
                     // These headers are not allowed in the spec.
                     // https://swagger.io/docs/specification/describing-parameters/#header-parameters
                     continue;
