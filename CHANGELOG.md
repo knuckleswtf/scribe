@@ -12,6 +12,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.23.0 (24 August 2023)
+## Added
+- Support for enums: you can now specify the allowed values of a parameter ([#713](https://github.com/knuckleswtf/scribe/pull/713))
+
+## Modified
+- Exclude Authorization header from generated OpenAPI spec, per spec ([#714](https://github.com/knuckleswtf/scribe/pull/714))
+
+## Fixed
+- Improve endpointId generation ([#700](https://github.com/knuckleswtf/scribe/pull/700))
+- Improve empty checks in OpenAPI spec generation ([#712](https://github.com/knuckleswtf/scribe/pull/712))
+- Don't export auth.use_value to Postman ([6a9d51b3a2](https://github.com/knuckleswtf/scribe/commit/6a9d51b3a215a89e8b8af47f796ffaa10993c171))
+
 # 4.22.0 (1 July 2023)
 ## Added
 - Make included package attributes extensible ([#680](https://github.com/knuckleswtf/scribe/pull/680))
