@@ -33,17 +33,21 @@ abstract class GetFieldsFromTagStrategy extends TagStrategyWithFormRequestFallba
 
     abstract protected function parseTag(string $tagContent): array;
 
-    protected function getDescriptionAndExample(string $description, string $type, string $tagContent, string $fieldName): array
+    protected function getDescriptionAndExample(
+        string $description, string $type, string $tagContent, string $fieldName
+    ): array
     {
-        [$description, $example] = $this->parseExampleFromParamDescription($description, $type);
-        $example = $this->setExampleIfNeeded($example, $type, $tagContent, $fieldName);
-        return [$description, $example];
+        [$description, $example, $enumValues] = $this->parseExampleFromParamDescription($description, $type);
+        $example = $this->setExampleIfNeeded($example, $type, $tagContent, $fieldName, $enumValues);
+        return [$description, $example, $enumValues];
     }
 
-    protected function setExampleIfNeeded(mixed $currentExample, string $type, string $tagContent, string $fieldName): mixed
+    protected function setExampleIfNeeded(
+        mixed $currentExample, string $type, string $tagContent, string $fieldName, ?array $enumValues = []
+    ): mixed
     {
         return (is_null($currentExample) && !$this->shouldExcludeExample($tagContent))
-            ? $this->generateDummyValue($type, hints: ['name' => $fieldName])
+            ? $this->generateDummyValue($type, hints: ['name' => $fieldName, 'enumValues' => $enumValues])
             : $currentExample;
     }
 }

@@ -7,6 +7,9 @@ use Knuckles\Camel\BaseDTO;
 
 class ResponseField extends BaseDTO
 {
+    // TODO make this extend Parameter, so we can have strong types and a unified API
+    //   but first we need to normalize incoming data
+
     /** @var string */
     public $name;
 
@@ -15,4 +18,6 @@ class ResponseField extends BaseDTO
 
     /** @var string */
     public $type;
+
+    public array $enumValues = [];
 }

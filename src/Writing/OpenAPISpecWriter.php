@@ -510,11 +510,16 @@ class OpenAPISpecWriter
                 })->all()),
             ];
         } else {
-            return [
+            $schema = [
                 'type' => static::normalizeTypeName($field->type),
                 'description' => $field->description ?: '',
                 'example' => $field->example,
             ];
+            if (!empty($field->enumValues)) {
+                $schema['enum'] = $field->enumValues;
+            }
+
+            return $schema;
         }
     }
 
@@ -523,30 +528,30 @@ class OpenAPISpecWriter
         if ($endpoint->metadata->title) return preg_replace('/[^\w+]/', '', Str::camel($endpoint->metadata->title));
 
         $parts = preg_split('/[^\w+]/', $endpoint->uri, -1, PREG_SPLIT_NO_EMPTY);
-        return Str::lower($endpoint->httpMethods[0]) . join('', array_map(fn ($part) => ucfirst($part), $parts));
+        return Str::lower($endpoint->httpMethods[0]) . join('', array_map(fn($part) => ucfirst($part), $parts));
     }
 
     /**
      * Given an array, return an object if the array is empty. To be used with fields that are
      * required by OpenAPI spec to be objects, since empty arrays get serialised as [].
      */
-    protected function objectIfEmpty(array $field): array | \stdClass
+    protected function objectIfEmpty(array $field): array|\stdClass
     {
         return count($field) > 0 ? $field : new \stdClass();
     }
 
     /**
-     * Given a value, generate the schema for it. The schema consists of: {type:, example:, properties: (if value is an object)},
-     * and possibly a description for each property.
-     * The $endpoint and $path are used for looking up response field descriptions.
+     * Given a value, generate the schema for it. The schema consists of: {type:, example:, properties: (if value is an
+     * object)}, and possibly a description for each property. The $endpoint and $path are used for looking up response
+     * field descriptions.
      */
     public function generateSchemaForValue(mixed $value, OutputEndpointData $endpoint, string $path): array
     {
         if ($value instanceof \stdClass) {
-            $value = (array) $value;
+            $value = (array)$value;
             $properties = [];
             // Recurse into the object
-            foreach($value as $subField => $subValue){
+            foreach ($value as $subField => $subValue) {
                 $subFieldPath = sprintf('%s.%s', $path, $subField);
                 $properties[$subField] = $this->generateSchemaForValue($subValue, $endpoint, $subFieldPath);
             }

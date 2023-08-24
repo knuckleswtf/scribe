@@ -69,3 +69,7 @@
     }
 @endphp
 {!! Parsedown::instance()->text(trim($description)) !!}
+@if(!empty($enumValues))
+Must be one of:
+<ul style="list-style-type: square;">{!! implode(" ", array_map(fn($val) => "<li><code>$val</code></li>", $enumValues)) !!}</ul>
+@endif
