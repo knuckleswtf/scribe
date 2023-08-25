@@ -29,10 +29,10 @@ class GenericParam
         ];
     }
 
-    protected function getEnumValues()
+    protected function getEnumValues(): array
     {
         if (!$this->enum) {
-            return null;
+            return [];
         }
 
         if (is_array($this->enum)) {
