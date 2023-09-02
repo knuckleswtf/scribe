@@ -110,7 +110,7 @@ class WritingUtils
         $output = isset($braces[0]) ? "{$braces[0]}\n" : '';
         foreach ($cleanQueryParams as $parameter => $value) {
             $output .= self::printSingleQueryParamAsKeyValue($value, $spacesIndentation, $startLinesWith, $quote,
-                                                             $parameter, $delimiter, $endLinesWith);
+                $parameter, $delimiter, $endLinesWith);
         }
 
         $closing = isset($braces[1]) ? str_repeat(" ", $closingBraceIndentation) . "{$braces[1]}" : '';
@@ -150,11 +150,11 @@ class WritingUtils
                 $parameterString = sprintf('%s[%s]', $parameter, $item);
                 if (is_array($itemValue)) {
                     $output .= static::printSingleQueryParamAsKeyValue($itemValue, $spacesIndentation, $startLinesWith,
-                                                                       $quote, $parameterString, $delimiter, $endLinesWith);
+                        $quote, $parameterString, $delimiter, $endLinesWith);
                 } else {
                     $output .= str_repeat(" ", $spacesIndentation);
                     $output .= sprintf("%s%s%s%s%s %s%s%s%s\n", $startLinesWith, $quote, $parameterString, $quote,
-                                       $delimiter, $quote, $itemValue, $quote, $endLinesWith);
+                        $delimiter, $quote, $itemValue, $quote, $endLinesWith);
                 }
             }
         }
