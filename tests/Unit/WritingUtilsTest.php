@@ -79,9 +79,9 @@ class WritingUtilsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function get_sample_body()
+    public function get_sample_body_with_array_fields()
     {
-        $sampleBody = WritingUtils::getSampleBody($this->bodyParams());
+        $sampleBody = WritingUtils::getSampleBody($this->bodyParamsWithArrayFields());
 
         $expected = [
             'name' => 'Experience Form',
@@ -118,7 +118,7 @@ class WritingUtilsTest extends BaseLaravelTest
         ];
     }
 
-    private function bodyParams(): array
+    private function bodyParamsWithArrayFields(): array
     {
         return [
             'name' => [
