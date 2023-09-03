@@ -78,6 +78,25 @@ class WritingUtilsTest extends BaseLaravelTest
         $this->assertEquals($expected, $queryParams);
     }
 
+    /** @test */
+    public function get_sample_body_with_array_fields()
+    {
+        $sampleBody = WritingUtils::getSampleBody($this->bodyParamsWithArrayFields());
+
+        $expected = [
+            'name' => 'Experience Form',
+            'fields' => [
+                [
+                    'name' => 'experience',
+                    'label' => 'Experience',
+                    'type' => 'textarea',
+                    'order' => 1,
+                ],
+            ],
+        ];
+        $this->assertEquals($expected, $sampleBody);
+    }
+
     private function queryParams(): array
     {
         return [
@@ -95,6 +114,63 @@ class WritingUtilsTest extends BaseLaravelTest
                     'nested query level 2 query' => 'name nested 2',
                 ],
                 'nested query level 1 query' => 'name nested 1'
+            ],
+        ];
+    }
+
+    private function bodyParamsWithArrayFields(): array
+    {
+        return [
+            'name' => [
+                'name' => 'name',
+                'description' => 'Form\'s name',
+                'required' => true,
+                'example' => 'Experience Form',
+                'type' => 'string',
+                'custom' => [],
+                '__fields' => [],
+            ],
+            'fields' => [
+                'name' => 'fields',
+                'description' => 'Form\'s fields',
+                'required' => false,
+                'example' => [[]],
+                'type' => 'object[]',
+                'custom' => [],
+                '__fields' => [
+                    'name' => [
+                        'name' => 'fields[].name',
+                        'description' => 'Field\'s name',
+                        'required' => true,
+                        'example' => 'experience',
+                        'type' => 'string',
+                        'custom' => [],
+                    ],
+                    'label' => [
+                        'name' => 'fields[].label',
+                        'description' => 'Field\'s label',
+                        'required' => true,
+                        'example' => 'Experience',
+                        'type' => 'string',
+                        'custom' => [],
+                    ],
+                    'type' => [
+                        'name' => 'fields[].type',
+                        'description' => 'Field\'s type',
+                        'required' => true,
+                        'example' => 'textarea',
+                        'type' => 'string',
+                        'custom' => [],
+                    ],
+                    'order' => [
+                        'name' => 'fields[].order',
+                        'description' => 'Field\'s order',
+                        'required' => true,
+                        'example' => 1,
+                        'type' => 'number',
+                        'custom' => [],
+                    ],
+                ],
             ],
         ];
     }
