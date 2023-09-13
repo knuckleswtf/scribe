@@ -4,7 +4,7 @@
 @endphp
 ```bash
 curl --request {{$endpoint->httpMethods[0]}} \
-    {{$endpoint->httpMethods[0] == 'GET' ? '--get ' : ''}}"{{ rtrim($baseUrl, '/')}}/{{ ltrim($endpoint->boundUri, '/') }}@if(count($endpoint->cleanQueryParameters))?{!! u::printQueryParamsAsString($endpoint->cleanQueryParameters) !!}@endif"@if(count($endpoint->headers)) \
+    {{$endpoint->httpMethods[0] == 'GET' ? '--get ' : ''}}"{!! rtrim($baseUrl, '/') !!}/{{ ltrim($endpoint->boundUri, '/') }}@if(count($endpoint->cleanQueryParameters))?{!! u::printQueryParamsAsString($endpoint->cleanQueryParameters) !!}@endif"@if(count($endpoint->headers)) \
 @foreach($endpoint->headers as $header => $value)
     --header "{{$header}}: {{ addslashes($value) }}"@if(! ($loop->last) || ($loop->last && count($endpoint->bodyParameters))) \
 @endif

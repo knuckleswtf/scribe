@@ -218,6 +218,10 @@ class WritingUtils
 
         return array_map(function ($param) {
             if (!empty($param['__fields'])) {
+                if ($param['type'] === 'object[]') {
+                    return [self::getSampleBody($param['__fields'])];
+                }
+
                 return self::getSampleBody($param['__fields']);
             }
 
