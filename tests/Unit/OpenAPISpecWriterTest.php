@@ -22,6 +22,16 @@ class OpenAPISpecWriterTest extends TestCase
         'title' => 'My Testy Testes API',
         'description' => 'All about testy testes.',
         'base_url' => 'http://api.api.dev',
+        'servers' => [
+            [
+                'url' => 'http://api.api.dev',
+                'description' => 'TheSideProjectAPI (Development)',
+            ],
+            [
+                'url' => 'http://api.api.prod',
+                'description' => 'TheSideProjectAPI (Production)',
+            ],
+        ]
     ];
 
     /** @test */
@@ -30,6 +40,9 @@ class OpenAPISpecWriterTest extends TestCase
         $endpointData1 = $this->createMockEndpointData();
         $endpointData2 = $this->createMockEndpointData();
         $groups = [$this->createGroup([$endpointData1, $endpointData2])];
+        // Remove the servers key, so we can confirm backwards compatibility with "base_url" config option
+        $ephemeralConfig = $this->config;
+        unset($this->config['servers']);
 
         $results = $this->generate($groups);
 
@@ -40,6 +53,14 @@ class OpenAPISpecWriterTest extends TestCase
         $this->assertEquals($this->config['base_url'], $results['servers'][0]['url']);
         $this->assertIsArray($results['paths']);
         $this->assertGreaterThan(0, count($results['paths']));
+
+        // Reset the config, so we can now test the new "servers" config option
+        $this->config = $ephemeralConfig;
+        $results = $this->generate($groups);
+        $this->assertEquals($this->config['servers'][0]['url'], $results['servers'][0]['url']);
+        $this->assertEquals($this->config['servers'][0]['description'], $results['servers'][0]['description']);
+        $this->assertEquals($this->config['servers'][1]['url'], $results['servers'][1]['url']);
+        $this->assertEquals($this->config['servers'][1]['description'], $results['servers'][1]['description']);
     }
 
     /** @test */

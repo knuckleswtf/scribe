@@ -23,6 +23,16 @@ return [
     'base_url' => null,
 
     /*
+     * An array of servers available for the generated docs.
+     * Overrides base_url when generating the servers list for the openapi.yaml file.
+     */
+    'servers' => [
+//        [
+//            'url' => null,
+//            'description' => null,
+//        ],
+    ],
+    /*
      * Tell Scribe what routes to generate documentation for.
      * Each group contains rules defining which routes should be included ('match', 'include' and 'exclude' sections)
      * and settings which should be applied to them ('apply' section).

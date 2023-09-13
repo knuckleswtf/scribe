@@ -43,11 +43,7 @@ class OpenAPISpecWriter
                 'description' => $this->config->get('description', ''),
                 'version' => '1.0.0',
             ],
-            'servers' => [
-                [
-                    'url' => rtrim($this->config->get('base_url') ?? config('app.url'), '/'),
-                ],
-            ],
+            'servers' => $this->generateServers(),
             'paths' => $this->generatePathsSpec($groupedEndpoints),
             'tags' => array_values(array_map(function (array $group) {
                 return [
@@ -56,6 +52,20 @@ class OpenAPISpecWriter
                 ];
             }, $groupedEndpoints)),
         ], $this->generateSecurityPartialSpec());
+    }
+
+    protected function generateServers(): array
+    {
+        $servers = $this->config->get('servers', []);
+        if ($servers) {
+            return $servers;
+        }
+
+        return [
+            [
+                'url' => rtrim($this->config->get('base_url') ?? config('app.url'), '/'),
+            ],
+        ];
     }
 
     /**
