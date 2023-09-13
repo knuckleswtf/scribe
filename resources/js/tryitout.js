@@ -231,8 +231,12 @@ async function executeTryOut(endpointId, form) {
     const urlParameters = form.querySelectorAll('input[data-component=url]');
     urlParameters.forEach(el => (path = path.replace(new RegExp(`\\{${el.name}\\??}`), el.value)));
 
-    const headers = Object.fromEntries(Array.from(form.querySelectorAll('input[data-component=header]'))
-        .map(el => [el.name, el.value]));
+    const headers = JSON.parse(form.dataset.headers);
+    // Check for auth param that might go in header
+    if (form.dataset.authed === "1") {
+        const authHeaderEl = form.querySelector('input[data-component=header]');
+        if (authHeaderEl) headers[authHeaderEl.name] = authHeaderEl.dataset.prefix + authHeaderEl.value;
+    }
 
     // When using FormData, the browser sets the correct content-type + boundary
     let method = form.dataset.method;
