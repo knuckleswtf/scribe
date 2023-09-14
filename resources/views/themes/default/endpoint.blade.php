@@ -68,6 +68,7 @@
       data-hasfiles="{{ $endpoint->hasFiles() ? 1 : 0 }}"
       data-isarraybody="{{ $endpoint->isArrayBody() ? 1 : 0 }}"
       autocomplete="off"
+      data-headers='@json($endpoint->headers)'
       onsubmit="event.preventDefault(); executeTryOut('{{ $endpoint->endpointId() }}', this);">
     <h3>
         {{ u::trans("scribe::endpoint.request") }}&nbsp;&nbsp;&nbsp;
