@@ -219,6 +219,17 @@ class OutputTest extends BaseLaravelTest
         RouteFacade::get('/api/echoesUrlParameters/{param}/{param2}/{param3?}/{param4?}', [TestController::class, 'echoesUrlParameters']);
 
         config(['scribe.openapi.enabled' => true]);
+        config(['scribe.version' => '2.4.1']);
+        config(['scribe.terms_of_service' => 'http://api.api.dev/terms-of-service']);
+        config(['scribe.contact' => [
+            'name' => 'Scribe Support',
+            'email' => 'support@scribe.test',
+            'url' => 'https://scribe.knuckles.wtf/laravel',
+        ]]);
+        config(['scribe.license' => [
+            'name' => 'MIT License',
+            'url' => 'https://github.com/knuckleswtf/scribe/blob/master/LICENSE.md',
+        ]]);
         config(['scribe.openapi.overrides' => [
             'info.version' => '3.9.9',
         ]]);

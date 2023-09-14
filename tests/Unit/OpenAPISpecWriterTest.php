@@ -22,6 +22,17 @@ class OpenAPISpecWriterTest extends TestCase
         'title' => 'My Testy Testes API',
         'description' => 'All about testy testes.',
         'base_url' => 'http://api.api.dev',
+        'version' => '2.4.1',
+        'terms_of_service' => 'http://api.api.dev/terms-of-service',
+        'contact' => [
+            'name' => 'Scribe Support',
+            'email' => 'support@scribe.test',
+            'url' => 'https://scribe.knuckles.wtf/laravel',
+        ],
+        'license' => [
+            'name' => 'MIT License',
+            'url' => 'https://github.com/knuckleswtf/scribe/blob/master/LICENSE.md',
+        ],
     ];
 
     /** @test */
@@ -36,7 +47,10 @@ class OpenAPISpecWriterTest extends TestCase
         $this->assertEquals(OpenAPISpecWriter::SPEC_VERSION, $results['openapi']);
         $this->assertEquals($this->config['title'], $results['info']['title']);
         $this->assertEquals($this->config['description'], $results['info']['description']);
-        $this->assertNotEmpty($results['info']['version']);
+        $this->assertEquals($this->config['contact'], $results['info']['contact']);
+        $this->assertEquals($this->config['version'], $results['info']['version']);
+        $this->assertEquals($this->config['license'], $results['info']['license']);
+        $this->assertEquals($this->config['terms_of_service'], $results['info']['termsOfService']);
         $this->assertEquals($this->config['base_url'], $results['servers'][0]['url']);
         $this->assertIsArray($results['paths']);
         $this->assertGreaterThan(0, count($results['paths']));

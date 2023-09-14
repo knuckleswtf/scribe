@@ -41,7 +41,10 @@ class OpenAPISpecWriter
             'info' => [
                 'title' => $this->config->get('title') ?: config('app.name', ''),
                 'description' => $this->config->get('description', ''),
-                'version' => '1.0.0',
+                'version' => $this->config->get('version', ''),
+                'termsOfService' => $this->config->get('terms_of_service', ''),
+                'contact' => $this->config->get('contact', []),
+                'license' => $this->config->get('license', []),
             ],
             'servers' => [
                 [

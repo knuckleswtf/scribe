@@ -3,6 +3,14 @@ info:
     title: Laravel
     description: ''
     version: 3.9.9
+    termsOfService: http://api.api.dev/terms-of-service
+    contact:
+        name: Scribe Support
+        email: support@scribe.test
+        url: https://scribe.knuckles.wtf/laravel
+    license:
+        name: MIT License
+        url: https://github.com/knuckleswtf/scribe/blob/master/LICENSE.md
 servers:
     -
         url: 'http://localhost'

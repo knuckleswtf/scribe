@@ -17,6 +17,38 @@ return [
     'description' => '',
 
     /*
+     * A URL to the Terms of Service for the API. This MUST be in the form of a URL.
+     * See https://swagger.io/specification/v3/#info-object for more info
+     */
+    'terms_of_service' => null,
+
+    /*
+     * Contact details for users of the Api to use to get more information or help.
+     * See https://swagger.io/specification/v3/#info-object for more info
+     */
+    'contact' => [
+        'name' => null,
+        'email' => null,
+        'url' => null,
+    ],
+
+    /*
+     * License information about who can use the api and to what extent
+     * See https://swagger.io/specification/v3/#info-object for more info
+     */
+    'license' => [
+        'name' => null,
+        'url' => null,
+    ],
+
+    /*
+     * The current version string of the api
+     * See https://swagger.io/specification/v3/#info-object for more info
+     */
+    'version' => null,
+
+
+    /*
      * The base URL displayed in the docs. If this is empty, Scribe will use the value of config('app.url') at generation time.
      * If you're using `laravel`` type, you can set this to a dynamic string, like '{{ config("app.tenant_url") }}' to get a dynamic base URL.
      */
