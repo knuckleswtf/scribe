@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Writing;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\DocumentationConfig;
@@ -127,7 +128,7 @@ class Writer
         $writer = app()->makeWith(PostmanCollectionWriter::class, ['config' => $this->config]);
 
         $collection = $writer->generatePostmanCollection($groupedEndpoints);
-        $overrides = $this->config->get('postman.overrides', []);
+        $overrides = Arr::dot($this->config->get('postman.overrides', []));
         if (count($overrides)) {
             foreach ($overrides as $key => $value) {
                 data_set($collection, $key, $value);
@@ -147,7 +148,7 @@ class Writer
         $writer = app()->makeWith(OpenAPISpecWriter::class, ['config' => $this->config]);
 
         $spec = $writer->generateSpecContent($groupedEndpoints);
-        $overrides = $this->config->get('openapi.overrides', []);
+        $overrides = Arr::dot($this->config->get('openapi.overrides', []));
         if (count($overrides)) {
             foreach ($overrides as $key => $value) {
                 data_set($spec, $key, $value);

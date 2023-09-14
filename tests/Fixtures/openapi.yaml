@@ -3,6 +3,7 @@ info:
     title: Laravel
     description: ''
     version: 3.9.9
+    termsOfService: "http://api.api.dev/terms-of-service"
 servers:
     -
         url: 'http://localhost'

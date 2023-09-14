@@ -187,6 +187,9 @@ class OutputTest extends BaseLaravelTest
         config(['scribe.auth.enabled' => true]);
         config(['scribe.postman.overrides' => [
             'info.version' => '3.9.9',
+            'info' => [
+                'termsOfService' => 'http://api.api.dev/terms-of-service',
+            ],
         ]]);
         config([
             'scribe.routes.0.apply.headers' => [
@@ -221,6 +224,9 @@ class OutputTest extends BaseLaravelTest
         config(['scribe.openapi.enabled' => true]);
         config(['scribe.openapi.overrides' => [
             'info.version' => '3.9.9',
+            'info' => [
+                'termsOfService' => 'http://api.api.dev/terms-of-service',
+            ],
         ]]);
         config([
             'scribe.routes.0.apply.headers' => [

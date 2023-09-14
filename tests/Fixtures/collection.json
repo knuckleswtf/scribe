@@ -13,7 +13,8 @@
     "_postman_id": "",
     "description": "",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "version": "3.9.9"
+    "version": "3.9.9",
+    "termsOfService": "http://api.api.dev/terms-of-service"
   },
   "item": [
     {
