@@ -403,18 +403,18 @@ class OpenAPISpecWriter
 
         $location = $this->config->get('auth.in');
         $parameterName = $this->config->get('auth.name');
-
+        $description = $this->config->get('auth.extra_info');
         $scheme = match ($location) {
             'query', 'header' => [
                 'type' => 'apiKey',
                 'name' => $parameterName,
                 'in' => $location,
-                'description' => '',
+                'description' => $description,
             ],
             'bearer', 'basic' => [
                 'type' => 'http',
                 'scheme' => $location,
-                'description' => '',
+                'description' => $description,
             ],
             default => [],
         };
