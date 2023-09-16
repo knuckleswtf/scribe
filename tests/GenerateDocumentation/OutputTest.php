@@ -350,6 +350,65 @@ class OutputTest extends BaseLaravelTest
     }
 
     /** @test */
+    public function sorts_groups_and_endpoints_in_the_specified_order_with_wildcard()
+    {
+        config(['scribe.groups.order' => [
+            '10. Group 10',
+            '*',
+            '13. Group 13' => [
+                'SG B' => [
+                    'POST /api/action13d',
+                    'GET /api/action13a',
+                ],
+                'SG A',
+                'PUT /api/action13c',
+            ],
+        ]]);
+
+        RouteFacade::get('/api/action1', [TestGroupController::class, 'action1']);
+        RouteFacade::get('/api/action1b', [TestGroupController::class, 'action1b']);
+        RouteFacade::get('/api/action2', [TestGroupController::class, 'action2']);
+        RouteFacade::get('/api/action10', [TestGroupController::class, 'action10']);
+        RouteFacade::get('/api/action13a', [TestGroupController::class, 'action13a']);
+        RouteFacade::post('/api/action13b', [TestGroupController::class, 'action13b']);
+        RouteFacade::put('/api/action13c', [TestGroupController::class, 'action13c']);
+        RouteFacade::post('/api/action13d', [TestGroupController::class, 'action13d']);
+        RouteFacade::get('/api/action13e', [TestGroupController::class, 'action13e']);
+
+        $this->generate();
+
+        $crawler = new Crawler(file_get_contents($this->htmlOutputPath()));
+        $headings = $crawler->filter('h1')->getIterator();
+        $this->assertCount(6, $headings); // intro, auth, four groups
+        [$_, $_, $firstGroup, $secondGroup, $thirdGroup, $fourthGroup] = $headings;
+
+        $this->assertEquals('10. Group 10', $firstGroup->textContent);
+        $this->assertEquals('1. Group 1', $secondGroup->textContent);
+        $this->assertEquals('2. Group 2', $thirdGroup->textContent);
+        $this->assertEquals('13. Group 13', $fourthGroup->textContent);
+
+        $firstGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($firstGroup->textContent).'"]');
+        $this->assertEquals(1, $firstGroupEndpointsAndSubgroups->count());
+        $this->assertEquals("GET api/action10", $firstGroupEndpointsAndSubgroups->getNode(0)->textContent);
+
+        $secondGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($secondGroup->textContent).'"]');
+        $this->assertEquals(2, $secondGroupEndpointsAndSubgroups->count());
+        $this->assertEquals("GET api/action1", $secondGroupEndpointsAndSubgroups->getNode(0)->textContent);
+        $this->assertEquals("GET api/action1b", $secondGroupEndpointsAndSubgroups->getNode(1)->textContent);
+
+        $fourthGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($fourthGroup->textContent).'"]');
+        $this->assertEquals(8, $fourthGroupEndpointsAndSubgroups->count());
+        $this->assertEquals("SG B", $fourthGroupEndpointsAndSubgroups->getNode(0)->textContent);
+        $this->assertEquals("POST api/action13d", $fourthGroupEndpointsAndSubgroups->getNode(1)->textContent);
+        $this->assertEquals("GET api/action13a", $fourthGroupEndpointsAndSubgroups->getNode(2)->textContent);
+        $this->assertEquals("SG A", $fourthGroupEndpointsAndSubgroups->getNode(3)->textContent);
+        $this->assertEquals("GET api/action13e", $fourthGroupEndpointsAndSubgroups->getNode(4)->textContent);
+        $this->assertEquals("PUT api/action13c", $fourthGroupEndpointsAndSubgroups->getNode(5)->textContent);
+        $this->assertEquals("SG C", $fourthGroupEndpointsAndSubgroups->getNode(6)->textContent);
+        $this->assertEquals("POST api/action13b", $fourthGroupEndpointsAndSubgroups->getNode(7)->textContent);
+    }
+
+    /** @test */
     public function merges_and_correctly_sorts_user_defined_endpoints()
     {
         RouteFacade::get('/api/action1', [TestGroupController::class, 'action1']);
