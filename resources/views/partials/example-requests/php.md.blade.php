@@ -4,9 +4,10 @@
 @endphp
 ```php
 $client = new \GuzzleHttp\Client();
+$url = '{!! rtrim($baseUrl, '/') . '/' . ltrim($endpoint->boundUri, '/') !!}';
 @if($endpoint->hasHeadersOrQueryOrBodyParams())
 $response = $client->{{ strtolower($endpoint->httpMethods[0]) }}(
-    '{{ rtrim($baseUrl, '/') . '/' . ltrim($endpoint->boundUri, '/') }}',
+    $url,
     [
 @if(!empty($endpoint->headers))
         'headers' => {!! u::printPhpValue($endpoint->headers, 8) !!},
@@ -43,7 +44,7 @@ $response = $client->{{ strtolower($endpoint->httpMethods[0]) }}(
     ]
 );
 @else
-$response = $client->{{ strtolower($endpoint->httpMethods[0]) }}('{{ rtrim($baseUrl, '/') . '/' . ltrim($endpoint->boundUri, '/') }}');
+$response = $client->{{ strtolower($endpoint->httpMethods[0]) }}($url);
 @endif
 $body = $response->getBody();
 print_r(json_decode((string) $body));

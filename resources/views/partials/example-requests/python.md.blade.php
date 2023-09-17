@@ -6,7 +6,7 @@
 import requests
 import json
 
-url = '{{ rtrim($baseUrl, '/') }}/{{ $endpoint->boundUri }}'
+url = '{!! rtrim($baseUrl, '/') !!}/{{ $endpoint->boundUri }}'
 @if($endpoint->hasFiles() || (isset($endpoint->headers['Content-Type']) && $endpoint->headers['Content-Type'] == 'multipart/form-data' && count($endpoint->cleanBodyParameters)))
 files = {
 @foreach($endpoint->cleanBodyParameters as $parameter => $value)

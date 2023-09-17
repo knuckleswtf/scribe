@@ -4,7 +4,7 @@
 @endphp
 ```javascript
 const url = new URL(
-    "{{ rtrim($baseUrl, '/') }}/{{ ltrim($endpoint->boundUri, '/') }}"
+    "{!! rtrim($baseUrl, '/') !!}/{{ ltrim($endpoint->boundUri, '/') }}"
 );
 @if(count($endpoint->cleanQueryParameters))
 
@@ -53,7 +53,7 @@ fetch(url, {
     body,
 @elseif(count($endpoint->cleanBodyParameters))
 @if ($endpoint->headers['Content-Type'] == 'application/x-www-form-urlencoded')
-    body: body,
+    body,
 @else
     body: JSON.stringify(body),
 @endif
