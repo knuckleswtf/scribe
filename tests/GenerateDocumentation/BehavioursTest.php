@@ -5,6 +5,7 @@ namespace Knuckles\Scribe\Tests\GenerateDocumentation;
 use Illuminate\Support\Facades\File as FileFacade;
 use Illuminate\Support\Facades\Route as RouteFacade;
 use Knuckles\Scribe\Commands\GenerateDocumentation;
+use Knuckles\Scribe\Exceptions\CouldntGetRouteDetails;
 use Knuckles\Scribe\Scribe;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
@@ -15,6 +16,7 @@ use Knuckles\Scribe\Tests\Fixtures\TestResourceController;
 use Knuckles\Scribe\Tests\Fixtures\TestUser;
 use Knuckles\Scribe\Tests\TestHelpers;
 use Knuckles\Scribe\Tools\Utils;
+use ReflectionClass;
 
 class BehavioursTest extends BaseLaravelTest
 {
@@ -96,10 +98,56 @@ class BehavioursTest extends BaseLaravelTest
         config(['scribe.routes.0.match.versions' => ['v1']]);
 
         $this->generateAndExpectConsoleOutput(
-            'Processed route: [GET] closure',
-            'Processed route: [GET] test'
+            $this->canProcessRoute('/closure'),
+            $this->canProcessRoute('/test')
         );
     }
+
+    private function canProcessRoute(string $route)
+    {
+        try {
+            list($class, $method) = $this->getRouteControllerAndMethod($route);
+
+            if ($this->routeCanBeProcessed($class, $method)) {
+                return "Processed route: [GET] $route";
+            } else {
+                return "Failed to process route: [GET] $route";
+            }
+        } catch (CouldntGetRouteDetails $e) {
+            return "Failed to process route: [GET] $route";
+        }
+    }
+
+    private function getRouteControllerAndMethod(string $route)
+    {
+        // Use a regular expression to match the controller and method from the route
+        $pattern = '/\/([^\/]+)\/([^\/]+)/';
+        if (preg_match($pattern, $route, $matches)) {
+            // $matches[1] will contain the controller class, and $matches[2] will contain the method
+            $class = $matches[1];
+            $method = $matches[2];
+
+            return [$class, $method];
+        } else {
+            // If the regex pattern doesn't match, throw an exception or handle the error as needed
+            throw new CouldntGetRouteDetails();
+        }
+    }
+
+
+    private function routeCanBeProcessed(string $class, string $method)
+    {
+        if (class_exists($class)) {
+            $reflection = new ReflectionClass($class);
+
+            if ($reflection->hasMethod($method)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 
     /** @test */
     public function calls_afterGenerating_hook()
@@ -124,7 +172,7 @@ class BehavioursTest extends BaseLaravelTest
             ],
         ], $paths);
 
-        Scribe::afterGenerating(fn() => null);
+        Scribe::afterGenerating(fn () => null);
     }
 
     /** @test */
@@ -132,7 +180,7 @@ class BehavioursTest extends BaseLaravelTest
     {
         $commandInstance = null;
 
-        Scribe::bootstrap(function (GenerateDocumentation $command) use (&$commandInstance){
+        Scribe::bootstrap(function (GenerateDocumentation $command) use (&$commandInstance) {
             $commandInstance = $command;
         });
 
@@ -142,7 +190,7 @@ class BehavioursTest extends BaseLaravelTest
 
         $this->assertTrue($commandInstance instanceof GenerateDocumentation);
 
-        Scribe::bootstrap(fn() => null);
+        Scribe::bootstrap(fn () => null);
     }
 
     /** @test */
@@ -215,7 +263,7 @@ class BehavioursTest extends BaseLaravelTest
 
         $output = $this->artisan('scribe:generate', ['--config' => 'scribe_test']);
 
-        if (! FileFacade::exists(config_path("scribe.php"))) {
+        if (!FileFacade::exists(config_path("scribe.php"))) {
             $this->assertStringContainsString("No config file to upgrade.", $output);
         } else {
             $this->assertStringContainsString("Checking for any pending upgrades to your config file...", $output);

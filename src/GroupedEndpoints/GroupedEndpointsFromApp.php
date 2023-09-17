@@ -237,16 +237,18 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
 
     private function doesControllerMethodExist(array $routeControllerAndMethod): bool
     {
-        if (count($routeControllerAndMethod) < 2) {
+       if (count($routeControllerAndMethod) < 2) {
             throw CouldntGetRouteDetails::new();
         }
         [$class, $method] = $routeControllerAndMethod;
-        $reflection = new ReflectionClass($class);
 
-        if ($reflection->hasMethod($method)) {
-            return true;
+        if (class_exists($class)) {
+            $reflection = new ReflectionClass($class);
+
+            if ($reflection->hasMethod($method)) {
+                return true;
+            }
         }
-
         return false;
     }
 
