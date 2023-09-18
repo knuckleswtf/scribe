@@ -317,7 +317,8 @@ INTRO
          * By default, Scribe will sort groups alphabetically, and endpoints in the order their routes are defined.
          * You can override this by listing the groups, subgroups and endpoints here in the order you want them.
          *
-         * Any groups, subgroups or endpoints you don't list here will be added as usual after the ones here.
+         * Any groups, subgroups or endpoints you don't list here will be added as usual after the ones here unless you
+         * use the "*" character as this specifies the position of all unspecified groups
          * If an endpoint/subgroup is listed under a group it doesn't belong in, it will be ignored.
          * Note: you must include the initial '/' when writing an endpoint.
          */

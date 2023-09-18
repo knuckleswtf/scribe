@@ -121,7 +121,26 @@ class Camel
 
         // First, sort groups
         $groupsOrder = Utils::getTopLevelItemsFromMixedConfigList($configFileOrder);
-        $groupedEndpoints = collect($groupedEndpoints)->sortKeysUsing(self::getOrderListComparator($groupsOrder));
+        $groupsCollection = collect($groupedEndpoints);
+        $wildcardPosition = array_search('*', $groupsOrder);
+        if ($wildcardPosition !== false) {
+            $promotedGroups = array_splice($groupsOrder, 0, $wildcardPosition);
+            $demotedGroups = array_splice($groupsOrder, 1);
+
+            $promotedOrderedGroups = $groupsCollection->filter(fn ($group, $groupName) => in_array($groupName, $promotedGroups))
+                ->sortKeysUsing(self::getOrderListComparator($promotedGroups));
+            $demotedOrderedGroups = $groupsCollection->filter(fn ($group, $groupName) => in_array($groupName, $demotedGroups))
+                ->sortKeysUsing(self::getOrderListComparator($demotedGroups));
+
+            $nonWildcardGroups = array_merge($promotedGroups, $demotedGroups);
+            $wildCardOrderedGroups = $groupsCollection->filter(fn ($group, $groupName) => !in_array($groupName, $nonWildcardGroups))
+                ->sortKeysUsing(self::getOrderListComparator($demotedGroups));
+
+            $groupedEndpoints = $promotedOrderedGroups->merge($wildCardOrderedGroups)
+                ->merge($demotedOrderedGroups);
+        } else {
+            $groupedEndpoints = $groupsCollection->sortKeysUsing(self::getOrderListComparator($groupsOrder));
+        }
 
         return $groupedEndpoints->map(function (array $group, string $groupName) use ($configFileOrder) {
             $sortedEndpoints = collect($group['endpoints']);
