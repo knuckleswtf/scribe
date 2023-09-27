@@ -95,6 +95,7 @@ trait ParamHelpers
                 return $max ? $faker->numberBetween((int)$min, (int)$max) : $faker->randomFloat();
             },
             'boolean' => fn() => $faker->boolean(),
+            'uuid' => fn() => $faker->uuid(),
             'string' => fn() => $size ? $faker->lexify(str_repeat("?", $size)) : $faker->word(),
             'object' => fn() => [],
             'file' => fn() => UploadedFile::fake()->create('test.jpg')->size($size ?: 10),
