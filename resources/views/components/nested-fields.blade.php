@@ -67,7 +67,7 @@
                           'required' => $subfield['required'] ?? false,
                           'description' => $subfield['description'] ?? '',
                           'example' => $subfield['example'] ?? '',
-                          'enumValues' => $field['enumValues'] ?? null,
+                          'enumValues' => $subfield['enumValues'] ?? null,
                           'endpointId' => $endpointId,
                           'hasChildren' => false,
                           'component' => 'body',
