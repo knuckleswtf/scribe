@@ -150,11 +150,19 @@ class PostmanCollectionWriter
                 'url' => $this->generateUrlObject($endpoint),
                 'method' => $method,
                 'header' => $this->resolveHeadersForEndpoint($endpoint),
-                'body' => $bodyParameters,
                 'description' => $endpoint->metadata->description,
             ],
             'response' => $this->getResponses($endpoint),
         ];
+
+        // When method is GET and @queryParam block quote not found in function then query will be generate from request param.
+        if ($method == 'GET') {
+            if (empty($endpointItem['request']['url']['query']) && ! empty($bodyParameters) && ! empty($bodyParameters[$bodyParameters['mode']])) {
+                $endpointItem['request']['url']['query'] = $bodyParameters[$bodyParameters['mode']];
+            }
+        } else {
+            $endpointItem['request']['body'] = $bodyParameters;
+        }
 
 
         if ($endpoint->metadata->authenticated === false) {
