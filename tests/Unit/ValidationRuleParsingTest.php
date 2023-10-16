@@ -110,6 +110,17 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         $this->assertEquals('string[]', $results['array_of_objects_with_array[].another[].one.field1']['type']);
         $this->assertEquals('integer', $results['array_of_objects_with_array[].another[].one.field2']['type']);
         $this->assertEquals('number', $results['array_of_objects_with_array[].another[].two.field2']['type']);
+
+        $ruleset = [
+            '*.foo' => 'required|array',
+            '*.foo.*' => 'required|array',
+            '*.foo.*.bar' => 'required',
+        ];
+        $results = $this->strategy->parse($ruleset);
+        $this->assertCount(3, $results);
+        $this->assertEquals('object', $results['*']['type']);
+        $this->assertEquals('object[]', $results['*.foo']['type']);
+        $this->assertEquals('string', $results['*.foo[].bar']['type']);
     }
 
     public static function supportedRules()
