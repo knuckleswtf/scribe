@@ -69,7 +69,7 @@ trait InstantiatesExampleModels
     protected function getExampleModelFromFactoryCreate(string $type, array $factoryStates = [], array $relations = [])
     {
         $factory = Utils::getModelFactory($type, $factoryStates, $relations);
-        return $factory->create()->load($relations);
+        return $factory->create()->load($relations)->refresh();
     }
 
     /**
