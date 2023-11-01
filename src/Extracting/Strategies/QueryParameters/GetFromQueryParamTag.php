@@ -63,9 +63,9 @@ class GetFromQueryParamTag extends GetFieldsFromTagStrategy
 
         }
 
-        [$description, $example, $enumValues] =
+        [$description, $example, $enumValues, $exampleExist] =
             $this->getDescriptionAndExample($description, $type, $tagContent, $name);
 
-        return compact('name', 'description', 'required', 'example', 'type', 'enumValues');
+        return compact('name', 'description', 'required', 'example', 'type', 'enumValues', 'exampleExist');
     }
 }

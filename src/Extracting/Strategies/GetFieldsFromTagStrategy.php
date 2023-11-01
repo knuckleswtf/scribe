@@ -45,7 +45,7 @@ abstract class GetFieldsFromTagStrategy extends TagStrategyWithFormRequestFallba
             $example = $this->setExampleIfNeeded($example, $type, $tagContent, $fieldName, $enumValues);
         }
         
-        return [$description, $example, $enumValues];
+        return [$description, $example, $enumValues, $exampleExist];
     }
 
     protected function setExampleIfNeeded(

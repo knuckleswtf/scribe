@@ -33,9 +33,9 @@ class GetFromBodyParamTag extends GetFieldsFromTagStrategy
         }
 
         $type = static::normalizeTypeName($type);
-        [$description, $example, $enumValues] =
+        [$description, $example, $enumValues, $exampleExist] =
             $this->getDescriptionAndExample($description, $type, $tagContent, $name);
 
-        return compact('name', 'type', 'description', 'required', 'example', 'enumValues');
+        return compact('name', 'type', 'description', 'required', 'example', 'enumValues', 'exampleExist');
     }
 }
