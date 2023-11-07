@@ -7,6 +7,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Knuckles\Camel\Camel;
+use Knuckles\Scribe\Configuration\CacheConfiguration;
 use Knuckles\Scribe\GroupedEndpoints\GroupedEndpointsFactory;
 use Knuckles\Scribe\Matching\RouteMatcherInterface;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
@@ -24,6 +25,7 @@ class GenerateDocumentation extends Command
                             {--no-extraction : Skip extraction of route and API info and just transform the YAML and Markdown files into HTML}
                             {--no-upgrade-check : Skip checking for config file upgrades. Won't make things faster, but can be helpful if the command is buggy}
                             {--config=scribe : choose which config file to use}
+                            {--cache-directory= : choose which cache directory to use}
     ";
 
     protected $description = 'Generate API documentation from your Laravel/Dingo routes.';
@@ -34,7 +36,8 @@ class GenerateDocumentation extends Command
 
     protected bool $forcing;
 
-    protected string $configName;
+    /** @var CacheConfiguration  */
+    protected CacheConfiguration $configObject;
 
     public function handle(RouteMatcherInterface $routeMatcher, GroupedEndpointsFactory $groupedEndpointsFactory): void
     {
@@ -47,9 +50,9 @@ class GenerateDocumentation extends Command
         }
 
         // Extraction stage - extract endpoint info either from app or existing Camel files (previously extracted data)
-        $groupedEndpointsInstance = $groupedEndpointsFactory->make($this, $routeMatcher, $this->configName);
+        $groupedEndpointsInstance = $groupedEndpointsFactory->make($this, $routeMatcher, $this->configObject);
         $extractedEndpoints = $groupedEndpointsInstance->get();
-        $userDefinedEndpoints = Camel::loadUserDefinedEndpoints(Camel::camelDir($this->configName));
+        $userDefinedEndpoints = Camel::loadUserDefinedEndpoints(Camel::camelDir($this->configObject));
         $groupedEndpoints = $this->mergeUserDefinedEndpoints($extractedEndpoints, $userDefinedEndpoints);
 
         // Output stage
@@ -61,7 +64,7 @@ class GenerateDocumentation extends Command
             $this->writeExampleCustomEndpoint();
         }
 
-        $writer = new Writer($this->docConfig, $this->configName);
+        $writer = new Writer($this->docConfig, $this->configObject);
         $writer->writeDocs($groupedEndpoints);
 
         $this->upgradeConfigFileIfNeeded();
@@ -98,12 +101,17 @@ class GenerateDocumentation extends Command
 
         c::bootstrapOutput($this->output);
 
-        $this->configName = $this->option('config');
-        if (!config($this->configName)) {
-            throw new \InvalidArgumentException("The specified config (config/{$this->configName}.php) doesn't exist.");
+        $configName = $this->option('config');
+        if (!config($configName)) {
+            throw new \InvalidArgumentException("The specified config (config/{$configName}.php) doesn't exist.");
         }
 
-        $this->docConfig = new DocumentationConfig(config($this->configName));
+        $this->configObject = new CacheConfiguration($configName, $configName, true);
+        if ($this->hasOption('cache-directory') && !empty($this->option('cache-directory'))) {
+            $this->configObject = new CacheConfiguration($this->option('cache-directory'), $configName, false);
+        }
+
+        $this->docConfig = new DocumentationConfig(config($this->configObject->getScribeConfigFile()));
 
         // Force root URL so it works in Postman collection
         $baseUrl = $this->docConfig->get('base_url') ?? config('app.url');
@@ -146,7 +154,7 @@ class GenerateDocumentation extends Command
     protected function writeExampleCustomEndpoint(): void
     {
         // We add an example to guide users in case they need to add a custom endpoint.
-        copy(__DIR__ . '/../../resources/example_custom_endpoint.yaml', Camel::camelDir($this->configName) . '/custom.0.yaml');
+        copy(__DIR__ . '/../../resources/example_custom_endpoint.yaml', Camel::camelDir($this->configObject) . '/custom.0.yaml');
     }
 
     protected function upgradeConfigFileIfNeeded(): void
@@ -155,12 +163,12 @@ class GenerateDocumentation extends Command
 
         $this->info("Checking for any pending upgrades to your config file...");
         try {
-            if (! $this->laravel['files']->exists($this->laravel->configPath("{$this->configName}.php"))) {
+            if (! $this->laravel['files']->exists($this->laravel->configPath($this->configObject->getScribeConfigFile() . ".php"))) {
                 $this->info("No config file to upgrade.");
                 return;
             }
 
-            $upgrader = Upgrader::ofConfigFile("config/{$this->configName}.php", __DIR__ . '/../../config/scribe.php')
+            $upgrader = Upgrader::ofConfigFile("config/" . $this->configObject->getScribeConfigFile() . ".php", __DIR__ . '/../../config/scribe.php')
                 ->dontTouch(
                     'routes', 'example_languages', 'database_connections_to_transact', 'strategies', 'laravel.middleware',
                     'postman.overrides', 'openapi.overrides', 'groups', 'examples.models_source'

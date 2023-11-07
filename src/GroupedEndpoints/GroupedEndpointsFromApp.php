@@ -10,6 +10,7 @@ use Knuckles\Camel\Camel;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Camel\Output\OutputEndpointData;
 use Knuckles\Scribe\Commands\GenerateDocumentation;
+use Knuckles\Scribe\Configuration\CacheConfiguration;
 use Knuckles\Scribe\Exceptions\CouldntGetRouteDetails;
 use Knuckles\Scribe\Extracting\ApiDetails;
 use Knuckles\Scribe\Extracting\Extractor;
@@ -34,10 +35,11 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
     public static string $cacheDir;
 
     public function __construct(
-        private GenerateDocumentation $command, private RouteMatcherInterface $routeMatcher,
-        private bool $preserveUserChanges = true, protected string $docsName = 'scribe'
-    )
-    {
+        private GenerateDocumentation $command,
+        private RouteMatcherInterface $routeMatcher,
+        private bool $preserveUserChanges = true,
+        protected CacheConfiguration $docsName
+    ) {
         $this->docConfig = $command->getDocConfig();
 
         static::$camelDir = Camel::camelDir($this->docsName);

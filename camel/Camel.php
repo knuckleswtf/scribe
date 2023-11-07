@@ -6,20 +6,21 @@ namespace Knuckles\Camel;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Knuckles\Camel\Output\OutputEndpointData;
+use Knuckles\Scribe\Configuration\CacheConfiguration;
 use Knuckles\Scribe\Tools\Utils;
 use Symfony\Component\Yaml\Yaml;
 
 
 class Camel
 {
-    public static function cacheDir(string $docsName = 'scribe'): string
+    public static function cacheDir(CacheConfiguration $docsObject): string
     {
-        return ".$docsName/endpoints.cache";
+        return $docsObject . "/endpoints.cache";
     }
 
-    public static function camelDir(string $docsName = 'scribe'): string
+    public static function camelDir(CacheConfiguration $docsObject): string
     {
-        return ".$docsName/endpoints";
+        return $docsObject . "/endpoints";
     }
 
     /**

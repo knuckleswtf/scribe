@@ -140,38 +140,81 @@ class OutputTest extends BaseLaravelTest
     /** @test */
     public function supports_multi_docs_in_laravel_type_output()
     {
-        RouteFacade::post('/api/withQueryParameters', [TestController::class, 'withQueryParameters']);
-        config(['scribe_admin' => config('scribe')]);
-        $title = "The Real Admin API";
-        config(['scribe_admin.title' => $title]);
-        config(['scribe_admin.type' => 'laravel']);
-        config(['scribe_admin.postman.enabled' => true]);
-        config(['scribe_admin.openapi.enabled' => true]);
+        $this->supports_base_test(["--config" => "scribe_admin"], '.scribe_admin');
+    }
 
-        $output = $this->generate(["--config" => "scribe_admin"]);
+    /** @test */
+    public function supports_separate_hidden_cache_directory()
+    {
+        $this->supports_base_test([
+            "--config" => "scribe_admin",
+            "--cache-directory" => ".scribe_admin_dir"
+        ], '.scribe_admin_dir');
+    }
+
+    /** @test */
+    public function supports_separate_non_hidden_cache_directory()
+    {
+        $this->supports_base_test([
+            "--config" => "scribe_admin",
+            "--cache-directory" => "scribe_admin_dir"
+        ], 'scribe_admin_dir');
+    }
+
+    /** @test */
+    public function supports_unrelated_temp_directory()
+    {
+        $this->supports_base_test([
+            "--config" => "bananas_are_good",
+            "--cache-directory" => "5.5/Apple/26"
+        ], '5.5/Apple/26');
+    }
+
+    /**
+     * Base test for
+     * - supports_multi_docs_in_laravel_type_output
+     * - supports_separate_hidden_cache_directory
+     * - supports_separate_non_hidden_cache_directory
+     * - supports_unrelated_temp_directory
+     *
+     * @param $generate
+     * @param $assertDir
+     * @return void
+     */
+    private function supports_base_test($generate, $assertDir)
+    {
+        RouteFacade::post('/api/withQueryParameters', [TestController::class, 'withQueryParameters']);
+        config([$generate['--config'] => config('scribe')]);
+        $title = "The Real Admin API";
+        config([$generate['--config'] . '.title' => $title]);
+        config([$generate['--config'] . '.type' => 'laravel']);
+        config([$generate['--config'] . '.postman.enabled' => true]);
+        config([$generate['--config'] . '.openapi.enabled' => true]);
+
+        $output = $this->generate($generate);
         $this->assertStringContainsString(
-            "Wrote Blade docs to: vendor/orchestra/testbench-core/laravel/resources/views/scribe_admin", $output
+            "Wrote Blade docs to: vendor/orchestra/testbench-core/laravel/resources/views/" . $generate['--config'], $output
         );
         $this->assertStringContainsString(
-            "Wrote Laravel assets to: vendor/orchestra/testbench-core/laravel/public/vendor/scribe_admin", $output
+            "Wrote Laravel assets to: vendor/orchestra/testbench-core/laravel/public/vendor/" . $generate['--config'], $output
         );
         $this->assertStringContainsString(
-            "Wrote Postman collection to: vendor/orchestra/testbench-core/laravel/storage/app/scribe_admin/collection.json", $output
+            "Wrote Postman collection to: vendor/orchestra/testbench-core/laravel/storage/app/" . $generate['--config'] . "/collection.json", $output
         );
         $this->assertStringContainsString(
-            "Wrote OpenAPI specification to: vendor/orchestra/testbench-core/laravel/storage/app/scribe_admin/openapi.yaml", $output
+            "Wrote OpenAPI specification to: vendor/orchestra/testbench-core/laravel/storage/app/" . $generate['--config'] . "/openapi.yaml", $output
         );
 
         $paths = collect([
-            Storage::disk('local')->path('scribe_admin/collection.json'),
-            Storage::disk('local')->path('scribe_admin/openapi.yaml'),
-            View::getFinder()->find('scribe_admin/index'),
+            Storage::disk('local')->path( $generate['--config'] . '/collection.json'),
+            Storage::disk('local')->path($generate['--config'] . '/openapi.yaml'),
+            View::getFinder()->find($generate['--config'] . '/index'),
         ]);
         $paths->each(fn($path) => $this->assertFileContainsString($path, $title));
         $paths->each(fn($path) => unlink($path));
 
-        $this->assertDirectoryExists(".scribe_admin");
-        Utils::deleteDirectoryAndContents(".scribe_admin");
+        $this->assertDirectoryExists($assertDir);
+        Utils::deleteDirectoryAndContents($assertDir);
     }
 
     /** @test */

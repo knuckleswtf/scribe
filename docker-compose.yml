@@ -1,0 +1,11 @@
+# Allow devs to run the unit tests in a dockerized environment
+# clear && docker-compose up -d && docker logs -f scribe_app_1
+version: '3.7'
+services:
+    app:
+      build:
+        context: ./
+      volumes:
+        - ./:/testing
+      working_dir: /testing
+      command: make test

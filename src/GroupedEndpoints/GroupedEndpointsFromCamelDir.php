@@ -3,12 +3,13 @@
 namespace Knuckles\Scribe\GroupedEndpoints;
 
 use Knuckles\Camel\Camel;
+use Knuckles\Scribe\Configuration\CacheConfiguration;
 
 class GroupedEndpointsFromCamelDir implements GroupedEndpointsContract
 {
-    protected string $docsName;
+    protected CacheConfiguration $docsName;
 
-    public function __construct(string $docsName = 'scribe')
+    public function __construct(CacheConfiguration $docsName)
     {
         $this->docsName = $docsName;
     }

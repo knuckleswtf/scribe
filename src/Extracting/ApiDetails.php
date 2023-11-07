@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting;
 
+use Knuckles\Scribe\Configuration\CacheConfiguration;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\Utils as u;
 use Knuckles\Scribe\Tools\DocumentationConfig;
@@ -23,9 +24,9 @@ class ApiDetails
 
     private array $lastKnownFileContentHashes = [];
 
-    public function __construct(DocumentationConfig $config = null, bool $preserveUserChanges = true, string $docsName = 'scribe')
+    public function __construct(DocumentationConfig $config = null, bool $preserveUserChanges = true, CacheConfiguration $docsName)
     {
-        $this->markdownOutputPath = ".{$docsName}"; //.scribe by default
+        $this->markdownOutputPath = $docsName; //.scribe by default
         // If no config is injected, pull from global. Makes testing easier.
         $this->config = $config ?: new DocumentationConfig(config($docsName));
         $this->baseUrl = $this->config->get('base_url') ?? config('app.url');

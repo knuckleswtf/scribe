@@ -3,12 +3,16 @@
 namespace Knuckles\Scribe\GroupedEndpoints;
 
 use Knuckles\Scribe\Commands\GenerateDocumentation;
+use Knuckles\Scribe\Configuration\CacheConfiguration;
 use Knuckles\Scribe\Matching\RouteMatcherInterface;
 
 class GroupedEndpointsFactory
 {
-    public function make(GenerateDocumentation $command, RouteMatcherInterface $routeMatcher, string $docsName = 'scribe'): GroupedEndpointsContract
-    {
+    public function make(
+        GenerateDocumentation $command,
+        RouteMatcherInterface $routeMatcher,
+        CacheConfiguration $docsName
+    ): GroupedEndpointsContract {
         if ($command->isForcing()) {
             return static::fromApp($command, $routeMatcher, false, $docsName);
         }
@@ -24,12 +28,12 @@ class GroupedEndpointsFactory
         GenerateDocumentation $command,
         RouteMatcherInterface $routeMatcher,
         bool $preserveUserChanges,
-        string $docsName = 'scribe'
+        CacheConfiguration $docsName
     ): GroupedEndpointsFromApp {
         return new GroupedEndpointsFromApp($command, $routeMatcher, $preserveUserChanges, $docsName);
     }
 
-    public static function fromCamelDir(string $docsName = 'scribe'): GroupedEndpointsFromCamelDir
+    public static function fromCamelDir(CacheConfiguration $docsName): GroupedEndpointsFromCamelDir
     {
         return new GroupedEndpointsFromCamelDir($docsName);
     }
