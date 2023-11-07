@@ -3,34 +3,55 @@
 namespace Knuckles\Scribe\GroupedEndpoints;
 
 use Knuckles\Scribe\Commands\GenerateDocumentation;
+use Knuckles\Scribe\Configuration\PathConfig;
 use Knuckles\Scribe\Matching\RouteMatcherInterface;
 
 class GroupedEndpointsFactory
 {
-    public function make(GenerateDocumentation $command, RouteMatcherInterface $routeMatcher, string $docsName = 'scribe'): GroupedEndpointsContract
-    {
+    /**
+     * @param GenerateDocumentation $command
+     * @param RouteMatcherInterface $routeMatcher
+     * @param PathConfig $pathConfig
+     * @return GroupedEndpointsContract
+     */
+    public function make(
+        GenerateDocumentation $command,
+        RouteMatcherInterface $routeMatcher,
+        PathConfig $pathConfig
+    ): GroupedEndpointsContract {
         if ($command->isForcing()) {
-            return static::fromApp($command, $routeMatcher, false, $docsName);
+            return static::fromApp($command, $routeMatcher, false, $pathConfig);
         }
 
         if ($command->shouldExtract()) {
-            return static::fromApp($command, $routeMatcher, true, $docsName);
+            return static::fromApp($command, $routeMatcher, true, $pathConfig);
         }
 
-        return static::fromCamelDir($docsName);
+        return static::fromCamelDir($pathConfig);
     }
 
+    /**
+     * @param GenerateDocumentation $command
+     * @param RouteMatcherInterface $routeMatcher
+     * @param bool $preserveUserChanges
+     * @param PathConfig $pathConfig
+     * @return GroupedEndpointsFromApp
+     */
     public static function fromApp(
         GenerateDocumentation $command,
         RouteMatcherInterface $routeMatcher,
         bool $preserveUserChanges,
-        string $docsName = 'scribe'
+        PathConfig $pathConfig
     ): GroupedEndpointsFromApp {
-        return new GroupedEndpointsFromApp($command, $routeMatcher, $preserveUserChanges, $docsName);
+        return new GroupedEndpointsFromApp($command, $routeMatcher, $pathConfig, $preserveUserChanges);
     }
 
-    public static function fromCamelDir(string $docsName = 'scribe'): GroupedEndpointsFromCamelDir
+    /**
+     * @param PathConfig $pathConfig
+     * @return GroupedEndpointsFromCamelDir
+     */
+    public static function fromCamelDir(PathConfig $pathConfig): GroupedEndpointsFromCamelDir
     {
-        return new GroupedEndpointsFromCamelDir($docsName);
+        return new GroupedEndpointsFromCamelDir($pathConfig);
     }
 }

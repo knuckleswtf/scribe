@@ -3,25 +3,26 @@
 namespace Knuckles\Scribe\GroupedEndpoints;
 
 use Knuckles\Camel\Camel;
+use Knuckles\Scribe\Configuration\PathConfig;
 
 class GroupedEndpointsFromCamelDir implements GroupedEndpointsContract
 {
-    protected string $docsName;
+    protected PathConfig $pathConfig;
 
-    public function __construct(string $docsName = 'scribe')
+    public function __construct(PathConfig $pathConfig)
     {
-        $this->docsName = $docsName;
+        $this->pathConfig = $pathConfig;
     }
 
     public function get(): array
     {
-        if (!is_dir(Camel::camelDir($this->docsName))) {
+        if (!is_dir(Camel::camelDir($this->pathConfig))) {
             throw new \InvalidArgumentException(
-                "Can't use --no-extraction because there are no endpoints in the " . Camel::camelDir($this->docsName) . " directory."
+                "Can't use --no-extraction because there are no endpoints in the " . Camel::camelDir($this->pathConfig) . " directory."
             );
         }
 
-        return Camel::loadEndpointsIntoGroups(Camel::camelDir($this->docsName));
+        return Camel::loadEndpointsIntoGroups(Camel::camelDir($this->pathConfig));
     }
 
     public function hasEncounteredErrors(): bool

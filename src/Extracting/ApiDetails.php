@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting;
 
+use Knuckles\Scribe\Configuration\PathConfig;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\Utils as u;
 use Knuckles\Scribe\Tools\DocumentationConfig;
@@ -23,11 +24,19 @@ class ApiDetails
 
     private array $lastKnownFileContentHashes = [];
 
-    public function __construct(DocumentationConfig $config = null, bool $preserveUserChanges = true, string $docsName = 'scribe')
-    {
-        $this->markdownOutputPath = ".{$docsName}"; //.scribe by default
+    /**
+     * @param PathConfig $pathConfig
+     * @param DocumentationConfig|null $config
+     * @param bool $preserveUserChanges
+     */
+    public function __construct(
+        PathConfig          $pathConfig,
+        DocumentationConfig $config = null,
+        bool                $preserveUserChanges = true
+    ) {
+        $this->markdownOutputPath = $pathConfig->getTemporaryDirectoryPath(); //.scribe by default
         // If no config is injected, pull from global. Makes testing easier.
-        $this->config = $config ?: new DocumentationConfig(config($docsName));
+        $this->config = $config ?: new DocumentationConfig(config($pathConfig));
         $this->baseUrl = $this->config->get('base_url') ?? config('app.url');
         $this->preserveUserChanges = $preserveUserChanges;
 
