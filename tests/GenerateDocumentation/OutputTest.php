@@ -205,8 +205,8 @@ class OutputTest extends BaseLaravelTest
         $generatedCollection['info']['_postman_id'] = '';
         $fixtureCollection = json_decode(file_get_contents(__DIR__ . '/../Fixtures/collection.json'), true);
 
-        dump(array_diff($fixtureCollection, $generatedCollection));
         dump($fixtureCollection == $generatedCollection);
+        dump(array_diff($fixtureCollection, $generatedCollection));
         $this->assertEquals($fixtureCollection, $generatedCollection);
     }
 
