@@ -478,7 +478,7 @@ class OutputTest extends BaseLaravelTest
             'type' => 'integer',
             'enumValues' => [],
             'custom' => [],
-            'hasExample' => false,
+            'exampleWasSpecified' => false,
         ];
         $group['endpoints'][0]['urlParameters']['a_param'] = $extraParam;
         file_put_contents($firstGroupFilePath, Yaml::dump(

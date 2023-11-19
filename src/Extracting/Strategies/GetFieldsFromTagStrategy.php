@@ -37,15 +37,15 @@ abstract class GetFieldsFromTagStrategy extends TagStrategyWithFormRequestFallba
         string $description, string $type, string $tagContent, string $fieldName
     ): array
     {
-        [$description, $example, $enumValues, $hasExample] = $this->parseExampleFromParamDescription($description, $type);
+        [$description, $example, $enumValues, $exampleWasSpecified] = $this->parseExampleFromParamDescription($description, $type);
 
-        if($hasExample && $example === null) {
+        if($exampleWasSpecified && $example === null) {
             $example = null;
         } else {
             $example = $this->setExampleIfNeeded($example, $type, $tagContent, $fieldName, $enumValues);
         }
         
-        return [$description, $example, $enumValues, $hasExample];
+        return [$description, $example, $enumValues, $exampleWasSpecified];
     }
 
     protected function setExampleIfNeeded(
