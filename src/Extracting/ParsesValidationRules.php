@@ -145,9 +145,14 @@ trait ParsesValidationRules
         // Now this will return the complete ruleset.
         // Nested array parameters will be present, with '*' replaced by '0'
         $newRules = Validator::make($testData, $rules)->getRules();
-
-        // Transform the key names back from 'ids.0' to 'ids.*'
+       
         return collect($newRules)->mapWithKeys(function ($val, $paramName) use ($rules) {
+            // Transform the key names back from '__asterisk__' to '*'
+            if (Str::contains($paramName, '__asterisk__')) {
+                $paramName = str_replace('__asterisk__', '*', $paramName);
+            }
+
+            // Transform the key names back from 'ids.0' to 'ids.*'
             if (Str::contains($paramName, '.0')) {
                 $genericArrayKeyName = str_replace('.0', '.*', $paramName);
 
