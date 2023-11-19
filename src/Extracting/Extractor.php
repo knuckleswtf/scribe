@@ -238,9 +238,12 @@ class Extractor
          * @var Parameter $details
          */
         foreach ($parameters as $paramName => $details) {
-            // Remove params which have no examples and are optional.
-            if (is_null($details->example) && $details->required === false) {
-                continue;
+            
+            // Remove params which have no intentional examples and are optional.
+            if (!$details->exampleWasSpecified) {
+                if (is_null($details->example) && $details->required === false) {
+                    continue;
+                }
             }
 
             if ($details->type === 'file') {

@@ -236,14 +236,21 @@ trait ParamHelpers
      */
     protected function parseExampleFromParamDescription(string $description, string $type): array
     {
+        $exampleWasSpecified = false;
         $example = null;
         $enumValues = [];
 
         if (preg_match('/(.*)\bExample:\s*([\s\S]+)\s*/s', $description, $content)) {
+            $exampleWasSpecified = true;
             $description = trim($content[1]);
 
-            // Examples are parsed as strings by default, we need to cast them properly
-            $example = $this->castToType($content[2], $type);
+            if ($content[2] == 'null') {
+                // If we intentionally put null as example we return null as example
+                $example = null;
+            } else {
+                // Examples are parsed as strings by default, we need to cast them properly
+                $example = $this->castToType($content[2], $type);
+            }
         }
 
         if (preg_match('/(.*)\bEnum:\s*([\s\S]+)\s*/s', $description, $content)) {
@@ -255,6 +262,6 @@ trait ParamHelpers
             );
         }
 
-        return [$description, $example, $enumValues];
+        return [$description, $example, $enumValues, $exampleWasSpecified];
     }
 }

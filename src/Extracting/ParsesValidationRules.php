@@ -660,14 +660,14 @@ trait ParsesValidationRules
         foreach ($parameters as $name => $details) {
             if (Str::endsWith($name, '.*')) {
                 // The user might have set the example via bodyParameters()
-                $hasExample = $this->examplePresent($details);
+                $exampleWasSpecified = $this->examplePresent($details);
 
                 // Change cars.*.dogs.things.*.* with type X to cars.*.dogs.things with type X[][]
                 while (Str::endsWith($name, '.*')) {
                     $details['type'] .= '[]';
                     $name = substr($name, 0, -2);
 
-                    if ($hasExample) {
+                    if ($exampleWasSpecified) {
                         $details['example'] = [$details['example']];
                     } else if (isset($details['setter'])) {
                         $previousSetter = $details['setter'];
