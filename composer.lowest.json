@@ -16,7 +16,7 @@
         }
     ],
     "require": {
-        "php": ">=7.4",
+        "php": ">=8.0",
         "ext-fileinfo": "*",
         "ext-json": "*",
         "ext-pdo": "*",
@@ -49,9 +49,6 @@
         "phpunit/phpunit": "^9.0|^10.0",
         "symfony/css-selector": "^5.4|^6.0",
         "symfony/dom-crawler": "^5.4|^6.0"
-    },
-    "suggest": {
-        "league/fractal": "Required for transformers support"
     },
     "autoload": {
         "psr-4": {
