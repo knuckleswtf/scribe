@@ -127,6 +127,31 @@ class GetFromBodyParamTagTest extends TestCase
     }
 
     /** @test */
+    public function retains_null_as_example_if_specified()
+    {
+        $tags = [
+            new Tag('bodyParam', 'id int required The id to use. Leave null to autogenerate. Example: null'),
+            new Tag('bodyParam', 'key string A key. Example: null'),
+        ];
+        $results = $this->strategy->getFromTags($tags);
+
+        $this->assertArraySubset([
+            'id' => [
+                'type' => 'integer',
+                'required' => true,
+                'description' => 'The id to use. Leave null to autogenerate.',
+                'example' => null,
+            ],
+            'key' => [
+                'type' => 'string',
+                'required' => false,
+                'description' => 'A key.',
+                'example' => null,
+            ],
+        ], $results);
+    }
+
+    /** @test */
     public function can_fetch_from_bodyparam_tag_for_array_body()
     {
         $tags = [
