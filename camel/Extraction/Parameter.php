@@ -13,7 +13,7 @@ class Parameter extends BaseDTO
     public mixed $example = null;
     public string $type = 'string';
     public array $enumValues = [];
-    public bool $exampleExist = false;
+    public bool $hasExample = false;
 
     public function __construct(array $parameters = [])
     {

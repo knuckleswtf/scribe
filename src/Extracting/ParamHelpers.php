@@ -236,12 +236,12 @@ trait ParamHelpers
      */
     protected function parseExampleFromParamDescription(string $description, string $type): array
     {
-        $exampleExist = false;
+        $hasExample = false;
         $example = null;
         $enumValues = [];
 
         if (preg_match('/(.*)\bExample:\s*([\s\S]+)\s*/s', $description, $content)) {
-            $exampleExist = true;
+            $hasExample = true;
             $description = trim($content[1]);
 
             if ($content[2] == 'null') {
@@ -262,6 +262,6 @@ trait ParamHelpers
             );
         }
 
-        return [$description, $example, $enumValues, $exampleExist];
+        return [$description, $example, $enumValues, $hasExample];
     }
 }

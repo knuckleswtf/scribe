@@ -240,7 +240,7 @@ class Extractor
         foreach ($parameters as $paramName => $details) {
             
             // Remove params which have no intentional examples and are optional.
-            if (!$details->exampleExist) {
+            if (!$details->hasExample) {
                 if (is_null($details->example) && $details->required === false) {
                     continue;
                 }
