@@ -206,7 +206,6 @@ class OutputTest extends BaseLaravelTest
         $fixtureCollection = json_decode(file_get_contents(__DIR__ . '/../Fixtures/collection.json'), true);
 
         dump($fixtureCollection == $generatedCollection);
-        dump(array_diff($fixtureCollection, $generatedCollection));
         $this->assertEquals($fixtureCollection, $generatedCollection);
     }
 
