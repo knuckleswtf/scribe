@@ -12,6 +12,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.26.0 (21 November 2023)
+## Added
+- Support specifying Example: null in annotations ([#755](https://github.com/knuckleswtf/scribe/pull/755)
+- Include database-generated values in models created via factoryCreate ([#753](https://github.com/knuckleswtf/scribe/pull/753)
+
+## Fixed
+- Parsing of nested fields in validation rules ([#749](https://github.com/knuckleswtf/scribe/pull/749))
+- Enum values not displaying in nested objects ([#740](https://github.com/knuckleswtf/scribe/pull/740))
+- Enum values not getting written to HTML ([#759](https://github.com/knuckleswtf/scribe/pull/759))
+
+
 # 4.25.0 (30 September 2023)
 ## Added
 - Support wildcards in `groups.order` (top-level only) ([#723](https://github.com/knuckleswtf/scribe/pull/731))
