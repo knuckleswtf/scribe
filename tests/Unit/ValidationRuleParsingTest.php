@@ -541,7 +541,12 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         }
 
         $results = $this->strategy->parse([
-            'enum' => ['required', Rule::enum(Fixtures\TestStringBackedEnum::class)],
+            'enum' => [
+                'required',
+                new \Illuminate\Validation\Rules\Enum(Fixtures\TestStringBackedEnum::class),
+                // Not supported in Laravel 8
+                // Rule::enum(Fixtures\TestStringBackedEnum::class)
+            ],
         ]);
         $this->assertEquals('string', $results['enum']['type']);
         $this->assertEquals(
@@ -555,7 +560,12 @@ class ValidationRuleParsingTest extends BaseLaravelTest
 
 
         $results = $this->strategy->parse([
-            'enum' => ['required', Rule::enum(Fixtures\TestIntegerBackedEnum::class)],
+            'enum' => [
+                'required',
+                new \Illuminate\Validation\Rules\Enum(Fixtures\TestIntegerBackedEnum::class),
+                // Not supported in Laravel 8
+                // Rule::enum(Fixtures\TestIntegerBackedEnum::class)
+            ],
         ]);
         $this->assertEquals('integer', $results['enum']['type']);
         $this->assertEquals(
@@ -568,7 +578,12 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         ));
 
         $results = $this->strategy->parse([
-            'enum' => ['required', Rule::enum(Fixtures\TestStringBackedEnum::class)],
+            'enum' => [
+                'required',
+                new \Illuminate\Validation\Rules\Enum(Fixtures\TestStringBackedEnum::class),
+                // Not supported in Laravel 8
+                // Rule::enum(Fixtures\TestStringBackedEnum::class),
+            ],
         ], [
             'enum' => ['description' => 'A description'],
         ]);
