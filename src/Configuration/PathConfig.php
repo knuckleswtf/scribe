@@ -21,7 +21,7 @@ class PathConfig
      * @param string $scribeConfig
      * @param bool $isHidden
      */
-    public function __construct(string $cacheDir, string$scribeConfig, bool $isHidden = true)
+    public function __construct(string $cacheDir, string $scribeConfig, bool $isHidden = true)
     {
         $this->cacheDir = $cacheDir;
         $this->scribeConfig = $scribeConfig;
@@ -29,6 +29,10 @@ class PathConfig
     }
 
     /**
+     * Path to the scribe.php (default) or otherwise named configuration file.
+     *
+     * @param string|null $resolvePath
+     * @param string $separator
      * @return string
      */
     public function getScribeConfigurationPath(string $resolvePath = null, string $separator = '/'): string
@@ -36,21 +40,25 @@ class PathConfig
         if (is_null($resolvePath)) {
             return $this->scribeConfig;
         }
-        // Separate the path with a /
+        // Separate the path with a / (default) or an override via $separator
         return sprintf("%s%s%s", $this->scribeConfig, $separator, $resolvePath);
     }
 
     /**
+     * Get the path to the .scribe (default) or otherwise named temporary file path.
+     *
+     * @param string|null $resolvePath
+     * @param string $separator
      * @return string
      */
-    public function getTemporaryDirectoryPath(string $resolvePath = null): string
+    public function getTemporaryDirectoryPath(string $resolvePath = null, string $separator = '/'): string
     {
         $path = ($this->isHidden ? '.' : '') . $this->cacheDir;
         if (is_null($resolvePath)) {
             return $path;
         }
-        // Separate the path with a /
-        return sprintf("%s/%s", $path, $resolvePath);
+        // Separate the path with a / (default) or an override via $separator
+        return sprintf("%s%s%s", $path, $separator, $resolvePath);
 
     }
 }

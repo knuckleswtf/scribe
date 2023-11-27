@@ -15,12 +15,12 @@ class Camel
 {
     public static function cacheDir(PathConfig $pathConfiguration): string
     {
-        return $pathConfiguration->getTemporaryDirectoryPath() . "/endpoints.cache";
+        return $pathConfiguration->getTemporaryDirectoryPath('endpoints.cache');
     }
 
     public static function camelDir(PathConfig $pathConfiguration): string
     {
-        return $pathConfiguration->getTemporaryDirectoryPath() . "/endpoints";
+        return $pathConfiguration->getTemporaryDirectoryPath('endpoints');
     }
 
     /**
