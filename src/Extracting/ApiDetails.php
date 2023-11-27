@@ -36,7 +36,7 @@ class ApiDetails
     ) {
         $this->markdownOutputPath = $pathConfig->getTemporaryDirectoryPath(); //.scribe by default
         // If no config is injected, pull from global. Makes testing easier.
-        $this->config = $config ?: new DocumentationConfig(config($pathConfig));
+        $this->config = $config ?: new DocumentationConfig(config($pathConfig->getScribeConfigurationPath()));
         $this->baseUrl = $this->config->get('base_url') ?? config('app.url');
         $this->preserveUserChanges = $preserveUserChanges;
 
