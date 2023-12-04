@@ -145,7 +145,7 @@ trait ParsesValidationRules
         // Now this will return the complete ruleset.
         // Nested array parameters will be present, with '*' replaced by '0'
         $newRules = Validator::make($testData, $rules)->getRules();
-       
+
         return collect($newRules)->mapWithKeys(function ($val, $paramName) use ($rules) {
             // Transform the key names back from '__asterisk__' to '*'
             if (Str::contains($paramName, '__asterisk__')) {
@@ -206,6 +206,9 @@ trait ParsesValidationRules
             $type = $property->getValue($rule);
 
             if (enum_exists($type) && method_exists($type, 'tryFrom')) {
+                // $case->value only exists on BackedEnums, not UnitEnums
+                // method_exists($enum, 'tryFrom') implies $enum instanceof BackedEnum
+                // @phpstan-ignore-next-line
                 $cases = array_map(fn ($case) => $case->value, $type::cases());
                 $parameterData['type'] = gettype($cases[0]);
                 $parameterData['enumValues'] = $cases;
