@@ -38,11 +38,11 @@ class UseResponseAttributes extends PhpAttributeStrategy
         $responses = [];
         foreach ([...$attributesOnController, ...$attributesOnFormRequest, ...$attributesOnMethod] as $attributeInstance) {
             /* @phpstan-ignore-next-line */
-            $responses[] = match (get_class($attributeInstance)) {
-                Response::class => $attributeInstance->toArray(),
-                ResponseFromFile::class => $attributeInstance->toArray(),
-                ResponseFromApiResource::class => $this->getApiResourceResponse($attributeInstance),
-                ResponseFromTransformer::class => $this->getTransformerResponse($attributeInstance),
+            $responses[] = match (true) {
+                $attributeInstance instanceof Response => $attributeInstance->toArray(),
+                $attributeInstance instanceof ResponseFromFile => $attributeInstance->toArray(),
+                $attributeInstance instanceof ResponseFromApiResource => $this->getApiResourceResponse($attributeInstance),
+                $attributeInstance instanceof ResponseFromTransformer => $this->getTransformerResponse($attributeInstance),
             };
         }
 
