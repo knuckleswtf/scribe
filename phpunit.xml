@@ -41,6 +41,7 @@
             <file>tests/Unit/ExtractorTest.php</file>
             <file>tests/Unit/ExtractorPluginSystemTest.php</file>
             <file>tests/Unit/ConfigDifferTest.php</file>
+            <file>tests/Unit/PathConfigurationTest.php</file>
         </testsuite>
         <testsuite name="Unit Tests 2">
             <file>tests/Unit/ExtractedEndpointDataTest.php</file>

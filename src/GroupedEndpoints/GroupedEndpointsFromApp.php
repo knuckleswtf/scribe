@@ -10,6 +10,7 @@ use Knuckles\Camel\Camel;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Camel\Output\OutputEndpointData;
 use Knuckles\Scribe\Commands\GenerateDocumentation;
+use Knuckles\Scribe\Configuration\PathConfig;
 use Knuckles\Scribe\Exceptions\CouldntGetRouteDetails;
 use Knuckles\Scribe\Extracting\ApiDetails;
 use Knuckles\Scribe\Extracting\Extractor;
@@ -34,14 +35,15 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
     public static string $cacheDir;
 
     public function __construct(
-        private GenerateDocumentation $command, private RouteMatcherInterface $routeMatcher,
-        private bool $preserveUserChanges = true, protected string $docsName = 'scribe'
-    )
-    {
+        private GenerateDocumentation $command,
+        private RouteMatcherInterface $routeMatcher,
+        protected PathConfig $paths,
+        private bool $preserveUserChanges = true
+    ) {
         $this->docConfig = $command->getDocConfig();
 
-        static::$camelDir = Camel::camelDir($this->docsName);
-        static::$cacheDir = Camel::cacheDir($this->docsName);
+        static::$camelDir = Camel::camelDir($this->paths);
+        static::$cacheDir = Camel::cacheDir($this->paths);
     }
 
     public function get(): array
@@ -282,7 +284,7 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
 
     protected function makeApiDetails(): ApiDetails
     {
-        return new ApiDetails($this->docConfig, !$this->command->option('force'), $this->docsName);
+        return new ApiDetails($this->paths, $this->docConfig, !$this->command->option('force'));
     }
 
     /**

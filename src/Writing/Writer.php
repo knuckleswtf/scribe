@@ -3,6 +3,7 @@
 namespace Knuckles\Scribe\Writing;
 
 use Illuminate\Support\Facades\Storage;
+use Knuckles\Scribe\Configuration\PathConfig;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\Globals;
@@ -11,17 +12,7 @@ use Symfony\Component\Yaml\Yaml;
 
 class Writer
 {
-    /**
-     * The "name" of this docs instance. By default, it is "scribe".
-     * Used for multi-docs.
-     */
-    public string $docsName;
-
-    private DocumentationConfig $config;
-
     private bool $isStatic;
-
-    private string $markdownOutputPath;
 
     private ?string $staticTypeOutputPath;
 
@@ -40,21 +31,15 @@ class Writer
 
     private string $laravelAssetsPath;
 
-    public function __construct(DocumentationConfig $config = null, $docsName = 'scribe')
+    public function __construct(protected DocumentationConfig $config, public PathConfig $paths)
     {
-        $this->docsName = $docsName;
-
-        // If no config is injected, pull from global, for easier testing.
-        $this->config = $config ?: new DocumentationConfig(config($docsName));
-
         $this->isStatic = $this->config->get('type') === 'static';
-        $this->markdownOutputPath = ".{$docsName}"; //.scribe by default
         $this->laravelTypeOutputPath = $this->getLaravelTypeOutputPath();
         $this->staticTypeOutputPath = rtrim($this->config->get('static.output_path', 'public/docs'), '/');
 
         $this->laravelAssetsPath = $this->config->get('laravel.assets_directory')
             ? '/' . $this->config->get('laravel.assets_directory')
-            : "/vendor/$this->docsName";
+            : "/vendor/" . $this->paths->outputPath();
     }
 
     /**
@@ -86,8 +71,9 @@ class Writer
                 $collectionPath = "{$this->staticTypeOutputPath}/collection.json";
                 file_put_contents($collectionPath, $collection);
             } else {
-                Storage::disk('local')->put("{$this->docsName}/collection.json", $collection);
-                $collectionPath = Storage::disk('local')->path("$this->docsName/collection.json");
+                $outputPath = $this->paths->outputPath('collection.json');
+                Storage::disk('local')->put($outputPath, $collection);
+                $collectionPath = Storage::disk('local')->path($outputPath);
             }
 
             c::success("Wrote Postman collection to: {$this->makePathFriendly($collectionPath)}");
@@ -105,8 +91,9 @@ class Writer
                 $specPath = "{$this->staticTypeOutputPath}/openapi.yaml";
                 file_put_contents($specPath, $spec);
             } else {
-                Storage::disk('local')->put("{$this->docsName}/openapi.yaml", $spec);
-                $specPath = Storage::disk('local')->path("$this->docsName/openapi.yaml");
+                $outputPath = $this->paths->outputPath('openapi.yaml');
+                Storage::disk('local')->put($outputPath, $spec);
+                $specPath = Storage::disk('local')->path($outputPath);
             }
 
             c::success("Wrote OpenAPI specification to: {$this->makePathFriendly($specPath)}");
@@ -180,8 +167,8 @@ class Writer
         // Rewrite asset links to go through Laravel
         $contents = preg_replace('#href="\.\./docs/css/(.+?)"#', 'href="{{ asset("' . $this->laravelAssetsPath . '/css/$1") }}"', $contents);
         $contents = preg_replace('#src="\.\./docs/(js|images)/(.+?)"#', 'src="{{ asset("' . $this->laravelAssetsPath . '/$1/$2") }}"', $contents);
-        $contents = str_replace('href="../docs/collection.json"', 'href="{{ route("' . $this->docsName . '.postman") }}"', $contents);
-        $contents = str_replace('href="../docs/openapi.yaml"', 'href="{{ route("' . $this->docsName . '.openapi") }}"', $contents);
+        $contents = str_replace('href="../docs/collection.json"', 'href="{{ route("' . $this->paths->outputPath('postman', '.') . '") }}"', $contents);
+        $contents = str_replace('href="../docs/openapi.yaml"', 'href="{{ route("' . $this->paths->outputPath('openapi', '.') . '") }}"', $contents);
 
         file_put_contents("$this->laravelTypeOutputPath/index.blade.php", $contents);
     }
@@ -193,7 +180,7 @@ class Writer
         // Then we convert them to HTML, and throw in the endpoints as well.
         /** @var HtmlWriter $writer */
         $writer = app()->makeWith(HtmlWriter::class, ['config' => $this->config]);
-        $writer->generate($groupedEndpoints, $this->markdownOutputPath, $this->staticTypeOutputPath);
+        $writer->generate($groupedEndpoints, $this->paths->intermediateOutputPath(), $this->staticTypeOutputPath);
 
         if (!$this->isStatic) {
             $this->performFinalTasksForLaravelType();
@@ -228,7 +215,10 @@ class Writer
     {
         if ($this->isStatic) return null;
 
-        return config('view.paths.0', function_exists('base_path') ? base_path("resources/views") : "resources/views") . "/$this->docsName";
+        return config(
+            'view.paths.0',
+            function_exists('base_path') ? base_path("resources/views") : "resources/views"
+        ). "/" . $this->paths->outputPath();
     }
 
     /**

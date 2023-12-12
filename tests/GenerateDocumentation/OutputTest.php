@@ -140,38 +140,53 @@ class OutputTest extends BaseLaravelTest
     /** @test */
     public function supports_multi_docs_in_laravel_type_output()
     {
-        RouteFacade::post('/api/withQueryParameters', [TestController::class, 'withQueryParameters']);
-        config(['scribe_admin' => config('scribe')]);
-        $title = "The Real Admin API";
-        config(['scribe_admin.title' => $title]);
-        config(['scribe_admin.type' => 'laravel']);
-        config(['scribe_admin.postman.enabled' => true]);
-        config(['scribe_admin.openapi.enabled' => true]);
+        $this->generate_with_paths(configName: "scribe_admin");
+    }
 
-        $output = $this->generate(["--config" => "scribe_admin"]);
+    /** @test */
+    public function supports_custom_scribe_directory()
+    {
+        $this->generate_with_paths(configName: "scribe_admin", intermediateOutputDirectory: '5.5/Apple/26');
+    }
+
+    private function generate_with_paths($configName, $intermediateOutputDirectory = null)
+    {
+        RouteFacade::post('/api/withQueryParameters', [TestController::class, 'withQueryParameters']);
+        config([$configName => config('scribe')]);
+        $title = "The Real Admin API";
+        config(["{$configName}.title" => $title]);
+        config(["{$configName}.type" => 'laravel']);
+        config(["{$configName}.postman.enabled" => true]);
+        config(["{$configName}.openapi.enabled" => true]);
+
+        $pathOptions = ["--config" => $configName];
+        if ($intermediateOutputDirectory) {
+            $pathOptions["--scribe-dir"] = $intermediateOutputDirectory;
+        }
+        $output = $this->generate($pathOptions);
         $this->assertStringContainsString(
-            "Wrote Blade docs to: vendor/orchestra/testbench-core/laravel/resources/views/scribe_admin", $output
+            "Wrote Blade docs to: vendor/orchestra/testbench-core/laravel/resources/views/{$configName}", $output
         );
         $this->assertStringContainsString(
-            "Wrote Laravel assets to: vendor/orchestra/testbench-core/laravel/public/vendor/scribe_admin", $output
+            "Wrote Laravel assets to: vendor/orchestra/testbench-core/laravel/public/vendor/{$configName}", $output
         );
         $this->assertStringContainsString(
-            "Wrote Postman collection to: vendor/orchestra/testbench-core/laravel/storage/app/scribe_admin/collection.json", $output
+            "Wrote Postman collection to: vendor/orchestra/testbench-core/laravel/storage/app/{$configName}/collection.json", $output
         );
         $this->assertStringContainsString(
-            "Wrote OpenAPI specification to: vendor/orchestra/testbench-core/laravel/storage/app/scribe_admin/openapi.yaml", $output
+            "Wrote OpenAPI specification to: vendor/orchestra/testbench-core/laravel/storage/app/{$configName}/openapi.yaml", $output
         );
 
         $paths = collect([
-            Storage::disk('local')->path('scribe_admin/collection.json'),
-            Storage::disk('local')->path('scribe_admin/openapi.yaml'),
-            View::getFinder()->find('scribe_admin/index'),
+            Storage::disk('local')->path("{$configName}/collection.json"),
+            Storage::disk('local')->path("{$configName}/openapi.yaml"),
+            View::getFinder()->find("{$configName}/index"),
         ]);
         $paths->each(fn($path) => $this->assertFileContainsString($path, $title));
         $paths->each(fn($path) => unlink($path));
 
-        $this->assertDirectoryExists(".scribe_admin");
-        Utils::deleteDirectoryAndContents(".scribe_admin");
+        $this->assertDirectoryExists($intermediateOutputDirectory ?: ".{$configName}");
+        Utils::deleteDirectoryAndContents($intermediateOutputDirectory ?: ".{$configName}");
     }
 
     /** @test */

@@ -4,6 +4,7 @@ namespace Knuckles\Scribe\Commands;
 
 use Illuminate\Console\Command;
 use Knuckles\Camel\Camel;
+use Knuckles\Scribe\Configuration\PathConfig;
 use Knuckles\Scribe\GroupedEndpoints\GroupedEndpointsFactory;
 use Knuckles\Scribe\Scribe;
 use Shalvah\Upgrader\Upgrader;
@@ -102,7 +103,8 @@ class Upgrade extends Command
         $this->info("We'll automatically import your current sorting into the config item `groups.order`.");
 
         $defaultGroup = config($this->configName.".default_group");
-        $extractedEndpoints = GroupedEndpointsFactory::fromCamelDir($this->configName)->get();
+        $pathConfig = new PathConfig($this->configName);
+        $extractedEndpoints = GroupedEndpointsFactory::fromCamelDir($pathConfig)->get();
 
         $order = array_map(function (array $group) {
             return array_map(function (array $endpoint) {
@@ -112,7 +114,7 @@ class Upgrade extends Command
         $groupsOrder = array_keys($order);
         $keyIndices = array_flip($groupsOrder);
 
-        $userDefinedEndpoints = Camel::loadUserDefinedEndpoints(Camel::camelDir($this->configName));
+        $userDefinedEndpoints = Camel::loadUserDefinedEndpoints(Camel::camelDir($pathConfig));
 
         if ($userDefinedEndpoints) {
             foreach ($userDefinedEndpoints as $endpoint) {
