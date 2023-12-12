@@ -24,8 +24,8 @@ class GenerateDocumentation extends Command
                             {--force : Discard any changes you've made to the YAML or Markdown files}
                             {--no-extraction : Skip extraction of route and API info and just transform the YAML and Markdown files into HTML}
                             {--no-upgrade-check : Skip checking for config file upgrades. Won't make things faster, but can be helpful if the command is buggy}
-                            {--config=scribe : choose which config file to use}
-                            {--cache-dir= : choose which cache directory to use}
+                            {--config=scribe : Choose which config file to use}
+                            {--scribe-dir= : Specify the directory where Scribe stores its intermediate output and cache. Defaults to `.<config_file>`}
     ";
 
     protected $description = 'Generate API documentation from your Laravel/Dingo routes.';
@@ -106,9 +106,9 @@ class GenerateDocumentation extends Command
         }
 
         $this->paths = new PathConfig(configName: $configName);
-        if ($this->hasOption('cache-dir') && !empty($this->option('cache-dir'))) {
+        if ($this->hasOption('scribe-dir') && !empty($this->option('scribe-dir'))) {
             $this->paths = new PathConfig(
-                configName: $configName, cacheDir: $this->option('cache-dir')
+                configName: $configName, scribeDir: $this->option('scribe-dir')
             );
         }
 

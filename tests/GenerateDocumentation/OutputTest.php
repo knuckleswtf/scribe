@@ -140,81 +140,53 @@ class OutputTest extends BaseLaravelTest
     /** @test */
     public function supports_multi_docs_in_laravel_type_output()
     {
-        $this->supports_base_test(["--config" => "scribe_admin"], '.scribe_admin');
+        $this->generate_with_paths(configName: "scribe_admin");
     }
 
     /** @test */
-    public function supports_separate_hidden_cache_directory()
+    public function supports_custom_scribe_directory()
     {
-        $this->supports_base_test([
-            "--config" => "scribe_admin",
-            "--cache-dir" => ".scribe_admin_dir"
-        ], '.scribe_admin_dir');
+        $this->generate_with_paths(configName: "scribe_admin", intermediateOutputDirectory: '5.5/Apple/26');
     }
 
-    /** @test */
-    public function supports_separate_non_hidden_cache_directory()
-    {
-        $this->supports_base_test([
-            "--config" => "scribe_admin",
-            "--cache-dir" => "scribe_admin_dir"
-        ], 'scribe_admin_dir');
-    }
-
-    /** @test */
-    public function supports_unrelated_temp_directory()
-    {
-        $this->supports_base_test([
-            "--config" => "bananas_are_good",
-            "--cache-dir" => "5.5/Apple/26"
-        ], '5.5/Apple/26');
-    }
-
-    /**
-     * Base test for
-     * - supports_multi_docs_in_laravel_type_output
-     * - supports_separate_hidden_cache_directory
-     * - supports_separate_non_hidden_cache_directory
-     * - supports_unrelated_temp_directory
-     *
-     * @param $generate
-     * @param $assertDir
-     * @return void
-     */
-    private function supports_base_test($generate, $assertDir)
+    private function generate_with_paths($configName, $intermediateOutputDirectory = null)
     {
         RouteFacade::post('/api/withQueryParameters', [TestController::class, 'withQueryParameters']);
-        config([$generate['--config'] => config('scribe')]);
+        config([$configName => config('scribe')]);
         $title = "The Real Admin API";
-        config([$generate['--config'] . '.title' => $title]);
-        config([$generate['--config'] . '.type' => 'laravel']);
-        config([$generate['--config'] . '.postman.enabled' => true]);
-        config([$generate['--config'] . '.openapi.enabled' => true]);
+        config(["{$configName}.title" => $title]);
+        config(["{$configName}.type" => 'laravel']);
+        config(["{$configName}.postman.enabled" => true]);
+        config(["{$configName}.openapi.enabled" => true]);
 
-        $output = $this->generate($generate);
+        $pathOptions = ["--config" => $configName];
+        if ($intermediateOutputDirectory) {
+            $pathOptions["--scribe-dir"] = $intermediateOutputDirectory;
+        }
+        $output = $this->generate($pathOptions);
         $this->assertStringContainsString(
-            "Wrote Blade docs to: vendor/orchestra/testbench-core/laravel/resources/views/" . $generate['--config'], $output
+            "Wrote Blade docs to: vendor/orchestra/testbench-core/laravel/resources/views/{$configName}", $output
         );
         $this->assertStringContainsString(
-            "Wrote Laravel assets to: vendor/orchestra/testbench-core/laravel/public/vendor/" . $generate['--config'], $output
+            "Wrote Laravel assets to: vendor/orchestra/testbench-core/laravel/public/vendor/{$configName}", $output
         );
         $this->assertStringContainsString(
-            "Wrote Postman collection to: vendor/orchestra/testbench-core/laravel/storage/app/" . $generate['--config'] . "/collection.json", $output
+            "Wrote Postman collection to: vendor/orchestra/testbench-core/laravel/storage/app/{$configName}/collection.json", $output
         );
         $this->assertStringContainsString(
-            "Wrote OpenAPI specification to: vendor/orchestra/testbench-core/laravel/storage/app/" . $generate['--config'] . "/openapi.yaml", $output
+            "Wrote OpenAPI specification to: vendor/orchestra/testbench-core/laravel/storage/app/{$configName}/openapi.yaml", $output
         );
 
         $paths = collect([
-            Storage::disk('local')->path( $generate['--config'] . '/collection.json'),
-            Storage::disk('local')->path($generate['--config'] . '/openapi.yaml'),
-            View::getFinder()->find($generate['--config'] . '/index'),
+            Storage::disk('local')->path("{$configName}/collection.json"),
+            Storage::disk('local')->path("{$configName}/openapi.yaml"),
+            View::getFinder()->find("{$configName}/index"),
         ]);
         $paths->each(fn($path) => $this->assertFileContainsString($path, $title));
         $paths->each(fn($path) => unlink($path));
 
-        $this->assertDirectoryExists($assertDir);
-        Utils::deleteDirectoryAndContents($assertDir);
+        $this->assertDirectoryExists($intermediateOutputDirectory ?: ".{$configName}");
+        Utils::deleteDirectoryAndContents($intermediateOutputDirectory ?: ".{$configName}");
     }
 
     /** @test */

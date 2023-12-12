@@ -9,11 +9,13 @@ class PathConfig
 {
     public function __construct(
         public string     $configName = 'scribe',
-        protected ?string $cacheDir = null
+        // FOr lack of a better name, we'll call this `scribeDir`.
+        // It's sort of the cache dir, where Scribe stores its intermediate outputs.
+        protected ?string $scribeDir = null
     )
     {
-        if (is_null($this->cacheDir)) {
-            $this->cacheDir = ".{$this->configName}";
+        if (is_null($this->scribeDir)) {
+            $this->scribeDir = ".{$this->configName}";
         }
     }
 
@@ -37,9 +39,9 @@ class PathConfig
     public function intermediateOutputPath(string $resolvePath = null, string $separator = '/'): string
     {
         if (is_null($resolvePath)) {
-            return $this->cacheDir;
+            return $this->scribeDir;
         }
 
-        return "{$this->cacheDir}{$separator}{$resolvePath}";
+        return "{$this->scribeDir}{$separator}{$resolvePath}";
     }
 }

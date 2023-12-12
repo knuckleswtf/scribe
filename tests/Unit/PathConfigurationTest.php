@@ -30,7 +30,7 @@ class PathConfigurationTest extends TestCase
     /** @test */
     public function supports_custom_cache_path()
     {
-        $pathConfig = new PathConfig('scribe/bob', cacheDir: 'scribe_cache');
+        $pathConfig = new PathConfig('scribe/bob', scribeDir: 'scribe_cache');
         $this->assertEquals('scribe_cache', $pathConfig->intermediateOutputPath());
         $this->assertEquals('scribe_cache/tim', $pathConfig->intermediateOutputPath('tim'));
         $this->assertEquals('scribe/bob', $pathConfig->outputPath());
