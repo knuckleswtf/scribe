@@ -39,8 +39,13 @@ class GenericParam
             return $this->enum;
         }
 
-        if (function_exists('enum_exists') && enum_exists($this->enum)) {
+        if (function_exists('enum_exists') && enum_exists($this->enum)
+            && method_exists($this->enum, 'tryFrom')
+        ) {
             return array_map(
+            // $case->value only exists on BackedEnums, not UnitEnums
+            // method_exists($enum, 'tryFrom') implies $enum instanceof BackedEnum
+            // @phpstan-ignore-next-line
                 fn ($case) => $case->value,
                 $this->enum::cases()
             );

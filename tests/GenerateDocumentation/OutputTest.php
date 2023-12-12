@@ -248,6 +248,7 @@ class OutputTest extends BaseLaravelTest
         $generatedCollection['info']['_postman_id'] = '';
         $fixtureCollection = json_decode(file_get_contents(__DIR__ . '/../Fixtures/collection.json'), true);
 
+        dump($fixtureCollection == $generatedCollection);
         $this->assertEquals($fixtureCollection, $generatedCollection);
     }
 
@@ -521,6 +522,7 @@ class OutputTest extends BaseLaravelTest
             'type' => 'integer',
             'enumValues' => [],
             'custom' => [],
+            'exampleWasSpecified' => false,
         ];
         $group['endpoints'][0]['urlParameters']['a_param'] = $extraParam;
         file_put_contents($firstGroupFilePath, Yaml::dump(
