@@ -34,22 +34,16 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
     public static string $camelDir;
     public static string $cacheDir;
 
-    /**
-     * @param GenerateDocumentation $command
-     * @param RouteMatcherInterface $routeMatcher
-     * @param PathConfig $pathConfiguration
-     * @param bool $preserveUserChanges
-     */
     public function __construct(
         private GenerateDocumentation $command,
         private RouteMatcherInterface $routeMatcher,
-        protected PathConfig $pathConfiguration,
+        protected PathConfig $paths,
         private bool $preserveUserChanges = true
     ) {
         $this->docConfig = $command->getDocConfig();
 
-        static::$camelDir = Camel::camelDir($this->pathConfiguration);
-        static::$cacheDir = Camel::cacheDir($this->pathConfiguration);
+        static::$camelDir = Camel::camelDir($this->paths);
+        static::$cacheDir = Camel::cacheDir($this->paths);
     }
 
     public function get(): array
@@ -290,7 +284,7 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
 
     protected function makeApiDetails(): ApiDetails
     {
-        return new ApiDetails($this->pathConfiguration, $this->docConfig, !$this->command->option('force'));
+        return new ApiDetails($this->paths, $this->docConfig, !$this->command->option('force'));
     }
 
     /**

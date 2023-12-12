@@ -7,22 +7,20 @@ use Knuckles\Scribe\Configuration\PathConfig;
 
 class GroupedEndpointsFromCamelDir implements GroupedEndpointsContract
 {
-    protected PathConfig $pathConfig;
 
-    public function __construct(PathConfig $pathConfig)
+    public function __construct(protected PathConfig $paths)
     {
-        $this->pathConfig = $pathConfig;
     }
 
     public function get(): array
     {
-        if (!is_dir(Camel::camelDir($this->pathConfig))) {
+        if (!is_dir(Camel::camelDir($this->paths))) {
             throw new \InvalidArgumentException(
-                "Can't use --no-extraction because there are no endpoints in the " . Camel::camelDir($this->pathConfig) . " directory."
+                "Can't use --no-extraction because there are no endpoints in the " . Camel::camelDir($this->paths) . " directory."
             );
         }
 
-        return Camel::loadEndpointsIntoGroups(Camel::camelDir($this->pathConfig));
+        return Camel::loadEndpointsIntoGroups(Camel::camelDir($this->paths));
     }
 
     public function hasEncounteredErrors(): bool

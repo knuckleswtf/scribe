@@ -148,7 +148,7 @@ class OutputTest extends BaseLaravelTest
     {
         $this->supports_base_test([
             "--config" => "scribe_admin",
-            "--cache-directory" => ".scribe_admin_dir"
+            "--cache-dir" => ".scribe_admin_dir"
         ], '.scribe_admin_dir');
     }
 
@@ -157,7 +157,7 @@ class OutputTest extends BaseLaravelTest
     {
         $this->supports_base_test([
             "--config" => "scribe_admin",
-            "--cache-directory" => "scribe_admin_dir"
+            "--cache-dir" => "scribe_admin_dir"
         ], 'scribe_admin_dir');
     }
 
@@ -166,7 +166,7 @@ class OutputTest extends BaseLaravelTest
     {
         $this->supports_base_test([
             "--config" => "bananas_are_good",
-            "--cache-directory" => "5.5/Apple/26"
+            "--cache-dir" => "5.5/Apple/26"
         ], '5.5/Apple/26');
     }
 

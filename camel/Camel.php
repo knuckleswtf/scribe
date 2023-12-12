@@ -13,14 +13,14 @@ use Symfony\Component\Yaml\Yaml;
 
 class Camel
 {
-    public static function cacheDir(PathConfig $pathConfiguration): string
+    public static function cacheDir(PathConfig $paths): string
     {
-        return $pathConfiguration->getTemporaryDirectoryPath('endpoints.cache');
+        return $paths->intermediateOutputPath('endpoints.cache');
     }
 
-    public static function camelDir(PathConfig $pathConfiguration): string
+    public static function camelDir(PathConfig $paths): string
     {
-        return $pathConfiguration->getTemporaryDirectoryPath('endpoints');
+        return $paths->intermediateOutputPath('endpoints');
     }
 
     /**

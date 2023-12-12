@@ -24,19 +24,14 @@ class ApiDetails
 
     private array $lastKnownFileContentHashes = [];
 
-    /**
-     * @param PathConfig $pathConfig
-     * @param DocumentationConfig|null $config
-     * @param bool $preserveUserChanges
-     */
     public function __construct(
-        PathConfig          $pathConfig,
+        PathConfig          $paths,
         DocumentationConfig $config = null,
         bool                $preserveUserChanges = true
     ) {
-        $this->markdownOutputPath = $pathConfig->getTemporaryDirectoryPath(); //.scribe by default
+        $this->markdownOutputPath = $paths->intermediateOutputPath(); //.scribe by default
         // If no config is injected, pull from global. Makes testing easier.
-        $this->config = $config ?: new DocumentationConfig(config($pathConfig->getScribeConfigurationPath()));
+        $this->config = $config ?: new DocumentationConfig(config($paths->configName));
         $this->baseUrl = $this->config->get('base_url') ?? config('app.url');
         $this->preserveUserChanges = $preserveUserChanges;
 

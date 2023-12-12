@@ -8,50 +8,43 @@ use Knuckles\Scribe\Matching\RouteMatcherInterface;
 
 class GroupedEndpointsFactory
 {
-    /**
-     * @param GenerateDocumentation $command
-     * @param RouteMatcherInterface $routeMatcher
-     * @param PathConfig $pathConfig
-     * @return GroupedEndpointsContract
-     */
     public function make(
         GenerateDocumentation $command,
         RouteMatcherInterface $routeMatcher,
-        PathConfig $pathConfig
+        PathConfig $paths
     ): GroupedEndpointsContract {
         if ($command->isForcing()) {
-            return static::fromApp($command, $routeMatcher, false, $pathConfig);
+            return static::fromApp(
+                command: $command,
+                routeMatcher: $routeMatcher,
+                preserveUserChanges: false,
+                paths: $paths
+            );
         }
 
         if ($command->shouldExtract()) {
-            return static::fromApp($command, $routeMatcher, true, $pathConfig);
+            return static::fromApp(
+                command: $command,
+                routeMatcher: $routeMatcher,
+                preserveUserChanges: true,
+                paths: $paths
+            );
         }
 
-        return static::fromCamelDir($pathConfig);
+        return static::fromCamelDir($paths);
     }
 
-    /**
-     * @param GenerateDocumentation $command
-     * @param RouteMatcherInterface $routeMatcher
-     * @param bool $preserveUserChanges
-     * @param PathConfig $pathConfig
-     * @return GroupedEndpointsFromApp
-     */
     public static function fromApp(
         GenerateDocumentation $command,
         RouteMatcherInterface $routeMatcher,
         bool $preserveUserChanges,
-        PathConfig $pathConfig
+        PathConfig $paths
     ): GroupedEndpointsFromApp {
-        return new GroupedEndpointsFromApp($command, $routeMatcher, $pathConfig, $preserveUserChanges);
+        return new GroupedEndpointsFromApp($command, $routeMatcher, $paths, $preserveUserChanges);
     }
 
-    /**
-     * @param PathConfig $pathConfig
-     * @return GroupedEndpointsFromCamelDir
-     */
-    public static function fromCamelDir(PathConfig $pathConfig): GroupedEndpointsFromCamelDir
+    public static function fromCamelDir(PathConfig $paths): GroupedEndpointsFromCamelDir
     {
-        return new GroupedEndpointsFromCamelDir($pathConfig);
+        return new GroupedEndpointsFromCamelDir($paths);
     }
 }

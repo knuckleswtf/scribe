@@ -3,62 +3,43 @@
 namespace Knuckles\Scribe\Configuration;
 
 /**
- * A home for path configurations.
+ * A home for path configurations. The important paths Scribe depends on.
  */
 class PathConfig
 {
-    /** @var string */
-    private string $scribeConfig;
-
-    /** @var string */
-    private string $cacheDir;
-
-    /** @var bool */
-    private bool $isHidden;
-
-    /**
-     * @param string $cacheDir
-     * @param string $scribeConfig
-     * @param bool $isHidden
-     */
-    public function __construct(string $cacheDir, string $scribeConfig, bool $isHidden = true)
+    public function __construct(
+        public string     $configName = 'scribe',
+        protected ?string $cacheDir = null
+    )
     {
-        $this->cacheDir = $cacheDir;
-        $this->scribeConfig = $scribeConfig;
-        $this->isHidden = $isHidden;
+        if (is_null($this->cacheDir)) {
+            $this->cacheDir = ".{$this->configName}";
+        }
+    }
+
+    public function outputPath(string $resolvePath = null, string $separator = '/'): string
+    {
+        if (is_null($resolvePath)) {
+            return $this->configName;
+        }
+
+        return "{$this->configName}{$separator}{$resolvePath}";
+    }
+
+    public function configFileName(): string
+    {
+        return "{$this->configName}.php";
     }
 
     /**
-     * Path to the scribe.php (default) or otherwise named configuration file.
-     *
-     * @param string|null $resolvePath
-     * @param string $separator
-     * @return string
+     * The directory where Scribe writes its intermediate output (default is .<config> ie .scribe)
      */
-    public function getScribeConfigurationPath(string $resolvePath = null, string $separator = '/'): string
+    public function intermediateOutputPath(string $resolvePath = null, string $separator = '/'): string
     {
         if (is_null($resolvePath)) {
-            return $this->scribeConfig;
+            return $this->cacheDir;
         }
-        // Separate the path with a / (default) or an override via $separator
-        return sprintf("%s%s%s", $this->scribeConfig, $separator, $resolvePath);
-    }
 
-    /**
-     * Get the path to the .scribe (default) or otherwise named temporary file path.
-     *
-     * @param string|null $resolvePath
-     * @param string $separator
-     * @return string
-     */
-    public function getTemporaryDirectoryPath(string $resolvePath = null, string $separator = '/'): string
-    {
-        $path = ($this->isHidden ? '.' : '') . $this->cacheDir;
-        if (is_null($resolvePath)) {
-            return $path;
-        }
-        // Separate the path with a / (default) or an override via $separator
-        return sprintf("%s%s%s", $path, $separator, $resolvePath);
-
+        return "{$this->cacheDir}{$separator}{$resolvePath}";
     }
 }

@@ -25,7 +25,7 @@ class GenerateDocumentation extends Command
                             {--no-extraction : Skip extraction of route and API info and just transform the YAML and Markdown files into HTML}
                             {--no-upgrade-check : Skip checking for config file upgrades. Won't make things faster, but can be helpful if the command is buggy}
                             {--config=scribe : choose which config file to use}
-                            {--cache-directory= : choose which cache directory to use}
+                            {--cache-dir= : choose which cache directory to use}
     ";
 
     protected $description = 'Generate API documentation from your Laravel/Dingo routes.';
@@ -36,8 +36,7 @@ class GenerateDocumentation extends Command
 
     protected bool $forcing;
 
-    /** @var PathConfig  */
-    protected PathConfig $pathConfiguration;
+    protected PathConfig $paths;
 
     public function handle(RouteMatcherInterface $routeMatcher, GroupedEndpointsFactory $groupedEndpointsFactory): void
     {
@@ -50,9 +49,9 @@ class GenerateDocumentation extends Command
         }
 
         // Extraction stage - extract endpoint info either from app or existing Camel files (previously extracted data)
-        $groupedEndpointsInstance = $groupedEndpointsFactory->make($this, $routeMatcher, $this->pathConfiguration);
+        $groupedEndpointsInstance = $groupedEndpointsFactory->make($this, $routeMatcher, $this->paths);
         $extractedEndpoints = $groupedEndpointsInstance->get();
-        $userDefinedEndpoints = Camel::loadUserDefinedEndpoints(Camel::camelDir($this->pathConfiguration));
+        $userDefinedEndpoints = Camel::loadUserDefinedEndpoints(Camel::camelDir($this->paths));
         $groupedEndpoints = $this->mergeUserDefinedEndpoints($extractedEndpoints, $userDefinedEndpoints);
 
         // Output stage
@@ -64,7 +63,7 @@ class GenerateDocumentation extends Command
             $this->writeExampleCustomEndpoint();
         }
 
-        $writer = new Writer($this->docConfig, $this->pathConfiguration);
+        $writer = new Writer($this->docConfig, $this->paths);
         $writer->writeDocs($groupedEndpoints);
 
         $this->upgradeConfigFileIfNeeded();
@@ -106,12 +105,14 @@ class GenerateDocumentation extends Command
             throw new \InvalidArgumentException("The specified config (config/{$configName}.php) doesn't exist.");
         }
 
-        $this->pathConfiguration = new PathConfig($configName, $configName, true);
-        if ($this->hasOption('cache-directory') && !empty($this->option('cache-directory'))) {
-            $this->pathConfiguration = new PathConfig($this->option('cache-directory'), $configName, false);
+        $this->paths = new PathConfig(configName: $configName);
+        if ($this->hasOption('cache-dir') && !empty($this->option('cache-dir'))) {
+            $this->paths = new PathConfig(
+                configName: $configName, cacheDir: $this->option('cache-dir')
+            );
         }
 
-        $this->docConfig = new DocumentationConfig(config($this->pathConfiguration->getScribeConfigurationPath()));
+        $this->docConfig = new DocumentationConfig(config($this->paths->configName));
 
         // Force root URL so it works in Postman collection
         $baseUrl = $this->docConfig->get('base_url') ?? config('app.url');
@@ -154,7 +155,7 @@ class GenerateDocumentation extends Command
     protected function writeExampleCustomEndpoint(): void
     {
         // We add an example to guide users in case they need to add a custom endpoint.
-        copy(__DIR__ . '/../../resources/example_custom_endpoint.yaml', Camel::camelDir($this->pathConfiguration) . '/custom.0.yaml');
+        copy(__DIR__ . '/../../resources/example_custom_endpoint.yaml', Camel::camelDir($this->paths) . '/custom.0.yaml');
     }
 
     protected function upgradeConfigFileIfNeeded(): void
@@ -163,12 +164,18 @@ class GenerateDocumentation extends Command
 
         $this->info("Checking for any pending upgrades to your config file...");
         try {
-            if (! $this->laravel['files']->exists($this->laravel->configPath($this->pathConfiguration->getScribeConfigurationPath('php', '.')))) {
+            if (!$this->laravel['files']->exists(
+                $this->laravel->configPath($this->paths->configFileName())
+            )
+            ) {
                 $this->info("No config file to upgrade.");
                 return;
             }
 
-            $upgrader = Upgrader::ofConfigFile("config/" . $this->pathConfiguration->getScribeConfigurationPath('php', '.'), __DIR__ . '/../../config/scribe.php')
+            $upgrader = Upgrader::ofConfigFile(
+                userOldConfigRelativePath: "config/{$this->paths->configFileName()}",
+                sampleNewConfigAbsolutePath: __DIR__ . '/../../config/scribe.php'
+            )
                 ->dontTouch(
                     'routes', 'example_languages', 'database_connections_to_transact', 'strategies', 'laravel.middleware',
                     'postman.overrides', 'openapi.overrides', 'groups', 'examples.models_source'

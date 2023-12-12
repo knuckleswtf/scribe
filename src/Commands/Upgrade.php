@@ -103,7 +103,7 @@ class Upgrade extends Command
         $this->info("We'll automatically import your current sorting into the config item `groups.order`.");
 
         $defaultGroup = config($this->configName.".default_group");
-        $pathConfig = new PathConfig($this->configName, $this->configName, true);
+        $pathConfig = new PathConfig($this->configName);
         $extractedEndpoints = GroupedEndpointsFactory::fromCamelDir($pathConfig)->get();
 
         $order = array_map(function (array $group) {

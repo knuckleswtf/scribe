@@ -8,30 +8,32 @@ use PHPUnit\Framework\TestCase;
 class PathConfigurationTest extends TestCase
 {
     /** @test */
-    public function object_resolves_into_hidden_string()
+    public function resolves_default_cache_path()
     {
-        $pathConfig = new PathConfig('scribe', 'scribe', true);
-        $this->assertEquals('.scribe', $pathConfig->getTemporaryDirectoryPath());
+        $pathConfig = new PathConfig('scribe');
+        $this->assertEquals('.scribe', $pathConfig->intermediateOutputPath());
+        $this->assertEquals('.scribe/endpoints', $pathConfig->intermediateOutputPath('endpoints'));
+        $this->assertEquals('scribe', $pathConfig->outputPath());
+        $this->assertEquals('scribe/tim', $pathConfig->outputPath('tim'));
     }
 
     /** @test */
-    public function object_resolves_into_non_hidden_string()
+    public function resolves_cache_path_with_subdirectories()
     {
-        $pathConfig = new PathConfig('scribe', 'scribe', false);
-        $this->assertEquals('scribe', $pathConfig->getTemporaryDirectoryPath());
+        $pathConfig = new PathConfig('scribe/bob');
+        $this->assertEquals('.scribe/bob', $pathConfig->intermediateOutputPath());
+        $this->assertEquals('.scribe/bob/tim', $pathConfig->intermediateOutputPath('tim'));
+        $this->assertEquals('scribe/bob', $pathConfig->outputPath());
+        $this->assertEquals('scribe/bob/tim', $pathConfig->outputPath('tim'));
     }
 
     /** @test */
-    public function object_resolves_into_hidden_string_for_subdirs()
+    public function supports_custom_cache_path()
     {
-        $pathConfig = new PathConfig('scribe/bob', 'scribe', true);
-        $this->assertEquals('.scribe/bob', $pathConfig->getTemporaryDirectoryPath());
-    }
-
-    /** @test */
-    public function object_resolves_into_non_hidden_string_for_subdirs()
-    {
-        $pathConfig = new PathConfig('scribe/bob/dave', 'scribe', false);
-        $this->assertEquals('scribe/bob/dave', $pathConfig->getTemporaryDirectoryPath());
+        $pathConfig = new PathConfig('scribe/bob', cacheDir: 'scribe_cache');
+        $this->assertEquals('scribe_cache', $pathConfig->intermediateOutputPath());
+        $this->assertEquals('scribe_cache/tim', $pathConfig->intermediateOutputPath('tim'));
+        $this->assertEquals('scribe/bob', $pathConfig->outputPath());
+        $this->assertEquals('scribe/bob/tim', $pathConfig->outputPath('tim'));
     }
 }
