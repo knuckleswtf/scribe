@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.27.0 (21 December 2023)
+## Modified
+- Allow Symfony v7
+
 # 4.26.0 (21 November 2023)
 ## Added
 - Support specifying Example: null in annotations ([#755](https://github.com/knuckleswtf/scribe/pull/755)
