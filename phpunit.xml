@@ -26,35 +26,12 @@
         <server name="SCRIBE_TESTS" value="1" />
     </php>
     <testsuites>
-        <testsuite name="Full Test">
-            <file>tests/GenerateDocumentation/OutputTest.php</file>
-            <file>tests/GenerateDocumentation/BehavioursTest.php</file>
-        </testsuite>
-        <testsuite name="Strategies">
+        <testsuite name="Non-Unit Tests">
+            <directory>tests/GenerateDocumentation/OutputTest.php</directory>
             <directory>tests/Strategies</directory>
         </testsuite>
-        <testsuite name="RouteMatcher Tests">
-            <file>tests/Unit/RouteMatcherDingoTest.php</file>
-            <file>tests/Unit/RouteMatcherTest.php</file>
-        </testsuite>
-        <testsuite name="Unit Tests 1">
-            <file>tests/Unit/ExtractorTest.php</file>
-            <file>tests/Unit/ExtractorPluginSystemTest.php</file>
-            <file>tests/Unit/ConfigDifferTest.php</file>
-            <file>tests/Unit/PathConfigurationTest.php</file>
-        </testsuite>
-        <testsuite name="Unit Tests 2">
-            <file>tests/Unit/ExtractedEndpointDataTest.php</file>
-            <file>tests/Unit/AnnotationParserTest.php</file>
-        </testsuite>
-        <testsuite name="Unit Tests 3">
-            <file>tests/Unit/OpenAPISpecWriterTest.php</file>
-            <file>tests/Unit/PostmanCollectionWriterTest.php</file>
-        </testsuite>
-        <testsuite name="Unit Tests 4">
-            <file>tests/Unit/ValidationRuleParsingTest.php</file>
-            <file>tests/Unit/HtmlWriterTest.php</file>
-            <file>tests/Unit/WritingUtilsTest.php</file>
+        <testsuite name="Unit Tests">
+            <directory>tests/Unit</directory>
         </testsuite>
     </testsuites>
 </phpunit>

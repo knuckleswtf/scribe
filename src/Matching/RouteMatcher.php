@@ -6,6 +6,7 @@ use Dingo\Api\Routing\RouteCollection;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Route as RouteFacade;
 use Illuminate\Support\Str;
+use Knuckles\Scribe\Tools\RoutePatternMatcher;
 
 class RouteMatcher implements RouteMatcherInterface
 {
@@ -61,7 +62,7 @@ class RouteMatcher implements RouteMatcherInterface
 
     private function shouldIncludeRoute(Route $route, array $routeRule, array $mustIncludes, bool $usingDingoRouter): bool
     {
-        if (Str::is($mustIncludes, $route->getName()) || Str::is($mustIncludes, $route->uri())) {
+        if (RoutePatternMatcher::matches($route, $mustIncludes)) {
             return true;
         }
 
@@ -90,7 +91,6 @@ class RouteMatcher implements RouteMatcherInterface
             $excludes[] = 'telescope/*';
         }
 
-        return Str::is($excludes, $route->getName())
-            || Str::is($excludes, $route->uri());
+        return RoutePatternMatcher::matches($route, $excludes);
     }
 }

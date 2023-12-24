@@ -1,0 +1,47 @@
+<?php
+
+namespace Knuckles\Scribe\Tests\Unit;
+
+use Illuminate\Routing\Route;
+use Knuckles\Scribe\Tools\RoutePatternMatcher;
+use PHPUnit\Framework\TestCase;
+
+class RoutePatternMatcherTest extends TestCase
+{
+    /** @test */
+    public function matches_by_route_name()
+    {
+        $route = new Route(["POST"], "/abc", ['as' => 'users.show']);
+        $this->assertTrue(RoutePatternMatcher::matches($route, ['users.show']));
+        $this->assertTrue(RoutePatternMatcher::matches($route, ['users.*']));
+        $this->assertFalse(RoutePatternMatcher::matches($route, ['users.index']));
+    }
+
+    /** @test */
+    public function matches_by_route_method_and_path()
+    {
+        $route = new Route(["POST"], "/abc", ['as' => 'users.show']);
+        $this->assertTrue(RoutePatternMatcher::matches($route, ["POST /abc"]));
+        $this->assertTrue(RoutePatternMatcher::matches($route, ["POST abc"]));
+        $this->assertTrue(RoutePatternMatcher::matches($route, ["POST ab*"]));
+        $this->assertTrue(RoutePatternMatcher::matches($route, ["POST /ab*"]));
+        $this->assertTrue(RoutePatternMatcher::matches($route, ["POST *"]));
+
+        $this->assertFalse(RoutePatternMatcher::matches($route, ["GET /abc"]));
+        $this->assertFalse(RoutePatternMatcher::matches($route, ["GET abc"]));
+    }
+
+    /** @test */
+    public function matches_by_route_path()
+    {
+        $route = new Route(["POST"], "/abc", ['as' => 'users.show']);
+        $this->assertTrue(RoutePatternMatcher::matches($route, ["/abc"]));
+        $this->assertTrue(RoutePatternMatcher::matches($route, ["abc"]));
+        $this->assertTrue(RoutePatternMatcher::matches($route, ["ab*"]));
+        $this->assertTrue(RoutePatternMatcher::matches($route, ["/ab*"]));
+        $this->assertTrue(RoutePatternMatcher::matches($route, ["*"]));
+
+        $this->assertFalse(RoutePatternMatcher::matches($route, ["/d*"]));
+    }
+
+}
