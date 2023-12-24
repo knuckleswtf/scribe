@@ -203,13 +203,29 @@ class Extractor
     {
         $strategies = $this->config->get("strategies.$stage", []);
 
-        foreach ($strategies as $strategyClass) {
-            /** @var Strategy $strategy */
+        $overrides = [];
+        foreach ($strategies as $strategyClassOrTuple) {
+            if (is_array($strategyClassOrTuple)) {
+                $strategyClass = $strategyClassOrTuple[0];
+                if ($strategyClass == 'overrides') {
+                    $overrides = $strategyClassOrTuple[1];
+                    continue;
+                }
+                $settings = $strategyClassOrTuple[1];
+            } else {
+                $strategyClass = $strategyClassOrTuple;
+                $settings = $rulesToApply;
+            }
+
             $strategy = new $strategyClass($this->config);
-            $results = $strategy($endpointData, $rulesToApply);
+            $results = $strategy($endpointData, $settings);
             if (is_array($results)) {
                 $handler($results);
             }
+        }
+
+        if (!empty($overrides)) {
+            $handler($overrides);
         }
     }
 
@@ -238,7 +254,7 @@ class Extractor
          * @var Parameter $details
          */
         foreach ($parameters as $paramName => $details) {
-            
+
             // Remove params which have no intentional examples and are optional.
             if (!$details->exampleWasSpecified) {
                 if (is_null($details->example) && $details->required === false) {

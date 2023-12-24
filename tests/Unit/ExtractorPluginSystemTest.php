@@ -59,6 +59,56 @@ class ExtractorPluginSystemTest extends TestCase
     }
 
     /** @test */
+    public function supports_overrides()
+    {
+        $config = [
+            'strategies' => [
+                'headers' => [
+                    DummyHeaderStrategy::class,
+                    [
+                        'overrides',
+                        ['Content-Type' => 'application/xml'],
+                    ]
+                ],
+                'bodyParameters' => [],
+                'responses' => [], // Making this empty so the Laravel-dependent strategies are not called
+            ],
+        ];
+
+        $endpointData = $this->processRoute($config);
+
+        $this->assertEquals([
+            'Accept' => 'application/form-data',
+            'Content-Type' => 'application/xml',
+        ], $endpointData->headers);
+    }
+
+
+    /** @test */
+    public function supports_strategy_tuples()
+    {
+        $config = [
+            'strategies' => [
+                'headers' => [
+                    [
+                        DummyHeaderStrategy::class,
+                        ['use_this_content_type' => 'text/plain'],
+                    ]
+                ],
+                'bodyParameters' => [],
+                'responses' => [], // Making this empty so the Laravel-dependent strategies are not called
+            ],
+        ];
+
+        $endpointData = $this->processRoute($config);
+
+        $this->assertEquals([
+            'Accept' => 'application/form-data',
+            'Content-Type' => 'text/plain',
+        ], $endpointData->headers);
+    }
+
+    /** @test */
     public function responses_from_different_strategies_get_added()
     {
         $config = [
@@ -214,6 +264,17 @@ class EmptyStrategy2 extends Strategy
     {
         static::$called = true;
         return [];
+    }
+}
+
+class DummyHeaderStrategy extends Strategy
+{
+    public function __invoke(ExtractedEndpointData $endpointData, array $settings = []): ?array
+    {
+        return [
+            'Accept' => 'application/form-data',
+            'Content-Type' => $settings['use_this_content_type'] ?? 'application/form-data',
+        ];
     }
 }
 
