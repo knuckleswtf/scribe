@@ -2,7 +2,7 @@
 
 namespace Knuckles\Scribe\Tests\Unit;
 
-use Knuckles\Scribe\Configuration\PathConfig;
+use Knuckles\Scribe\Tools\PathConfig;
 use PHPUnit\Framework\TestCase;
 
 class PathConfigurationTest extends TestCase

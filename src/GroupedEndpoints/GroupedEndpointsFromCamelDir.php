@@ -3,7 +3,7 @@
 namespace Knuckles\Scribe\GroupedEndpoints;
 
 use Knuckles\Camel\Camel;
-use Knuckles\Scribe\Configuration\PathConfig;
+use Knuckles\Scribe\Tools\PathConfig;
 
 class GroupedEndpointsFromCamelDir implements GroupedEndpointsContract
 {

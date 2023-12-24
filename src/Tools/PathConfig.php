@@ -1,6 +1,6 @@
 <?php
 
-namespace Knuckles\Scribe\Configuration;
+namespace Knuckles\Scribe\Tools;
 
 /**
  * A home for path configurations. The important paths Scribe depends on.

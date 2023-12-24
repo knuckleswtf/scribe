@@ -6,7 +6,7 @@ namespace Knuckles\Camel;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Knuckles\Camel\Output\OutputEndpointData;
-use Knuckles\Scribe\Configuration\PathConfig;
+use Knuckles\Scribe\Tools\PathConfig;
 use Knuckles\Scribe\Tools\Utils;
 use Symfony\Component\Yaml\Yaml;
 

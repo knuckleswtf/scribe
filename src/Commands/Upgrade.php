@@ -4,9 +4,9 @@ namespace Knuckles\Scribe\Commands;
 
 use Illuminate\Console\Command;
 use Knuckles\Camel\Camel;
-use Knuckles\Scribe\Configuration\PathConfig;
 use Knuckles\Scribe\GroupedEndpoints\GroupedEndpointsFactory;
 use Knuckles\Scribe\Scribe;
+use Knuckles\Scribe\Tools\PathConfig;
 use Shalvah\Upgrader\Upgrader;
 use Symfony\Component\VarExporter\VarExporter;
 

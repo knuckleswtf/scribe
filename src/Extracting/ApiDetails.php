@@ -2,10 +2,10 @@
 
 namespace Knuckles\Scribe\Extracting;
 
-use Knuckles\Scribe\Configuration\PathConfig;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
-use Knuckles\Scribe\Tools\Utils as u;
 use Knuckles\Scribe\Tools\DocumentationConfig;
+use Knuckles\Scribe\Tools\PathConfig;
+use Knuckles\Scribe\Tools\Utils as u;
 
 /**
  * Handles extracting other API details — intro, auth

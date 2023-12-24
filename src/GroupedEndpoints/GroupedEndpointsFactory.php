@@ -3,8 +3,8 @@
 namespace Knuckles\Scribe\GroupedEndpoints;
 
 use Knuckles\Scribe\Commands\GenerateDocumentation;
-use Knuckles\Scribe\Configuration\PathConfig;
 use Knuckles\Scribe\Matching\RouteMatcherInterface;
+use Knuckles\Scribe\Tools\PathConfig;
 
 class GroupedEndpointsFactory
 {
