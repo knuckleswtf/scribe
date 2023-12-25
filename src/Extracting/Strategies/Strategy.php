@@ -53,7 +53,8 @@ abstract class Strategy
 
         return [
             static::class,
-            ['only' => $only, 'except' => $except, ...$otherSettings],
+            // This would be ...$otherSettings, but it's PHP 8.1+
+            array_merge(['only' => $only, 'except' => $except], $otherSettings),
         ];
     }
 }
