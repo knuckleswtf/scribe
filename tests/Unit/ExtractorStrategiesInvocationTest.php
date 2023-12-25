@@ -33,7 +33,6 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
                 'bodyParameters' => [
                     EmptyStrategy1::class,
                 ],
-                'responses' => [], // Making this empty so the Laravel-dependent strategies are not called
             ],
         ];
         $this->processRoute($config);
@@ -56,7 +55,6 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
                     ]
                 ],
                 'bodyParameters' => [],
-                'responses' => [], // Making this empty so the Laravel-dependent strategies are not called
             ],
         ];
 
@@ -81,7 +79,6 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
                     ]
                 ],
                 'bodyParameters' => [],
-                'responses' => [], // Making this empty so the Laravel-dependent strategies are not called
             ],
         ];
 
@@ -101,7 +98,6 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
                 'bodyParameters' => [
                     [EmptyStrategy1::class, ['only' => 'GET /test']]
                 ],
-                'responses' => [],
             ],
         ];
         $this->processRoute($config);
@@ -121,7 +117,6 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
                 'bodyParameters' => [
                     [EmptyStrategy1::class, ['except' => 'GET /api*']]
                 ],
-                'responses' => [],
             ],
         ];
         $this->processRoute($config);
@@ -171,8 +166,6 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
         $config = [
             'strategies' => [
                 'metadata' => [PartialDummyMetadataStrategy1::class, PartialDummyMetadataStrategy2::class],
-                'bodyParameters' => [],
-                'responses' => [],
             ],
         ];
         $parsed = $this->processRoute($config);
@@ -193,8 +186,6 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
         $config = [
             'strategies' => [
                 'metadata' => [PartialDummyMetadataStrategy2::class],
-                'bodyParameters' => [],
-                'responses' => [],
             ],
         ];
         $parsed = $this->processRoute($config);

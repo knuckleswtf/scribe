@@ -42,7 +42,7 @@ abstract class Strategy
     public static function wrapWithSettings(
         array $only = ['*'],
         array $except = [],
-        ...$settings
+        ...$otherSettings
     ): array
     {
         if (!empty($only) && !empty($except)) {
@@ -53,7 +53,7 @@ abstract class Strategy
 
         return [
             static::class,
-            $settings,
+            ['only' => $only, 'except' => $except, ...$otherSettings],
         ];
     }
 }

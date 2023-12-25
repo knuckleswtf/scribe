@@ -45,4 +45,13 @@ class RoutePatternMatcherTest extends BaseUnitTest
         $this->assertFalse(RoutePatternMatcher::matches($route, ["d*"]));
     }
 
+    /** @test */
+    public function matches_route_with_multiple_methods()
+    {
+        $route = new Route(["GET", "HEAD"], "/abc", ['as' => 'users.show']);
+        $this->assertTrue(RoutePatternMatcher::matches($route, ["HEAD /abc"]));
+        $this->assertTrue(RoutePatternMatcher::matches($route, ["GET abc"]));
+        $this->assertFalse(RoutePatternMatcher::matches($route, ["POST abc"]));
+    }
+
 }

@@ -208,12 +208,11 @@ class Extractor
         $overrides = [];
         foreach ($strategies as $strategyClassOrTuple) {
             if (is_array($strategyClassOrTuple)) {
-                $strategyClass = $strategyClassOrTuple[0];
+                [$strategyClass, $settings] = $strategyClassOrTuple;
                 if ($strategyClass == 'overrides') {
-                    $overrides = $strategyClassOrTuple[1];
+                    $overrides = $settings;
                     continue;
                 }
-                $settings = $strategyClassOrTuple[1];
 
                 $routesToSkip = $settings['except'] ?? [];
                 $routesToInclude = $settings['only'] ?? [];
