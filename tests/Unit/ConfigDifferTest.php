@@ -2,10 +2,10 @@
 
 namespace Knuckles\Scribe\Tests\Unit;
 
+use Knuckles\Scribe\Tests\BaseUnitTest;
 use Knuckles\Scribe\Tools\ConfigDiffer;
-use PHPUnit\Framework\TestCase;
 
-class ConfigDifferTest extends TestCase
+class ConfigDifferTest extends BaseUnitTest
 {
     /** @test */
     public function returns_empty_when_there_are_no_changes()

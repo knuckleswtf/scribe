@@ -2,22 +2,19 @@
 
 namespace Knuckles\Scribe\Tests\Unit;
 
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Faker\Factory;
 use Illuminate\Support\Arr;
 use Knuckles\Camel\Camel;
 use Knuckles\Camel\Output\OutputEndpointData;
+use Knuckles\Scribe\Tests\BaseUnitTest;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Writing\OpenAPISpecWriter;
-use PHPUnit\Framework\TestCase;
 
 /**
  * See https://swagger.io/specification/
  */
-class OpenAPISpecWriterTest extends TestCase
+class OpenAPISpecWriterTest extends BaseUnitTest
 {
-    use ArraySubsetAsserts;
-
     protected $config = [
         'title' => 'My Testy Testes API',
         'description' => 'All about testy testes.',

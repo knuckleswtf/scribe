@@ -2,10 +2,10 @@
 
 namespace Knuckles\Scribe\Tests\Unit;
 
+use Knuckles\Scribe\Tests\BaseUnitTest;
 use Knuckles\Scribe\Tools\AnnotationParser;
-use PHPUnit\Framework\TestCase;
 
-class AnnotationParserTest extends TestCase
+class AnnotationParserTest extends BaseUnitTest
 {
     /**
      * @test

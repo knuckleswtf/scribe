@@ -2,10 +2,10 @@
 
 namespace Knuckles\Scribe\Tests\Unit;
 
+use Knuckles\Scribe\Tests\BaseUnitTest;
 use Knuckles\Scribe\Tools\PathConfig;
-use PHPUnit\Framework\TestCase;
 
-class PathConfigurationTest extends TestCase
+class PathConfigurationTest extends BaseUnitTest
 {
     /** @test */
     public function resolves_default_cache_path()

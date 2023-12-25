@@ -3,10 +3,10 @@
 namespace Knuckles\Scribe\Tests\Unit;
 
 use Illuminate\Routing\Route;
+use Knuckles\Scribe\Tests\BaseUnitTest;
 use Knuckles\Scribe\Tools\RoutePatternMatcher;
-use PHPUnit\Framework\TestCase;
 
-class RoutePatternMatcherTest extends TestCase
+class RoutePatternMatcherTest extends BaseUnitTest
 {
     /** @test */
     public function matches_by_route_name()
@@ -42,6 +42,7 @@ class RoutePatternMatcherTest extends TestCase
         $this->assertTrue(RoutePatternMatcher::matches($route, ["*"]));
 
         $this->assertFalse(RoutePatternMatcher::matches($route, ["/d*"]));
+        $this->assertFalse(RoutePatternMatcher::matches($route, ["d*"]));
     }
 
 }

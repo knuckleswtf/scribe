@@ -2,18 +2,15 @@
 
 namespace Knuckles\Scribe\Tests\Unit;
 
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Knuckles\Camel\Output\OutputEndpointData;
 use Knuckles\Camel\Output\Parameter;
 use Knuckles\Scribe\Extracting\Extractor;
+use Knuckles\Scribe\Tests\BaseUnitTest;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Writing\PostmanCollectionWriter;
-use PHPUnit\Framework\TestCase;
 
-class PostmanCollectionWriterTest extends TestCase
+class PostmanCollectionWriterTest extends BaseUnitTest
 {
-    use ArraySubsetAsserts;
-
     /** @test */
     public function correct_structure_is_followed()
     {

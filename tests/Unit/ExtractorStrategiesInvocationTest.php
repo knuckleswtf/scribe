@@ -2,33 +2,18 @@
 
 namespace Knuckles\Scribe\Tests\Unit;
 
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Illuminate\Routing\Route;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Extracting\Extractor;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\ScribeServiceProvider;
+use Knuckles\Scribe\Tests\BaseUnitTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
-use PHPUnit\Framework\TestCase;
 
-class ExtractorPluginSystemTest extends TestCase
+class ExtractorStrategiesInvocationTest extends BaseUnitTest
 {
-    use ArraySubsetAsserts;
-
-    /** @var \Knuckles\Scribe\Extracting\Extractor|null */
-    protected $generator;
-
-    protected function getPackageProviders($app)
-    {
-        $providers = [
-            ScribeServiceProvider::class,
-        ];
-        if (class_exists(\Dingo\Api\Provider\LaravelServiceProvider::class)) {
-            $providers[] = \Dingo\Api\Provider\LaravelServiceProvider::class;
-        }
-        return $providers;
-    }
+    protected ?Extractor $generator;
 
     protected function tearDown(): void
     {

@@ -2,12 +2,14 @@
 
 namespace Knuckles\Scribe\Tests;
 
+use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Knuckles\Scribe\ScribeServiceProvider;
 use Orchestra\Testbench\TestCase;
 
 class BaseLaravelTest extends TestCase
 {
     use TestHelpers;
+    use ArraySubsetAsserts;
 
     protected function getEnvironmentSetUp($app)
     {
@@ -40,5 +42,13 @@ class BaseLaravelTest extends TestCase
             $providers[] = \Dingo\Api\Provider\LaravelServiceProvider::class;
         }
         return $providers;
+    }
+
+    protected function setConfig($configValues): void
+    {
+        foreach ($configValues as $key => $value) {
+            config(["scribe.$key" => $value]);
+            config(["scribe_new.$key" => $value]);
+        }
     }
 }
