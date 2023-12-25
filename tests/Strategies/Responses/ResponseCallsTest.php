@@ -13,14 +13,11 @@ use Knuckles\Scribe\Scribe;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Illuminate\Support\Facades\Route as LaravelRouteFacade;
 use Symfony\Component\HttpFoundation\Request;
 
 class ResponseCallsTest extends BaseLaravelTest
 {
-    use ArraySubsetAsserts;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -33,17 +30,13 @@ class ResponseCallsTest extends BaseLaravelTest
         $route = LaravelRouteFacade::post('/shouldFetchRouteResponse', [TestController::class, 'shouldFetchRouteResponse']);
 
         $rules = [
-            'headers' => [
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
-            ],
             'response_calls' => [
                 'methods' => ['*'],
             ],
         ];
 
         $strategy = new ResponseCalls(new DocumentationConfig([]));
-        $results = $strategy(ExtractedEndpointData::fromRoute($route), $rules);
+        $results = $strategy(ExtractedEndpointData::fromRoute($route), $this->convertRules($rules));
 
         $this->assertEquals(200, $results[0]['status']);
         $this->assertArraySubset([
@@ -99,7 +92,8 @@ class ResponseCallsTest extends BaseLaravelTest
         ]);
 
         $strategy = new ResponseCalls(new DocumentationConfig([]));
-        $results = $strategy($endpointData, $rules);
+        $results = $strategy($endpointData,
+            $this->convertRules($rules));
 
         $this->assertEquals(200, $results[0]['status']);
 
@@ -122,7 +116,7 @@ class ResponseCallsTest extends BaseLaravelTest
         ];
 
         $strategy = new ResponseCalls(new DocumentationConfig([]));
-        $results = $strategy(ExtractedEndpointData::fromRoute($route), $rules);
+        $results = $strategy(ExtractedEndpointData::fromRoute($route), $this->convertRules($rules));
         $originalValue = json_decode($results[0]['content'], true)['app.env'];
 
         $now = time();
@@ -135,7 +129,7 @@ class ResponseCallsTest extends BaseLaravelTest
             ],
         ];
 
-        $results = $strategy(ExtractedEndpointData::fromRoute($route), $rules);
+        $results = $strategy(ExtractedEndpointData::fromRoute($route), $this->convertRules($rules));
         $newValue = json_decode($results[0]['content'], true)['app.env'];
         $this->assertEquals($now, $newValue);
         $this->assertNotEquals($originalValue, $newValue);
@@ -175,7 +169,7 @@ class ResponseCallsTest extends BaseLaravelTest
         ]);
 
         $strategy = new ResponseCalls(new DocumentationConfig([]));
-        $results = $strategy($endpointData, $rules);
+        $results = $strategy($endpointData, $this->convertRules($rules));
 
         $this->assertEquals(200, $results[0]['status']);
 
@@ -197,17 +191,13 @@ class ResponseCallsTest extends BaseLaravelTest
         $route = $this->registerDingoRoute('post', '/shouldFetchRouteResponse', 'shouldFetchRouteResponse');
 
         $rules = [
-            'headers' => [
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
-            ],
             'response_calls' => [
                 'methods' => ['*'],
             ],
         ];
 
         $strategy = new ResponseCalls(new DocumentationConfig());
-        $results = $strategy(ExtractedEndpointData::fromRoute($route), $rules);
+        $results = $strategy(ExtractedEndpointData::fromRoute($route), $this->convertRules($rules));
 
         $this->assertEquals(200, $results[0]['status']);
         $this->assertArraySubset([
@@ -247,7 +237,7 @@ class ResponseCallsTest extends BaseLaravelTest
             ],
         ]);
         $strategy = new ResponseCalls(new DocumentationConfig());
-        $results = $strategy($endpointData, $rules);
+        $results = $strategy($endpointData, $this->convertRules($rules));
 
         $this->assertEquals(200, $results[0]['status']);
 
@@ -272,7 +262,7 @@ class ResponseCallsTest extends BaseLaravelTest
         ];
 
         $strategy = new ResponseCalls(new DocumentationConfig());
-        $results = $strategy(ExtractedEndpointData::fromRoute($route), $rules);
+        $results = $strategy(ExtractedEndpointData::fromRoute($route), $this->convertRules($rules));
         $originalValue = json_decode($results[0]['content'], true)['app.env'];
 
         $now = time();
@@ -285,7 +275,7 @@ class ResponseCallsTest extends BaseLaravelTest
             ],
         ];
 
-        $results = $strategy(ExtractedEndpointData::fromRoute($route), $rules);
+        $results = $strategy(ExtractedEndpointData::fromRoute($route), $this->convertRules($rules));
         $newValue = json_decode($results[0]['content'], true)['app.env'];
         $this->assertEquals($now, $newValue);
         $this->assertNotEquals($originalValue, $newValue);
@@ -297,10 +287,6 @@ class ResponseCallsTest extends BaseLaravelTest
         $route = LaravelRouteFacade::post('/shouldFetchRouteResponse', [TestController::class, 'shouldFetchRouteResponse']);
 
         $rules = [
-            'headers' => [
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
-            ],
             'response_calls' => [
                 'methods' => ['*'],
             ],
@@ -315,23 +301,7 @@ class ResponseCallsTest extends BaseLaravelTest
             ]),
         ]);
         $strategy = new ResponseCalls(new DocumentationConfig([]));
-        $results = $strategy($endpointData, $rules);
-
-        $this->assertNull($results);
-    }
-
-    /** @test */
-    public function does_not_make_response_call_if_forbidden_by_config()
-    {
-        $route = LaravelRouteFacade::post('/shouldFetchRouteResponse', [TestController::class, 'shouldFetchRouteResponse']);
-
-        $rules = [
-            'response_calls' => [
-                'methods' => [],
-            ],
-        ];
-        $strategy = new ResponseCalls(new DocumentationConfig([]));
-        $results = $strategy(ExtractedEndpointData::fromRoute($route), $rules);
+        $results = $strategy($endpointData, $this->convertRules($rules));
 
         $this->assertNull($results);
     }
@@ -353,5 +323,10 @@ class ResponseCallsTest extends BaseLaravelTest
             ->first(function (Route $route) use ($desiredRoute) {
                 return $route->uri() === $desiredRoute->uri();
             });
+    }
+
+    protected function convertRules(array $rules): mixed
+    {
+        return Extractor::transformOldRouteRulesIntoNewSettings('responses', $rules, ResponseCalls::class);
     }
 }

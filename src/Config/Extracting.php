@@ -2,8 +2,6 @@
 
 namespace Knuckles\Scribe\Config;
 
-use Illuminate\Support\Arr;
-
 class Extracting
 {
     public function __construct(
@@ -43,7 +41,7 @@ class Extracting
         StrategyListWrapper $responseFields,
     ): array
     {
-        return Arr::map(get_defined_vars(), fn($listWrapper) => $listWrapper->toArray());
+        return array_map(fn($listWrapper) => $listWrapper->toArray(), get_defined_vars());
     }
 
     public static function with(

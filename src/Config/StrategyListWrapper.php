@@ -3,7 +3,6 @@
 namespace Knuckles\Scribe\Config;
 
 use Illuminate\Support\Arr;
-use Knuckles\Scribe\Extracting\Strategies\StrategyInterface;
 
 /**
  * @internal
@@ -49,10 +48,10 @@ class StrategyListWrapper
 
     public function configure(array $configurationTuple): self
     {
-        $this->strategies = Arr::map($this->strategies, function ($strategy) use ($configurationTuple) {
+        $this->strategies = array_map(function ($strategy) use ($configurationTuple) {
             $strategyName = is_string($strategy) ? $strategy : $strategy[0];
             return $strategyName == $configurationTuple[0] ? $configurationTuple : $strategy;
-        });
+        }, $this->strategies);
 
         return $this;
     }

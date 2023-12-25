@@ -229,7 +229,6 @@ class OutputTest extends BaseLaravelTest
 
         $generatedSpec = Yaml::parseFile($this->openapiOutputPath());
         $fixtureSpec = Yaml::parseFile(__DIR__ . '/../Fixtures/openapi.yaml');
-        ray($fixtureSpec);
         $this->assertEquals($fixtureSpec, $generatedSpec);
     }
 

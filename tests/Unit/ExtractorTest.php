@@ -6,6 +6,7 @@ use Illuminate\Routing\Route;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Camel\Extraction\Parameter;
 use Knuckles\Scribe\Extracting\Extractor;
+use Knuckles\Scribe\Extracting\Strategies;
 use Knuckles\Scribe\Tests\BaseUnitTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
@@ -17,30 +18,29 @@ class ExtractorTest extends BaseUnitTest
     protected $config = [
         'strategies' => [
             'metadata' => [
-                \Knuckles\Scribe\Extracting\Strategies\Metadata\GetFromDocBlocks::class,
+                Strategies\Metadata\GetFromDocBlocks::class,
                 \Knuckles\Scribe\Tests\Fixtures\TestCustomEndpointMetadata::class,
             ],
             'urlParameters' => [
-                \Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromLaravelAPI::class,
-                \Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromUrlParamTag::class,
+                Strategies\UrlParameters\GetFromLaravelAPI::class,
+                Strategies\UrlParameters\GetFromUrlParamTag::class,
             ],
             'queryParameters' => [
-                \Knuckles\Scribe\Extracting\Strategies\QueryParameters\GetFromQueryParamTag::class,
+                Strategies\QueryParameters\GetFromQueryParamTag::class,
             ],
             'headers' => [
-                \Knuckles\Scribe\Extracting\Strategies\Headers\GetFromRouteRules::class,
-                \Knuckles\Scribe\Extracting\Strategies\Headers\GetFromHeaderTag::class,
+                Strategies\Headers\GetFromRouteRules::class,
+                Strategies\Headers\GetFromHeaderTag::class,
             ],
             'bodyParameters' => [
-                \Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromBodyParamTag::class,
+                Strategies\BodyParameters\GetFromBodyParamTag::class,
             ],
             'responses' => [
-                \Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseTag::class,
-                \Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseFileTag::class,
-                \Knuckles\Scribe\Extracting\Strategies\Responses\ResponseCalls::class,
+                Strategies\Responses\UseResponseTag::class,
+                Strategies\Responses\UseResponseFileTag::class,
             ],
             'responseFields' => [
-                \Knuckles\Scribe\Extracting\Strategies\ResponseFields\GetFromResponseFieldTag::class,
+                Strategies\ResponseFields\GetFromResponseFieldTag::class,
             ],
         ],
     ];

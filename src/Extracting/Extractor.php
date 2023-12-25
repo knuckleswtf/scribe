@@ -214,8 +214,9 @@ class Extractor
                     continue;
                 }
 
-                $routesToSkip = $settings['except'] ?? [];
-                $routesToInclude = $settings['only'] ?? [];
+                $settings = self::transformOldRouteRulesIntoNewSettings($stage, $rulesToApply, $strategyClass, $settings);
+                $routesToSkip = $settings["except"] ?? [];
+                $routesToInclude = $settings["only"] ?? [];
 
                 if (!empty($routesToSkip)) {
                     if (RoutePatternMatcher::matches($endpointData->route, $routesToSkip)) {
@@ -465,5 +466,37 @@ class Extractor
                 default => $results,
             };
         }
+    }
+
+    public static function transformOldRouteRulesIntoNewSettings($stage, $rulesToApply, $strategyName, $strategySettings = [])
+    {
+        if ($stage == 'headers' && Str::is('*RouteRules*', $strategyName)) {
+            return $rulesToApply;
+        }
+
+        if ($stage == 'responses' && Str::is('*ResponseCalls*', $strategyName) &&!empty($rulesToApply['response_calls'])) {
+            // Transform `methods` to `only`
+            $strategySettings = [];
+
+            if (isset($rulesToApply['response_calls']['methods'])) {
+                if(empty($rulesToApply['response_calls']['methods'])) {
+                    // This means all routes are forbidden
+                    $strategySettings['except'] = ["*"];
+                } else {
+                    $strategySettings['only'] = array_map(
+                        fn($method) => "$method *",
+                        $rulesToApply['response_calls']['methods']
+                    );
+                }
+            }
+
+            // Copy all other keys over as is
+            foreach (array_keys($rulesToApply['response_calls']) as $key) {
+                if ($key == 'methods') continue;
+                $strategySettings[$key] = $rulesToApply['response_calls'][$key];
+            }
+        }
+
+        return $strategySettings;
     }
 }

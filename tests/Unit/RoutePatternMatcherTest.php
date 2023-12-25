@@ -26,6 +26,9 @@ class RoutePatternMatcherTest extends BaseUnitTest
         $this->assertTrue(RoutePatternMatcher::matches($route, ["POST ab*"]));
         $this->assertTrue(RoutePatternMatcher::matches($route, ["POST /ab*"]));
         $this->assertTrue(RoutePatternMatcher::matches($route, ["POST *"]));
+        $this->assertTrue(RoutePatternMatcher::matches($route, ["* abc"]));
+        $this->assertTrue(RoutePatternMatcher::matches($route, ["* /abc"]));
+        $this->assertTrue(RoutePatternMatcher::matches($route, ["* *"]));
 
         $this->assertFalse(RoutePatternMatcher::matches($route, ["GET /abc"]));
         $this->assertFalse(RoutePatternMatcher::matches($route, ["GET abc"]));

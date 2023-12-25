@@ -61,8 +61,8 @@ class Serializer
 
     protected static function translateKeys($array)
     {
-        return Arr::mapWithKeys($array, function ($value, $key) {
+        return collect($array)->mapWithKeys(function ($value, $key) {
             return [Str::snake($key) => $value];
-        });
+        })->toArray();
     }
 }
