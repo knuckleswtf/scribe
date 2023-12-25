@@ -8,7 +8,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Knuckles\Camel\BaseDTO;
 use Knuckles\Camel\Extraction\Metadata;
-use Knuckles\Camel\Extraction\Parameter;
 use Knuckles\Camel\Extraction\ResponseCollection;
 use Knuckles\Camel\Extraction\ResponseField;
 use Knuckles\Scribe\Extracting\Extractor;

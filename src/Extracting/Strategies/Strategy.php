@@ -47,7 +47,7 @@ abstract class Strategy
     {
         if (!empty($only) && !empty($except)) {
             throw new \InvalidArgumentException(
-                "Both \$only and \$except cannot be specified in your ".static::class." settings"
+                "You can not specify both \$only and \$except together in your ".static::class." settings"
             );
         }
 
