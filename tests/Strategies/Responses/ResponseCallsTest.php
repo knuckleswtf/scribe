@@ -24,7 +24,7 @@ class ResponseCallsTest extends BaseLaravelTest
     protected function setUp(): void
     {
         parent::setUp();
-        config(['scribe.database_connections_to_transact' => []]);
+        $this->setConfig(['database_connections_to_transact' => []]);
     }
 
     /** @test */
@@ -60,7 +60,7 @@ class ResponseCallsTest extends BaseLaravelTest
     {
         $route = RouteFacade::post('/withFormDataParams', [TestController::class, 'withFormDataParams']);
 
-        config(['scribe.routes.0.apply.response_calls.methods' => ['POST']]);
+        $this->setConfig(['routes.0.apply.response_calls.methods' => ['POST']]);
         $parsed = (new Extractor())->processRoute($route, config('scribe.routes.0.apply'));
 
         $responses = $parsed->responses->toArray();

@@ -19,13 +19,10 @@ use Knuckles\Scribe\Tests\Fixtures\TestUserApiResource;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\Utils;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use ReflectionClass;
 
 class UseResponseAttributesTest extends BaseLaravelTest
 {
-    use ArraySubsetAsserts;
-
     protected function getPackageProviders($app)
     {
         $providers = parent::getPackageProviders($app);
@@ -39,7 +36,7 @@ class UseResponseAttributesTest extends BaseLaravelTest
     {
         parent::setUp();
 
-        config(['scribe.database_connections_to_transact' => []]);
+        $this->setConfig(['database_connections_to_transact' => []]);
 
         $factory = app(\Illuminate\Database\Eloquent\Factory::class);
         $factory->define(TestUser::class, function () {

@@ -24,11 +24,13 @@ class BehavioursTest extends BaseLaravelTest
     {
         parent::setUp();
 
-        config(['scribe.database_connections_to_transact' => []]);
-        config(['scribe.routes.0.match.prefixes' => ['api/*']]);
-        // Skip these ones for faster tests
-        config(['scribe.openapi.enabled' => false]);
-        config(['scribe.postman.enabled' => false]);
+        $this->setConfig([
+            'database_connections_to_transact' => [],
+            'routes.0.match.prefixes' => ['api/*'],
+            // Skip these for faster tests
+            'openapi.enabled' => false,
+            'postman.enabled' => false,
+        ]);
 
         $factory = app(\Illuminate\Database\Eloquent\Factory::class);
         $factory->define(TestUser::class, function () {
@@ -92,8 +94,8 @@ class BehavioursTest extends BaseLaravelTest
             $api->get('/test', [TestController::class, 'withEndpointDescription']);
         });
 
-        config(['scribe.routes.0.match.prefixes' => ['*']]);
-        config(['scribe.routes.0.match.versions' => ['v1']]);
+        $this->setConfig(['routes.0.match.prefixes' => ['*']]);
+        $this->setConfig(['routes.0.match.versions' => ['v1']]);
 
         $this->generateAndExpectConsoleOutput(
             'Processed route: [GET] closure',
@@ -197,7 +199,7 @@ class BehavioursTest extends BaseLaravelTest
     {
         RouteFacade::get('/api/action1', TestGroupController::class . '@action1');
 
-        config(['scribe.static.output_path' => 'static/docs']);
+        $this->setConfig(['static.output_path' => 'static/docs']);
         $this->assertFileDoesNotExist('static/docs/index.html');
 
         $this->generate();

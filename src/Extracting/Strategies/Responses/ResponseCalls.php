@@ -315,13 +315,22 @@ class ResponseCalls extends Strategy
 
     protected function shouldMakeApiCall(ExtractedEndpointData $endpointData, array $rulesToApply): bool
     {
-        $allowedMethods = $rulesToApply['methods'] ?? [];
-        if (empty($allowedMethods)) {
+        // Don't attempt a response call if there are already successful responses
+        if ($endpointData->responses->hasSuccessResponse()) {
             return false;
         }
 
-        // Don't attempt a response call if there are already successful responses
-        if ($endpointData->responses->hasSuccessResponse()) {
+        if (array_key_exists('only', $rulesToApply) || array_key_exists('except', $rulesToApply)) {
+            // We're in the v2 config. The route filtering has already been done
+            return true;
+        }
+
+        /**
+         * @deprecated The rest of this method is now determined by the strategy-level settings (`only` and `exclude` keys),
+         *   which are supported globally by all strategies.
+         */
+        $allowedMethods = $rulesToApply['methods'] ?? [];
+        if (empty($allowedMethods)) {
             return false;
         }
 

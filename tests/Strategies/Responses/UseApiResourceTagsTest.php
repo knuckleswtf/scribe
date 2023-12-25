@@ -15,12 +15,9 @@ use Knuckles\Scribe\Tests\Fixtures\TestUser;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\Utils;
 use Mpociot\Reflection\DocBlock\Tag;
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 
 class UseApiResourceTagsTest extends BaseLaravelTest
 {
-    use ArraySubsetAsserts;
-
     protected function getPackageProviders($app)
     {
         $providers = parent::getPackageProviders($app);
@@ -34,7 +31,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     {
         parent::setUp();
 
-        config(['scribe.database_connections_to_transact' => []]);
+        $this->setConfig(['database_connections_to_transact' => []]);
 
         $factory = app(\Illuminate\Database\Eloquent\Factory::class);
         $factory->define(TestUser::class, function () {

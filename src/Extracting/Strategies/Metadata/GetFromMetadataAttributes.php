@@ -28,7 +28,9 @@ class GetFromMetadataAttributes extends PhpAttributeStrategy
 
     protected function extractFromAttributes(
         ExtractedEndpointData $endpointData,
-        array $attributesOnMethod, array $attributesOnFormRequest = [], array $attributesOnController = []
+        array $attributesOnMethod,
+        array $attributesOnFormRequest = [],
+        array $attributesOnController = []
     ): ?array
     {
         $metadata = [

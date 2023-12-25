@@ -92,6 +92,8 @@ class ScribeServiceProvider extends ServiceProvider
         ], 'scribe-config');
 
         $this->mergeConfigFrom(__DIR__ . '/../config/scribe.php', 'scribe');
+        // This is really only used in internal testing.
+        $this->mergeConfigFrom(__DIR__ . '/../config/scribe_new.php', 'scribe_new');
     }
 
     protected function registerCommands(): void

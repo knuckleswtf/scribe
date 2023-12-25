@@ -7,16 +7,13 @@ use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestUser;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Mpociot\Reflection\DocBlock\Tag;
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 
 class UseTransformerTagsTest extends BaseLaravelTest
 {
-    use ArraySubsetAsserts;
-
     protected function setUp(): void
     {
         parent::setUp();
-        config(['scribe.database_connections_to_transact' => []]);
+        $this->setConfig(['database_connections_to_transact' => []]);
     }
 
     /**

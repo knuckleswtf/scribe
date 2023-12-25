@@ -105,10 +105,10 @@ class GenerateDocumentation extends Command
             throw new \InvalidArgumentException("The specified config (config/{$configName}.php) doesn't exist.");
         }
 
-        $this->paths = new PathConfig(configName: $configName);
+        $this->paths = new PathConfig($configName);
         if ($this->hasOption('scribe-dir') && !empty($this->option('scribe-dir'))) {
             $this->paths = new PathConfig(
-                configName: $configName, scribeDir: $this->option('scribe-dir')
+                $configName, scribeDir: $this->option('scribe-dir')
             );
         }
 
