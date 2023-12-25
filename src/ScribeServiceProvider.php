@@ -92,7 +92,11 @@ class ScribeServiceProvider extends ServiceProvider
         ], 'scribe-config');
 
         $this->mergeConfigFrom(__DIR__ . '/../config/scribe.php', 'scribe');
-        // This is really only used in internal testing.
+        // This is really only used in internal testing,
+        // but we also make it publishable for easy migration, so there's no .
+        $this->publishes([
+            __DIR__ . '/../config/scribe.php' => $this->app->configPath('scribe.php'),
+        ], 'scribe-config');
         $this->mergeConfigFrom(__DIR__ . '/../config/scribe_new.php', 'scribe_new');
     }
 

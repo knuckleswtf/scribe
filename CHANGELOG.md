@@ -12,6 +12,47 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.28.0 (25 December 2023)
+## Added
+- **Configurable strategies**: You can now configure strategies individually, by using the _tuple_ format. A tuple is an array with two elements; the first is the strategy class, and the second is the settings array. For instance, you can configure response calls to only be used on certain endpoints:
+  ```php
+  'responses' => [
+      Strategies\Responses\UseResponseAttributes::class,
+      [
+        Strategies\Responses\ResponseCalls::class,
+        ['only' => ['GET *']],
+      ]
+  ],
+  ```
+- **Disable strategies per endpoint**: All strategies (including custom strategies) now support the `only` and `except` settings, allowing you to specify the routes you want them to be applied to, or the opposite.
+    ```php
+  'bodyParameters' => [
+      [
+        Strategies\BodyParameters\GetFromInlineValidator::class,
+        ['except' => ['POST /special-endpoint']],
+      ],
+      [
+        App\Docs\Strategies\SomeCoolStuff::class,
+        ['only' => ['POST /cool-endpoint']],
+      ],
+  ],
+  ```
+- **Easily override returned values**: The new `override` strategy (also a tuple) is a simple way to say "merge these values into the result of other strategies", without having to write a whole strategy. A common use case is for adding headers:
+  ```php
+  'headers' => [
+      Strategies\Responses\UseHeaderAttribute::class,
+      [
+        'override',
+        [
+          'Content-Type' => 'application/json'],
+          'Accept' => 'application/json'],
+      ]
+  ],
+  ```
+  
+- **New config format**: In an effort to simplify the config file and surface the most useful items, we're trying out a new config format which should be the default in v5. See [the docs]() for details.
+- **Better route matching**: Route matching now works with both method and URL. Previously, in you could only specify route name or URL. Now you can also specify "GET /path", "GET path", or "GET pa*".
+
 # 4.27.0 (21 December 2023)
 ## Modified
 - Allow Symfony v7

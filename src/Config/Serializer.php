@@ -7,16 +7,6 @@ use Illuminate\Support\Str;
 
 class Serializer
 {
-    // todo new features & breaking changes:
-    // - strategy config tuples - responseCalls support
-    // - support route method + path in route matching
-    // - no more route groups, header apply rules move to override
-    // - no more apply rules for response_calls, use strategy settings. methods is replaced by only/except
-    // todo design beta/migration story
-    // todo design upgrade story
-    // todo design continuous upgrade story
-    // todo document parameters
-    // todo support multiple base URLs
     public static function toOldConfig(Extracting $extractingConfig, Output $outputConfig): array
     {
         return [
@@ -24,7 +14,7 @@ class Serializer
             'theme' => $outputConfig->theme,
             'title' => $outputConfig->title,
             'description' => $outputConfig->description,
-            'base_url' => $outputConfig->baseUrls[0] ?? null,
+            'base_url' => Arr::first($outputConfig->baseUrls) ?? null,
             'type' => $outputConfig->type[0],
             $outputConfig->type[0] => self::translateKeys($outputConfig->type[1]),
             'try_it_out' => self::translateKeys($outputConfig->tryItOut),
