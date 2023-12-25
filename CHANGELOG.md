@@ -12,7 +12,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
-# 4.28.0 (25 December 2023)
+# 4.28.0 (25 December 2023 🎄)
+See [the announcement post](https://scribe.knuckles.wtf/blog/laravel-v4-28) for more details.
+
 ## Added
 - **Support for external UIs**: You can now use an external client-side UI such as [Scalar](https://github.com/scalar/scalar). Details in [the config reference](https://scribe.knuckles.wtf/laravel/reference/config#theme).
 - **Configurable strategies**: You can now configure strategies individually, by using the _tuple_ format. A tuple is an array with two elements; the first is the strategy class, and the second is the settings array. For instance, you can configure response calls to only be used on certain endpoints:
