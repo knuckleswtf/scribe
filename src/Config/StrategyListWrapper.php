@@ -22,7 +22,7 @@ class StrategyListWrapper
 
     public function override(array $valuesToOverride): self
     {
-        return $this->addStrategies(['overrides', $valuesToOverride]);
+        return $this->addStrategies(['override', $valuesToOverride]);
     }
 
     public function addStrategies(array|string ...$newStrategies): self

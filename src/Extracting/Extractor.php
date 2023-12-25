@@ -209,7 +209,7 @@ class Extractor
         foreach ($strategies as $strategyClassOrTuple) {
             if (is_array($strategyClassOrTuple)) {
                 [$strategyClass, $settings] = $strategyClassOrTuple;
-                if ($strategyClass == 'overrides') {
+                if ($strategyClass == 'override') {
                     $overrides = $settings;
                     continue;
                 }

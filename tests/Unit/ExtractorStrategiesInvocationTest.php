@@ -43,14 +43,14 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
     }
 
     /** @test */
-    public function supports_overrides_tuples()
+    public function supports_override_tuples()
     {
         $config = [
             'strategies' => [
                 'headers' => [
                     DummyHeaderStrategy::class,
                     [
-                        'overrides',
+                        'override',
                         ['Content-Type' => 'application/xml'],
                     ]
                 ],
