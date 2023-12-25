@@ -214,6 +214,19 @@ class Extractor
                     continue;
                 }
                 $settings = $strategyClassOrTuple[1];
+
+                $routesToSkip = $settings['except'] ?? [];
+                $routesToInclude = $settings['only'] ?? [];
+
+                if (!empty($routesToSkip)) {
+                    if (RoutePatternMatcher::matches($endpointData->route, $routesToSkip)) {
+                        continue;
+                    }
+                } elseif (!empty($routesToInclude)) {
+                    if (!RoutePatternMatcher::matches($endpointData->route, $routesToInclude)) {
+                        continue;
+                    }
+                }
             } else {
                 $strategyClass = $strategyClassOrTuple;
                 $settings = $rulesToApply;

@@ -44,7 +44,7 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
     }
 
     /** @test */
-    public function supports_overrides()
+    public function supports_overrides_tuples()
     {
         $config = [
             'strategies' => [
@@ -70,7 +70,7 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
 
 
     /** @test */
-    public function supports_strategy_tuples()
+    public function supports_strategy_settings_tuples()
     {
         $config = [
             'strategies' => [
@@ -91,6 +91,51 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
             'Accept' => 'application/form-data',
             'Content-Type' => 'text/plain',
         ], $endpointData->headers);
+    }
+
+    /** @test */
+    public function respects_strategy_s_only_setting()
+    {
+        $config = [
+            'strategies' => [
+                'bodyParameters' => [
+                    [EmptyStrategy1::class, ['only' => 'GET /test']]
+                ],
+                'responses' => [],
+            ],
+        ];
+        $this->processRoute($config);
+        $this->assertFalse(EmptyStrategy1::$called);
+
+        $config['strategies']['bodyParameters'][0] =
+            [EmptyStrategy1::class, ['only' => ['GET api/*']]];
+        $this->processRoute($config);
+        $this->assertTrue(EmptyStrategy1::$called);
+    }
+
+    /** @test */
+    public function respects_strategy_s_except_setting()
+    {
+        $config = [
+            'strategies' => [
+                'bodyParameters' => [
+                    [EmptyStrategy1::class, ['except' => 'GET /api*']]
+                ],
+                'responses' => [],
+            ],
+        ];
+        $this->processRoute($config);
+        $this->assertFalse(EmptyStrategy1::$called);
+
+        $config['strategies']['bodyParameters'][0] =
+            [EmptyStrategy1::class, ['except' => ['*']]];
+        $this->processRoute($config);
+        $this->assertFalse(EmptyStrategy1::$called);
+
+        $config['strategies']['bodyParameters'][0] =
+            [EmptyStrategy1::class, ['except' => []]];
+        $this->processRoute($config);
+        $this->assertTrue(EmptyStrategy1::$called);
     }
 
     /** @test */
@@ -216,9 +261,11 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
         $this->assertArraySubset($expectedMetadata, $parsed->metadata->toArray());
     }
 
-    protected function processRoute(array $config): ExtractedEndpointData
+    protected function processRoute(
+        array $config, $routeMethod = "GET", $routePath = "/api/test", $routeName = "dummy"
+    ): ExtractedEndpointData
     {
-        $route = $this->createRoute('GET', '/api/test', 'dummy');
+        $route = $this->createRoute($routeMethod, $routePath, $routeName);
         $extractor = new Extractor(new DocumentationConfig($config));
         return $extractor->processRoute($route);
     }

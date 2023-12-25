@@ -37,7 +37,7 @@ class ResponseCalls extends Strategy
 
     public function makeResponseCallIfConditionsPass(ExtractedEndpointData $endpointData, array $routeRules): ?array
     {
-        $rulesToApply = $routeRules['response_calls'] ?? [];
+        $rulesToApply = $routeRules['response_calls'] ?? $routeRules;
         if (!$this->shouldMakeApiCall($endpointData, $rulesToApply)) {
             return null;
         }
@@ -132,8 +132,10 @@ class ResponseCalls extends Strategy
      *
      * @return Request
      */
-    protected function prepareRequest(Route $route, string $url, array $rulesToApply, array $urlParams,
-        array $bodyParams, array $queryParams, array $fileParameters, array $headers): Request
+    protected function prepareRequest(
+        Route $route, string $url, array $rulesToApply, array $urlParams,
+        array $bodyParams, array $queryParams, array $fileParameters, array $headers
+    ): Request
     {
         $uri = Utils::getUrlWithBoundParameters($url, $urlParams);
         $routeMethods = $this->getMethods($route);
@@ -367,5 +369,32 @@ class ResponseCalls extends Strategy
         }
 
         return $formattedHeaders;
+    }
+
+    /**
+     * @param array $only The routes which this strategy should be applied to. Can not be specified with $except.
+     *   Specify route names ("users.index", "users.*"), or method and path ("GET *", "POST /safe/*").
+     * @param array $except The routes which this strategy should be applied to. Can not be specified with $only.
+     *   Specify route names ("users.index", "users.*"), or method and path ("GET *", "POST /safe/*").
+     * @param array $config Any extra Laravel config() values to before starting the response call.
+     * @param array $queryParams Query params to always send with the response call. Key-value array.
+     * @param array $bodyParams Body params to always send with the response call. Key-value array.
+     * @param array $fileParams File params to always send with the response call. Key-value array. Key is param name, value is file path.
+     * @param array $cookies Cookies to always send with the response call. Key-value array.
+     * @return array
+     */
+    public static function withSettings(
+        array $only = ['GET *'],
+        array $except = [],
+        array $config = [],
+        array $queryParams = [],
+        array $bodyParams = [],
+        array $fileParams = [
+            // 'key' => 'storage/app/image.png',
+        ],
+        array $cookies = [],
+    ): array
+    {
+        return static::wrapWithSettings(...get_defined_vars());
     }
 }

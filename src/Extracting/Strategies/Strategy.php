@@ -25,9 +25,35 @@ abstract class Strategy
 
     /**
      * @param ExtractedEndpointData $endpointData
-     * @param array $routeRules Array of rules for the ruleset which this route belongs to.
+     * @param array $settings Settings to be applied to this strategy while processing this route.
+     *   In the past, this was "routeRules".
      *
      * @return array|null
      */
-    abstract public function __invoke(ExtractedEndpointData $endpointData, array $routeRules = []): ?array;
+    abstract public function __invoke(ExtractedEndpointData $endpointData, array $settings = []): ?array;
+
+    /**
+     * @param array $only The routes which this strategy should be applied to. Can not be specified with $except.
+     *   Specify route names ("users.index", "users.*"), or method and path ("GET *", "POST /safe/*").
+     * @param array $except The routes which this strategy should be applied to. Can not be specified with $only.
+     *   Specify route names ("users.index", "users.*"), or method and path ("GET *", "POST /safe/*").
+     * @return array{string,array} Tuple of strategy class FQN and specified settings.
+     */
+    public static function wrapWithSettings(
+        array $only = ['*'],
+        array $except = [],
+        ...$settings
+    ): array
+    {
+        if (!empty($only) && !empty($except)) {
+            throw new \InvalidArgumentException(
+                "Both \$only and \$except cannot be specified in your ".static::class." settings"
+            );
+        }
+
+        return [
+            static::class,
+            $settings,
+        ];
+    }
 }
