@@ -59,6 +59,22 @@ class Output
         return ['static', get_defined_vars()];
     }
 
+    public static function externalStaticType(
+        string $outputPath = 'public/docs',
+    ): array
+    {
+        return ['external_static', get_defined_vars()];
+    }
+
+    public static function externalLaravelType(
+        bool   $addRoutes = true,
+        string $docsUrl = '/docs',
+        array  $middleware = [],
+    ): array
+    {
+        return ['external_laravel', get_defined_vars()];
+    }
+
     public static function postman(
         bool  $enabled = true,
         array $overrides = [],

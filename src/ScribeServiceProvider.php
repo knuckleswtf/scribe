@@ -3,6 +3,7 @@
 namespace Knuckles\Scribe;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 use Knuckles\Scribe\Commands\DiffConfig;
 use Knuckles\Scribe\Commands\GenerateDocumentation;
 use Knuckles\Scribe\Commands\MakeStrategy;
@@ -44,7 +45,7 @@ class ScribeServiceProvider extends ServiceProvider
     protected function bootRoutes()
     {
         if (
-            config('scribe.type', 'static') === 'laravel' &&
+            Str::endsWith(config('scribe.type', 'static'), 'laravel') &&
             config('scribe.laravel.add_routes', false)
         ) {
             $routesPath = Utils::isLumen() ? __DIR__ . '/../routes/lumen.php' : __DIR__ . '/../routes/laravel.php';
@@ -55,7 +56,7 @@ class ScribeServiceProvider extends ServiceProvider
     protected function configureTranslations(): void
     {
         $this->publishes([
-            __DIR__.'/../lang/' => $this->app->langPath(),
+            __DIR__ . '/../lang/' => $this->app->langPath(),
         ], 'scribe-translations');
 
         $this->loadTranslationsFrom($this->app->langPath('scribe.php'), 'scribe');
@@ -77,6 +78,7 @@ class ScribeServiceProvider extends ServiceProvider
             'examples' => 'partials/example-requests',
             'themes' => 'themes',
             'markdown' => 'markdown',
+            'external' => 'external',
         ];
         foreach ($viewGroups as $group => $path) {
             $this->publishes([

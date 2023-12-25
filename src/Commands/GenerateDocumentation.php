@@ -212,7 +212,7 @@ class GenerateDocumentation extends Command
     protected function sayGoodbye(bool $errored = false): void
     {
         $message = 'All done. ';
-        if ($this->docConfig->get('type') == 'laravel') {
+        if ($this->docConfig->outputRoutedThroughLaravel()) {
             if ($this->docConfig->get('laravel.add_routes')) {
                 $message .= 'Visit your docs at ' . url($this->docConfig->get('laravel.docs_url'));
             }

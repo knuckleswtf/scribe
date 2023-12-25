@@ -3,6 +3,7 @@
 namespace Knuckles\Scribe\Writing;
 
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\Globals;
@@ -13,6 +14,7 @@ use Symfony\Component\Yaml\Yaml;
 class Writer
 {
     private bool $isStatic;
+    private bool $isExternal;
 
     private ?string $staticTypeOutputPath;
 
@@ -33,7 +35,9 @@ class Writer
 
     public function __construct(protected DocumentationConfig $config, public PathConfig $paths)
     {
-        $this->isStatic = $this->config->get('type') === 'static';
+        $this->isStatic = $this->config->outputIsStatic();
+        $this->isExternal = $this->config->outputIsExternal();
+
         $this->laravelTypeOutputPath = $this->getLaravelTypeOutputPath();
         $this->staticTypeOutputPath = rtrim($this->config->get('static.output_path', 'public/docs'), '/');
 
@@ -52,11 +56,15 @@ class Writer
         // For 'laravel' docs, the output files (index.blade.php, collection.json)
         // go in resources/views/scribe/ and storage/app/scribe/ respectively.
 
-        $this->writeHtmlDocs($groupedEndpoints);
-
-        $this->writePostmanCollection($groupedEndpoints);
-
-        $this->writeOpenAPISpec($groupedEndpoints);
+        if ($this->isExternal) {
+            $this->writeOpenAPISpec($groupedEndpoints);
+            $this->writePostmanCollection($groupedEndpoints);
+            $this->writeExternalHtmlDocs();
+        } else {
+            $this->writeHtmlDocs($groupedEndpoints);
+            $this->writePostmanCollection($groupedEndpoints);
+            $this->writeOpenAPISpec($groupedEndpoints);
+        }
 
         $this->runAfterGeneratingHook();
     }
@@ -83,7 +91,7 @@ class Writer
 
     protected function writeOpenAPISpec(array $parsedRoutes): void
     {
-        if ($this->config->get('openapi.enabled', false)) {
+        if ($this->config->get('openapi.enabled', false) || $this->isExternal) {
             c::info('Generating OpenAPI specification');
 
             $spec = $this->generateOpenAPISpec($parsedRoutes);
@@ -169,6 +177,7 @@ class Writer
         $contents = preg_replace('#src="\.\./docs/(js|images)/(.+?)"#', 'src="{{ asset("' . $this->laravelAssetsPath . '/$1/$2") }}"', $contents);
         $contents = str_replace('href="../docs/collection.json"', 'href="{{ route("' . $this->paths->outputPath('postman', '.') . '") }}"', $contents);
         $contents = str_replace('href="../docs/openapi.yaml"', 'href="{{ route("' . $this->paths->outputPath('openapi', '.') . '") }}"', $contents);
+        $contents = str_replace('url="../docs/openapi.yaml"', 'url="{{ route("' . $this->paths->outputPath('openapi', '.') . '") }}"', $contents);
 
         file_put_contents("$this->laravelTypeOutputPath/index.blade.php", $contents);
     }
@@ -201,6 +210,31 @@ class Writer
         $this->generatedFiles['assets']['js'] = realpath("{$assetsOutputPath}js");
         $this->generatedFiles['assets']['css'] = realpath("{$assetsOutputPath}css");
         $this->generatedFiles['assets']['images'] = realpath("{$assetsOutputPath}images");
+    }
+
+    public function writeExternalHtmlDocs(): void
+    {
+        c::info('Writing client-side HTML docs...');
+
+        /** @var ExternalHtmlWriter $writer */
+        $writer = app()->makeWith(ExternalHtmlWriter::class, ['config' => $this->config]);
+        $writer->generate([], $this->paths->intermediateOutputPath(), $this->staticTypeOutputPath);
+
+       if (!$this->isStatic) {
+           $this->performFinalTasksForLaravelType();
+       }
+
+        if ($this->isStatic) {
+            $outputPath = rtrim($this->staticTypeOutputPath, '/') . '/';
+            c::success("Wrote client-side HTML docs and assets to: $outputPath");
+            $this->generatedFiles['html'] = realpath("{$outputPath}index.html");
+        } else {
+            $outputPath = rtrim($this->laravelTypeOutputPath, '/') . '/';
+            c::success("Wrote Blade docs to: " . $this->makePathFriendly($outputPath));
+            $this->generatedFiles['blade'] = realpath("{$outputPath}index.blade.php");
+            $assetsOutputPath = public_path() . $this->laravelAssetsPath . '/';
+            c::success("Wrote Laravel assets to: " . $this->makePathFriendly($assetsOutputPath));
+        }
     }
 
     protected function runAfterGeneratingHook()

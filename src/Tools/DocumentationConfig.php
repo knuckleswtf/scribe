@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Tools;
 
+use Illuminate\Support\Str;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 
 class DocumentationConfig
@@ -44,5 +45,20 @@ class DocumentationConfig
 
         return 'laravel';
 
+    }
+
+    public function outputIsStatic(): bool
+    {
+        return !$this->outputRoutedThroughLaravel();
+    }
+
+    public function outputRoutedThroughLaravel(): bool
+    {
+        return Str::is(['laravel', 'external_laravel'], $this->get('type'));
+    }
+
+    public function outputIsExternal(): bool
+    {
+        return Str::is(['external_static', 'external_laravel'], $this->get('type'));
     }
 }
