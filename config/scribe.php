@@ -73,6 +73,10 @@ return [
         'middleware' => [],
     ],
 
+    'external' => [
+        'html_attributes' => []
+    ],
+
     'try_it_out' => [
         // Add a Try It Out button to your endpoints so consumers can test endpoints right from their browser.
         // Don't forget to enable CORS headers for your endpoints.
