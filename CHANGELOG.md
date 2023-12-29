@@ -12,6 +12,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.29.0 (29 December 2023)
+## Added
+- **More external UIs**: [Stoplight Elements](https://github.com/stoplightio/elements) [#780](https://github.com/knuckleswtf/scribe/pull/780)
+- Support `try_it_out` and `logo` config options in rapi-doc external UI [#780](https://github.com/knuckleswtf/scribe/pull/780)
+- Allow passing of custom HTML attributes to external UIs [#780](https://github.com/knuckleswtf/scribe/pull/780)
+
+## Fixed
+- Fix `config:diff` command for tuple configs
+
 # 4.28.0 (25 December 2023 🎄)
 See [the announcement post](https://scribe.knuckles.wtf/blog/laravel-v4-28) for more details.
 
