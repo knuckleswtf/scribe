@@ -12,11 +12,15 @@
 <body>
 
 <elements-api
+@foreach($htmlAttributes as $attribute => $value)
+    {{-- Attributes specified first override later ones --}}
+    {!! $attribute !!}="{!! $value !!}"
+@endforeach
     apiDescriptionUrl="{!! $metadata['openapi_spec_url'] !!}"
     router="hash"
     layout="sidebar"
-    hideTryIt="{!! $metadata['try_it_out']['enabled'] == true ? '' : 'true'!!}"
-    logo ="{!! $metadata['logo'] ?: '' !!}"
+    hideTryIt="{!! ($tryItOut['enabled'] ?? true) ? '' : 'true'!!}"
+    logo="{!! $metadata['logo'] !!}"
 />
 
 </body>

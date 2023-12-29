@@ -16,6 +16,7 @@ class ExternalHtmlWriter extends HtmlWriter
             'metadata' => $this->getMetadata(),
             'baseUrl' => $this->baseUrl,
             'tryItOut' => $this->config->get('try_it_out'),
+            'htmlAttributes' => $this->config->get('external.html_attributes', []),
         ])->render();
 
         if (!is_dir($destinationFolder)) {
@@ -44,4 +45,5 @@ class ExternalHtmlWriter extends HtmlWriter
             "openapi_spec_url" => $openApiSpecUrl ?? null,
         ];
     }
+
 }
