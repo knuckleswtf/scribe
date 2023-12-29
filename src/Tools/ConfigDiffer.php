@@ -3,6 +3,7 @@
 namespace Knuckles\Scribe\Tools;
 
 use Illuminate\Support\Str;
+use Symfony\Component\VarExporter\VarExporter;
 
 class ConfigDiffer
 {
@@ -59,8 +60,8 @@ class ConfigDiffer
             return "changed to a list";
         }
 
-        $added = array_map(fn ($v) => "$v", array_diff($value, $oldValue));
-        $removed = array_map(fn ($v) => "$v", array_diff($oldValue, $value));
+        $added = array_map(fn ($v) => "$v", $this->subtractArraysFlat($value, $oldValue));
+        $removed = array_map(fn ($v) => "$v", $this->subtractArraysFlat($oldValue, $value));
 
         $diff = [];
         if (!empty($added)) {
@@ -71,5 +72,28 @@ class ConfigDiffer
         }
 
         return empty($diff) ? "" : implode(": ", $diff);
+    }
+
+    /**
+     * Basically array_diff, but handling items which may also be arrays
+     */
+    protected function subtractArraysFlat(array $a, array $b)
+    {
+        $mapped_a = array_map(function ($item) {
+            if (is_array($item)) {
+                return VarExporter::export($item);
+            }
+
+            return $item;
+        }, $a);
+        $mapped_b = array_map(function ($item) {
+            if (is_array($item)) {
+                return VarExporter::export($item);
+            }
+
+            return $item;
+        }, $b);
+
+        return array_diff($mapped_a, $mapped_b);
     }
 }
