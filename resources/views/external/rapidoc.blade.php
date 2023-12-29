@@ -1,4 +1,4 @@
-
+<!-- See https://rapidocweb.com/api.html for options -->
 <!doctype html> <!-- Important: must specify -->
 <html>
 <head>
@@ -8,6 +8,11 @@
 <body>
 <rapi-doc spec-url="{!! $metadata['openapi_spec_url'] !!}"
           render-style="read"
-> </rapi-doc>
+          allow-try="{!! $metadata['try_it_out']['enabled'] == true ? 'true' : 'false'!!}"
+>
+    @if($metadata['logo'] ?: '')
+        <img slot="logo" src="{!! $metadata['logo'] ?: '' !!}"/>
+    @endif
+</rapi-doc>
 </body>
 </html>
