@@ -110,7 +110,7 @@
                         <div class="ParameterGrid sl-p-4">
                             @foreach($endpoint->urlParameters as $name => $parameter)
                                 <label aria-hidden="true"
-                                       for="urlparam-{{ $endpoint->endpointId() }}-{{ $name }}">{{ $name }}</label>
+                                       for="urlparam-{{ $endpoint->endpointId() }}-{{ $name }}">@if($parameter->required) <span class="required-attribute">*</span> @endif {{ $name }}</label>
                                 <span class="sl-mx-3">:</span>
                                 <div class="sl-flex sl-flex-1">
                                     <div class="sl-input sl-flex-1 sl-relative">
@@ -118,7 +118,8 @@
                                                id="urlparam-{{ $endpoint->endpointId() }}-{{ $name }}"
                                                placeholder="{{ $parameter->description }}"
                                                value="{{ $parameter->example }}" data-component="url"
-                                               class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border">
+                                               class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border"
+                                               @required($parameter->required)>
                                     </div>
                                 </div>
                             @endforeach
@@ -158,7 +159,7 @@
                                     && $name === $metadata['auth']['name']) continue;
                                 @endphp
                                 <label aria-hidden="true"
-                                       for="queryparam-{{ $endpoint->endpointId() }}-{{ $name }}">{{ $name }}</label>
+                                       for="queryparam-{{ $endpoint->endpointId() }}-{{ $name }}">@if($parameter->required) <span class="required-attribute">*</span> @endif {{ $name }}</label>
                                 <span class="sl-mx-3">:</span>
                                 <div class="sl-flex sl-flex-1">
                                     <div class="sl-input sl-flex-1 sl-relative">
@@ -168,6 +169,7 @@
                                                    placeholder="{{ $parameter->description }}"
                                                    value="{{ json_encode($parameter->example) }}" data-component="query"
                                                    class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border"
+                                                   @required($parameter->required)
                                             >
                                         @else
                                             <input aria-label="{{ $name }}" name="{{ $name }}"
@@ -175,6 +177,7 @@
                                                    placeholder="{{ $parameter->description }}"
                                                    value="{{ $parameter->example }}" data-component="query"
                                                    class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border"
+                                                   @required($parameter->required)
                                             >
                                         @endif
                                     </div>
@@ -222,7 +225,7 @@
                                             continue;
                                     @endphp
                                     <label aria-hidden="true"
-                                           for="bodyparam-{{ $endpoint->endpointId() }}-{{ $name }}">{{ $name }}</label>
+                                           for="bodyparam-{{ $endpoint->endpointId() }}-{{ $name }}">@if($parameter->required) <span class="required-attribute">*</span> @endif {{ $name }}</label>
                                     <span class="sl-mx-3">:</span>
                                     <div class="sl-flex sl-flex-1">
                                         <div class="sl-input sl-flex-1 sl-relative">
@@ -231,6 +234,7 @@
                                                        id="bodyparam-{{ $endpoint->endpointId() }}-{{ $name }}"
                                                        type="file" data-component="body"
                                                        class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border"
+                                                       @required($parameter->required)
                                                 >
                                             @elseif(str_ends_with($parameter->type, '[]'))
                                                 <input aria-label="{{ $name }}" name="{{ $name }}"
@@ -238,6 +242,7 @@
                                                        placeholder="{{ $parameter->description }}"
                                                        value="{{ json_encode($parameter->example) }}" data-component="body"
                                                        class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border"
+                                                       @required($parameter->required)
                                                 >
                                             @else
                                                 <input aria-label="{{ $name }}" name="{{ $name }}"
@@ -245,6 +250,7 @@
                                                        placeholder="{{ $parameter->description }}"
                                                        value="{{ $parameter->example }}" data-component="body"
                                                        class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border"
+                                                       @required($parameter->required)
                                                 >
                                             @endif
                                         </div>

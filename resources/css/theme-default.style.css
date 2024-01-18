@@ -1082,6 +1082,10 @@ button {
     border: none;
 }
 
+.required-attribute {
+    color: #e13939;
+}
+
 * {
     /* Foreground, Background */
     scrollbar-color: #3c4c67 transparent;

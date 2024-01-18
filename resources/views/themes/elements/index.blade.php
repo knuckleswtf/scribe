@@ -111,37 +111,45 @@
                     });
                 }
 
-                return preflightPromise.then(() => makeAPICall(method, path, body, query, headers, endpointId))
-                    .then(([responseStatus, statusText, responseContent, responseHeaders]) => {
-                        responsePanel.hidden = false;
-                        responsePanel.querySelector(`.response-status`).textContent = responseStatus + " " + statusText ;
+                form.reportValidity();
 
-                        let contentEl = responsePanel.querySelector(`.response-content`);
-                        if (responseContent === '') {
-                            contentEl.textContent = contentEl.dataset.emptyResponseText;
-                            return;
-                        }
+                return preflightPromise.then(function () {
+                    if (form.checkValidity()) {
+                        return makeAPICall(method, path, body, query, headers, endpointId)
+                            .then(([responseStatus, statusText, responseContent, responseHeaders]) => {
+                                responsePanel.hidden = false;
+                                responsePanel.querySelector(`.response-status`).textContent = responseStatus + " " + statusText ;
 
-                        // Prettify it if it's JSON
-                        let isJson = false;
-                        try {
-                            const jsonParsed = JSON.parse(responseContent);
-                            if (jsonParsed !== null) {
-                                isJson = true;
-                                responseContent = JSON.stringify(jsonParsed, null, 4);
-                            }
-                        } catch (e) {}
+                                let contentEl = responsePanel.querySelector(`.response-content`);
+                                if (responseContent === '') {
+                                    contentEl.textContent = contentEl.dataset.emptyResponseText;
+                                    return;
+                                }
 
-                        contentEl.innerHTML = responseContent;
-                        isJson && window.hljs.highlightElement(contentEl);
-                    })
-                    .catch(err => {
-                        console.log(err);
-                        let errorMessage = err.message || err;
-                        errorPanel.hidden = false;
-                        errorPanel.querySelector(`.error-message`).textContent = errorMessage;
-                    })
-                    .finally(() => { btnElement.disabled = false } );
+                                // Prettify it if it's JSON
+                                let isJson = false;
+                                try {
+                                    const jsonParsed = JSON.parse(responseContent);
+                                    if (jsonParsed !== null) {
+                                        isJson = true;
+                                        responseContent = JSON.stringify(jsonParsed, null, 4);
+                                    }
+                                } catch (e) {}
+
+                                contentEl.innerHTML = responseContent;
+                                isJson && window.hljs.highlightElement(contentEl);
+                            })
+                            .catch(err => {
+                                console.log(err);
+                                let errorMessage = err.message || err;
+                                errorPanel.hidden = false;
+                                errorPanel.querySelector(`.error-message`).textContent = errorMessage;
+                            })
+                            .finally(() => { btnElement.disabled = false } );
+                    } else {
+                        btnElement.disabled = false;
+                    }
+                });
             }
 
             window.addEventListener('DOMContentLoaded', () => {

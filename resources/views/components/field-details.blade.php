@@ -1,7 +1,7 @@
 @php
     $html ??= []; $class = $html['class'] ?? null;
 @endphp
-<b style="line-height: 2;"><code>{{ $name }}</code></b>&nbsp;&nbsp;
+<b style="line-height: 2;"><code>@if($required) <span class="required-attribute">*</span> @endif {{ $name }}</code></b>&nbsp;&nbsp;
 @if($type)<small>{{ $type }}</small>@endif&nbsp;
 @if($isInput && !$required)<i>optional</i>@endif &nbsp;
 @if($isInput && empty($hasChildren))
@@ -28,6 +28,7 @@
                    value="{{$component === 'body' ? 'true' : 1}}"
                    data-endpoint="{{ $endpointId }}"
                    data-component="{{ $component }}" @if($class)class="{{ $class }}"@endif
+                   @required($required)
             >
             <code>true</code>
         </label>
@@ -36,6 +37,7 @@
                    value="{{$component === 'body' ? 'false' : 0}}"
                    data-endpoint="{{ $endpointId }}"
                    data-component="{{ $component }}" @if($class)class="{{ $class }}"@endif
+                   @required($required)
             >
             <code>false</code>
         </label>
@@ -44,18 +46,21 @@
                @if($inputType === 'number')step="any"@endif
                name="{{ $fullName."[0]" }}" @if($class)class="{{ $class }}"@endif
                data-endpoint="{{ $endpointId }}"
-               data-component="{{ $component }}">
+               data-component="{{ $component }}"
+               @required($required)>
         <input type="{{ $inputType }}" style="display: none"
                name="{{ $fullName."[1]" }}" @if($class)class="{{ $class }}"@endif
                data-endpoint="{{ $endpointId }}"
-               data-component="{{ $component }}">
+               data-component="{{ $component }}"
+               @required($required)>
     @else
         <input type="{{ $inputType }}" style="display: none"
                @if($inputType === 'number')step="any"@endif
                name="{{ $fullName }}" @if($class)class="{{ $class }}"@endif
                data-endpoint="{{ $endpointId }}"
                value="{!! (isset($example) && (is_string($example) || is_numeric($example))) ? $example : '' !!}"
-               data-component="{{ $component }}">
+               data-component="{{ $component }}"
+               @required($required)>
     @endif
 @endif
 <br>
