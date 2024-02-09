@@ -183,6 +183,47 @@ paths:
             operationId: getApiEchoesUrlParametersParamParam2Param3Param4
             parameters:
                 -
+                    in: path
+                    name: param
+                    description: ''
+                    example: '4'
+                    required: true
+                    schema:
+                        type: string
+                -
+                    in: path
+                    name: param2
+                    description: ''
+                    required: true
+                    schema:
+                        type: string
+                    example: consequatur
+                -
+                    in: path
+                    name: param3
+                    description: 'Optional parameter.'
+                    required: true
+                    schema:
+                        type: string
+                    examples:
+                        omitted:
+                            summary: 'When the value is omitted'
+                            value: ''
+                        present:
+                            summary: 'When the value is present'
+                            value: consequatur
+                -
+                    in: path
+                    name: param4
+                    description: 'Optional parameter.'
+                    required: true
+                    schema:
+                        type: string
+                    examples:
+                        omitted:
+                            summary: 'When the value is omitted'
+                            value: ''
+                -
                     in: query
                     name: something
                     description: ''
@@ -219,48 +260,6 @@ paths:
             tags:
                 - Other😎
             security: []
-        parameters:
-            -
-                in: path
-                name: param
-                description: ''
-                example: '4'
-                required: true
-                schema:
-                    type: string
-            -
-                in: path
-                name: param2
-                description: ''
-                required: true
-                schema:
-                    type: string
-                example: consequatur
-            -
-                in: path
-                name: param3
-                description: 'Optional parameter.'
-                required: true
-                schema:
-                    type: string
-                examples:
-                    omitted:
-                        summary: 'When the value is omitted'
-                        value: ''
-                    present:
-                        summary: 'When the value is present'
-                        value: consequatur
-            -
-                in: path
-                name: param4
-                description: 'Optional parameter.'
-                required: true
-                schema:
-                    type: string
-                examples:
-                    omitted:
-                        summary: 'When the value is omitted'
-                        value: ''
     /api/withBodyParametersAsArray:
         post:
             summary: 'Endpoint with body parameters as array.'

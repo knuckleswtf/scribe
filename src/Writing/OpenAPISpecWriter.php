@@ -98,50 +98,6 @@ class OpenAPISpecWriter
 
             $pathItem = $operations;
 
-            // Placing all URL parameters at the path level, since it's the same path anyway
-            if (count($endpoints[0]->urlParameters)) {
-                $parameters = [];
-                /**
-                 * @var string $name
-                 * @var Parameter $details
-                 */
-                foreach ($endpoints[0]->urlParameters as $name => $details) {
-                    $parameterData = [
-                        'in' => 'path',
-                        'name' => $name,
-                        'description' => $details->description,
-                        'example' => $details->example,
-                        // Currently, OAS requires path parameters to be required
-                        'required' => true,
-                        'schema' => [
-                            'type' => $details->type,
-                        ],
-                    ];
-                    // Workaround for optional parameters
-                    if (empty($details->required)) {
-                        $parameterData['description'] = rtrim('Optional parameter. ' . $parameterData['description']);
-                        $parameterData['examples'] = [
-                            'omitted' => [
-                                'summary' => 'When the value is omitted',
-                                'value' => '',
-                            ],
-                        ];
-
-                        if ($parameterData['example'] !== null) {
-                            $parameterData['examples']['present'] = [
-                                'summary' => 'When the value is present',
-                                'value' => $parameterData['example'],
-                            ];
-                        }
-
-                        // Can't have `example` and `examples`
-                        unset($parameterData['example']);
-                    }
-                    $parameters[] = $parameterData;
-                }
-                $pathItem['parameters'] = $parameters; // @phpstan-ignore-line
-            }
-
             return [$path => $pathItem];
         })->toArray();
     }
@@ -156,6 +112,47 @@ class OpenAPISpecWriter
     protected function generateEndpointParametersSpec(OutputEndpointData $endpoint): array
     {
         $parameters = [];
+
+        if (count($endpoint->urlParameters)) {
+            /**
+             * @var string $name
+             * @var Parameter $details
+             */
+            foreach ($endpoint->urlParameters as $name => $details) {
+                $parameterData = [
+                    'in' => 'path',
+                    'name' => $name,
+                    'description' => $details->description,
+                    'example' => $details->example,
+                    // Currently, OAS requires path parameters to be required
+                    'required' => true,
+                    'schema' => [
+                        'type' => $details->type,
+                    ],
+                ];
+                // Workaround for optional parameters
+                if (empty($details->required)) {
+                    $parameterData['description'] = rtrim('Optional parameter. ' . $parameterData['description']);
+                    $parameterData['examples'] = [
+                        'omitted' => [
+                            'summary' => 'When the value is omitted',
+                            'value' => '',
+                        ],
+                    ];
+
+                    if ($parameterData['example'] !== null) {
+                        $parameterData['examples']['present'] = [
+                            'summary' => 'When the value is present',
+                            'value' => $parameterData['example'],
+                        ];
+                    }
+
+                    // Can't have `example` and `examples`
+                    unset($parameterData['example']);
+                }
+                $parameters[] = $parameterData;
+            }
+        }
 
         if (count($endpoint->queryParameters)) {
             /**
