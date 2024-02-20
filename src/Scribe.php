@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class Scribe
 {
-    public const VERSION = '4.30.1';
+    public const VERSION = '4.30.0';
 
     /**
      * Specify a callback that will be executed just before a response call is made
