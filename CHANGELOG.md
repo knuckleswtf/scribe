@@ -12,6 +12,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.31.0 (20 February 2024)
+Last version with support for nikic/php-parser v4
+
 # 4.29.0 (29 December 2023)
 ## Added
 - **More external UIs**: [Stoplight Elements](https://github.com/stoplightio/elements) [#780](https://github.com/knuckleswtf/scribe/pull/780)
