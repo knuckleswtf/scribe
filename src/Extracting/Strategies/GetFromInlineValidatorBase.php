@@ -63,7 +63,7 @@ class GetFromInlineValidatorBase extends Strategy
         $rules = [];
         $customParameterData = [];
         foreach ($validationRules->items as $item) {
-            /** @var Node\Expr\ArrayItem $item */
+            /** @var Node\ArrayItem $item */
             if (!$item->key instanceof Node\Scalar\String_) {
                 continue;
             }
@@ -77,7 +77,7 @@ class GetFromInlineValidatorBase extends Strategy
             } else if ($item->value instanceof Node\Expr\Array_) {
                 $rulesList = [];
                 foreach ($item->value->items as $arrayItem) {
-                    /** @var Node\Expr\ArrayItem $arrayItem */
+                    /** @var Node\ArrayItem $arrayItem */
                     if ($arrayItem->value instanceof Node\Scalar\String_) {
                         $rulesList[] = $arrayItem->value->value;
                     }
@@ -122,14 +122,14 @@ class GetFromInlineValidatorBase extends Strategy
         return [$rules, $customParameterData];
     }
 
-    protected function extractEnumClassFromArrayItem(Node\Expr\ArrayItem $arrayItem): ?string
+    protected function extractEnumClassFromArrayItem(Node\ArrayItem $arrayItem): ?string
     {
         $args = [];
 
         // Enum rule with the form "new Enum(...)"
         if ($arrayItem->value instanceof Node\Expr\New_ &&
             $arrayItem->value->class instanceof Node\Name &&
-            last($arrayItem->value->class->parts) === 'Enum'
+            str_ends_with($arrayItem->value->class->name, 'Enum')
         ) {
             $args = $arrayItem->value->args;
         }
@@ -137,7 +137,7 @@ class GetFromInlineValidatorBase extends Strategy
         // Enum rule with the form "Rule::enum(...)"
         else if ($arrayItem->value instanceof Node\Expr\StaticCall &&
             $arrayItem->value->class instanceof Node\Name &&
-            last($arrayItem->value->class->parts) === 'Rule' &&
+            str_ends_with($arrayItem->value->class->name, 'Rule') &&
             $arrayItem->value->name instanceof Node\Identifier &&
             $arrayItem->value->name->name === 'enum'
         ) {
@@ -150,7 +150,7 @@ class GetFromInlineValidatorBase extends Strategy
         if ($arg->value instanceof Node\Expr\ClassConstFetch &&
             $arg->value->class instanceof Node\Name
         ) {
-            return '\\' . implode('\\', $arg->value->class->parts);
+            return '\\' . $arg->value->class->name;
         } else if ($arg->value instanceof Node\Scalar\String_) {
             return $arg->value->value;
         }

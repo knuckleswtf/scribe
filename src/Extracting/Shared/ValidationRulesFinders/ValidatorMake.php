@@ -24,8 +24,8 @@ class ValidatorMake
 
         if (
             $expr instanceof Node\Expr\StaticCall
-            && !empty($expr->class->parts)
-            && end($expr->class->parts) == "Validator"
+            && !empty($expr->class->name)
+            && str_ends_with($expr->class->name, "Validator")
             && $expr->name->name == "make"
         ) {
             return $expr->args[1]->value;

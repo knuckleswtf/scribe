@@ -43,7 +43,7 @@ class MethodAstParser
      */
     protected static function parseClassSourceCode(string $sourceCode): ?array
     {
-        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
+        $parser = (new ParserFactory)->createForHostVersion();
         try {
             $ast = $parser->parse($sourceCode);
         } catch (Throwable $error) {
