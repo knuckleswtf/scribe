@@ -12,10 +12,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
-# 4.30.1 (18 February 2024)
-## Added
-- Fix compatibility ([#808](https://github.com/knuckleswtf/scribe/pull/808))
-  
 # 4.30.0 (13 February 2024)
 ## Added
 - Compatibility with nikic/php-parser v5 ([#795](https://github.com/knuckleswtf/scribe/pull/795))
