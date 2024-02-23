@@ -16,7 +16,7 @@ class GetFromResponseFieldTag extends GetFieldsFromTagStrategy
     protected function parseTag(string $tagContent): array
     {
         // Format:
-        // @responseField <name> <type> <required> <description>
+        // @responseField <name> <type> <"required" (optional)> <description>
         // Examples:
         // @responseField text string required The text.
         // @responseField user_id integer The ID of the user.
