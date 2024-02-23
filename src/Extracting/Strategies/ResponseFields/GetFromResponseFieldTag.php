@@ -25,12 +25,14 @@ class GetFromResponseFieldTag extends GetFieldsFromTagStrategy
             // This means only name and type were supplied
             [$name, $type] = preg_split('/\s+/', $tagContent);
             $description = '';
+            $required = false;
         } else {
             [$_, $name, $type, $required, $description] = $content;
             if($required !== "required"){
-                $description = $required . $description;
-                $required = false;
+                $description = $required . " " . $description;
             }
+            
+            $required = $required === "required";
             $description = trim($description);
         }
 
