@@ -374,7 +374,7 @@ class OpenAPISpecWriter
                             ],
                             'example' => $decoded,
                         ],
-                    ],
+                    ], 
                 ];
 
             case 'object':
@@ -387,14 +387,14 @@ class OpenAPISpecWriter
                         'schema' => [
                             'type' => 'object',
                             'example' => $decoded,
-                            'properties' => $this->objectIfEmpty($properties)
+                            'properties' => $this->objectIfEmpty($properties),
                         ],
                     ],
                 ];
 
                 $required = $this->generateRequired($endpoint);
 
-                if(! empty( $required)){
+                if(!empty($required)){
                     $data['application/json']['schema']['required'] = $required;
                 }
 
@@ -599,12 +599,12 @@ class OpenAPISpecWriter
      * Given a enpoint, generate the required fields for it. The $endpoint is used for looking up response
      * field custom.
      */
-    public function generateRequired(OutputEndpointData $endpoint,): array
+    public function generateRequired(OutputEndpointData $endpoint): array
     {   
         $requiredFields = [];
         $responseFields  = $endpoint->responseFields;
         foreach ($responseFields as $fieldName => $fieldValue) {
-            if(isset($fieldValue->required) && $fieldValue->required ){
+            if(isset($fieldValue->required) && $fieldValue->required){
                 $requiredFields[] = $fieldName;
             }
         }
