@@ -381,18 +381,24 @@ class OpenAPISpecWriter
                 $properties = collect($decoded)->mapWithKeys(function ($value, $key) use ($endpoint) {
                     return [$key => $this->generateSchemaForValue($value, $endpoint, $key)];
                 })->toArray();
-                $required = $this->generateRequired($endpoint);
 
-                return [
+                $data = [
                     'application/json' => [
                         'schema' => [
                             'type' => 'object',
                             'example' => $decoded,
-                            'properties' => $this->objectIfEmpty($properties),
-                            'required' => $this->objectIfEmpty($required)
+                            'properties' => $this->objectIfEmpty($properties)
                         ],
                     ],
                 ];
+
+                $required = $this->generateRequired($endpoint);
+
+                if(! empty( $required)){
+                    $data['application/json']['schema']['required'] = $required;
+                }
+
+                return $data;
         }
     }
 
