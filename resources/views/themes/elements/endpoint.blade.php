@@ -175,7 +175,7 @@
                                 <div class="sl-bg-canvas-100 example-request example-request-{{ $language }}"
                                      style="{{ $index == 0 ? '' : 'display: none;' }}">
                                     <div class="sl-px-0 sl-py-1">
-                                        <div style="max-height: 400px;" class="sl-rounded">
+                                        <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             @include("scribe::partials.example-requests.$language")
                                         </div>
                                     </div>
