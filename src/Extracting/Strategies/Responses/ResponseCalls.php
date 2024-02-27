@@ -49,8 +49,8 @@ class ResponseCalls extends Strategy
         $this->configureEnvironment($settings);
 
         // Mix in parsed parameters with manually specified parameters.
-        $bodyParameters = array_merge($endpointData->cleanBodyParameters, $settings['bodyParams'] ?? []);
-        $queryParameters = array_merge($endpointData->cleanQueryParameters, $settings['queryParams'] ?? []);
+        $bodyParameters = array_merge($endpointData->cleanBodyParameters, $settings['response_calls']['bodyParams'] ?? []);
+        $queryParameters = array_merge($endpointData->cleanQueryParameters, $settings['response_calls']['queryParams'] ?? []);
         $urlParameters = $endpointData->cleanUrlParameters;
         $headers = $endpointData->headers;
 
