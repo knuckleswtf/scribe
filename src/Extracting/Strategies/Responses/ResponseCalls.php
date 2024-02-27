@@ -47,7 +47,7 @@ class ResponseCalls extends Strategy
 
     public function makeResponseCall(ExtractedEndpointData $endpointData, array $settings): ?array
     {
-        $settings = Extractor::transformOldRouteRulesIntoNewSettings('responses', $settings, ResponseCalls::class);
+        $settings = array_merge($settings, Extractor::transformOldRouteRulesIntoNewSettings('responses', $settings, ResponseCalls::class));
         $this->configureEnvironment($settings);
 
         // Mix in parsed parameters with manually specified parameters.
