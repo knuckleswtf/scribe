@@ -71,7 +71,7 @@ class ResponseCalls extends Strategy
             }
         }
 
-        $hardcodedFileParams = $settings['fileParams'] ?? [];
+        $hardcodedFileParams = $settings['response_calls']['fileParams'] ?? [];
         $hardcodedFileParams = collect($hardcodedFileParams)->map(function ($filePath) {
             $fileName = basename($filePath);
             return new UploadedFile(
@@ -116,7 +116,7 @@ class ResponseCalls extends Strategy
     private function configureEnvironment(array $settings)
     {
         $this->startDbTransaction();
-        $this->setLaravelConfigs($settings['config'] ?? []);
+        $this->setLaravelConfigs($settings['response_calls']['config'] ?? []);
     }
 
     /**
@@ -139,7 +139,7 @@ class ResponseCalls extends Strategy
         $uri = Utils::getUrlWithBoundParameters($url, $urlParams);
         $routeMethods = $this->getMethods($route);
         $method = array_shift($routeMethods);
-        $cookies = $settings['cookies'] ?? [];
+        $cookies = $settings['response_calls']['cookies'] ?? [];
 
         // Note that we initialise the request with the bodyParams here
         // and later still add them to the ParameterBag (`addBodyParameters`)
