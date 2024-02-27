@@ -20,6 +20,7 @@ use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\ErrorHandlingUtils as e;
 use Knuckles\Scribe\Tools\Globals;
 use Knuckles\Scribe\Tools\Utils;
+use Knuckles\Scribe\Extracting\Extractor;
 
 /**
  * Make a call to the route and retrieve its response.
@@ -46,11 +47,12 @@ class ResponseCalls extends Strategy
 
     public function makeResponseCall(ExtractedEndpointData $endpointData, array $settings): ?array
     {
+        $settings = Extractor::transformOldRouteRulesIntoNewSettings('responses', $settings, ResponseCalls::class);
         $this->configureEnvironment($settings);
 
         // Mix in parsed parameters with manually specified parameters.
-        $bodyParameters = array_merge($endpointData->cleanBodyParameters, $settings['response_calls']['bodyParams'] ?? []);
-        $queryParameters = array_merge($endpointData->cleanQueryParameters, $settings['response_calls']['queryParams'] ?? []);
+        $bodyParameters = array_merge($endpointData->cleanBodyParameters, $settings['bodyParams'] ?? []);
+        $queryParameters = array_merge($endpointData->cleanQueryParameters, $settings['queryParams'] ?? []);
         $urlParameters = $endpointData->cleanUrlParameters;
         $headers = $endpointData->headers;
 
@@ -71,7 +73,7 @@ class ResponseCalls extends Strategy
             }
         }
 
-        $hardcodedFileParams = $settings['response_calls']['fileParams'] ?? [];
+        $hardcodedFileParams = $settings['fileParams'] ?? [];
         $hardcodedFileParams = collect($hardcodedFileParams)->map(function ($filePath) {
             $fileName = basename($filePath);
             return new UploadedFile(
@@ -116,7 +118,7 @@ class ResponseCalls extends Strategy
     private function configureEnvironment(array $settings)
     {
         $this->startDbTransaction();
-        $this->setLaravelConfigs($settings['response_calls']['config'] ?? []);
+        $this->setLaravelConfigs($settings['config'] ?? []);
     }
 
     /**
@@ -139,7 +141,7 @@ class ResponseCalls extends Strategy
         $uri = Utils::getUrlWithBoundParameters($url, $urlParams);
         $routeMethods = $this->getMethods($route);
         $method = array_shift($routeMethods);
-        $cookies = $settings['response_calls']['cookies'] ?? [];
+        $cookies = $settings['cookies'] ?? [];
 
         // Note that we initialise the request with the bodyParams here
         // and later still add them to the ParameterBag (`addBodyParameters`)
