@@ -470,6 +470,10 @@ class OpenAPISpecWriter
                 'format' => 'binary',
             ] : ['type' => $baseType];
 
+            if (!empty($field->enumValues)) {
+                $baseItem['enum'] = $field->enumValues;
+            }
+
             $fieldData = [
                 'type' => 'array',
                 'description' => $field->description ?: '',
