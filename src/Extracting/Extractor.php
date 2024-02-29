@@ -229,7 +229,7 @@ class Extractor
                 }
             } else {
                 $strategyClass = $strategyClassOrTuple;
-                $settings = $rulesToApply;
+                $settings = self::transformOldRouteRulesIntoNewSettings($stage, $rulesToApply, $strategyClass);
             }
 
             $strategy = new $strategyClass($this->config);
@@ -468,6 +468,8 @@ class Extractor
         }
     }
 
+    // In the past, we defined rules at the `routes` level;
+    // currently, they should be defined as parameters to the ResponseCalls strategy
     public static function transformOldRouteRulesIntoNewSettings($stage, $rulesToApply, $strategyName, $strategySettings = [])
     {
         if ($stage == 'headers' && Str::is('*RouteRules*', $strategyName)) {
