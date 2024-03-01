@@ -12,6 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.33.0 (29 February 2024)
+## Fixed
+- List enums for array items in OpenAPI spec [#818](https://github.com/knuckleswtf/scribe/pull/818)
+- UI fix for `elements` theme [#815](https://github.com/knuckleswtf/scribe/pull/818)
+
 # 4.32.0 (20 February 2024)
 Support nikic/php-parser v5
 
