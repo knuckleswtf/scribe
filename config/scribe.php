@@ -157,6 +157,9 @@ INTRO
     'openapi' => [
         'enabled' => true,
 
+        // The output format for the spec, either 'yaml' or 'json'.
+        'format' => 'yaml',
+
         'overrides' => [
             // 'info.version' => '2.0.0',
         ],

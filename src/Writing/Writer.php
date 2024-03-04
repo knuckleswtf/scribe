@@ -95,12 +95,21 @@ class Writer
             c::info('Generating OpenAPI specification');
 
             $spec = $this->generateOpenAPISpec($parsedRoutes);
-            if ($this->isStatic) {
-                $specPath = "{$this->staticTypeOutputPath}/openapi.yaml";
-                file_put_contents($specPath, $spec);
+
+            if (config('scribe.openapi.format') === 'json') {
+                $fileName = "openapi.json";
+                $fileContent = json_encode($spec, JSON_PRETTY_PRINT);
             } else {
-                $outputPath = $this->paths->outputPath('openapi.yaml');
-                Storage::disk('local')->put($outputPath, $spec);
+                $fileName = "openapi.yaml";
+                $fileContent = Yaml::dump($spec, 20, 2, Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP);
+            }
+
+            if ($this->isStatic) {
+                $specPath = "{$this->staticTypeOutputPath}/{$fileName}";
+                file_put_contents($specPath, $fileContent);
+            } else {
+                $outputPath = $this->paths->outputPath($fileName);
+                Storage::disk('local')->put($outputPath, $fileContent);
                 $specPath = Storage::disk('local')->path($outputPath);
             }
 
@@ -134,9 +143,9 @@ class Writer
     /**
      * @param array[] $groupedEndpoints
      *
-     * @return string
+     * @return array
      */
-    public function generateOpenAPISpec(array $groupedEndpoints): string
+    public function generateOpenAPISpec(array $groupedEndpoints): array
     {
         /** @var OpenAPISpecWriter $writer */
         $writer = app()->makeWith(OpenAPISpecWriter::class, ['config' => $this->config]);
@@ -148,7 +157,8 @@ class Writer
                 data_set($spec, $key, $value);
             }
         }
-        return Yaml::dump($spec, 20, 2, Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP);
+
+        return $spec;
     }
 
     protected function performFinalTasksForLaravelType(): void
