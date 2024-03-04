@@ -18,6 +18,6 @@ $router->group([
         return new JsonResponse(Storage::disk('local')->get('scribe/collection.json'), json: true);
     })->name('scribe.postman');
     $router->get("$prefix.openapi", function () {
-        return response()->file(Storage::disk('local')->path('scribe/openapi.yaml'));
+        return response()->file(Storage::disk('local')->path('scribe/openapi.' . config('scribe.openapi.format')));
     })->name('scribe.openapi');
 });

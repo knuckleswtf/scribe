@@ -203,7 +203,7 @@ class OutputTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function generated_openapi_spec_file_is_correct()
+    public function generated_openapi_spec_file_is_correct_yaml()
     {
         RouteFacade::post('/api/withBodyParametersAsArray', [TestController::class, 'withBodyParametersAsArray']);
         RouteFacade::post('/api/withFormDataParams', [TestController::class, 'withFormDataParams']);
@@ -228,6 +228,37 @@ class OutputTest extends BaseLaravelTest
         );
 
         $generatedSpec = Yaml::parseFile($this->openapiOutputPath());
+        $fixtureSpec = Yaml::parseFile(__DIR__ . '/../Fixtures/openapi.yaml');
+        $this->assertEquals($fixtureSpec, $generatedSpec);
+    }
+
+    /** @test */
+    public function generated_openapi_spec_file_is_correct_json()
+    {
+        RouteFacade::post('/api/withBodyParametersAsArray', [TestController::class, 'withBodyParametersAsArray']);
+        RouteFacade::post('/api/withFormDataParams', [TestController::class, 'withFormDataParams']);
+        RouteFacade::get('/api/withResponseTag', [TestController::class, 'withResponseTag']);
+        RouteFacade::get('/api/withQueryParameters', [TestController::class, 'withQueryParameters']);
+        RouteFacade::get('/api/withAuthTag', [TestController::class, 'withAuthenticatedTag']);
+        RouteFacade::get('/api/echoesUrlParameters/{param}/{param2}/{param3?}/{param4?}', [TestController::class, 'echoesUrlParameters']);
+
+        $this->setConfig([
+            'openapi.enabled' => true,
+            'openapi.format' => 'json',
+            'openapi.overrides' => [
+                'info.version' => '3.9.9',
+            ],
+            'routes.0.apply.headers' => [
+                'Custom-Header' => 'NotSoCustom',
+            ],
+        ]);
+
+        $this->generateAndExpectConsoleOutput(
+            "Wrote HTML docs and assets to: public/docs/",
+            "Wrote OpenAPI specification to: public/docs/openapi.json"
+        );
+
+        $generatedSpec = json_decode(file_get_contents($this->openapiOutputPath(extension: 'json')), associative: true);
         $fixtureSpec = Yaml::parseFile(__DIR__ . '/../Fixtures/openapi.yaml');
         $this->assertEquals($fixtureSpec, $generatedSpec);
     }
@@ -623,10 +654,12 @@ class OutputTest extends BaseLaravelTest
             ? Storage::disk('local')->path('scribe/collection.json') : 'public/docs/collection.json';
     }
 
-    protected function openapiOutputPath(bool $laravelType = false): string
+    protected function openapiOutputPath(bool $laravelType = false, string $extension = 'yaml'): string
     {
+        $filename = "openapi.{$extension}";
+
         return $laravelType
-            ? Storage::disk('local')->path('scribe/openapi.yaml') : 'public/docs/openapi.yaml';
+            ? Storage::disk('local')->path("scribe/$filename") : ("public/docs/$filename");
     }
 
     protected function htmlOutputPath(): string

@@ -186,8 +186,8 @@ class Writer
         $contents = preg_replace('#href="\.\./docs/css/(.+?)"#', 'href="{{ asset("' . $this->laravelAssetsPath . '/css/$1") }}"', $contents);
         $contents = preg_replace('#src="\.\./docs/(js|images)/(.+?)"#', 'src="{{ asset("' . $this->laravelAssetsPath . '/$1/$2") }}"', $contents);
         $contents = str_replace('href="../docs/collection.json"', 'href="{{ route("' . $this->paths->outputPath('postman', '.') . '") }}"', $contents);
-        $contents = str_replace('href="../docs/openapi.yaml"', 'href="{{ route("' . $this->paths->outputPath('openapi', '.') . '") }}"', $contents);
-        $contents = str_replace('url="../docs/openapi.yaml"', 'url="{{ route("' . $this->paths->outputPath('openapi', '.') . '") }}"', $contents);
+        $contents = str_replace('href="../docs/openapi.' . config('scribe.openapi.format') . '"', 'href="{{ route("' . $this->paths->outputPath('openapi', '.') . '") }}"', $contents);
+        $contents = str_replace('url="../docs/openapi.' . config('scribe.openapi.format') . '"', 'url="{{ route("' . $this->paths->outputPath('openapi', '.') . '") }}"', $contents);
 
         file_put_contents("$this->laravelTypeOutputPath/index.blade.php", $contents);
     }

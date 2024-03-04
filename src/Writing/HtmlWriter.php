@@ -117,8 +117,8 @@ class HtmlWriter
             $postmanCollectionUrl = "{$this->assetPathPrefix}collection.json";
         }
         if ($this->config->get('openapi.enabled', false)) {
-            $links[] = "<a href=\"{$this->assetPathPrefix}openapi.yaml\">".u::trans("scribe::links.openapi")."</a>";
-            $openApiSpecUrl = "{$this->assetPathPrefix}openapi.yaml";
+            $links[] = "<a href=\"{$this->assetPathPrefix}openapi.".config('scribe.openapi.format')."\">".u::trans("scribe::links.openapi")."</a>";
+            $openApiSpecUrl = "{$this->assetPathPrefix}openapi.".config('scribe.openapi.format');
         }
 
         $auth = $this->config->get('auth');
