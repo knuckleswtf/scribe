@@ -249,7 +249,6 @@ class OpenAPISpecWriter
             }
 
             $body['content'][$contentType]['schema'] = $schema;
-
         }
 
         // return object rather than empty array, so can get properly serialised as object
@@ -528,7 +527,7 @@ class OpenAPISpecWriter
         if ($endpoint->metadata->title) return preg_replace('/[^\w+]/', '', Str::camel($endpoint->metadata->title));
 
         $parts = preg_split('/[^\w+]/', $endpoint->uri, -1, PREG_SPLIT_NO_EMPTY);
-        return Str::lower($endpoint->httpMethods[0]) . join('', array_map(fn($part) => ucfirst($part), $parts));
+        return Str::lower($endpoint->httpMethods[0]) . join('', array_map(fn ($part) => ucfirst($part), $parts));
     }
 
     /**
@@ -585,5 +584,15 @@ class OpenAPISpecWriter
         }
 
         return $schema;
+    }
+
+    /**
+     * Get the filename for the OpenAPI spec file, with a .yaml or .json extension following the configuration
+     *
+     * @return string
+     */
+    public static function getSpecFileName(): string
+    {
+        return 'openapi.' . (config('scribe.openapi.json', false)  ? 'json' : 'yaml');
     }
 }

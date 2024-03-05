@@ -16,6 +16,6 @@ Route::middleware($middleware)
         })->name('scribe.postman');
 
         Route::get("$prefix.openapi", function () {
-            return response()->file(Storage::disk('local')->path('scribe/openapi.' . config('scribe.openapi.format')));
+            return response()->file(Storage::disk('local')->path('scribe/openapi.' . (config('scribe.openapi.json', false) ? 'json' : 'yaml')));
         })->name('scribe.openapi');
     });

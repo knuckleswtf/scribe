@@ -118,7 +118,7 @@ class BehavioursTest extends BaseLaravelTest
             'html' => realpath('public/docs/index.html'),
             'blade' => null,
             'postman' => realpath('public/docs/collection.json') ?: null,
-            'openapi' => realpath('public/docs/openapi.'.config('scribe.openapi.format')) ?: null,
+            'openapi' => realpath('public/docs/openapi.'.(config('scribe.openapi.json') ? 'json' : 'yaml')) ?: null,
             'assets' => [
                 'js' => realpath('public/docs/js'),
                 'css' => realpath('public/docs/css'),

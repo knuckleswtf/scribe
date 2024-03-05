@@ -96,19 +96,17 @@ class Writer
 
             $spec = $this->generateOpenAPISpec($parsedRoutes);
 
-            if (config('scribe.openapi.format') === 'json') {
-                $fileName = "openapi.json";
+            if (config('scribe.openapi.json', false)) {
                 $fileContent = json_encode($spec, JSON_PRETTY_PRINT);
             } else {
-                $fileName = "openapi.yaml";
                 $fileContent = Yaml::dump($spec, 20, 2, Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP);
             }
 
             if ($this->isStatic) {
-                $specPath = "{$this->staticTypeOutputPath}/{$fileName}";
+                $specPath = "{$this->staticTypeOutputPath}/" . OpenAPISpecWriter::getSpecFileName();
                 file_put_contents($specPath, $fileContent);
             } else {
-                $outputPath = $this->paths->outputPath($fileName);
+                $outputPath = $this->paths->outputPath(OpenAPISpecWriter::getSpecFileName());
                 Storage::disk('local')->put($outputPath, $fileContent);
                 $specPath = Storage::disk('local')->path($outputPath);
             }
@@ -186,8 +184,8 @@ class Writer
         $contents = preg_replace('#href="\.\./docs/css/(.+?)"#', 'href="{{ asset("' . $this->laravelAssetsPath . '/css/$1") }}"', $contents);
         $contents = preg_replace('#src="\.\./docs/(js|images)/(.+?)"#', 'src="{{ asset("' . $this->laravelAssetsPath . '/$1/$2") }}"', $contents);
         $contents = str_replace('href="../docs/collection.json"', 'href="{{ route("' . $this->paths->outputPath('postman', '.') . '") }}"', $contents);
-        $contents = str_replace('href="../docs/openapi.' . config('scribe.openapi.format') . '"', 'href="{{ route("' . $this->paths->outputPath('openapi', '.') . '") }}"', $contents);
-        $contents = str_replace('url="../docs/openapi.' . config('scribe.openapi.format') . '"', 'url="{{ route("' . $this->paths->outputPath('openapi', '.') . '") }}"', $contents);
+        $contents = str_replace('href="../docs'.OpenAPISpecWriter::getSpecFileName().'"', 'href="{{ route("' . $this->paths->outputPath('openapi', '.') . '") }}"', $contents);
+        $contents = str_replace('url="../docs'.OpenAPISpecWriter::getSpecFileName().'"', 'url="{{ route("' . $this->paths->outputPath('openapi', '.') . '") }}"', $contents);
 
         file_put_contents("$this->laravelTypeOutputPath/index.blade.php", $contents);
     }

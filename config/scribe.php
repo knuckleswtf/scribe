@@ -154,11 +154,9 @@ INTRO
     // For 'static' docs, the collection will be generated to public/docs/openapi.yaml.
     // For 'laravel' docs, it will be generated to storage/app/scribe/openapi.yaml.
     // Setting `laravel.add_routes` to true (above) will also add a route for the spec.
+    // If the json format is chosen, the file will be saved as openapi.json
     'openapi' => [
         'enabled' => true,
-
-        // The output format for the spec, either 'yaml' or 'json'.
-        'format' => 'yaml',
 
         'overrides' => [
             // 'info.version' => '2.0.0',

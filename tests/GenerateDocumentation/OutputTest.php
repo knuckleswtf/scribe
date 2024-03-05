@@ -244,7 +244,7 @@ class OutputTest extends BaseLaravelTest
 
         $this->setConfig([
             'openapi.enabled' => true,
-            'openapi.format' => 'json',
+            'openapi.json' => true,
             'openapi.overrides' => [
                 'info.version' => '3.9.9',
             ],

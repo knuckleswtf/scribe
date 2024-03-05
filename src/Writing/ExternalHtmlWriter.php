@@ -33,7 +33,8 @@ class ExternalHtmlWriter extends HtmlWriter
             $postmanCollectionUrl = "{$this->assetPathPrefix}collection.json";
         }
         if ($this->config->get('openapi.enabled', false)) {
-            $openApiSpecUrl = "{$this->assetPathPrefix}openapi." . config('scribe.openapi.format');
+            $openApiSpecUrl = $this->assetPathPrefix . OpenAPISpecWriter::getSpecFileName();
+
         }
         return [
             'title' => $this->config->get('title') ?: config('app.name', '') . ' Documentation',
