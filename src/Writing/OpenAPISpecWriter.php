@@ -381,6 +381,7 @@ class OpenAPISpecWriter
                 $properties = collect($decoded)->mapWithKeys(function ($value, $key) use ($endpoint) {
                     return [$key => $this->generateSchemaForValue($value, $endpoint, $key)];
                 })->toArray();
+                $required = $this->filterRequiredFields($endpoint, array_keys($properties));
 
                 $data = [
                     'application/json' => [
@@ -391,10 +392,7 @@ class OpenAPISpecWriter
                         ],
                     ],
                 ];
-
-                $required = $this->generateRequired($endpoint);
-
-                if(!empty($required)){
+                if ($required) {
                     $data['application/json']['schema']['required'] = $required;
                 }
 
@@ -567,11 +565,16 @@ class OpenAPISpecWriter
                 $subFieldPath = sprintf('%s.%s', $path, $subField);
                 $properties[$subField] = $this->generateSchemaForValue($subValue, $endpoint, $subFieldPath);
             }
+            $required = $this->filterRequiredFields($endpoint, array_keys($properties));
 
-            return [
+            $schema = [
                 'type' => 'object',
                 'properties' => $this->objectIfEmpty($properties),
             ];
+            if ($required) {
+                $schema['required'] = $required;
+            }
+            return $schema;
         }
 
         $schema = [
@@ -600,18 +603,17 @@ class OpenAPISpecWriter
     }
 
     /**
-     * Given a enpoint, generate the required fields for it. The $endpoint is used for looking up response
-     * field custom.
+     * Given an enpoint and a set of properties, return the properties that are specified as required.
      */
-    public function generateRequired(OutputEndpointData $endpoint): array
-    {   
-        $requiredFields = [];
-        $responseFields  = $endpoint->responseFields;
-        foreach ($responseFields as $fieldName => $fieldValue) {
-            if(isset($fieldValue->required) && $fieldValue->required){
-                $requiredFields[] = $fieldName;
+    public function filterRequiredFields(OutputEndpointData $endpoint, array $properties): array
+    {
+        $required = [];
+        foreach ($properties as $property) {
+            if (isset($endpoint->responseFields[$property]) && $endpoint->responseFields[$property]->required) {
+                $required[] = $property;
             }
         }
-        return $requiredFields;
+
+        return $required;
     }
 }
