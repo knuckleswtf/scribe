@@ -8,6 +8,11 @@
     <!-- Embed elements Elements via Web Component -->
     <script src="https://unpkg.com/@stoplight/elements/web-components.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/@stoplight/elements/styles.min.css">
+    <style>
+        body {
+            height: 100vh;
+        }
+    </style>
 </head>
 <body>
 
