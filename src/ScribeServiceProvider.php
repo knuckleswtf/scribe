@@ -120,7 +120,7 @@ class ScribeServiceProvider extends ServiceProvider
     public function loadCustomTranslationLayer(): void
     {
         $this->app->extend('translation.loader', function ($defaultFileLoader) {
-            return new CustomTranslationsLoader($defaultFileLoader);
+            return app(CustomTranslationsLoader::class, ['loader' => $defaultFileLoader]);
         });
         $this->app->forgetInstance('translator');
         self::$customTranslationLayerLoaded = true;

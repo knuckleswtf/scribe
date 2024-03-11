@@ -364,7 +364,7 @@ class Utils
     {
         // We only load our custom translation layer if we really need it
         if (!ScribeServiceProvider::$customTranslationLayerLoaded) {
-            (new ScribeServiceProvider(app()))->loadCustomTranslationLayer();
+            app(ScribeServiceProvider::class, ['app' => app()])->loadCustomTranslationLayer();
         }
 
         $translation = trans($key, $replace);
