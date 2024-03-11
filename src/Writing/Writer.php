@@ -13,12 +13,12 @@ use Symfony\Component\Yaml\Yaml;
 
 class Writer
 {
-    private bool $isStatic;
-    private bool $isExternal;
+    protected bool $isStatic;
+    protected bool $isExternal;
 
-    private ?string $staticTypeOutputPath;
+    protected ?string $staticTypeOutputPath;
 
-    private ?string $laravelTypeOutputPath;
+    protected ?string $laravelTypeOutputPath;
     protected array $generatedFiles = [
         'postman' => null,
         'openapi' => null,
@@ -31,7 +31,7 @@ class Writer
         ],
     ];
 
-    private string $laravelAssetsPath;
+    protected string $laravelAssetsPath;
 
     public function __construct(protected DocumentationConfig $config, public PathConfig $paths)
     {
