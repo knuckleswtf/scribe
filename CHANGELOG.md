@@ -12,6 +12,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.34.0 (15 March 2024)
+## Added
+- Laravel 11 compatibility [#812](https://github.com/knuckleswtf/scribe/pull/812)
+
+## Modified
+- Instantiate some classes via service container for easier overriding. [#822](https://github.com/knuckleswtf/scribe/pull/822)
+
 # 4.33.0 (29 February 2024)
 ## Fixed
 - List enums for array items in OpenAPI spec [#818](https://github.com/knuckleswtf/scribe/pull/818)
