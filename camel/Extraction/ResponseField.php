@@ -19,5 +19,8 @@ class ResponseField extends BaseDTO
     /** @var string */
     public $type;
 
+    /** @var mixed */
+    public $example;
+
     public array $enumValues = [];
 }
