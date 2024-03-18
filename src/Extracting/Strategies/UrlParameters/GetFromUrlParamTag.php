@@ -18,7 +18,7 @@ class GetFromUrlParamTag extends GetFieldsFromTagStrategy
         // @urlParam user_id The ID of the user.
 
         // We match on all the possible types for URL parameters. It's a limited range, so no biggie.
-        preg_match('/(\w+?)\s+((int|integer|string|float|double|number)\s+)?(required\s+)?([\s\S]*)/', $tagContent, $content);
+        preg_match('/(\w+?)\s+((int|integer|string|float|double|number|uuid)\s+)?(required\s+)?([\s\S]*)/', $tagContent, $content);
         if (empty($content)) {
             // This means only name was supplied
             $name = $tagContent;
