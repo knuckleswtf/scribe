@@ -263,12 +263,34 @@ class OpenAPISpecWriter
 
         foreach ($endpoint->responses as $response) {
             // OpenAPI groups responses by status code
-            // Only one response type per status code, so only the last one will be used
+            // OpenAPI 3.0 allows multiple different response content types and schemas per content type (via oneOf), so all responses will be used and merged (but not deduplicated)
+            // Only the first response per status code sets the overall description of the response status code
             if (intval($response->status) === 204) {
                 // Must not add content for 204
                 $responses[204] = [
                     'description' => $this->getResponseDescription($response),
                 ];
+            } elseif (isset($responses[$response->status])) {
+                $content = $this->generateResponseContentSpec($response->content, $endpoint);
+                $contentType = array_keys($content)[0];
+                if (isset($responses[$response->status]['content'][$contentType])) {
+                    if (!isset($responses[$response->status]['content'][$contentType]['schema']['oneOf'])) {
+                        $oldSchema = array_replace([
+                            'description' => $responses[$response->status]['description'],
+                        ], $responses[$response->status]['content'][$contentType]['schema']);
+
+                        $responses[$response->status]['content'][$contentType]['schema'] = [
+                            'oneOf' => [$newSchema],
+                        ];
+                    }
+                    $newSchema = array_replace([
+                        'description' => $this->getResponseDescription($response),
+                    ], $content[$contentType]['schema']);
+
+                    $responses[$response->status]['content'][$contentType]['schema']['oneOf'][] = $newSchema;
+                } else {
+                    $responses[$response->status]['content'][$contentType] = $content[$contentType];
+                }
             } else {
                 $responses[$response->status] = [
                     'description' => $this->getResponseDescription($response),
