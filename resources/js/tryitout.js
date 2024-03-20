@@ -194,6 +194,11 @@ async function executeTryOut(endpointId, form) {
     const bodyParameters = form.querySelectorAll('input[data-component=body]');
     bodyParameters.forEach(el => {
         let value = el.value;
+
+        if (el.type === 'number' && typeof value === 'string') {
+            value = parseFloat(value);
+        }
+
         if (el.type === 'file' && el.files[0]) {
             setter(el.name, el.files[0]);
             return;
