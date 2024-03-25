@@ -3,7 +3,6 @@
 namespace Knuckles\Scribe\Writing;
 
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\Globals;
@@ -96,6 +95,7 @@ class Writer
 
             $spec = $this->generateOpenAPISpec($parsedRoutes);
             if ($this->isStatic) {
+                Utils::makeDirectoryRecursive($this->staticTypeOutputPath);
                 $specPath = "{$this->staticTypeOutputPath}/openapi.yaml";
                 file_put_contents($specPath, $spec);
             } else {
