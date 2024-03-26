@@ -12,6 +12,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.35.0 (26 March 2024)
+## Modified
+- Allow examples to be shown in response fields [#825](https://github.com/knuckleswtf/scribe/pull/825)
+
+## Fixed
+- Try It Out: send numbers in JSON as float, not strings [#830](https://github.com/knuckleswtf/scribe/pull/830)
+- Fix "No such file or directory" error [#829](https://github.com/knuckleswtf/scribe/pull/829)
+- Fix translating rules with translation engines that don't return arrays [#826](https://github.com/knuckleswtf/scribe/pull/826)
+
 # 4.34.0 (15 March 2024)
 ## Added
 - Laravel 11 compatibility [#812](https://github.com/knuckleswtf/scribe/pull/812)
