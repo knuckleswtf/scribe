@@ -33,9 +33,9 @@
 
 @if($tryItOut['enabled'] ?? true)
     <script>
-        var tryItOutBaseUrl = "{{ $tryItOut['base_url'] ?? config('app.url') }}";
-        var useCsrf = Boolean({{ $tryItOut['use_csrf'] ?? null }});
-        var csrfUrl = "{{ $tryItOut['csrf_url'] ?? null }}";
+        var tryItOutBaseUrl = "{!! $tryItOut['base_url'] ?? config('app.url') !!}";
+        var useCsrf = Boolean({!! $tryItOut['use_csrf'] ?? null !!});
+        var csrfUrl = "{!! $tryItOut['csrf_url'] ?? null !!}";
     </script>
     <script src="{{ u::getVersionedAsset($assetPathPrefix.'js/tryitout.js') }}"></script>
 @endif
