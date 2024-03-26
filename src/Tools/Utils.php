@@ -9,6 +9,7 @@ use FastRoute\RouteParser\Std;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Routing\Route;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Knuckles\Scribe\Exceptions\CouldntFindFactory;
 use Knuckles\Scribe\Exceptions\CouldntGetRouteDetails;
@@ -189,6 +190,11 @@ class Utils
                 self::copyDirectory($f->getRealPath(), "$dest/$f");
             }
         }
+    }
+
+    public static function makeDirectoryRecursive(string $dir): void
+    {
+        File::isDirectory($dir) || File::makeDirectory($dir, 0777, true, true);
     }
 
     public static function deleteFilesMatching(string $dir, callable $condition): void
