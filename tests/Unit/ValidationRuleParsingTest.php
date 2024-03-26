@@ -4,6 +4,7 @@ namespace Knuckles\Scribe\Tests\Unit;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Translation\Translator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Knuckles\Scribe\Extracting\ParsesValidationRules;
@@ -597,6 +598,32 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             array_map(fn ($case) => $case->value, Fixtures\TestStringBackedEnum::cases())
         ));
     }
+
+    /** @test */
+    public function can_translate_validation_rules_with_types_with_translator_without_array_support()
+    {
+        // Single line DocComment
+        $ruleset = [
+            'nested' => [
+                'string', 'max:20',
+            ],
+        ];
+
+        $results = $this->strategy->parse($ruleset);
+
+        $this->assertEquals('Must not be greater than 20 characters.', $results['nested']['description']);
+
+        $this->app->extend('translator', function ($command, $app) {
+            $loader = $app['translation.loader'];
+            $locale = $app['config']['app.locale'];
+            return new DummyTranslator($loader, $locale);
+        });
+
+        $results = $this->strategy->parse($ruleset);
+
+        $this->assertEquals('successfully translated by concatenated string.', $results['nested']['description']);
+
+    }
 }
 
 class DummyValidationRule implements \Illuminate\Contracts\Validation\Rule
@@ -671,5 +698,17 @@ if ($laravel10Rules) {
                 'description' => 'This is a custom rule.',
             ];
         }
+    }
+}
+
+class DummyTranslator extends Translator
+{
+    public function get($key, array $replace = [], $locale = null, $fallback = true)
+    {
+        if ($key === 'validation.max.string') {
+            return 'successfully translated by concatenated string';
+        }
+
+        return $key;
     }
 }

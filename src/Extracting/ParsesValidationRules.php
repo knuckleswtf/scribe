@@ -778,11 +778,21 @@ trait ParsesValidationRules
             return "Must match the regex {$arguments[':regex']}.";
         }
 
-        $description = trans("validation.{$rule}");
-        // For rules that can apply to multiple types (eg 'max' rule), Laravel returns an array of possible messages
+        $translationString = "validation.{$rule}";
+        $description = trans($translationString);
+
+        // For rules that can apply to multiple types (eg 'max' rule), There is an array of possible messages
         // 'numeric' => 'The :attribute must not be greater than :max'
         // 'file' => 'The :attribute must have a size less than :max kilobytes'
-        if (is_array($description)) {
+        // Depending on the translation engine, trans may return the array, or it will fail to translate the string
+        // and will need to be called with the baseType appended.
+        if ($description === $translationString) {
+            $translationString = "{$translationString}.{$baseType}";
+            $translated = trans($translationString);
+            if ($translated !== $translationString) {
+                $description = $translated;
+            }
+        } elseif (is_array($description)) {
             $description = $description[$baseType];
         }
 
