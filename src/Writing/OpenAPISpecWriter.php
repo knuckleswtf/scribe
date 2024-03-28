@@ -462,6 +462,7 @@ class OpenAPISpecWriter
                 'type' => 'string',
                 'format' => 'binary',
                 'description' => $field->description ?: '',
+                'nullable' => $field->nullable,
             ];
         } else if (Utils::isArrayType($field->type)) {
             $baseType = Utils::getBaseTypeFromArrayType($field->type);
@@ -474,6 +475,10 @@ class OpenAPISpecWriter
                 $baseItem['enum'] = $field->enumValues;
             }
 
+            if ($field->nullable) {
+                $baseItem['nullable'] = true;
+            }
+
             $fieldData = [
                 'type' => 'array',
                 'description' => $field->description ?: '',
@@ -483,6 +488,7 @@ class OpenAPISpecWriter
                         'name' => '',
                         'type' => $baseType,
                         'example' => ($field->example ?: [null])[0],
+                        'nullable' => $field->nullable,
                     ])
                     : $baseItem,
             ];
@@ -509,6 +515,7 @@ class OpenAPISpecWriter
                 'type' => 'object',
                 'description' => $field->description ?: '',
                 'example' => $field->example,
+                'nullable'=> $field->nullable,
                 'properties' => $this->objectIfEmpty(collect($field->__fields)->mapWithKeys(function ($subfield, $subfieldName) {
                     return [$subfieldName => $this->generateFieldData($subfield)];
                 })->all()),
@@ -518,6 +525,7 @@ class OpenAPISpecWriter
                 'type' => static::normalizeTypeName($field->type),
                 'description' => $field->description ?: '',
                 'example' => $field->example,
+                'nullable' => $field->nullable,
             ];
             if (!empty($field->enumValues)) {
                 $schema['enum'] = $field->enumValues;
