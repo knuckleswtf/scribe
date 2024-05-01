@@ -173,7 +173,7 @@
                                             <input aria-label="{{ $name }}" name="{{ $name }}"
                                                    id="queryparam-{{ $endpoint->endpointId() }}-{{ $name }}"
                                                    placeholder="{{ $parameter->description }}"
-                                                   value="{{ $parameter->example }}" data-component="query"
+                                                   value="{{ is_bool($parameter->example) ? var_export($parameter->example, true) : $parameter->example }}" data-component="query"
                                                    class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border"
                                             >
                                         @endif

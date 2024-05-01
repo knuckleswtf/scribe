@@ -49,12 +49,20 @@
                 @endif
             </div>
         @endif
-        @if(!$hasChildren && !is_null($example) && $example != '')
+        @if(!$hasChildren && !is_null($example) && $example !== '')
             <div class="sl-stack sl-stack--horizontal sl-stack--2 sl-flex sl-flex-row sl-items-baseline sl-text-muted">
                 <span>Example:</span> <!-- <span> important for spacing -->
                 <div class="sl-flex sl-flex-1 sl-flex-wrap" style="gap: 4px;">
                     <div class="sl-max-w-full sl-break-all sl-px-1 sl-bg-canvas-tint sl-text-muted sl-rounded sl-border">
-                        {{ is_array($example) ? json_encode($example) : $example }}
+
+                        @if(is_array($example))
+                            {{ json_encode($example) }}
+                        @elseif(is_bool($example))
+                            {{ var_export($example, true) }}
+                        @else
+                            {{ $example }}
+                        @endif
+
                     </div>
                 </div>
             </div>
