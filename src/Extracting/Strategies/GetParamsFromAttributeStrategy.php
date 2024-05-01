@@ -34,7 +34,7 @@ class GetParamsFromAttributeStrategy extends PhpAttributeStrategy
                 'name' => $data['name'],
                 'enumValues' => $data['enumValues'],
             ]);
-        } else if ($data['example'] == 'No-example' || $data['example'] == 'No-example.') {
+        } else if ($data['example'] === 'No-example' || $data['example'] === 'No-example.') {
             $data['example'] = null;
         }
 
