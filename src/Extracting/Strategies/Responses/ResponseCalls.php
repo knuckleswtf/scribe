@@ -2,17 +2,18 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 
-use Illuminate\Support\Facades\Config;
-use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Dingo\Api\Dispatcher;
 use Dingo\Api\Routing\Route as DingoRoute;
 use Exception;
 use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Routing\Route;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
+use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Extracting\DatabaseTransactionHelpers;
 use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
@@ -89,6 +90,9 @@ class ResponseCalls extends Strategy
 
         try {
             $response = $this->makeApiCall($request, $endpointData->route);
+
+            $this->runPostRequestHook($request, $endpointData, $response);
+
             $response = [
                 [
                     'status' => $response->getStatusCode(),
@@ -167,6 +171,13 @@ class ResponseCalls extends Strategy
     {
         if (is_callable(Globals::$__beforeResponseCall)) {
             call_user_func_array(Globals::$__beforeResponseCall, [$request, $endpointData]);
+        }
+    }
+
+    protected function runPostRequestHook(Request $request, ExtractedEndpointData $endpointData, JsonResponse $jsonResponse): void
+    {
+        if (is_callable(Globals::$__afterResponseCall)) {
+            call_user_func_array(Globals::$__afterResponseCall, [$request, $endpointData, $jsonResponse]);
         }
     }
 
