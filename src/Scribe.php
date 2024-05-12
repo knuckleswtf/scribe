@@ -2,7 +2,6 @@
 
 namespace Knuckles\Scribe;
 
-use Illuminate\Http\JsonResponse;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Commands\GenerateDocumentation;
 use Knuckles\Scribe\Tools\Globals;
@@ -27,7 +26,7 @@ class Scribe
      * Specify a callback that will be executed just after a response call is done
      * (allowing to modify the response).
      *
-     * @param callable(Request, ExtractedEndpointData, JSONResponse): mixed $callable
+     * @param callable(Request, ExtractedEndpointData, mixed): mixed $callable
      */
     public static function afterResponseCall(callable $callable)
     {
