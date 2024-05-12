@@ -174,10 +174,10 @@ class ResponseCalls extends Strategy
         }
     }
 
-    protected function runPostRequestHook(Request $request, ExtractedEndpointData $endpointData, JsonResponse $jsonResponse): void
+    protected function runPostRequestHook(Request $request, ExtractedEndpointData $endpointData, mixed $response): void
     {
         if (is_callable(Globals::$__afterResponseCall)) {
-            call_user_func_array(Globals::$__afterResponseCall, [$request, $endpointData, $jsonResponse]);
+            call_user_func_array(Globals::$__afterResponseCall, [$request, $endpointData, $response]);
         }
     }
 
