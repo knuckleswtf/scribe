@@ -48,7 +48,7 @@ class UseExampleTag extends Strategy
             $meta = [];
 
             if (empty($type) || ! in_array($type, self::TYPES)) {
-                // Status code is required for type response
+                // Type is required
                 throw new ExampleTypeNotFound();
             }
 
