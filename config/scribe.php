@@ -248,6 +248,9 @@ INTRO
             Strategies\ResponseFields\GetFromResponseFieldAttribute::class,
             Strategies\ResponseFields\GetFromResponseFieldTag::class,
         ],
+        'examples' => [
+            Strategies\Examples\UseExampleTag::class,
+        ],
     ],
 
     // For response calls, API resource responses and transformer responses,

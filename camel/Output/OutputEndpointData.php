@@ -7,6 +7,7 @@ use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Knuckles\Camel\BaseDTO;
+use Knuckles\Camel\Extraction\ExampleCollection;
 use Knuckles\Camel\Extraction\Metadata;
 use Knuckles\Camel\Extraction\ResponseCollection;
 use Knuckles\Camel\Extraction\ResponseField;
@@ -77,6 +78,8 @@ class OutputEndpointData extends BaseDTO
      */
     public array $responseFields = [];
 
+    public ExampleCollection $examples;
+
     /**
      * The same as bodyParameters, but organized in a hierarchy.
      * So, top-level items first, with a __fields property containing their children, and so on.
@@ -100,6 +103,7 @@ class OutputEndpointData extends BaseDTO
         $parameters['queryParameters'] = array_map(fn($param) => new Parameter($param), $parameters['queryParameters'] ?? []);
         $parameters['urlParameters'] = array_map(fn($param) => new Parameter($param), $parameters['urlParameters'] ?? []);
         $parameters['responseFields'] = array_map(fn($param) => new ResponseField($param), $parameters['responseFields'] ?? []);
+        $parameters['examples'] = new ExampleCollection($parameters['examples'] ?? []);
 
         parent::__construct($parameters);
 

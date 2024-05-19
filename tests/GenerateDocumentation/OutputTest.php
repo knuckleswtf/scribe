@@ -47,6 +47,7 @@ class OutputTest extends BaseLaravelTest
                 ))
                 ->toArray(),
             'responseFields' => Defaults::responseFieldsStrategies()->toArray(),
+            'examples' => Defaults::examplesStrategies()->toArray(),
         ],
         ]);
         $this->setConfig(['database_connections_to_transact' => []]);
@@ -211,6 +212,8 @@ class OutputTest extends BaseLaravelTest
         RouteFacade::get('/api/withQueryParameters', [TestController::class, 'withQueryParameters']);
         RouteFacade::get('/api/withAuthTag', [TestController::class, 'withAuthenticatedTag']);
         RouteFacade::get('/api/echoesUrlParameters/{param}/{param2}/{param3?}/{param4?}', [TestController::class, 'echoesUrlParameters']);
+        RouteFacade::get('/api/withExampleTagTypeResponse', [TestController::class, 'withExampleTagTypeResponse']);
+        RouteFacade::get('/api/withExampleTagTypeRequest', [TestController::class, 'withExampleTagTypeRequest']);
 
         $this->setConfig([
             'openapi.enabled' => true,

@@ -42,6 +42,9 @@ class ExtractorTest extends BaseUnitTest
             'responseFields' => [
                 Strategies\ResponseFields\GetFromResponseFieldTag::class,
             ],
+            'examples' => [
+                Strategies\Examples\UseExampleTag::class,
+            ],
         ],
     ];
 
