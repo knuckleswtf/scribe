@@ -120,6 +120,7 @@ paths:
                     name: filters
                     description: 'The filters.'
                     example: consequatur
+                    nullable: true
                     required: false
                     schema:
                         type: string
@@ -130,6 +131,7 @@ paths:
                     name: url_encoded
                     description: 'Used for testing that URL parameters will be URL-encoded where needed.'
                     example: '+ []&='
+                    nullable: true
                     required: false
                     schema:
                         type: string
@@ -192,6 +194,7 @@ paths:
                         type: string
                         description: ''
                         example: consequatur
+                        nullable: true
                 -
                     in: header
                     name: Custom-Header
@@ -283,6 +286,7 @@ paths:
                         schema:
                             type: array
                             description: Details.
+                            nullable: true
                             example:
                             - first_name: 'John'
                               last_name: 'Doe'
