@@ -23,6 +23,17 @@ class Scribe
     }
 
     /**
+     * Specify a callback that will be executed just after a response call is done
+     * (allowing to modify the response).
+     *
+     * @param callable(Request, ExtractedEndpointData, mixed): mixed $callable
+     */
+    public static function afterResponseCall(callable $callable)
+    {
+        Globals::$__afterResponseCall = $callable;
+    }
+
+    /**
      * Specify a callback that will be executed just before the generate command is executed
      *
      * @param callable(GenerateDocumentation): mixed $callable
