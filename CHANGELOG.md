@@ -12,6 +12,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.36.0 (27 May 2024)
+## Added
+- Add `afterResponseCall` hook [#847](https://github.com/knuckleswtf/scribe/pull/847)
+
+## Fixed
+- Unescape tryItOutBaseURL [09b49b582](https://github.com/knuckleswtf/scribe/commit/09b49b5829647597825b2cc7162382e926d53f90)
+- Ignore `external.html_attributes` for upgrades [f56a48014](https://github.com/knuckleswtf/scribe/commit/f56a480140d25ada8a441f69db9a6a14b5f0dcd1)
+- Fix missing title and logo in `elements` theme [#844](https://github.com/knuckleswtf/scribe/pull/844)
+
+
 # 4.35.0 (26 March 2024)
 ## Modified
 - Allow examples to be shown in response fields [#825](https://github.com/knuckleswtf/scribe/pull/825)

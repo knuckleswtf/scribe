@@ -81,7 +81,6 @@ class GetFromInlineValidatorBase extends Strategy
                     if ($arrayItem->value instanceof Node\Scalar\String_) {
                         $rulesList[] = $arrayItem->value->value;
                     }
-
                     // Try to extract Enum rule
                     else if (
                         function_exists('enum_exists') &&
