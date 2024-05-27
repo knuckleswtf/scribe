@@ -178,7 +178,7 @@ class GenerateDocumentation extends Command
             )
                 ->dontTouch(
                     'routes', 'example_languages', 'database_connections_to_transact', 'strategies', 'laravel.middleware',
-                    'postman.overrides', 'openapi.overrides', 'groups', 'examples.models_source'
+                    'postman.overrides', 'openapi.overrides', 'groups', 'examples.models_source', 'external.html_attributes'
                 );
             $changes = $upgrader->dryRun();
             if (!empty($changes)) {
