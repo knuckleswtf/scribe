@@ -445,7 +445,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                     'type' => 'string',
                     'description' => 'Parameter description, ha!',
                 ],
-                'sub level 0.sub level 1 key 3.sub level 2 key 1'=> [
+                'sub level 0.sub level 1 key 3.sub level 2 key 1' => [
                     'description' => 'This is description of nested object',
                 ]
             ],
@@ -555,6 +555,85 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                 ],
             ],
         ], $results['paths']['/path2']['put']['responses']);
+    }
+
+    /** @test */
+    public function adds_multiple_responses_correctly_using_oneOf()
+    {
+        $endpointData1 = $this->createMockEndpointData([
+            'httpMethods' => ['POST'],
+            'uri' => '/path1',
+            'responses' => [
+                [
+                    'status' => 201,
+                    'description' => 'This one',
+                    'content' => '{"this": "one"}',
+                ],
+                [
+                    'status' => 201,
+                    'description' => 'No, that one.',
+                    'content' => '{"that": "one"}',
+                ],
+                [
+                    'status' => 200,
+                    'description' => 'A separate one',
+                    'content' => '{"the other": "one"}',
+                ],
+            ],
+        ]);
+        $groups = [$this->createGroup([$endpointData1])];
+
+        $results = $this->generate($groups);
+
+        $this->assertArraySubset([
+            '200' => [
+                'description' => 'A separate one',
+                'content' => [
+                    'application/json' => [
+                        'schema' => [
+                            'type' => 'object',
+                            'properties' => [
+                                'the other' => [
+                                    'example' => "one",
+                                    'type' => 'string',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            '201' => [
+                'description' => '',
+                'content' => [
+                    'application/json' => [
+                        'schema' => [
+                            'oneOf' => [
+                                [
+                                    'type' => 'object',
+                                    'description' => 'This one',
+                                    'properties' => [
+                                        'this' => [
+                                            'example' => "one",
+                                            'type' => 'string',
+                                        ],
+                                    ],
+                                ],
+                                [
+                                    'type' => 'object',
+                                    'description' => 'No, that one.',
+                                    'properties' => [
+                                        'that' => [
+                                            'example' => "one",
+                                            'type' => 'string',
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ], $results['paths']['/path1']['post']['responses']);
     }
 
     protected function createMockEndpointData(array $custom = []): OutputEndpointData
