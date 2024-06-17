@@ -224,6 +224,47 @@ class ExtractorTest extends BaseLaravelTest
         $this->assertNotEmpty($parsed->responses);
     }
 
+    /** @test */
+    public function adds_override_for_headers_based_on_deprecated_route_apply_rules()
+    {
+        $config = $this->config;
+        $config['strategies']['headers'] = [Strategies\Headers\GetFromRouteRules::class];
+
+        $extractor = $this->makeExtractor($config);
+        $route = $this->createRoute('GET', '/get', 'dummy');
+        $parsed = $extractor->processRoute($route, ['headers' => ['content-type' => 'application/json+vnd']]);
+        $this->assertArraySubset($parsed->headers, ['content-type' => 'application/json+vnd']);
+
+        $parsed = $extractor->processRoute($route);
+        $this->assertEmpty($parsed->headers);
+    }
+
+    /** @test */
+    public function adds_override_for_headers_based_on_strategy_configs()
+    {
+        $route = $this->createRoute('GET', '/get', 'dummy');
+        $config = $this->config;
+
+        $config['strategies']['headers'] = [Strategies\Headers\GetFromHeaderAttribute::class];
+        $extractor = $this->makeExtractor($config);
+        $parsed = $extractor->processRoute($route);
+        $this->assertEmpty($parsed->headers);
+
+        $headers = [
+            'accept' => 'application/json',
+            'Content-Type' => 'application/json+vnd',
+        ];
+        $config['strategies']['headers'] = [
+            Strategies\Headers\GetFromHeaderAttribute::class,
+            [
+                'override', $headers
+            ],
+        ];
+        $extractor = $this->makeExtractor($config);
+        $parsed = $extractor->processRoute($route);
+        $this->assertArraySubset($parsed->headers, $headers);
+    }
+
     /**
      * @test
      * @dataProvider authRules
