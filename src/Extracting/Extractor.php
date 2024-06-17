@@ -11,6 +11,8 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Knuckles\Camel\Extraction\ExampleCollection;
+use Knuckles\Camel\Extraction\RequestCollection;
 use Knuckles\Camel\Extraction\ResponseCollection;
 use Knuckles\Camel\Extraction\ResponseField;
 use Knuckles\Camel\Output\OutputEndpointData;
@@ -97,6 +99,9 @@ class Extractor
 
         $this->fetchResponseFields($endpointData, $routeRules);
         $this->mergeInheritedMethodsData('responseFields', $endpointData, $inheritedDocsOverrides);
+
+        $this->fetchExampleFields($endpointData, $routeRules);
+        $this->mergeInheritedMethodsData('examples', $endpointData, $inheritedDocsOverrides);
 
         self::$routeBeingProcessed = null;
 
@@ -186,6 +191,15 @@ class Extractor
                 }
             }
         });
+    }
+
+    protected function fetchExampleFields(ExtractedEndpointData $endpointData, array $rulesToApply): void
+    {
+        $this->iterateThroughStrategies('examples', $endpointData, $rulesToApply, function ($results) use ($endpointData) {
+            $endpointData->examples->concat($results);
+        });
+
+        $endpointData->examples = new ExampleCollection($endpointData->examples->values());
     }
 
     /**

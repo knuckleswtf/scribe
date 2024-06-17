@@ -557,6 +557,265 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         ], $results['paths']['/path2']['put']['responses']);
     }
 
+    /** @test */
+    public function adds_examples_correctly_as_examples_on_media_type_object()
+    {
+        $endpointData1 = $this->createMockEndpointData([
+            'httpMethods' => ['POST'],
+            'uri' => '/path1',
+            'examples' => [
+                [
+                    'type' => 'response',
+                    'meta' => [
+                        'status' => 204,
+                    ],
+                    'description' => 'Successfully updated.',
+                    'content' => '{"this": "should be ignored"}',
+                ],
+                [
+                    'type' => 'response',
+                    'meta' => [
+                        'status' => 201,
+                    ],
+                    'description' => '',
+                    'content' => '{"this": "shouldn\'t be ignored", "and this": "too", "sub level 0": { "sub level 1 key 1": "sl0_sl1k1", "sub level 1 key 2": [ { "sub level 2 key 1": "sl0_sl1k2_sl2k1", "sub level 2 key 2": { "sub level 3 key 1": "sl0_sl1k2_sl2k2_sl3k1" } } ], "sub level 1 key 3": { "sub level 2 key 1": "sl0_sl1k3_sl2k2", "sub level 2 key 2": { "sub level 3 key 1": "sl0_sl1k3_sl2k2_sl3k1", "sub level 3 key null": null, "sub level 3 key integer": 99 } } } }',
+                ],
+                [
+                    'type' => 'response',
+                    'meta' => [
+                        'status' => 201,
+                    ],
+                    'description' => '',
+                    'content' => '{"this": "also"}',
+                ],
+                [
+                    'type' => 'response',
+                    'meta' => [
+                        'status' => 200,
+                    ],
+                    'description' => 'Successfully retrieved.',
+                    'content' => '{"this": "shouldn\'t be ignored"}',
+                ],
+                [
+                    'type' => 'response',
+                    'meta' => [
+                        'status' => 200,
+                    ],
+                    'description' => 'Successfully completed.',
+                    'content' => '{"this": "also shouldn\'t be ignored"}',
+                ],
+            ],
+        ]);
+        $endpointData2 = $this->createMockEndpointData([
+            'httpMethods' => ['PUT'],
+            'uri' => '/path2',
+            'bodyParameters' => [
+                'stringParam' => [
+                    'name' => 'stringParam',
+                    'description' => 'String param',
+                    'required' => false,
+                    'example' => 'hahoho',
+                    'type' => 'string',
+                ],
+            ],
+            'examples' => [
+                [
+                    'type' => 'request',
+                    'meta' => [],
+                    'description' => 'Task 1',
+                    'content' => '{"this": "shouldn\'t be ignored"}',
+                ],
+                [
+                    'type' => 'request',
+                    'meta' => [],
+                    'description' => 'Task 2',
+                    'content' => '{"this": "also shouldn\'t be ignored"}',
+                ],
+            ],
+        ]);
+        $groups = [$this->createGroup([$endpointData1, $endpointData2])];
+
+        $results = $this->generate($groups);
+
+        $this->assertCount(3, $results['paths']['/path1']['post']['responses']);
+        $this->assertCount(2, $results['paths']['/path1']['post']['responses'][200]['content']['application/json']['examples']);
+        $this->assertArraySubset([
+            '200' => [
+                "description" => "Okayy",
+                "content" => [
+                    "application/json" => [
+                        "schema" => [
+                            "type" => "object",
+                            "properties" => [
+                                "random" => [
+                                    "type" => "string",
+                                    "example" => "json",
+                                ]
+                            ]
+                        ],
+                        "examples" => [
+                            "response-example-1" => [
+                                "summary" => "Successfully retrieved.",
+                                "value" => [
+                                    "this" => "shouldn't be ignored",
+                                ],
+                            ],
+                            "response-example-2" => [
+                                "summary" => "Successfully completed.",
+                                "value" => [
+                                    "this" => "also shouldn't be ignored",
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            '204' => [
+                'description' => 'Successfully updated.',
+            ],
+            '201' => [
+                "description" => "",
+                "content" => [
+                    "application/json" => [
+                        "schema" => [
+                            "type" => "object",
+                            "properties" => [
+                                "this" => [
+                                    "type" => "string",
+                                    "example" => "shouldn't be ignored",
+                                ],
+                                "and this" => [
+                                    "type" => "string",
+                                    "example" => "too",
+                                ],
+                                "sub level 0" => [
+                                    "type" => "object",
+                                    "properties" => [
+                                        "sub level 1 key 1" => [
+                                            "type" => "string",
+                                            "example" => "sl0_sl1k1",
+                                        ],
+                                        "sub level 1 key 2" => [
+                                            "type" => "array",
+                                            "example" => [
+                                                [
+                                                    "sub level 2 key 1" => "sl0_sl1k2_sl2k1",
+                                                    "sub level 2 key 2" => [
+                                                        "sub level 3 key 1" => "sl0_sl1k2_sl2k2_sl3k1",
+                                                    ],
+                                                ],
+                                            ],
+                                            "items" => [
+                                                "type" => "object",
+                                                "properties" => [
+                                                    "sub level 2 key 1" => [
+                                                        "type" => "string",
+                                                        "example" => "sl0_sl1k2_sl2k1",
+                                                    ],
+                                                    "sub level 2 key 2" => [
+                                                        "type" => "object",
+                                                        "properties" => [
+                                                            "sub level 3 key 1" => [
+                                                                "type" => "string",
+                                                                "example" => "sl0_sl1k2_sl2k2_sl3k1",
+                                                            ],
+                                                        ]
+                                                    ]
+                                                ]
+                                            ]
+                                        ],
+                                        "sub level 1 key 3" => [
+                                            "type" => "object",
+                                            "properties" => [
+                                                "sub level 2 key 1" => [
+                                                    "type" => "string",
+                                                    "example" => "sl0_sl1k3_sl2k2",
+                                                ],
+                                                "sub level 2 key 2" => [
+                                                    "type" => "object",
+                                                    "properties" => [
+                                                        "sub level 3 key 1" => [
+                                                            "type" => "string",
+                                                            "example" => "sl0_sl1k3_sl2k2_sl3k1",
+                                                        ],
+                                                        "sub level 3 key null" => [
+                                                            "type" => "string",
+                                                            "example" => null,
+                                                        ],
+                                                        "sub level 3 key integer" => [
+                                                            "type" => "integer",
+                                                            "example" => 99,
+                                                        ],
+                                                    ]
+                                                ]
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ],
+                        "examples" => [
+                            "response-example-1" => [
+                                "summary" => "Response 1",
+                                "value" => [
+                                    "this" => "shouldn't be ignored",
+                                    "and this" => "too",
+                                    "sub level 0" => [
+                                        "sub level 1 key 1" => "sl0_sl1k1",
+                                        "sub level 1 key 2" => [
+                                            [
+                                                "sub level 2 key 1" => "sl0_sl1k2_sl2k1",
+                                                "sub level 2 key 2" => [
+                                                    "sub level 3 key 1" => "sl0_sl1k2_sl2k2_sl3k1",
+                                                ]
+                                            ]
+                                        ],
+                                        "sub level 1 key 3" => [
+                                            "sub level 2 key 1" => "sl0_sl1k3_sl2k2",
+                                            "sub level 2 key 2" => [
+                                                "sub level 3 key 1" => "sl0_sl1k3_sl2k2_sl3k1",
+                                                "sub level 3 key null" => null,
+                                                "sub level 3 key integer" => 99,
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            ],
+                            "response-example-2" => [
+                                "summary" => "Response 2",
+                                "value" => [
+                                    "this" => "also"
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ], $results['paths']['/path1']['post']['responses']);
+        $this->assertCount(1, $results['paths']['/path2']['put']['responses']);
+        $this->assertEquals([
+            '200' => [
+                "description" => "Okayy",
+                "content" => [
+                    "application/json" => [
+                        "schema" => [
+                            "type" => "object",
+                            "example" => [
+                                "random" => "json",
+                            ],
+                            "properties" => [
+                                "random" => [
+                                    "type" => "string",
+                                    "example" => "json"
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ], $results['paths']['/path2']['put']['responses']);
+    }
+
     protected function createMockEndpointData(array $custom = []): OutputEndpointData
     {
         $faker = Factory::create();
@@ -583,6 +842,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                 ],
             ],
             'responseFields' => [],
+            'examples' => [],
         ];
 
         foreach ($custom as $key => $value) {

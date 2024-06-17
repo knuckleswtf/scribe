@@ -73,4 +73,10 @@ class Defaults
         ]);
     }
 
+    public static function examplesStrategies(): StrategyListWrapper
+    {
+        return new StrategyListWrapper([
+            Strategies\Examples\UseExampleTag::class,
+        ]);
+    }
 }

@@ -176,6 +176,54 @@ paths:
                                 example: ""
             tags:
                 - 'Group A'
+    '/api/withExampleTagTypeResponse':
+        get:
+            summary: ''
+            operationId: getApiWithExampleTagTypeResponse
+            description: ''
+            parameters:
+                -
+                    in: header
+                    name: Custom-Header
+                    description: ''
+                    example: NotSoCustom
+                    schema:
+                        type: string
+            responses:
+                200:
+                    description: ''
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                example: ''
+            tags:
+                - 'Group A'
+            security: []
+    '/api/withExampleTagTypeRequest':
+        get:
+            summary: ''
+            operationId: getApiWithExampleTagTypeRequest
+            description: ''
+            parameters:
+                -
+                    in: header
+                    name: Custom-Header
+                    description: ''
+                    example: NotSoCustom
+                    schema:
+                        type: string
+            responses:
+                200:
+                    description: ''
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                example: ''
+            tags:
+                - 'Group A'
+            security: []
     '/api/echoesUrlParameters/{param}/{param2}/{param3}/{param4}':
         get:
             summary: ''

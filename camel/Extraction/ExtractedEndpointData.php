@@ -68,6 +68,8 @@ class ExtractedEndpointData extends BaseDTO
      */
     public array $responseFields = [];
 
+    public ExampleCollection $examples;
+
     /**
      * Authentication info for this endpoint. In the form [{where}, {name}, {sample}]
      * Example: ["queryParameters", "api_key", "njiuyiw97865rfyvgfvb1"]
@@ -84,6 +86,7 @@ class ExtractedEndpointData extends BaseDTO
     {
         $parameters['metadata'] = $parameters['metadata'] ?? new Metadata([]);
         $parameters['responses'] = $parameters['responses'] ?? new ResponseCollection([]);
+        $parameters['examples'] = $parameters['examples'] ?? new ExampleCollection([]);
 
         parent::__construct($parameters);
 

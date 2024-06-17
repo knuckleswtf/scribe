@@ -43,6 +43,9 @@ class ExtractorTest extends BaseLaravelTest
             'responseFields' => [
                 Strategies\ResponseFields\GetFromResponseFieldTag::class,
             ],
+            'examples' => [
+                Strategies\Examples\UseExampleTag::class,
+            ],
         ],
     ];
 

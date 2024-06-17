@@ -6,6 +6,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Knuckles\Camel\Camel;
+use Knuckles\Camel\Extraction\Example;
 use Knuckles\Camel\Extraction\Response;
 use Knuckles\Camel\Output\OutputEndpointData;
 use Knuckles\Camel\Output\Parameter;
@@ -247,9 +248,11 @@ class OpenAPISpecWriter
             } else {
                 $contentType = 'application/json';
             }
-
-            $body['content'][$contentType]['schema'] = $schema;
-
+            
+            $body['content'][$contentType] = $this->mergeMediaTypeObjectExamples(
+                ['schema' =>  $schema],
+                $endpoint
+            );
         }
 
         // return object rather than empty array, so can get properly serialised as object
@@ -263,19 +266,41 @@ class OpenAPISpecWriter
 
         foreach ($endpoint->responses as $response) {
             // OpenAPI groups responses by status code
-            // Only one response type per status code, so only the last one will be used
+            // Only one response type per status code, so only the first one will be used
             if (intval($response->status) === 204) {
                 // Must not add content for 204
                 $responses[204] = [
                     'description' => $this->getResponseDescription($response),
                 ];
             } else {
-                $responses[$response->status] = [
-                    'description' => $this->getResponseDescription($response),
-                    'content' => $this->generateResponseContentSpec($response->content, $endpoint),
-                ];
+                if (! isset($responses[$response->status])) {
+                    $responses[$response->status] = [
+                        'description' => $this->getResponseDescription($response),
+                        'content' => $this->generateResponseContentSpec($response->status, $response->content, $endpoint),
+                    ];
+                }
             }
         }
+
+        // Parse any examples
+        $endpoint['examples']->where('type', 'response')
+            ->each(function (Example $item, int $key) use (&$responses, $endpoint) {
+                $statusCode = $item['meta']['status'];
+
+                if (! isset($responses[$statusCode])) {
+                    if (intval($statusCode) === 204) {
+                        // Must not add content for 204
+                        $responses[204] = [
+                            'description' => $item['description'],
+                        ];
+                    } else {
+                        $responses[$statusCode] = [
+                            'description' => $item['description'],
+                            'content' => $this->generateResponseContentSpec($statusCode, $item['content'], $endpoint),
+                        ];
+                    }
+                }
+            });
 
         // return object rather than empty array, so can get properly serialised as object
         return $this->objectIfEmpty($responses);
@@ -297,7 +322,7 @@ class OpenAPISpecWriter
         return $description;
     }
 
-    protected function generateResponseContentSpec(?string $responseContent, OutputEndpointData $endpoint)
+    protected function generateResponseContentSpec(int $responseStatus, ?string $responseContent, OutputEndpointData $endpoint)
     {
         if (Str::startsWith($responseContent, '<<binary>>')) {
             return [
@@ -325,12 +350,12 @@ class OpenAPISpecWriter
         $decoded = json_decode($responseContent);
         if ($decoded === null) { // Decoding failed, so we return the content string as is
             return [
-                'text/plain' => [
+                'text/plain' => $this->mergeMediaTypeObjectExamples([
                     'schema' => [
                         'type' => 'string',
                         'example' => $responseContent,
                     ],
-                ],
+                ], $endpoint, $responseStatus, $responseContent),
             ];
         }
 
@@ -340,19 +365,19 @@ class OpenAPISpecWriter
             case 'integer':
             case 'double':
                 return [
-                    'application/json' => [
+                    'application/json' => $this->mergeMediaTypeObjectExamples([
                         'schema' => [
                             'type' => $type === 'double' ? 'number' : $type,
                             'example' => $decoded,
                         ],
-                    ],
+                    ], $endpoint, $responseStatus, $responseContent),
                 ];
 
             case 'array':
                 if (!count($decoded)) {
                     // empty array
                     return [
-                        'application/json' => [
+                        'application/json' => $this->mergeMediaTypeObjectExamples([
                             'schema' => [
                                 'type' => 'array',
                                 'items' => [
@@ -360,13 +385,13 @@ class OpenAPISpecWriter
                                 ],
                                 'example' => $decoded,
                             ],
-                        ],
+                        ], $endpoint, $responseStatus, $responseContent),
                     ];
                 }
 
                 // Non-empty array
                 return [
-                    'application/json' => [
+                    'application/json' => $this->mergeMediaTypeObjectExamples([
                         'schema' => [
                             'type' => 'array',
                             'items' => [
@@ -374,7 +399,7 @@ class OpenAPISpecWriter
                             ],
                             'example' => $decoded,
                         ],
-                    ],
+                    ], $endpoint, $responseStatus, $responseContent),
                 ];
 
             case 'object':
@@ -383,13 +408,13 @@ class OpenAPISpecWriter
                 })->toArray();
 
                 return [
-                    'application/json' => [
+                    'application/json' => $this->mergeMediaTypeObjectExamples([
                         'schema' => [
                             'type' => 'object',
                             'example' => $decoded,
                             'properties' => $this->objectIfEmpty($properties),
                         ],
-                    ],
+                    ], $endpoint, $responseStatus, $responseContent),
                 ];
         }
     }
@@ -589,5 +614,48 @@ class OpenAPISpecWriter
         }
 
         return $schema;
+    }
+
+    protected function mergeMediaTypeObjectExamples(array $merge, OutputEndpointData $endpoint, ?int $responseStatus = null, ?string $responseContent = null)
+    {
+        $type = ($responseStatus) ? "response" : "request";
+
+        $decoded = json_decode($responseContent ?? '{}', true);
+
+        $i = 0;
+
+        $examples = [];
+
+        $endpoint['examples']->where('type', $type)
+            ->reject(function (Example $item, int $key) use ($type, $responseStatus) {
+                return $type === 'response' && $item['meta']['status'] != $responseStatus;
+            })
+            ->map(function (Example $item, int $key) use (&$examples, &$i, $type) {
+                // Extract the JSON part of the string
+                $json = json_decode($item['content'], true);
+
+                $summary = ! empty($item['description']) ? $item['description'] : sprintf("%s %d", Str::ucfirst($type), $i+1);
+                    
+                $examples[sprintf("%s-example-%d", $type, $i+1)] = [
+                    'summary' => $summary,
+                    'value' => $json ?? $item['content']
+                ];
+
+                $i++;
+            });
+
+        if (count($examples) > 1) {
+            if ($merge['schema']['example'] ?? false) {
+                unset($merge['schema']['example']);
+            }
+
+            return data_set($merge, 'examples', $examples);
+        }
+
+        if ($responseStatus) {
+            return data_set($merge, 'schema.example', $decoded ?? $responseContent);
+        }
+        
+        return $merge;
     }
 }

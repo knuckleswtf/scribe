@@ -527,7 +527,6 @@ class TestController extends Controller
 
         // Do stuff
         if ($validator->fails()) {
-
         }
     }
 
@@ -585,7 +584,7 @@ class TestController extends Controller
     {
         return null;
     }
-    
+
     public function withInjectedModelFullParamName(TestPost $testPost)
     {
         return null;
@@ -608,6 +607,116 @@ class TestController extends Controller
         return null;
     }
      */
+
+    /**
+     * @example
+     * type="response"
+     * status=200
+     * {
+     *   "id": 4,
+     *   "name": "banana",
+     *   "color": "red",
+     *   "weight": "1 kg",
+     *   "delicious": true,
+     *   "responseTag": true
+     * }
+     */
+    public function withExampleTagTypeResponse()
+    {
+        return '';
+    }
+
+    /**
+     * @example
+     * type="response"
+     * status=200
+     * {
+     *   "id": 4,
+     *   "name": "banana",
+     *   "color": "red",
+     *   "weight": "1 kg",
+     *   "delicious": true,
+     *   "responseTag": true
+     * }
+     * 
+     * @example
+     * type="response"
+     * status=200
+     * {
+     *   "id": 5,
+     *   "name": "banana",
+     *   "color": "green",
+     *   "weight": "1 kg",
+     *   "delicious": true,
+     *   "responseTag": true
+     * }
+     */
+    public function withMultipleExampleTagTypeResponse()
+    {
+        return '';
+    }
+
+    /**
+     * @example
+     * type="response"
+     * {
+     *   "id": 4,
+     *   "name": "banana",
+     *   "color": "red",
+     *   "weight": "1 kg",
+     *   "delicious": true,
+     *   "responseTag": true
+     * }
+     */
+    public function withExampleTagTypeResponseWithoutStatusCode()
+    {
+        return '';
+    }
+
+    /**
+     * @example
+     * type="request"
+     * {
+     *   "id": 4,
+     *   "name": "banana",
+     *   "color": "red",
+     *   "weight": "1 kg",
+     *   "delicious": true,
+     *   "requestTag": true
+     * }
+     */
+    public function withExampleTagTypeRequest()
+    {
+        return '';
+    }
+
+    /**
+     * @example
+     * type="request"
+     * {
+     *   "id": 4,
+     *   "name": "banana",
+     *   "color": "red",
+     *   "weight": "1 kg",
+     *   "delicious": true,
+     *   "requestTag": true
+     * }
+     * 
+     * @example
+     * type="request"
+     * {
+     *   "id": 5,
+     *   "name": "banana",
+     *   "color": "green",
+     *   "weight": "1 kg",
+     *   "delicious": true,
+     *   "requestTag": true
+     * }
+     */
+    public function withMultipleExampleTagTypeRequest()
+    {
+        return '';
+    }
 }
 
 /**
@@ -616,4 +725,4 @@ enum Category: string
     case Fruits = 'fruits';
     case People = 'people';
 }
-*/
+ */
