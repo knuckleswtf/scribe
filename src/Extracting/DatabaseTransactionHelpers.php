@@ -15,9 +15,9 @@ trait DatabaseTransactionHelpers
 
     private function startDbTransaction()
     {
-        $database = app('db');
-
         foreach ($this->connectionsToTransact() as $connection) {
+            $database ??= app('db');
+
             $driver = $database->connection($connection);
 
             if (self::driverSupportsTransactions($driver)) {
@@ -30,7 +30,6 @@ trait DatabaseTransactionHelpers
                         " If you aren't using this database, remove it from the `database_connections_to_transact` config array."
                     );
                 }
-                continue;
             } else {
                 $driverClassName = get_class($driver);
                 throw DatabaseTransactionsNotSupported::create($connection, $driverClassName);
@@ -43,9 +42,9 @@ trait DatabaseTransactionHelpers
      */
     private function endDbTransaction()
     {
-        $database = app('db');
-
         foreach ($this->connectionsToTransact() as $connection) {
+            $database ??= app('db');
+
             $driver = $database->connection($connection);
             try {
                 $driver->rollback();

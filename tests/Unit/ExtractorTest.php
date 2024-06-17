@@ -7,11 +7,12 @@ use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Camel\Extraction\Parameter;
 use Knuckles\Scribe\Extracting\Extractor;
 use Knuckles\Scribe\Extracting\Strategies;
+use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\BaseUnitTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 
-class ExtractorTest extends BaseUnitTest
+class ExtractorTest extends BaseLaravelTest
 {
     protected Extractor $extractor;
 
@@ -52,7 +53,7 @@ class ExtractorTest extends BaseUnitTest
     {
         parent::setUp();
 
-        $this->extractor = new Extractor(new DocumentationConfig($this->config));
+        $this->extractor = $this->makeExtractor($this->config);
     }
 
     /** @test */
@@ -181,6 +182,48 @@ class ExtractorTest extends BaseUnitTest
         $this->assertEquals(['DELETE'], $parsed->httpMethods);
     }
 
+    /** @test */
+    public function invokes_strategy_based_on_deprecated_route_apply_rules()
+    {
+        $config = $this->config;
+        $config['strategies']['responses'] = [Strategies\Responses\ResponseCalls::class];
+
+        $extractor = $this->makeExtractor($config);
+        $route = $this->createRoute('GET', '/get', 'shouldFetchRouteResponse');
+        $parsed = $extractor->processRoute($route, ['response_calls' => ['methods' => ['POST']]]);
+        $this->assertEmpty($parsed->responses);
+
+        $parsed = $extractor->processRoute($route, ['response_calls' => ['methods' => ['GET']]]);
+        $this->assertNotEmpty($parsed->responses);
+    }
+
+    /** @test */
+    public function invokes_strategy_based_on_new_strategy_configs()
+    {
+        $route = $this->createRoute('GET', '/get', 'shouldFetchRouteResponse');
+        $config = $this->config;
+        $config['strategies']['responses'] = [
+            [
+                Strategies\Responses\ResponseCalls::class,
+                ['only' => 'POST *']
+            ]
+        ];
+        $extractor = $this->makeExtractor($config);
+
+        $parsed = $extractor->processRoute($route);
+        $this->assertEmpty($parsed->responses);
+
+        $config['strategies']['responses'] = [
+            [
+                Strategies\Responses\ResponseCalls::class,
+                ['only' => 'GET *']
+            ]
+        ];
+        $extractor = $this->makeExtractor($config);
+        $parsed = $extractor->processRoute($route);
+        $this->assertNotEmpty($parsed->responses);
+    }
+
     /**
      * @test
      * @dataProvider authRules
@@ -188,7 +231,7 @@ class ExtractorTest extends BaseUnitTest
     public function adds_appropriate_field_based_on_configured_auth_type($config, $expected)
     {
         $route = $this->createRouteOldSyntax('POST', '/withAuthenticatedTag', 'withAuthenticatedTag');
-        $generator = new Extractor(new DocumentationConfig(array_merge($this->config, $config)));
+        $generator = $this->makeExtractor(array_merge($this->config, $config));
         $parsed = $generator->processRoute($route, [])->toArray();
         $this->assertNotNull($parsed[$expected['where']][$expected['name']]);
         $this->assertEquals($expected['where'], $parsed['auth'][0]);
@@ -210,7 +253,7 @@ class ExtractorTest extends BaseUnitTest
         // Examples should have different values
         $this->assertNotEquals(1, count($results));
 
-        $generator = new Extractor(new DocumentationConfig($this->config + ['examples' => ['faker_seed' => 12345]]));
+        $generator = $this->makeExtractor($this->config + ['examples' => ['faker_seed' => 12345]]);
         $results = [];
         $results[$generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
         $results[$generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
@@ -373,6 +416,11 @@ class ExtractorTest extends BaseUnitTest
                 ],
             ],
         ];
+    }
+
+    protected function makeExtractor(mixed $config): Extractor
+    {
+        return new Extractor(new DocumentationConfig($config));
     }
 }
 
