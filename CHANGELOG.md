@@ -12,6 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.37.0 (17 june 2024)
+## Added
+- Support multiple responses in OpenAPI spec using oneOf [#739](https://github.com/knuckleswtf/scribe/pull/739)
+
+
 # 4.36.0 (27 May 2024)
 ## Added
 - Add `afterResponseCall` hook [#847](https://github.com/knuckleswtf/scribe/pull/847)
