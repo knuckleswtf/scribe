@@ -269,7 +269,32 @@ class OpenAPISpecWriter
                 $responses[204] = [
                     'description' => $this->getResponseDescription($response),
                 ];
+            } elseif (isset($responses[$response->status])) {
+                // If we already have a response for this status code and content type,
+                // we change to a `oneOf` which includes all the responses
+                $content = $this->generateResponseContentSpec($response->content, $endpoint);
+                $contentType = array_keys($content)[0];
+                if (isset($responses[$response->status]['content'][$contentType])) {
+                    // If we've already created the oneOf object, add this response
+                    if (isset($responses[$response->status]['content'][$contentType]['schema']['oneOf'])) {
+                        $responses[$response->status]['content'][$contentType]['schema']['oneOf'][] = $content[$contentType];
+                    } else {
+                        // Create the oneOf object
+                        $existingResponseExample = array_replace([
+                            'description' => $responses[$response->status]['description'],
+                        ], $responses[$response->status]['content'][$contentType]['schema']);
+                        $newResponseExample = array_replace([
+                            'description' => $this->getResponseDescription($response),
+                        ], $content[$contentType]['schema']);
+
+                        $responses[$response->status]['description'] = '';
+                        $responses[$response->status]['content'][$contentType]['schema'] = [
+                            'oneOf' => [$existingResponseExample, $newResponseExample]
+                        ];
+                    }
+                }
             } else {
+                // Store as the response for this status
                 $responses[$response->status] = [
                     'description' => $this->getResponseDescription($response),
                     'content' => $this->generateResponseContentSpec($response->content, $endpoint),
