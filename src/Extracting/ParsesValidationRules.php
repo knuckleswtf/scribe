@@ -50,6 +50,7 @@ trait ParsesValidationRules
                     'type' => null,
                     'example' => self::$MISSING_VALUE,
                     'description' => $description,
+                    'nullable' => false,
                 ];
                 $dependentRules[$parameter] = [];
 
@@ -69,6 +70,11 @@ trait ParsesValidationRules
                 }
 
                 $parameterData['name'] = $parameter;
+
+                if ($parameterData['required'] === true){
+                    $parameterData['nullable'] = false;
+                }
+
                 $parameters[$parameter] = $parameterData;
             } catch (Throwable $e) {
                 if ($e instanceof ScribeException) {
@@ -531,7 +537,9 @@ trait ParsesValidationRules
                 case 'different':
                     $parameterData['description'] .= " The value and <code>{$arguments[0]}</code> must be different.";
                     break;
-
+                case 'nullable':
+                    $parameterData['nullable'] = true;
+                    break;
                 default:
                     // Other rules not supported
                     break;

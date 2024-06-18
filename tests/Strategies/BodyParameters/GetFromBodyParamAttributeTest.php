@@ -32,85 +32,115 @@ class GetFromBodyParamAttributeTest extends TestCase
                 'required' => true,
                 'description' => 'The id of the user.',
                 'example' => 9,
+                'nullable' => false,
             ],
             'room_id' => [
                 'type' => 'string',
                 'required' => false,
                 'description' => 'The id of the room.',
+                'nullable' => false,
             ],
             'forever' => [
                 'type' => 'boolean',
                 'required' => false,
                 'description' => 'Whether to ban the user forever.',
                 'example' => false,
+                'nullable' => false,
             ],
             'another_one' => [
                 'type' => 'number',
                 'required' => false,
                 'description' => 'Just need something here.',
+                'nullable' => false,
             ],
             'yet_another_param' => [
                 'type' => 'object',
                 'required' => true,
                 'description' => 'Some object params.',
+                'nullable' => false,
             ],
             'yet_another_param.name' => [
                 'type' => 'string',
                 'description' => '',
                 'required' => true,
+                'nullable' => false,
             ],
             'even_more_param' => [
                 'type' => 'number[]',
                 'description' => 'A list of numbers',
                 'required' => false,
+                'nullable' => false,
             ],
             'book' => [
                 'type' => 'object',
                 'description' => 'Book information',
                 'required' => false,
+                'nullable' => false,
             ],
             'book.name' => [
                 'type' => 'string',
                 'description' => '',
                 'required' => true,
+                'nullable' => false,
             ],
             'book.author_id' => [
                 'type' => 'integer',
                 'description' => '',
                 'required' => true,
+                'nullable' => false,
             ],
             'book.pages_count' => [
                 'type' => 'integer',
                 'description' => '',
                 'required' => true,
+                'nullable' => false,
             ],
             'ids' => [
                 'type' => 'integer[]',
                 'description' => '',
                 'required' => true,
+                'nullable' => false,
             ],
             'state' => [
                 'type' => 'string',
                 'description' => '',
                 'required' => true,
-                'enumValues' => ["active", "pending"]
+                'enumValues' => ["active", "pending"],
+                'nullable' => false,
             ],
             'users' => [
                 'type' => 'object[]',
                 'description' => 'Users\' details',
                 'required' => false,
+                'nullable' => false,
             ],
             'users[].first_name' => [
                 'type' => 'string',
                 'description' => 'The first name of the user.',
                 'required' => false,
                 'example' => 'John',
+                'nullable' => false,
             ],
             'users[].last_name' => [
                 'type' => 'string',
                 'description' => 'The last name of the user.',
                 'required' => false,
                 'example' => 'Doe',
+                'nullable' => false,
+            ],
+            'note' => [
+                'type' => 'string',
+                'description' => '',
+                'required' => false,
+                'example' => 'This is a note.',
+                'nullable' => true,
+            ],
+            'required_note' => [
+                'type' => 'string',
+                'description' => '',
+                'required' => true,
+                'example' => 'This is a note.',
+                'nullable' => false,
             ],
         ], $results);
     }
@@ -226,6 +256,8 @@ class BodyParamAttributeTestController
     #[BodyParam("users", "object[]", "Users' details", required: false)]
     #[BodyParam("users[].first_name", "string", "The first name of the user.", example: "John", required: false)]
     #[BodyParam("users[].last_name", "string", "The last name of the user.", example: "Doe", required: false)]
+    #[BodyParam("note", example: "This is a note.", required: false, nullable: true)]
+    #[BodyParam("required_note", example: "This is a note.", required: true, nullable: true)]
     public function methodWithAttributes()
     {
 

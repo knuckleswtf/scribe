@@ -38,6 +38,10 @@ class GetParamsFromAttributeStrategy extends PhpAttributeStrategy
             $data['example'] = null;
         }
 
+        if ($data['required']){
+            $data['nullable'] = false;
+        }
+
         $data['description'] = trim($data['description'] ?? '');
         return $data;
     }

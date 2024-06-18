@@ -624,6 +624,57 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         $this->assertEquals('successfully translated by concatenated string.', $results['nested']['description']);
 
     }
+
+    /** @test */
+    public function can_valid_parse_nullable_rules()
+    {
+        $ruleset = [
+            'nullable_param' => 'nullable|string',
+        ];
+
+        $results = $this->strategy->parse($ruleset);
+
+        $this->assertEquals(true, $results['nullable_param']['nullable']);
+
+        $ruleset = [
+            'nullable_param' => 'string',
+        ];
+
+        $results = $this->strategy->parse($ruleset);
+
+        $this->assertEquals(false, $results['nullable_param']['nullable']);
+
+        $ruleset = [
+            'required_param' => 'required|nullable|string',
+        ];
+
+        $results = $this->strategy->parse($ruleset);
+
+        $this->assertEquals(false, $results['required_param']['nullable']);
+
+
+        $ruleset = [
+            'array_param' => 'array',
+            'array_param.*.field' => 'nullable|string',
+        ];
+
+        $results = $this->strategy->parse($ruleset);
+
+        $this->assertEquals(false, $results['array_param']['nullable']);
+        $this->assertEquals(true, $results['array_param[].field']['nullable']);
+
+        $ruleset = [
+            'object' => 'array',
+            'object.field1' => 'string',
+            'object.field2' => 'nullable|string',
+        ];
+
+        $results = $this->strategy->parse($ruleset);
+
+        $this->assertEquals(false, $results['object']['nullable']);
+        $this->assertEquals(false, $results['object.field1']['nullable']);
+        $this->assertEquals(true, $results['object.field2']['nullable']);
+    }
 }
 
 class DummyValidationRule implements \Illuminate\Contracts\Validation\Rule
