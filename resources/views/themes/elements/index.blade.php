@@ -111,6 +111,11 @@
                     });
                 }
 
+                // content type has to be unset otherwise file upload won't work
+                if (form.dataset.hasfiles === "1") {
+                    delete headers['Content-Type'];
+                }
+
                 return preflightPromise.then(() => makeAPICall(method, path, body, query, headers, endpointId))
                     .then(([responseStatus, statusText, responseContent, responseHeaders]) => {
                         responsePanel.hidden = false;
