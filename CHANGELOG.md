@@ -12,7 +12,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
-# 4.37.0 (17 june 2024)
+# 4.37.1 (11 July 2024)
+## Fixed
+- Multipart file upload in `elements` theme [#864](https://github.com/knuckleswtf/scribe/pull/864)
+- Properly set multiple responses in OpenAPI spec with the same status code [#863](https://github.com/knuckleswtf/scribe/pull/863)
+
+
+
+# 4.37.0 (17 June 2024)
 ## Added
 - Support multiple responses in OpenAPI spec using oneOf [#739](https://github.com/knuckleswtf/scribe/pull/739)
 
