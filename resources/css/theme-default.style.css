@@ -688,6 +688,7 @@ html {
 .content>p,
 .content>table,
 .content>ul,
+.content>div,
 .content>form>aside,
 .content>form>details,
 .content>form>h1,
@@ -961,20 +962,6 @@ html {
     .page-wrapper .lang-selector {
         display: none
     }
-    .content aside,
-    .content dl,
-    .content h1,
-    .content h2,
-    .content h3,
-    .content h4,
-    .content h5,
-    .content h6,
-    .content ol,
-    .content p,
-    .content table,
-    .content ul {
-        margin-right: 0
-    }
     .content>aside,
     .content>details,
     .content>dl,
@@ -988,6 +975,7 @@ html {
     .content>p,
     .content>table,
     .content>ul,
+    .content>div,
     .content>form>aside,
     .content>form>details,
     .content>form>h1,
