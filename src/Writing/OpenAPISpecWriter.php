@@ -275,17 +275,18 @@ class OpenAPISpecWriter
                 $content = $this->generateResponseContentSpec($response->content, $endpoint);
                 $contentType = array_keys($content)[0];
                 if (isset($responses[$response->status]['content'][$contentType])) {
+                    $newResponseExample = array_replace([
+                        'description' => $this->getResponseDescription($response),
+                    ], $content[$contentType]['schema']);
+
                     // If we've already created the oneOf object, add this response
                     if (isset($responses[$response->status]['content'][$contentType]['schema']['oneOf'])) {
-                        $responses[$response->status]['content'][$contentType]['schema']['oneOf'][] = $content[$contentType];
+                        $responses[$response->status]['content'][$contentType]['schema']['oneOf'][] = $newResponseExample;
                     } else {
                         // Create the oneOf object
                         $existingResponseExample = array_replace([
                             'description' => $responses[$response->status]['description'],
                         ], $responses[$response->status]['content'][$contentType]['schema']);
-                        $newResponseExample = array_replace([
-                            'description' => $this->getResponseDescription($response),
-                        ], $content[$contentType]['schema']);
 
                         $responses[$response->status]['description'] = '';
                         $responses[$response->status]['content'][$contentType]['schema'] = [
