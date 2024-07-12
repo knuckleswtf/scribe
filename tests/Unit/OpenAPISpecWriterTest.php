@@ -127,7 +127,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function adds_url_parameters_correctly_as_parameters_on_path_item_object()
+    public function adds_url_parameters_correctly_as_parameters_on_operation_object()
     {
         $endpointData1 = $this->createMockEndpointData([
             'httpMethods' => ['POST'],
@@ -153,7 +153,8 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $results = $this->generate($groups);
 
         $this->assertArrayNotHasKey('parameters', $results['paths']['/path1']);
-        $this->assertCount(2, $results['paths']['/path1/{param}/{optionalParam}']['parameters']);
+        $this->assertArrayNotHasKey('parameters', $results['paths']['/path1/{param}/{optionalParam}']);
+        $this->assertCount(2, $results['paths']['/path1/{param}/{optionalParam}']['post']['parameters']);
         $this->assertEquals([
             'in' => 'path',
             'required' => true,
@@ -161,7 +162,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
             'description' => 'Something',
             'example' => 56,
             'schema' => ['type' => 'integer'],
-        ], $results['paths']['/path1/{param}/{optionalParam}']['parameters'][0]);
+        ], $results['paths']['/path1/{param}/{optionalParam}']['post']['parameters'][0]);
         $this->assertEquals([
             'in' => 'path',
             'required' => true,
@@ -173,7 +174,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                     'summary' => 'When the value is present', 'value' => '69'],
             ],
             'schema' => ['type' => 'string'],
-        ], $results['paths']['/path1/{param}/{optionalParam}']['parameters'][1]);
+        ], $results['paths']['/path1/{param}/{optionalParam}']['post']['parameters'][1]);
     }
 
     /** @test */
