@@ -40,7 +40,7 @@ class GetFromFormRequestBase extends Strategy
         if (Globals::$__instantiateFormRequestUsing) {
             $formRequest = call_user_func_array(Globals::$__instantiateFormRequestUsing, [$className, $route, $method]);
         } else {
-            $formRequest = new $className;
+            $formRequest = app($className);
         }
         // Set the route properly so it works for users who have code that checks for the route.
         /** @var LaravelFormRequest|DingoFormRequest $formRequest */
