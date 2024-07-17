@@ -34,10 +34,12 @@ paths:
                                     type: string
                                     description: 'Name of image.'
                                     example: cat.jpg
+                                    nullable: false
                                 image:
                                     type: string
                                     format: binary
                                     description: 'The image.'
+                                    nullable: false
                             required:
                                 - name
                                 - image
@@ -95,6 +97,7 @@ paths:
                         type: string
                         description: 'The id of the location.'
                         example: consequatur
+                        nullable: false
                 -
                     in: query
                     name: user_id
@@ -105,6 +108,7 @@ paths:
                         type: string
                         description: 'The id of the user.'
                         example: me
+                        nullable: false
                 -
                     in: query
                     name: page
@@ -115,6 +119,7 @@ paths:
                         type: string
                         description: 'The page number.'
                         example: '4'
+                        nullable: false
                 -
                     in: query
                     name: filters
@@ -125,6 +130,7 @@ paths:
                         type: string
                         description: 'The filters.'
                         example: consequatur
+                        nullable: false
                 -
                     in: query
                     name: url_encoded
@@ -135,6 +141,7 @@ paths:
                         type: string
                         description: 'Used for testing that URL parameters will be URL-encoded where needed.'
                         example: '+ []&='
+                        nullable: false
                 -
                     in: header
                     name: Custom-Header
@@ -192,6 +199,7 @@ paths:
                         type: string
                         description: ''
                         example: consequatur
+                        nullable: false
                 -
                     in: header
                     name: Custom-Header
@@ -293,9 +301,9 @@ paths:
                             items:
                                 type: object
                                 properties:
-                                    first_name: { type: string, description: 'The first name of the user.', example: John }
-                                    last_name: { type: string, description: 'The last name of the user.', example: Doe }
-                                    contacts: { type: array, description: 'Contact info', example: [ [ ] ], items: { type: object, properties: { first_name: { type: string, description: 'The first name of the contact.', example: Janelle }, last_name: { type: string, description: 'The last name of the contact.', example: Monáe } }, required: [ first_name, last_name ] } }
+                                    first_name: { type: string, description: 'The first name of the user.', example: John, nullable: false }
+                                    last_name: { type: string, description: 'The last name of the user.', example: Doe, nullable: false}
+                                    contacts: { type: array, description: 'Contact info', example: [ [ ] ], items: { type: object, properties: { first_name: { type: string, description: 'The first name of the contact.', example: Janelle, nullable: false }, last_name: { type: string, description: 'The last name of the contact.', example: Monáe, nullable: false } }, required: [ first_name, last_name ] } }
                                     roles: { type: array, description: 'The name of the role.', example: [ Admin ], items: { type: string } }
                                 required:
                                     - first_name
