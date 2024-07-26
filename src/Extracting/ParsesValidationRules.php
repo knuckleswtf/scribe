@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Extracting;
 
+use BackedEnum;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Arr;
@@ -208,9 +209,13 @@ trait ParsesValidationRules
             if (enum_exists($type) && method_exists($type, 'tryFrom')) {
                 // $case->value only exists on BackedEnums, not UnitEnums
                 // method_exists($enum, 'tryFrom') implies $enum instanceof BackedEnum
-                // @phpstan-ignore-next-line
-                $cases = array_map(fn ($case) => $case->value, $type::cases());
-                $parameterData['type'] = gettype($cases[0]);
+                $cases = [];
+                foreach ($type::cases() as $case) {
+                    /** @var BackedEnum $case */
+                    $cases[$case->name] = $case->value;
+                }
+                
+                $parameterData['type'] = gettype(reset($cases));
                 $parameterData['enumValues'] = $cases;
                 $parameterData['setter'] = fn () => Arr::random($cases);
             }
