@@ -38,7 +38,7 @@
         @endif
         @if(!empty($enumValues))
             Must be one of:
-            <ul style="list-style-position: inside; list-style-type: square;">{!! implode(" ", array_map(fn($val) => "<li><code>$val</code></li>", $enumValues)) !!}</ul>
+            <ul style="list-style-position: inside; list-style-type: square;">{!! implode(" ", array_map(fn($val, $key) => "<li><code>$val ($key)</code></li>", $enumValues, array_keys($enumValues))) !!}</ul>
         @endif
         @if($isArrayBody)
             <div class="sl-flex sl-items-baseline sl-text-base">
