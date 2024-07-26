@@ -208,7 +208,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
             ],
         ];
 
-        $getCase = fn ($case) => $case->value;
+        $getCase = fn ($case) => "$case->value ($case->name)";
 
         $this->assertArraySubset($expected, $results);
         $this->assertTrue(in_array(
