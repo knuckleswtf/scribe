@@ -551,7 +551,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         ]);
         $this->assertEquals('string', $results['enum']['type']);
         $this->assertEquals(
-            ['red', 'green', 'blue'],
+            ['Red' => 'red', 'Green' => 'green', 'Blue' => 'blue'],
             $results['enum']['enumValues']
         );
         $this->assertTrue(in_array(
@@ -570,7 +570,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         ]);
         $this->assertEquals('integer', $results['enum']['type']);
         $this->assertEquals(
-            [1, 2, 3],
+            ['One' => 1, 'Two' => 2, 'Three' => 3],
             $results['enum']['enumValues']
         );
         $this->assertTrue(in_array(
