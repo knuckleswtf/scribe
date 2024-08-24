@@ -96,7 +96,6 @@ class GetFromInlineValidatorBase extends Strategy
                 $rules[$paramName] = join('|', $rulesList);
             } else {
                 $rules[$paramName] = [];
-                continue;
             }
 
             $dataFromComment = [];
