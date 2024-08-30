@@ -12,6 +12,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.37.2 (30 August 2024)
+## Fixed
+- Stop response fields from overflowing to the dark box zone [#868](https://github.com/knuckleswtf/scribe/pull/868)
+- Don't ignore comments for validator parameters with non string/array (e.g. conditional) rule lists [#880](https://github.com/knuckleswtf/scribe/pull/880)
+- Allow custom output path for static and external_static instead of only static [#884](https://github.com/knuckleswtf/scribe/pull/884)
+
+
 # 4.37.1 (11 July 2024)
 ## Fixed
 - Multipart file upload in `elements` theme [#864](https://github.com/knuckleswtf/scribe/pull/864)
