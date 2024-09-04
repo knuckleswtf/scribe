@@ -439,6 +439,13 @@ class ValidationRuleParsingTest extends BaseLaravelTest
                 'description' => 'Must be accepted.',
             ],
         ];
+        yield 'exists' => [
+            ['exists_param' => 'exists:users,id'],
+            [],
+            [
+                'description' => 'The <code>id</code> of an existing record in the users.',
+            ],
+        ];
         yield 'unsupported' => [
             ['unsupported_param' => [new DummyValidationRule, 'bail']],
             ['unsupported_param' => ['description' => $description]],
