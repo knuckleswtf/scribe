@@ -137,6 +137,9 @@
                             }
                         } catch (e) {}
 
+                        // Replace HTML entities
+                        responseContent = responseContent.replace(/[<>&]/g, (i) => '&#' + i.charCodeAt(0) + ';');
+
                         contentEl.innerHTML = responseContent;
                         isJson && window.hljs.highlightElement(contentEl);
                     })
