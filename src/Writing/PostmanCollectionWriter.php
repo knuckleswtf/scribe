@@ -293,7 +293,7 @@ class PostmanCollectionWriter
                     // See https://www.php.net/manual/en/function.parse-str.php
                     $query[] = [
                         'key' => "{$name}[$index]",
-                        'value' => urlencode($value),
+                        'value' => is_string($value) ? $value : urlencode($value),
                         'description' => strip_tags($parameterData->description),
                         // Default query params to disabled if they aren't required and have empty values
                         'disabled' => !$parameterData->required && empty($parameterData->example),
