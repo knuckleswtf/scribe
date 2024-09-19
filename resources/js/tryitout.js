@@ -139,6 +139,17 @@ function handleResponse(endpointId, response, status, headers) {
 
     const responseContentEl = document.querySelector('#execution-response-content-' + endpointId);
 
+    // Check if the response contains Laravel's  dd() default dump output
+    const isLaravelDump = response.includes('Sfdump');
+
+    // If it's a Laravel dd() dump, use innerHTML to render it safely
+    if (isLaravelDump) {
+        responseContentEl.innerHTML = response === '' ? responseContentEl.dataset.emptyResponseText : response;
+    } else {
+        // Otherwise, stick to textContent for regular responses
+        responseContentEl.textContent = response === '' ? responseContentEl.dataset.emptyResponseText : response;
+    }
+
     // Prettify it if it's JSON
     let isJson = false;
     try {
@@ -146,11 +157,12 @@ function handleResponse(endpointId, response, status, headers) {
         if (jsonParsed !== null) {
             isJson = true;
             response = JSON.stringify(jsonParsed, null, 4);
+            responseContentEl.textContent = response;
         }
     } catch (e) {
 
     }
-    responseContentEl.textContent = response === '' ? responseContentEl.dataset.emptyResponseText : response;
+
     isJson && window.hljs.highlightElement(responseContentEl);
     const statusEl = document.querySelector('#execution-response-status-' + endpointId);
     statusEl.textContent = ` (${status})`;
