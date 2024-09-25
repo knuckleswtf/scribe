@@ -175,6 +175,7 @@ class GetFromInlineValidatorBase extends Strategy
     {
         $strategies = [
             RequestValidate::class, // $request->validate(...);
+            RequestValidateFacade::class, // Request::validate(...);
             ValidatorMake::class, // Validator::make($request, ...)
             ThisValidate::class, // $this->validate(...);
         ];
