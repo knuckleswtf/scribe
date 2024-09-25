@@ -55,7 +55,9 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             $this->assertEquals($expected['type'], $results[$parameterName]['type']);
         }
 
-        // Validate that the generated values actually pass validation
+        // Validate that the generated values actually pass validation (for rules where we can generate some data)
+        if (is_string($ruleset[$parameterName]) && str_contains($ruleset[$parameterName], "exists")) return;
+        
         $exampleData = [$parameterName => $results[$parameterName]['example']];
         $validator = Validator::make($exampleData, $ruleset);
         try {
