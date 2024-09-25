@@ -42,7 +42,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
     public function can_parse_supported_rules(array $ruleset, array $customInfo, array $expected)
     {
         // Needed for `exists` rule
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('users', function ($table) {
             $table->id();
         });
         
@@ -449,7 +449,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['exists_param' => 'exists:users,id'],
             [],
             [
-                'description' => 'The <code>id</code> of an existing record in the users.',
+                'description' => 'The <code>id</code> of an existing record in the users table.',
             ],
         ];
         yield 'unsupported' => [

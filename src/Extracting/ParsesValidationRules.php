@@ -532,7 +532,7 @@ trait ParsesValidationRules
                     $parameterData['description'] .= " The value and <code>{$arguments[0]}</code> must be different.";
                     break;
                 case 'exists':
-                    $parameterData['description'] .= " The <code>{$arguments[1]}</code> of an existing record in the {$arguments[0]}.";
+                    $parameterData['description'] .= " The <code>{$arguments[1]}</code> of an existing record in the {$arguments[0]} table.";
                     break;
                 default:
                     // Other rules not supported
