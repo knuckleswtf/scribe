@@ -482,9 +482,11 @@ class OpenAPISpecWriter
             $field = new Parameter($field);
         }
 
+        $fieldData = [];
+
         if ($field->type === 'file') {
             // See https://swagger.io/docs/specification/describing-request-body/file-upload/
-            return [
+            $fieldData = [
                 'type' => 'string',
                 'format' => 'binary',
                 'description' => $field->description ?: '',
@@ -528,10 +530,8 @@ class OpenAPISpecWriter
                     }
                 }
             }
-
-            return $fieldData;
         } else if ($field->type === 'object') {
-            return [
+            $fieldData = [
                 'type' => 'object',
                 'description' => $field->description ?: '',
                 'example' => $field->example,
@@ -540,17 +540,20 @@ class OpenAPISpecWriter
                 })->all()),
             ];
         } else {
-            $schema = [
+            $fieldData = [
                 'type' => static::normalizeTypeName($field->type),
                 'description' => $field->description ?: '',
                 'example' => $field->example,
             ];
             if (!empty($field->enumValues)) {
-                $schema['enum'] = $field->enumValues;
+                $fieldData['enum'] = $field->enumValues;
             }
-
-            return $schema;
         }
+
+        if (isset($field['required']) && !$field['required']) {
+            $fieldData['nullable'] = true;
+        }
+        return $fieldData;
     }
 
     protected function operationId(OutputEndpointData $endpoint): string

@@ -231,6 +231,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                 'type' => 'string',
                 'description' => 'A query param',
                 'example' => 'hahoho',
+                'nullable' => true,
             ],
         ], $results['paths']['/path1']['get']['parameters'][0]);
     }
@@ -338,6 +339,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                                 'description' => 'String param',
                                 'example' => 'hahoho',
                                 'type' => 'string',
+                                'nullable' => true,
                             ],
                             'booleanParam' => [
                                 'description' => 'Boolean param',
@@ -358,8 +360,10 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                                         'description' => 'Object param field',
                                         'example' => 119.0,
                                         'type' => 'number',
+                                        'nullable' => true,
                                     ],
                                 ],
+                                'nullable' => true,
                             ],
                         ],
                         'required' => [
@@ -381,11 +385,13 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                                 'description' => 'File param',
                                 'type' => 'string',
                                 'format' => 'binary',
+                                'nullable' => true,
                             ],
                             'numberArrayParam' => [
                                 'description' => 'Number array param',
                                 'example' => [186.9],
                                 'type' => 'array',
+                                'nullable' => true,
                                 'items' => [
                                     'type' => 'number',
                                 ],
