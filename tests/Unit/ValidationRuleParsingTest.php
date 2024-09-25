@@ -3,6 +3,7 @@
 namespace Knuckles\Scribe\Tests\Unit;
 
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Translation\Translator;
 use Illuminate\Validation\Rule;
@@ -40,6 +41,11 @@ class ValidationRuleParsingTest extends BaseLaravelTest
      */
     public function can_parse_supported_rules(array $ruleset, array $customInfo, array $expected)
     {
+        // Needed for `exists` rule
+        Schema::create('users', function (Blueprint $table) {
+            $table->id();
+        });
+        
         $results = $this->strategy->parse($ruleset, $customInfo);
 
         $parameterName = array_keys($ruleset)[0];
