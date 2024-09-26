@@ -565,7 +565,7 @@ class OpenAPISpecWriter
                 $subFieldPath = sprintf('%s.%s', $path, $subField);
                 $properties[$subField] = $this->generateSchemaForValue($subValue, $endpoint, $subFieldPath);
             }
-            $required = $this->filterRequiredFields($endpoint, array_keys($properties));
+            $required = $this->filterRequiredFields($endpoint, array_keys($properties), $path);
 
             $schema = [
                 'type' => 'object',
@@ -603,13 +603,14 @@ class OpenAPISpecWriter
     }
 
     /**
-     * Given an enpoint and a set of properties, return the properties that are specified as required.
+     * Given an enpoint and a set of object keys at a path, return the properties that are specified as required.
      */
-    public function filterRequiredFields(OutputEndpointData $endpoint, array $properties): array
+    public function filterRequiredFields(OutputEndpointData $endpoint, array $properties, string $path = ''): array
     {
         $required = [];
         foreach ($properties as $property) {
-            if (isset($endpoint->responseFields[$property]) && $endpoint->responseFields[$property]->required) {
+            $responseField = $endpoint->responseFields["$path.$property"] ?? $endpoint->responseFields[$property] ?? null;
+            if ($responseField && $responseField->required) {
                 $required[] = $property;
             }
         }

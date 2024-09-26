@@ -436,7 +436,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                 [
                     'status' => 201,
                     'description' => '',
-                    'content' => '{"this": "shouldn\'t be ignored", "and this": "too", "sub level 0": { "sub level 1 key 1": "sl0_sl1k1", "sub level 1 key 2": [ { "sub level 2 key 1": "sl0_sl1k2_sl2k1", "sub level 2 key 2": { "sub level 3 key 1": "sl0_sl1k2_sl2k2_sl3k1" } } ], "sub level 1 key 3": { "sub level 2 key 1": "sl0_sl1k3_sl2k2", "sub level 2 key 2": { "sub level 3 key 1": "sl0_sl1k3_sl2k2_sl3k1", "sub level 3 key null": null, "sub level 3 key integer": 99 } } } }',
+                    'content' => '{"this": "shouldn\'t be ignored", "and this": "too", "also this": "too", "sub level 0": { "sub level 1 key 1": "sl0_sl1k1", "sub level 1 key 2": [ { "sub level 2 key 1": "sl0_sl1k2_sl2k1", "sub level 2 key 2": { "sub level 3 key 1": "sl0_sl1k2_sl2k2_sl3k1" } } ], "sub level 1 key 3": { "sub level 2 key 1": "sl0_sl1k3_sl2k2", "sub level 2 key 2": { "sub level 3 key 1": "sl0_sl1k3_sl2k2_sl3k1", "sub level 3 key null": null, "sub level 3 key integer": 99 }, "sub level 2 key 3 required" : "sl0_sl1k3_sl2k3" } } }',
                 ],
             ],
             'responseFields' => [
@@ -445,9 +445,19 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                     'type' => 'string',
                     'description' => 'Parameter description, ha!',
                 ],
+                'also this' => [
+                    'name' => 'also this',
+                    'type' => 'string',
+                    'description' => 'This response parameter is required.',
+                    'required' => true,
+                ],
                 'sub level 0.sub level 1 key 3.sub level 2 key 1'=> [
-                    'description' => 'This is description of nested object',
-                ]
+                    'description' => 'This is a description of a nested object',
+                ],
+                'sub level 0.sub level 1 key 3.sub level 2 key 3 required'=> [
+                    'description' => 'This is a description of a required nested object',
+                    'required' => true,
+                ],
             ],
         ]);
         $endpointData2 = $this->createMockEndpointData([
@@ -485,6 +495,11 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                                     'example' => "too",
                                     'type' => 'string',
                                 ],
+                                'also this' => [
+                                    'description' => 'This response parameter is required.',
+                                    'example' => "too",
+                                    'type' => 'string',
+                                ],
                                 'sub level 0' => [
                                     'type' => 'object',
                                     'properties' => [
@@ -512,7 +527,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                                                 'sub level 2 key 1' => [
                                                     'type' => 'string',
                                                     'example' => 'sl0_sl1k3_sl2k2',
-                                                    'description' => 'This is description of nested object'
+                                                    'description' => 'This is a description of a nested object'
                                                 ],
                                                 'sub level 2 key 2' => [
                                                     'type' => 'object',
@@ -530,12 +545,24 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                                                             'example' => 99
                                                         ]
                                                     ]
-                                                ]
+                                                ],
+                                                'sub level 2 key 3 required' => [
+                                                    'type' => 'string',
+                                                    'example' => 'sl0_sl1k3_sl2k3',
+                                                    'description' => 'This is a description of a required nested object'
+                                                ],
+
+                                            ],
+                                            'required' => [
+                                                'sub level 2 key 3 required'
                                             ]
                                         ]
                                     ]
                                 ]
                             ],
+                            'required' => [
+                                'also this'
+                            ]
                         ],
                     ],
                 ],
