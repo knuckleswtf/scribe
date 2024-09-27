@@ -3,7 +3,6 @@
 namespace Knuckles\Scribe\Writing;
 
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\Globals;
@@ -13,12 +12,12 @@ use Symfony\Component\Yaml\Yaml;
 
 class Writer
 {
-    private bool $isStatic;
-    private bool $isExternal;
+    protected bool $isStatic;
+    protected bool $isExternal;
 
-    private ?string $staticTypeOutputPath;
+    protected ?string $staticTypeOutputPath;
 
-    private ?string $laravelTypeOutputPath;
+    protected ?string $laravelTypeOutputPath;
     protected array $generatedFiles = [
         'postman' => null,
         'openapi' => null,
@@ -31,7 +30,7 @@ class Writer
         ],
     ];
 
-    private string $laravelAssetsPath;
+    protected string $laravelAssetsPath;
 
     public function __construct(protected DocumentationConfig $config, public PathConfig $paths)
     {
@@ -96,6 +95,7 @@ class Writer
 
             $spec = $this->generateOpenAPISpec($parsedRoutes);
             if ($this->isStatic) {
+                Utils::makeDirectoryRecursive($this->staticTypeOutputPath);
                 $specPath = "{$this->staticTypeOutputPath}/openapi.yaml";
                 file_put_contents($specPath, $spec);
             } else {

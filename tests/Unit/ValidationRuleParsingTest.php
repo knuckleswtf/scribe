@@ -3,7 +3,9 @@
 namespace Knuckles\Scribe\Tests\Unit;
 
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Translation\Translator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Knuckles\Scribe\Extracting\ParsesValidationRules;
@@ -39,6 +41,11 @@ class ValidationRuleParsingTest extends BaseLaravelTest
      */
     public function can_parse_supported_rules(array $ruleset, array $customInfo, array $expected)
     {
+        // Needed for `exists` rule
+        Schema::create('users', function ($table) {
+            $table->id();
+        });
+        
         $results = $this->strategy->parse($ruleset, $customInfo);
 
         $parameterName = array_keys($ruleset)[0];
@@ -48,7 +55,9 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             $this->assertEquals($expected['type'], $results[$parameterName]['type']);
         }
 
-        // Validate that the generated values actually pass validation
+        // Validate that the generated values actually pass validation (for rules where we can generate some data)
+        if (is_string($ruleset[$parameterName]) && str_contains($ruleset[$parameterName], "exists")) return;
+        
         $exampleData = [$parameterName => $results[$parameterName]['example']];
         $validator = Validator::make($exampleData, $ruleset);
         try {
@@ -438,6 +447,13 @@ class ValidationRuleParsingTest extends BaseLaravelTest
                 'description' => 'Must be accepted.',
             ],
         ];
+        yield 'exists' => [
+            ['exists_param' => 'exists:users,id'],
+            [],
+            [
+                'description' => 'The <code>id</code> of an existing record in the users table.',
+            ],
+        ];
         yield 'unsupported' => [
             ['unsupported_param' => [new DummyValidationRule, 'bail']],
             ['unsupported_param' => ['description' => $description]],
@@ -597,6 +613,32 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             array_map(fn ($case) => $case->value, Fixtures\TestStringBackedEnum::cases())
         ));
     }
+
+    /** @test */
+    public function can_translate_validation_rules_with_types_with_translator_without_array_support()
+    {
+        // Single line DocComment
+        $ruleset = [
+            'nested' => [
+                'string', 'max:20',
+            ],
+        ];
+
+        $results = $this->strategy->parse($ruleset);
+
+        $this->assertEquals('Must not be greater than 20 characters.', $results['nested']['description']);
+
+        $this->app->extend('translator', function ($command, $app) {
+            $loader = $app['translation.loader'];
+            $locale = $app['config']['app.locale'];
+            return new DummyTranslator($loader, $locale);
+        });
+
+        $results = $this->strategy->parse($ruleset);
+
+        $this->assertEquals('successfully translated by concatenated string.', $results['nested']['description']);
+
+    }
 }
 
 class DummyValidationRule implements \Illuminate\Contracts\Validation\Rule
@@ -671,5 +713,17 @@ if ($laravel10Rules) {
                 'description' => 'This is a custom rule.',
             ];
         }
+    }
+}
+
+class DummyTranslator extends Translator
+{
+    public function get($key, array $replace = [], $locale = null, $fallback = true)
+    {
+        if ($key === 'validation.max.string') {
+            return 'successfully translated by concatenated string';
+        }
+
+        return $key;
     }
 }

@@ -12,6 +12,8 @@ class Globals
 
     public static $__beforeResponseCall;
 
+    public static $__afterResponseCall;
+
     public static $__bootstrap;
 
     public static $__afterGenerating;

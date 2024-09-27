@@ -215,21 +215,22 @@ class Extractor
                 }
 
                 $settings = self::transformOldRouteRulesIntoNewSettings($stage, $rulesToApply, $strategyClass, $settings);
-                $routesToSkip = $settings["except"] ?? [];
-                $routesToInclude = $settings["only"] ?? [];
-
-                if (!empty($routesToSkip)) {
-                    if (RoutePatternMatcher::matches($endpointData->route, $routesToSkip)) {
-                        continue;
-                    }
-                } elseif (!empty($routesToInclude)) {
-                    if (!RoutePatternMatcher::matches($endpointData->route, $routesToInclude)) {
-                        continue;
-                    }
-                }
             } else {
                 $strategyClass = $strategyClassOrTuple;
                 $settings = self::transformOldRouteRulesIntoNewSettings($stage, $rulesToApply, $strategyClass);
+            }
+
+            $routesToSkip = $settings["except"] ?? [];
+            $routesToInclude = $settings["only"] ?? [];
+
+            if (!empty($routesToSkip)) {
+                if (RoutePatternMatcher::matches($endpointData->route, $routesToSkip)) {
+                    continue;
+                }
+            } elseif (!empty($routesToInclude)) {
+                if (!RoutePatternMatcher::matches($endpointData->route, $routesToInclude)) {
+                    continue;
+                }
             }
 
             $strategy = new $strategyClass($this->config);
