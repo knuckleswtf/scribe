@@ -586,10 +586,13 @@ class OpenAPISpecWriter
                 $properties[$subField] = $this->generateSchemaForValue($subValue, $endpoint, $subFieldPath);
             }
 
-            return [
+            $schema = [
                 'type' => 'object',
                 'properties' => $this->objectIfEmpty($properties),
             ];
+            $this->setDescription($schema, $endpoint, $path);
+
+            return $schema;
         }
 
         $schema = [
@@ -615,6 +618,9 @@ class OpenAPISpecWriter
         return $schema;
     }
 
+    /**
+     * Set the description for the schema. If the field has a description, it is set in the schema.
+     */
     private function setDescription(array &$schema, OutputEndpointData $endpoint, string $path): void
     {
         if (isset($endpoint->responseFields[$path]->description)) {
