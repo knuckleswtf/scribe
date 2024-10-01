@@ -596,9 +596,7 @@ class OpenAPISpecWriter
             'type' => $this->convertScribeOrPHPTypeToOpenAPIType(gettype($value)),
             'example' => $value,
         ];
-        if (isset($endpoint->responseFields[$path]->description)) {
-            $schema['description'] = $endpoint->responseFields[$path]->description;
-        }
+        $this->setDescription($schema, $endpoint, $path);
 
         if ($schema['type'] === 'array' && !empty($value)) {
             $schema['example'] = json_decode(json_encode($schema['example']), true); // Convert stdClass to array
@@ -615,5 +613,12 @@ class OpenAPISpecWriter
         }
 
         return $schema;
+    }
+
+    private function setDescription(array &$schema, OutputEndpointData $endpoint, string $path): void
+    {
+        if (isset($endpoint->responseFields[$path]->description)) {
+            $schema['description'] = $endpoint->responseFields[$path]->description;
+        }
     }
 }
