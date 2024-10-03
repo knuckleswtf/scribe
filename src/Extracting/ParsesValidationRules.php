@@ -218,6 +218,55 @@ trait ParsesValidationRules
             return true;
         }
 
+
+        if ($rule instanceof \Illuminate\Validation\Rules\Password) {
+            // no getters available on Password class, so we use Reflection to extract protected attributes
+            $passwordAttrs = [];
+            $reflection = new ReflectionClass($rule);
+            foreach ($reflection->getProperties() as $property) {
+                if ($property->isStatic()) {
+                    continue;
+                }
+                $property->setAccessible(true);
+                $passwordAttrs[$property->getName()] = $property->getValue($rule);
+            }
+
+            $min = $passwordAttrs['min'] ?? null;
+            $max = $passwordAttrs['max'] ?? null;
+            $letters = $passwordAttrs['letters'] ?? false;
+            $mixedCase = $passwordAttrs['mixedCase'] ?? false;
+            $numbers = $passwordAttrs['numbers'] ?? false;
+            $symbols = $passwordAttrs['symbols'] ?? false;
+
+            if (!empty($min)) {
+                $parameterData['description'] .= ' ' . $this->getDescription('min', [':min' => $min]);
+            }
+            if (!empty($max)) {
+                $parameterData['description'] .= ' ' . $this->getDescription('max', [':max' => $max]);
+            }
+            if ($letters) {
+                $parameterData['description'] .= ' ' . $this->getDescription('password.letters');
+            }
+            if ($mixedCase) {
+                $parameterData['description'] .= ' ' . $this->getDescription('password.mixed');
+            }
+            if ($numbers) {
+                $parameterData['description'] .= ' ' . $this->getDescription('password.numbers');
+            }
+            if ($symbols) {
+                $parameterData['description'] .= ' ' . $this->getDescription('password.symbols');
+            }
+
+            $parameterData['setter'] = fn () => Str::password(
+                length: rand($min ?? 10, $max ?? 14),
+                letters: $letters,
+                numbers: $numbers,
+                symbols: $symbols,
+            );
+
+            return true;
+        }
+
         if ($rule instanceof Rule || $rule instanceof ValidationRule) {
             if (method_exists($rule, 'invokable')) {
                 // Laravel wraps InvokableRule instances in an InvokableValidationRule class,
