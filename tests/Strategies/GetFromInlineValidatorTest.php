@@ -131,6 +131,58 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
     }
 
     /** @test */
+    public function can_fetch_from_request_validate_facade_assignment()
+    {
+        $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
+            $e->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidateFacade');
+        });
+
+        $results = $this->fetchViaBodyParams($endpoint);
+
+        $this->assertArraySubset(self::$expected, $results);
+        $this->assertIsArray($results['ids']['example']);
+    }
+
+    /** @test */
+    public function can_fetch_from_request_validate_facade_expression()
+    {
+        $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
+            $e->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidateFacadeNoAssignment');
+        });
+
+        $results = $this->fetchViaBodyParams($endpoint);
+
+        $this->assertArraySubset(self::$expected, $results);
+        $this->assertIsArray($results['ids']['example']);
+    }
+
+    /** @test */
+    public function can_fetch_from_request_validate_facade_with_full_import()
+    {
+        $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
+            $e->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidateFacadeWithFullImport');
+        });
+
+        $results = $this->fetchViaBodyParams($endpoint);
+
+        $this->assertArraySubset(self::$expected, $results);
+        $this->assertIsArray($results['ids']['example']);
+    }
+
+    /** @test */
+    public function can_fetch_from_request_validatewithbag_facade()
+    {
+        $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
+            $e->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidateWithBagFacade');
+        });
+
+        $results = $this->fetchViaBodyParams($endpoint);
+
+        $this->assertArraySubset(self::$expected, $results);
+        $this->assertIsArray($results['ids']['example']);
+    }
+
+    /** @test */
     public function can_fetch_from_this_validate()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
