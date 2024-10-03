@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class Scribe
 {
-    public const VERSION = '4.35.0';
+    public const VERSION = '4.37.2';
 
     /**
      * Specify a callback that will be executed just before a response call is made
@@ -20,6 +20,17 @@ class Scribe
     public static function beforeResponseCall(callable $callable)
     {
         Globals::$__beforeResponseCall = $callable;
+    }
+
+    /**
+     * Specify a callback that will be executed just after a response call is done
+     * (allowing to modify the response).
+     *
+     * @param callable(Request, ExtractedEndpointData, mixed): mixed $callable
+     */
+    public static function afterResponseCall(callable $callable)
+    {
+        Globals::$__afterResponseCall = $callable;
     }
 
     /**

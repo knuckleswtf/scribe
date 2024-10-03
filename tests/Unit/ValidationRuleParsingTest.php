@@ -3,6 +3,7 @@
 namespace Knuckles\Scribe\Tests\Unit;
 
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Translation\Translator;
 use Illuminate\Validation\Rule;
@@ -40,6 +41,11 @@ class ValidationRuleParsingTest extends BaseLaravelTest
      */
     public function can_parse_supported_rules(array $ruleset, array $customInfo, array $expected)
     {
+        // Needed for `exists` rule
+        Schema::create('users', function ($table) {
+            $table->id();
+        });
+        
         $results = $this->strategy->parse($ruleset, $customInfo);
 
         $parameterName = array_keys($ruleset)[0];
@@ -49,7 +55,9 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             $this->assertEquals($expected['type'], $results[$parameterName]['type']);
         }
 
-        // Validate that the generated values actually pass validation
+        // Validate that the generated values actually pass validation (for rules where we can generate some data)
+        if (is_string($ruleset[$parameterName]) && str_contains($ruleset[$parameterName], "exists")) return;
+        
         $exampleData = [$parameterName => $results[$parameterName]['example']];
         $validator = Validator::make($exampleData, $ruleset);
         try {
@@ -437,6 +445,13 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             [
                 'type' => 'boolean',
                 'description' => 'Must be accepted.',
+            ],
+        ];
+        yield 'exists' => [
+            ['exists_param' => 'exists:users,id'],
+            [],
+            [
+                'description' => 'The <code>id</code> of an existing record in the users table.',
             ],
         ];
         yield 'unsupported' => [

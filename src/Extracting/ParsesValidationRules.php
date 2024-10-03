@@ -540,6 +540,9 @@ trait ParsesValidationRules
                 case 'nullable':
                     $parameterData['nullable'] = true;
                     break;
+                case 'exists':
+                    $parameterData['description'] .= " The <code>{$arguments[1]}</code> of an existing record in the {$arguments[0]} table.";
+                    break;
                 default:
                     // Other rules not supported
                     break;
@@ -644,8 +647,11 @@ trait ParsesValidationRules
                 // 2. If `users.<name>` exists, `users` is an `object`
                 // 3. Otherwise, default to `object`
                 // Important: We're iterating in reverse, to ensure we set child items before parent items
-                // (assuming the user specified parents first, which is the more common thing)
-                if ($childKey = Arr::first($allKeys, fn($key) => Str::startsWith($key, "$name.*"))) {
+                // (assuming the user specified parents first, which is the more common thing)y
+                if(Arr::first($allKeys, fn($key) => Str::startsWith($key, "$name.*."))) {
+                    $details['type'] = 'object[]';
+                    unset($details['setter']);
+                } else if ($childKey = Arr::first($allKeys, fn($key) => Str::startsWith($key, "$name.*"))) {
                     $childType = ($converted[$childKey] ?? $parameters[$childKey])['type'];
                     $details['type'] = "{$childType}[]";
                 } else { // `array` types default to `object` if no subtype is specified

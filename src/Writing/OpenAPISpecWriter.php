@@ -269,7 +269,33 @@ class OpenAPISpecWriter
                 $responses[204] = [
                     'description' => $this->getResponseDescription($response),
                 ];
+            } elseif (isset($responses[$response->status])) {
+                // If we already have a response for this status code and content type,
+                // we change to a `oneOf` which includes all the responses
+                $content = $this->generateResponseContentSpec($response->content, $endpoint);
+                $contentType = array_keys($content)[0];
+                if (isset($responses[$response->status]['content'][$contentType])) {
+                    $newResponseExample = array_replace([
+                        'description' => $this->getResponseDescription($response),
+                    ], $content[$contentType]['schema']);
+
+                    // If we've already created the oneOf object, add this response
+                    if (isset($responses[$response->status]['content'][$contentType]['schema']['oneOf'])) {
+                        $responses[$response->status]['content'][$contentType]['schema']['oneOf'][] = $newResponseExample;
+                    } else {
+                        // Create the oneOf object
+                        $existingResponseExample = array_replace([
+                            'description' => $responses[$response->status]['description'],
+                        ], $responses[$response->status]['content'][$contentType]['schema']);
+
+                        $responses[$response->status]['description'] = '';
+                        $responses[$response->status]['content'][$contentType]['schema'] = [
+                            'oneOf' => [$existingResponseExample, $newResponseExample]
+                        ];
+                    }
+                }
             } else {
+                // Store as the response for this status
                 $responses[$response->status] = [
                     'description' => $this->getResponseDescription($response),
                     'content' => $this->generateResponseContentSpec($response->content, $endpoint),
@@ -568,19 +594,20 @@ class OpenAPISpecWriter
                 $properties[$subField] = $this->generateSchemaForValue($subValue, $endpoint, $subFieldPath);
             }
 
-            return [
+            $schema = [
                 'type' => 'object',
                 'properties' => $this->objectIfEmpty($properties),
             ];
+            $this->setDescription($schema, $endpoint, $path);
+
+            return $schema;
         }
 
         $schema = [
             'type' => $this->convertScribeOrPHPTypeToOpenAPIType(gettype($value)),
             'example' => $value,
         ];
-        if (isset($endpoint->responseFields[$path]->description)) {
-            $schema['description'] = $endpoint->responseFields[$path]->description;
-        }
+        $this->setDescription($schema, $endpoint, $path);
 
         if ($schema['type'] === 'array' && !empty($value)) {
             $schema['example'] = json_decode(json_encode($schema['example']), true); // Convert stdClass to array
@@ -597,5 +624,15 @@ class OpenAPISpecWriter
         }
 
         return $schema;
+    }
+
+    /**
+     * Set the description for the schema. If the field has a description, it is set in the schema.
+     */
+    private function setDescription(array &$schema, OutputEndpointData $endpoint, string $path): void
+    {
+        if (isset($endpoint->responseFields[$path]->description)) {
+            $schema['description'] = $endpoint->responseFields[$path]->description;
+        }
     }
 }
