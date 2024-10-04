@@ -494,6 +494,7 @@ class OpenAPISpecWriter
                 'type' => 'string',
                 'format' => 'binary',
                 'description' => $field->description ?: '',
+                'nullable' => $field->nullable,
             ];
         } else if (Utils::isArrayType($field->type)) {
             $baseType = Utils::getBaseTypeFromArrayType($field->type);
@@ -506,6 +507,10 @@ class OpenAPISpecWriter
                 $baseItem['enum'] = $field->enumValues;
             }
 
+            if ($field->nullable) {
+                $baseItem['nullable'] = true;
+            }
+
             $fieldData = [
                 'type' => 'array',
                 'description' => $field->description ?: '',
@@ -515,6 +520,7 @@ class OpenAPISpecWriter
                         'name' => '',
                         'type' => $baseType,
                         'example' => ($field->example ?: [null])[0],
+                        'nullable' => $field->nullable,
                     ])
                     : $baseItem,
             ];
@@ -541,6 +547,7 @@ class OpenAPISpecWriter
                 'type' => 'object',
                 'description' => $field->description ?: '',
                 'example' => $field->example,
+                'nullable'=> $field->nullable,
                 'properties' => $this->objectIfEmpty(collect($field->__fields)->mapWithKeys(function ($subfield, $subfieldName) {
                     return [$subfieldName => $this->generateFieldData($subfield)];
                 })->all()),
@@ -550,6 +557,7 @@ class OpenAPISpecWriter
                 'type' => static::normalizeTypeName($field->type),
                 'description' => $field->description ?: '',
                 'example' => $field->example,
+                'nullable' => $field->nullable,
             ];
             if (!empty($field->enumValues)) {
                 $schema['enum'] = $field->enumValues;
@@ -600,6 +608,8 @@ class OpenAPISpecWriter
             if ($required) {
                 $schema['required'] = $required;
             }
+            $this->setDescription($schema, $endpoint, $path);
+
             return $schema;
         }
 
@@ -607,9 +617,7 @@ class OpenAPISpecWriter
             'type' => $this->convertScribeOrPHPTypeToOpenAPIType(gettype($value)),
             'example' => $value,
         ];
-        if (isset($endpoint->responseFields[$path]->description)) {
-            $schema['description'] = $endpoint->responseFields[$path]->description;
-        }
+        $this->setDescription($schema, $endpoint, $path);
 
         if ($schema['type'] === 'array' && !empty($value)) {
             $schema['example'] = json_decode(json_encode($schema['example']), true); // Convert stdClass to array
@@ -642,5 +650,15 @@ class OpenAPISpecWriter
         }
 
         return $required;
+    }
+  
+    /*
+     * Set the description for the schema. If the field has a description, it is set in the schema.
+     */
+    private function setDescription(array &$schema, OutputEndpointData $endpoint, string $path): void
+    {
+        if (isset($endpoint->responseFields[$path]->description)) {
+            $schema['description'] = $endpoint->responseFields[$path]->description;
+        }
     }
 }
