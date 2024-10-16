@@ -609,6 +609,11 @@ class OpenAPISpecWriter
         ];
         $this->setDescription($schema, $endpoint, $path);
 
+        // Set enum values for the property if they exist
+        if (isset($endpoint->responseFields[$path]->enumValues)) {
+            $schema['enum'] = $endpoint->responseFields[$path]->enumValues;
+        }
+
         if ($schema['type'] === 'array' && !empty($value)) {
             $schema['example'] = json_decode(json_encode($schema['example']), true); // Convert stdClass to array
 
