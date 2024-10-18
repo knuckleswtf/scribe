@@ -201,7 +201,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
                 'description' => '',
                 'required' => true,
             ],
-            'enum_inexistent' => [
+            'enum_nonexistent' => [
                 'type' => 'string',
                 'description' => 'Not full path class call won\'t work.',
                 'required' => true,

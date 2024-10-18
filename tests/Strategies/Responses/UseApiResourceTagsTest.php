@@ -7,7 +7,6 @@ use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Schema;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Extracting\Strategies\Responses\UseApiResourceTags;
-use Knuckles\Scribe\ScribeServiceProvider;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tests\Fixtures\TestPet;

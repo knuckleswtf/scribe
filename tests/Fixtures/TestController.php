@@ -585,7 +585,7 @@ class TestController extends Controller
     {
         return null;
     }
-    
+
     public function withInjectedModelFullParamName(TestPost $testPost)
     {
         return null;
@@ -597,7 +597,7 @@ class TestController extends Controller
             'enum_class' => ['required', new Rules\Enum(\Knuckles\Scribe\Tests\Fixtures\TestStringBackedEnum::class), 'nullable'],
             'enum_string' => ['required', Rule::enum('\Knuckles\Scribe\Tests\Fixtures\TestIntegerBackedEnum'), 'nullable'],
             // Not full path class call won't work
-            'enum_inexistent' => ['required', new Rules\Enum(TestStringBackedEnum::class)],
+            'enum_nonexistent' => ['required', new Rules\Enum(TestStringBackedEnum::class)],
         ]);
     }
 

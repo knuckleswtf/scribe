@@ -53,7 +53,14 @@ class ResponseCallsTest extends BaseLaravelTest
     {
         $route = RouteFacade::post('/withFormDataParams', [TestController::class, 'withFormDataParams']);
 
-        $this->setConfig(['routes.0.apply.response_calls.methods' => ['POST']]);
+        $this->setConfig([
+            'routes.0.apply.response_calls' => [],
+            'strategies.responses' => [
+                [ResponseCalls::class,
+                    ['only' => 'POST *']
+                ],
+            ]
+        ]);
         $parsed = (new Extractor())->processRoute($route, config('scribe.routes.0.apply'));
 
         $responses = $parsed->responses->toArray();
