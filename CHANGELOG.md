@@ -12,6 +12,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.38.0 (18 October 2024)
+## Fixed
+- Elements theme: Fix display of boolean examples [#887](https://github.com/knuckleswtf/scribe/pull/887)
+- Elements theme: Fix html responses not showing in received response [#890](https://github.com/knuckleswtf/scribe/pull/890)
+- Postman collection export: convert query parameters to strings to prevent validation errors [#888](https://github.com/knuckleswtf/scribe/pull/888)
+- Fix issue with example model relations being lost after refresh [#901](https://github.com/knuckleswtf/scribe/pull/901)
+
+## Modified
+- Improve Laravel dd() Output Rendering in Scribe Documentation [#893](https://github.com/knuckleswtf/scribe/pull/893)
+
+## Added
+- [Experimental] Support for nullable values for OpenAPI specs [#834](https://github.com/knuckleswtf/scribe/pull/834)
+
+  You can now specify a `nullable` property on a field, via either the PHP attributes (`#[BodyParam]`, ...), or the validation rules. Annotations (`@bodyParam`, ...) are not currently supported, and the `nullable` property will affect only the OpenAPI output.
+- Add required to responseField tag and append the required fields in the OpenAPI spec [#814](https://github.com/knuckleswtf/scribe/pull/814)
+
+  The `@responseField` annotation now supports "required", similarly to `@bodyParam`.
+- Add parsing support for `exists` rule [#886](https://github.com/knuckleswtf/scribe/pull/886)
+- Add `description` to object fields when generating OpenAPI file [#896](https://github.com/knuckleswtf/scribe/pull/896)
+- Support `Request::validate` facade expressions for parsing validation rules [#895](https://github.com/knuckleswtf/scribe/pull/895)
+- Add enum list to Open API spec response properties [#902](https://github.com/knuckleswtf/scribe/pull/902)
+
+
 # 4.37.2 (30 August 2024)
 ## Fixed
 - Stop response fields from overflowing to the dark box zone [#868](https://github.com/knuckleswtf/scribe/pull/868)
