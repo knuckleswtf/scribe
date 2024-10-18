@@ -400,15 +400,16 @@ class OpenAPISpecWriter
                             ],
                             'example' => $decoded,
                         ],
-                    ],
+                    ], 
                 ];
 
             case 'object':
                 $properties = collect($decoded)->mapWithKeys(function ($value, $key) use ($endpoint) {
                     return [$key => $this->generateSchemaForValue($value, $endpoint, $key)];
                 })->toArray();
+                $required = $this->filterRequiredFields($endpoint, array_keys($properties));
 
-                return [
+                $data = [
                     'application/json' => [
                         'schema' => [
                             'type' => 'object',
@@ -417,6 +418,11 @@ class OpenAPISpecWriter
                         ],
                     ],
                 ];
+                if ($required) {
+                    $data['application/json']['schema']['required'] = $required;
+                }
+
+                return $data;
         }
     }
 
@@ -593,11 +599,15 @@ class OpenAPISpecWriter
                 $subFieldPath = sprintf('%s.%s', $path, $subField);
                 $properties[$subField] = $this->generateSchemaForValue($subValue, $endpoint, $subFieldPath);
             }
+            $required = $this->filterRequiredFields($endpoint, array_keys($properties), $path);
 
             $schema = [
                 'type' => 'object',
                 'properties' => $this->objectIfEmpty($properties),
             ];
+            if ($required) {
+                $schema['required'] = $required;
+            }
             $this->setDescription($schema, $endpoint, $path);
 
             return $schema;
@@ -632,6 +642,22 @@ class OpenAPISpecWriter
     }
 
     /**
+     * Given an enpoint and a set of object keys at a path, return the properties that are specified as required.
+     */
+    public function filterRequiredFields(OutputEndpointData $endpoint, array $properties, string $path = ''): array
+    {
+        $required = [];
+        foreach ($properties as $property) {
+            $responseField = $endpoint->responseFields["$path.$property"] ?? $endpoint->responseFields[$property] ?? null;
+            if ($responseField && $responseField->required) {
+                $required[] = $property;
+            }
+        }
+
+        return $required;
+    }
+  
+    /*
      * Set the description for the schema. If the field has a description, it is set in the schema.
      */
     private function setDescription(array &$schema, OutputEndpointData $endpoint, string $path): void
