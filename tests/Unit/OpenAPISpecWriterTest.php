@@ -744,6 +744,45 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         ], $results['paths']['/path1']['post']['responses']);
     }
 
+    /** @test */
+    public function adds_enum_values_to_response_properties()
+    {
+        $endpointData = $this->createMockEndpointData([
+            'uri' => '/path',
+            'httpMethods' => ['POST'],
+            'responses' => [
+                [
+                    'status' => 200,
+                    'description' => 'This one',
+                    'content' => '{"status": "one"}',
+                ],
+            ],
+            'responseFields' => [
+                'status' => ['enumValues' => ['one', 'two', 'three']],
+            ],
+        ]);
+
+        $groups = [$this->createGroup([$endpointData])];
+
+        $results = $this->generate($groups);
+
+        $this->assertArraySubset([
+            '200' => [
+                'content' => [
+                    'application/json' => [
+                        'schema' => [
+                            'properties' => [
+                                'status' => [
+                                    'enum' => ['one', 'two', 'three'],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ], $results['paths']['/path']['post']['responses']);
+    }
+
     protected function createMockEndpointData(array $custom = []): OutputEndpointData
     {
         $faker = Factory::create();
