@@ -6,6 +6,7 @@ use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Extracting\MethodAstParser;
 use Knuckles\Scribe\Extracting\ParsesValidationRules;
 use Knuckles\Scribe\Extracting\Shared\ValidationRulesFinders\RequestValidate;
+use Knuckles\Scribe\Extracting\Shared\ValidationRulesFinders\RequestValidateFacade;
 use Knuckles\Scribe\Extracting\Shared\ValidationRulesFinders\ThisValidate;
 use Knuckles\Scribe\Extracting\Shared\ValidationRulesFinders\ValidatorMake;
 use PhpParser\Node;
@@ -175,6 +176,7 @@ class GetFromInlineValidatorBase extends Strategy
     {
         $strategies = [
             RequestValidate::class, // $request->validate(...);
+            RequestValidateFacade::class, // Request::validate(...);
             ValidatorMake::class, // Validator::make($request, ...)
             ThisValidate::class, // $this->validate(...);
         ];

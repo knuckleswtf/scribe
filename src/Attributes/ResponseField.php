@@ -15,7 +15,8 @@ class ResponseField extends GenericParam
         public ?string $description = '',
         public ?bool $required = true,
         public mixed $example = null, /* Pass 'No-example' to omit the example */
-        public mixed $enum = null, // Can pass a list of values, or a native PHP enum
+        public mixed $enum = null, // Can pass a list of values, or a native PHP enum,
+        public ?bool $nullable = false,
     ) {
     }
 }

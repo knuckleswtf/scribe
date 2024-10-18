@@ -46,11 +46,19 @@ class GetFromResponseFieldAttributesTest extends TestCase
             'id' => [
                 'type' => 'integer',
                 'description' => 'The id of the newly created user.',
+                'required' => true,
             ],
             'other' => [
                 'type' => 'string',
                 'description' => '',
+                'required' => true,
             ],
+            'required_attribute' => [
+                'required' => true,
+            ],
+            'not_required_attribute' => [
+                'required' => false,
+            ]
         ], $results);
     }
 
@@ -98,6 +106,8 @@ class ResponseFieldAttributeTestController
 {
     #[ResponseField('id', description: 'The id of the newly created user.')]
     #[ResponseField('other', 'string')]
+    #[ResponseField('required_attribute', required: true)]
+    #[ResponseField('not_required_attribute', required: false)]
     public function methodWithAttributes()
     {
     }

@@ -14,6 +14,7 @@ class GenericParam
         public ?bool $required = true,
         public mixed $example = null, /* Pass 'No-example' to omit the example */
         public mixed $enum = null, // Can pass a list of values, or a native PHP enum
+        public ?bool $nullable = false,
     ) {
     }
 
@@ -26,6 +27,7 @@ class GenericParam
             "required" => $this->required,
             "example" => $this->example,
             "enumValues" => $this->getEnumValues(),
+            'nullable' => $this->nullable,
         ];
     }
 

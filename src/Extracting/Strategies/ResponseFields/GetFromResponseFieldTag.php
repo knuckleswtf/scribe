@@ -16,22 +16,28 @@ class GetFromResponseFieldTag extends GetFieldsFromTagStrategy
     protected function parseTag(string $tagContent): array
     {
         // Format:
-        // @responseField <name> <type> <description>
+        // @responseField <name> <type> <"required" (optional)> <description>
         // Examples:
-        // @responseField text string The text.
+        // @responseField text string required The text.
         // @responseField user_id integer The ID of the user.
-        preg_match('/(.+?)\s+(.+?)\s+([\s\S]*)/', $tagContent, $content);
+        preg_match('/(.+?)\s+(.+?)\s+(.+?)\s+([\s\S]*)/', $tagContent, $content);
         if (empty($content)) {
             // This means only name and type were supplied
             [$name, $type] = preg_split('/\s+/', $tagContent);
             $description = '';
+            $required = false;
         } else {
-            [$_, $name, $type, $description] = $content;
+            [$_, $name, $type, $required, $description] = $content;
+            if($required !== "required"){
+                $description = $required . " " . $description;
+            }
+            
+            $required = $required === "required";
             $description = trim($description);
         }
 
         $type = static::normalizeTypeName($type);
-        $data = compact('name', 'type', 'description');
+        $data = compact('name', 'type', 'required', 'description');
 
         // Support optional type in annotation
         // The type can also be a union or nullable type (eg ?string or string|null)

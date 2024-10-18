@@ -19,6 +19,9 @@ class ResponseField extends BaseDTO
     /** @var string */
     public $type;
 
+    /** @var boolean */
+    public $required;
+
     /** @var mixed */
     public $example;
 
