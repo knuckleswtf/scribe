@@ -41,7 +41,12 @@ class OpenAPISpecWriter
             'info' => [
                 'title' => $this->config->get('title') ?: config('app.name', ''),
                 'description' => $this->config->get('description', ''),
-                'version' => '1.0.0',
+                'version' => config('app.version', ''),
+                'contact' => [
+                    'name' => $this->config->get('contact.name', ''),
+                    'url' => $this->config->get('contact.url', ''),
+                    'email' => $this->config->get('contact.email', ''),
+                ],
             ],
             'servers' => [
                 [
@@ -249,7 +254,6 @@ class OpenAPISpecWriter
             }
 
             $body['content'][$contentType]['schema'] = $schema;
-
         }
 
         // return object rather than empty array, so can get properly serialised as object
@@ -400,7 +404,7 @@ class OpenAPISpecWriter
                             ],
                             'example' => $decoded,
                         ],
-                    ], 
+                    ],
                 ];
 
             case 'object':
@@ -547,7 +551,7 @@ class OpenAPISpecWriter
                 'type' => 'object',
                 'description' => $field->description ?: '',
                 'example' => $field->example,
-                'nullable'=> $field->nullable,
+                'nullable' => $field->nullable,
                 'properties' => $this->objectIfEmpty(collect($field->__fields)->mapWithKeys(function ($subfield, $subfieldName) {
                     return [$subfieldName => $this->generateFieldData($subfield)];
                 })->all()),
@@ -656,7 +660,7 @@ class OpenAPISpecWriter
 
         return $required;
     }
-  
+
     /*
      * Set the description for the schema. If the field has a description, it is set in the schema.
      */
