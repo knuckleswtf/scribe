@@ -178,6 +178,7 @@ class Writer
         $contents = str_replace('href="../docs/collection.json"', 'href="{{ route("' . $this->paths->outputPath('postman', '.') . '") }}"', $contents);
         $contents = str_replace('href="../docs/openapi.yaml"', 'href="{{ route("' . $this->paths->outputPath('openapi', '.') . '") }}"', $contents);
         $contents = str_replace('url="../docs/openapi.yaml"', 'url="{{ route("' . $this->paths->outputPath('openapi', '.') . '") }}"', $contents);
+        // With Elements theme, we'd have <elements-api apiDescriptionUrl="../docs/openapi.yaml" 
         $contents = str_replace('Url="../docs/openapi.yaml"', 'Url="{{ route("' . $this->paths->outputPath('openapi', '.') . '") }}"', $contents);
 
         file_put_contents("$this->laravelTypeOutputPath/index.blade.php", $contents);
