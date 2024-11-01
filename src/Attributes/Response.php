@@ -18,7 +18,11 @@ class Response
     {
         return  [
             "status" => $this->status,
-            "content" => is_string($this->content) ? $this->content : json_encode($this->content, JSON_THROW_ON_ERROR),
+            "content" => match (true) {
+                is_null($this->content) => null,
+                is_string($this->content) => $this->content,
+                default => json_encode($this->content, JSON_THROW_ON_ERROR),
+            },
             "description" => $this->description,
         ];
     }
