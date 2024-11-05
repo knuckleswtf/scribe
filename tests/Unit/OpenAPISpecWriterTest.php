@@ -599,6 +599,92 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
+    public function adds_required_fields_on_objects_wrapped_in_array()
+    {
+        $endpointData = $this->createMockEndpointData([
+            'httpMethods' => ['GEt'],
+            'uri' => '/path1',
+            'responses' => [
+                [
+                    'status' => 200,
+                    'description' => 'List of entities',
+                    'content' => '{"data":[{"name":"Resource name","uuid":"UUID","primary":true}]}',
+                ],
+            ],
+            'responseFields' => [
+                'data' => [
+                    'name' => 'data',
+                    'type' => 'array',
+                    'description' => 'Data wrapper',
+                ],
+                'data.name' => [
+                    'name' => 'Resource name',
+                    'type' => 'string',
+                    'description' => 'Name of the resource object',
+                    'required' => true,
+                ],
+                'data.uuid' => [
+                    'name' => 'Resource UUID',
+                    'type' => 'string',
+                    'description' => 'Unique ID for the resource',
+                    'required' => true,
+                ],
+                'data.primary' => [
+                    'name' => 'Is primary',
+                    'type' => 'bool',
+                    'description' => 'Is primary resource',
+                    'required' => true,
+                ],
+            ],
+        ]);
+
+        $groups = [$this->createGroup([$endpointData])];
+
+        $results = $this->generate($groups);
+
+        $this->assertArraySubset([
+            '200' => [
+                'description' => 'List of entities',
+                'content' => [
+                    'application/json' => [
+                        'schema' => [
+                            'type' => 'object',
+                            'properties' => [
+                                'data' => [
+                                    'type' => 'array',
+                                    'description' => 'Data wrapper',
+                                    'items' => [
+                                        'type' => 'object',
+                                        'properties' => [
+                                            'name' => [
+                                                'type' => 'string',
+                                                'description' => 'Name of the resource object',
+                                            ],
+                                            'uuid' => [
+                                                'type' => 'string',
+                                                'description' => 'Unique ID for the resource',
+                                            ],
+                                            'primary' => [
+                                                'type' => 'boolean',
+                                                'description' => 'Is primary resource',
+                                            ],
+                                        ],
+                                    ],
+                                    'required' => [
+                                        'name',
+                                        'uuid',
+                                        'primary',
+                                    ]
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ], $results['paths']['/path1']['get']['responses']);
+    }
+
+    /** @test */
     public function adds_multiple_responses_correctly_using_oneOf()
     {
         $endpointData1 = $this->createMockEndpointData([

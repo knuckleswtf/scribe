@@ -635,6 +635,11 @@ class OpenAPISpecWriter
                 $schema['items']['properties'] = collect($sample)->mapWithKeys(function ($v, $k) use ($endpoint, $path) {
                     return [$k => $this->generateSchemaForValue($v, $endpoint, "$path.$k")];
                 })->toArray();
+
+                $required = $this->filterRequiredFields($endpoint, array_keys($schema['items']['properties']), $path);
+                if ($required) {
+                    $schema['required'] = $required;
+                }
             }
         }
 
