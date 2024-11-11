@@ -22,6 +22,7 @@ class ResponseFromApiResource
 
         public ?int $paginate = null,
         public ?int $simplePaginate = null,
+        public ?int $cursorPaginate = null,
         public array $additional = [],
     )
     {

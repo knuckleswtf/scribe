@@ -802,4 +802,48 @@ class UseApiResourceTagsTest extends BaseLaravelTest
             ],
         ], $results);
     }
+
+    /** @test */
+    public function can_parse_apiresourcecollection_tags_with_collection_class_and_curosr_pagination()
+    {
+        $config = new DocumentationConfig([]);
+
+        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+
+        $strategy = new UseApiResourceTags($config);
+        $tags = [
+            new Tag('apiResourceCollection', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResourceCollection'),
+            new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser paginate=1,cursor'),
+        ];
+        $results = $strategy->getApiResourceResponseFromTags($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+
+        $nextCursor = base64_encode(json_encode(['_pointsToNextItems' => true]));
+        $this->assertArraySubset([
+            [
+                'status' => 200,
+                'content' => json_encode([
+                    'data' => [
+                        [
+                            'id' => 4,
+                            'name' => 'Tested Again',
+                            'email' => 'a@b.com',
+                        ],
+                    ],
+                    'links' => [
+                        'self' => 'link-value',
+                        "first" => null,
+                        "last" => null,
+                        "prev" => null,
+                        "next" => "/?cursor={$nextCursor}",
+                    ],
+                    "meta" => [
+                        "path" => '/',
+                        'per_page' => 1,
+                        'next_cursor' => $nextCursor,
+                        'prev_cursor' => null,
+                    ],
+                ]),
+            ],
+        ], $results);
+    }
 }

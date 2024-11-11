@@ -68,6 +68,8 @@ class UseResponseAttributes extends PhpAttributeStrategy
             $pagination = [$attributeInstance->paginate];
         } else if ($attributeInstance->simplePaginate) {
             $pagination = [$attributeInstance->simplePaginate, 'simple'];
+        } else if ($attributeInstance->cursorPaginate) {
+            $pagination = [$attributeInstance->cursorPaginate, 'cursor'];
         }
 
 
