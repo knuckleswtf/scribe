@@ -270,7 +270,7 @@ class UseResponseAttributesTest extends BaseLaravelTest
                     "meta" => match (version_compare(Application::VERSION, '9.0', '>=')) {
                         false => [
                             "path" => '/',
-                            'per_page' => "1",
+                            'per_page' => 1,
                         ],
                         true => [
                             "path" => '/',
