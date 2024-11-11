@@ -14,6 +14,7 @@ use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\Utils;
 use Knuckles\Scribe\Writing\OpenApiSpecGenerators\BaseGenerator;
 use Knuckles\Scribe\Writing\OpenApiSpecGenerators\OpenApiGenerator;
+use Knuckles\Scribe\Writing\OpenApiSpecGenerators\OverridesGenerator;
 use Knuckles\Scribe\Writing\OpenApiSpecGenerators\SecurityGenerator;
 use function array_map;
 
@@ -36,6 +37,7 @@ class OpenAPISpecWriter
         $this->generators = collect([
                 BaseGenerator::class,
                 SecurityGenerator::class,
+                OverridesGenerator::class,
             ])
             ->merge($this->config->get('openapi.generators',[]))
             ->map(fn($generatorClass) => app()->makeWith($generatorClass, ['config' => $this->config]));
@@ -54,10 +56,10 @@ class OpenAPISpecWriter
 
         $content = [];
         foreach ($this->generators as $generator) {
-            $content = array_merge($content, $generator->specContent($groupedEndpoints));
+            $content = $generator->root($content, $groupedEndpoints);
         }
 
-        return array_merge($content, $paths);
+        return array_replace_recursive($content, $paths);
     }
 
     /**
@@ -78,7 +80,7 @@ class OpenAPISpecWriter
                 $spec = [];
 
                 foreach ($this->generators as $generator) {
-                    $spec = array_merge($spec, $generator->pathSpecOperation($groupedEndpoints, $endpoint));
+                    $spec = $generator->pathItem($spec, $groupedEndpoints, $endpoint);
                 }
 
                 return [strtolower($endpoint->httpMethods[0]) => $spec];
@@ -87,17 +89,16 @@ class OpenAPISpecWriter
             $pathItem = $operations;
 
             // Placing all URL parameters at the path level, since it's the same path anyway
-            if (count($endpoints[0]->urlParameters)) {
-                /** @var OutputEndpointData $urlParameterEndpoint */
-                $urlParameterEndpoint = $endpoints[0];
+            /** @var OutputEndpointData $urlParameterEndpoint */
+            $urlParameterEndpoint = $endpoints[0];
 
-                $parameters = [];
+            $parameters = [];
 
-                foreach ($this->generators as $generator) {
-                    $parameters = array_merge($parameters, $generator->pathSpecUrlParameters($endpoints->all(), $urlParameterEndpoint->urlParameters));
-                }
-
-                $pathItem['parameters'] = $parameters;
+            foreach ($this->generators as $generator) {
+                $parameters = $generator->pathParameters($parameters, $endpoints->all(), $urlParameterEndpoint->urlParameters);
+            }
+            if (!empty($parameters)) {
+                $pathItem['parameters'] = array_values($parameters);
             }
 
             return [$path => $pathItem];

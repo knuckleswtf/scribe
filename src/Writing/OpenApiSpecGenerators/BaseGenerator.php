@@ -11,12 +11,14 @@ use Knuckles\Camel\Output\Parameter;
 use Knuckles\Scribe\Tools\Utils;
 use Knuckles\Scribe\Writing\OpenAPISpecWriter;
 
+/**
+ * The main generator for Open API Spec. It adds the minimum needed information to the spec.
+ */
 class BaseGenerator extends OpenApiGenerator
 {
-
-    public function specContent(array $groupedEndpoints): array
+    public function root(array $root, array $groupedEndpoints): array
     {
-        return [
+        return array_merge($root, [
             'openapi' => OpenAPISpecWriter::SPEC_VERSION,
             'info' => [
                 'title' => $this->config->get('title') ?: config('app.name', ''),
@@ -34,10 +36,10 @@ class BaseGenerator extends OpenApiGenerator
                     'description' => $group['description'],
                 ];
             }, $groupedEndpoints)),
-        ];
+        ]);
     }
 
-    public function pathSpecOperation(array $groupedEndpoints, OutputEndpointData $endpoint): array
+    public function pathItem(array $pathItem, array $groupedEndpoints, OutputEndpointData $endpoint): array
     {
         $spec = [
             'summary' => $endpoint->metadata->title,
@@ -54,14 +56,12 @@ class BaseGenerator extends OpenApiGenerator
             $spec['requestBody'] = $this->generateEndpointRequestBodySpec($endpoint);
         }
 
-        return $spec;
+        return array_merge($pathItem, $spec);
     }
 
 
-    public function pathSpecUrlParameters(array $endpoints, array $urlParameters): array
+    public function pathParameters(array $parameters, array $endpoints, array $urlParameters): array
     {
-        $parameters = [];
-
         foreach ($urlParameters as $name => $details) {
             $parameterData = [
                 'in' => 'path',
@@ -94,7 +94,7 @@ class BaseGenerator extends OpenApiGenerator
                 // Can't have `example` and `examples`
                 unset($parameterData['example']);
             }
-            $parameters[] = $parameterData;
+            $parameters[$name] = $parameterData;
         }
 
         return $parameters;
@@ -543,6 +543,11 @@ class BaseGenerator extends OpenApiGenerator
                 $schema['items']['properties'] = collect($sample)->mapWithKeys(function ($v, $k) use ($endpoint, $path) {
                     return [$k => $this->generateSchemaForValue($v, $endpoint, "$path.$k")];
                 })->toArray();
+            }
+
+            $required = $this->filterRequiredFields($endpoint, array_keys($schema['items']['properties']), $path);
+            if ($required) {
+                $schema['required'] = $required;
             }
         }
 

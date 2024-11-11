@@ -7,6 +7,7 @@ use Illuminate\Support\Arr;
 use Knuckles\Camel\Camel;
 use Knuckles\Camel\Output\OutputEndpointData;
 use Knuckles\Scribe\Tests\BaseUnitTest;
+use Knuckles\Scribe\Tests\Fixtures\ComponentsOpenApiGenerator;
 use Knuckles\Scribe\Tests\Fixtures\TestOpenApiGenerator;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Writing\OpenAPISpecWriter;
@@ -919,6 +920,51 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $results = $writer->generateSpecContent($groups);
 
         $this->assertEquals([['default' => ['post:view']]], $results['paths']['/path']['post']['security']);
+    }
+
+    /** @test */
+    public function can_extend_openapi_generator_parameters()
+    {
+        $endpointData1 = $this->createMockEndpointData([
+            'uri' => '/{slug}/path',
+            'httpMethods' => ['POST'],
+            'custom' => ['permissions' => ['post:view']],
+            'urlParameters.slug' => [
+                'description' => 'Something',
+                'required' => true,
+                'example' => 56,
+                'type' => 'integer',
+                'name' => 'slug',
+            ],
+        ]);
+        $groups = [$this->createGroup([$endpointData1])];
+        $extraGenerator = ComponentsOpenApiGenerator::class;
+        $config = array_merge($this->config, [
+            'openapi' => [
+                'generators' => [
+                    $extraGenerator,
+                ],
+            ],
+        ]);
+        $writer = new OpenAPISpecWriter(new DocumentationConfig($config));
+
+        $results = $writer->generateSpecContent($groups);
+
+        $actualParameters = $results['paths']['/{slug}/path']['parameters'];
+        $this->assertCount(1, $actualParameters);
+        $this->assertEquals(['$ref' =>  "#/components/parameters/slugParam"], $actualParameters[0]);
+        $this->assertEquals([
+            'slugParam' => [
+                'in' => 'path',
+                'name' => 'slug',
+                'description' => 'The slug of the organization.',
+                'example' => 'acme-corp',
+                'required' => true,
+                'schema' => [
+                    'type' => 'string',
+                ],
+            ]
+        ], $results['components']['parameters']);
     }
 
     protected function createMockEndpointData(array $custom = []): OutputEndpointData

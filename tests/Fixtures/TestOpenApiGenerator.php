@@ -7,15 +7,15 @@ use Knuckles\Scribe\Writing\OpenApiSpecGenerators\OpenApiGenerator;
 
 class TestOpenApiGenerator extends OpenApiGenerator
 {
-    public function pathSpecOperation(array $groupedEndpoints, OutputEndpointData $endpoint): array
+    public function pathItem(array $pathItem, array $groupedEndpoints, OutputEndpointData $endpoint): array
     {
         /** @var array<int, string> $permissions */
         $permissions = $endpoint->custom['permissions'];
 
-        return [
-            'security' => [
-                ['default' => $permissions]
-            ],
+        $pathItem['security'] = [
+            ['default' => $permissions]
         ];
+
+        return $pathItem;
     }
 }

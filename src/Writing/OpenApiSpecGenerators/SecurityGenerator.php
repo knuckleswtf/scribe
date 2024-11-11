@@ -6,11 +6,11 @@ use Knuckles\Camel\Output\OutputEndpointData;
 
 class SecurityGenerator extends OpenApiGenerator
 {
-    public function specContent(array $groupedEndpoints): array
+    public function root(array $root, array $groupedEndpoints): array
     {
         $isApiAuthed = $this->config->get('auth.enabled', false);
         if (!$isApiAuthed) {
-            return [];
+            return $root;
         }
 
         $location = $this->config->get('auth.in');
@@ -31,7 +31,7 @@ class SecurityGenerator extends OpenApiGenerator
             default => [],
         };
 
-        return [
+        return array_merge($root, [
             // All security schemes must be registered in `components.securitySchemes`...
             'components' => [
                 'securitySchemes' => [
@@ -45,17 +45,15 @@ class SecurityGenerator extends OpenApiGenerator
                     'default' => [],
                 ],
             ],
-        ];
+        ]);
     }
 
-    public function pathSpecOperation(array $groupedEndpoints, OutputEndpointData $endpoint): array
+    public function pathItem(array $pathItem, array $groupedEndpoints, OutputEndpointData $endpoint): array
     {
         if (!$endpoint->metadata->authenticated) {
             // Make sure to exclude non-auth endpoints from auth
-            return [
-                'security' => [],
-            ];
+            $pathItem['security'] = [];
         }
-        return [];
+        return $pathItem;
     }
 }
