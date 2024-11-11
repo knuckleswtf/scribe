@@ -3,6 +3,7 @@
 namespace Knuckles\Scribe\Tests\Strategies\Responses;
 
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Foundation\Application;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Schema;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
@@ -804,7 +805,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_parse_apiresourcecollection_tags_with_collection_class_and_curosr_pagination()
+    public function can_parse_apiresourcecollection_tags_with_collection_class_and_cursor_pagination()
     {
         $config = new DocumentationConfig([]);
 
@@ -836,12 +837,18 @@ class UseApiResourceTagsTest extends BaseLaravelTest
                         "prev" => null,
                         "next" => "/?cursor={$nextCursor}",
                     ],
-                    "meta" => [
-                        "path" => '/',
-                        'per_page' => 1,
-                        'next_cursor' => $nextCursor,
-                        'prev_cursor' => null,
-                    ],
+                    "meta" => match (version_compare(Application::VERSION, '9.0', '>=')) {
+                        false => [
+                            "path" => '/',
+                            'per_page' => "1",
+                        ],
+                        true => [
+                            "path" => '/',
+                            'per_page' => 1,
+                            'next_cursor' => $nextCursor,
+                            'prev_cursor' => null,
+                        ]
+                    },
                 ]),
             ],
         ], $results);
