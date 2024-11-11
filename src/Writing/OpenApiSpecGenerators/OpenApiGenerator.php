@@ -26,6 +26,7 @@ abstract class OpenApiGenerator
     /**
      * This section is the root of the OpenAPI document. It contains general info about the API.
      *
+     * @param array $root
      * @param array<int, array{description: string, name: string, endpoints: OutputEndpointData[]}> $groupedEndpoints
      * @return array
      * @see https://spec.openapis.org/oas/v3.1.1.html#openapi-object
@@ -39,6 +40,7 @@ abstract class OpenApiGenerator
      * This section is the individual path item object in an OpenApi document. It contains the details of the specific
      * endpoint. This will be called for each individual endpoint, e.g. post, get, put, delete, etc.
      *
+     * @param array $pathItem
      * @param array<int, array{description: string, name: string, endpoints: OutputEndpointData[]}> $groupedEndpoints
      * @param OutputEndpointData $endpoint
      * @return array
