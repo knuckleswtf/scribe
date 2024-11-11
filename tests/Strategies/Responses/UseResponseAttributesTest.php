@@ -73,6 +73,10 @@ class UseResponseAttributesTest extends BaseLaravelTest
                 'status' => 201,
                 'content' => json_encode(["all" => "good"]),
             ],
+            [
+                'status' => 404,
+                'content' => null,
+            ]
         ], $results);
     }
 
@@ -246,6 +250,7 @@ class ResponseAttributesTestController
 {
     #[Response(["all" => "good"], 200, "Success")]
     #[Response('{"all":"good"}', 201)]
+    #[Response(status: 404)]
     public function plainResponseAttributes()
     {
 
