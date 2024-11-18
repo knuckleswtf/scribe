@@ -70,9 +70,11 @@ trait InstantiatesExampleModels
      */
     protected function getExampleModelFromFactoryCreate(string $type, array $factoryStates = [], array $relations = [], array $withCount = [])
     {
-        $mergeAll = array_unique(array_merge($relations, $withCount));
+        // Since $relations and $withCount refer to the same underlying relationships in the model,
+        // combining them ensures that all required relationships are initialized when passed to the factory.
+        $allRelations = array_unique(array_merge($relations, $withCount));
 
-        $factory = Utils::getModelFactory($type, $factoryStates, $mergeAll);
+        $factory = Utils::getModelFactory($type, $factoryStates, $allRelations);
         return $factory->create()->refresh()->load($relations)->loadCount($withCount);
     }
 
