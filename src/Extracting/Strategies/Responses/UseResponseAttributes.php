@@ -60,7 +60,7 @@ class UseResponseAttributes extends PhpAttributeStrategy
             );
             $modelInstantiator = null;
         } else {
-            $modelInstantiator = fn() => $this->instantiateExampleModel($modelToBeTransformed, $attributeInstance->factoryStates, $attributeInstance->with);
+            $modelInstantiator = fn() => $this->instantiateExampleModel($modelToBeTransformed, $attributeInstance->factoryStates, $attributeInstance->with, null, $attributeInstance->withCount);
         }
 
         $pagination = [];

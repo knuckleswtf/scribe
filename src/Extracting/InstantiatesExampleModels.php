@@ -21,7 +21,7 @@ trait InstantiatesExampleModels
      */
     protected function instantiateExampleModel(
         ?string $type = null, array $factoryStates = [],
-        array   $relations = [], ?ReflectionFunctionAbstract $transformationMethod = null
+        array   $relations = [], ?ReflectionFunctionAbstract $transformationMethod = null, array $withCount = [],
     )
     {
         // If the API Resource uses an empty resource, there won't be an example model
@@ -42,7 +42,7 @@ trait InstantiatesExampleModels
         $configuredStrategies = $this->config->get('examples.models_source', ['factoryCreate', 'factoryMake', 'databaseFirst']);
 
         $strategies = [
-            'factoryCreate' => fn() => $this->getExampleModelFromFactoryCreate($type, $factoryStates, $relations),
+            'factoryCreate' => fn() => $this->getExampleModelFromFactoryCreate($type, $factoryStates, $relations, $withCount),
             'factoryMake' => fn() => $this->getExampleModelFromFactoryMake($type, $factoryStates, $relations),
             'databaseFirst' => fn() => $this->getExampleModelFromDatabaseFirst($type, $relations),
         ];
@@ -63,13 +63,17 @@ trait InstantiatesExampleModels
     /**
      * @param class-string $type
      * @param string[] $factoryStates
+     * @param string[] $relations
+     * @param string[] $withCount
      *
      * @return \Illuminate\Database\Eloquent\Model|null
      */
-    protected function getExampleModelFromFactoryCreate(string $type, array $factoryStates = [], array $relations = [])
+    protected function getExampleModelFromFactoryCreate(string $type, array $factoryStates = [], array $relations = [], array $withCount = [])
     {
-        $factory = Utils::getModelFactory($type, $factoryStates, $relations);
-        return $factory->create()->refresh()->load($relations);
+        $mergeAll = array_unique(array_merge($relations, $withCount));
+
+        $factory = Utils::getModelFactory($type, $factoryStates, $mergeAll);
+        return $factory->create()->refresh()->load($relations)->loadCount($withCount);
     }
 
     /**
