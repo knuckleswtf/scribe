@@ -21,6 +21,7 @@ class ResponseFromTransformer
 
         /* Format: [adapter, numberPerPage]. Example: [SomePaginator::class, 10] */
         public array $paginate = [],
+        public array $withCount = [],
     ) {
     }
 }

@@ -89,7 +89,7 @@ class UseResponseAttributes extends PhpAttributeStrategy
     {
         $modelInstantiator = fn() => $this->instantiateExampleModel(
             $attributeInstance->model, $attributeInstance->factoryStates, $attributeInstance->with,
-            (new ReflectionClass($attributeInstance->name))->getMethod('transform')
+            (new ReflectionClass($attributeInstance->name))->getMethod('transform'), $attributeInstance->withCount,
         );
 
         $pagination = $attributeInstance->paginate ? [

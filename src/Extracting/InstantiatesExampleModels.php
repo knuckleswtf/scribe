@@ -93,12 +93,13 @@ trait InstantiatesExampleModels
     /**
      * @param class-string $type
      * @param string[] $relations
+     * @param string[] $withCount
      *
      * @return \Illuminate\Database\Eloquent\Model|null
      */
-    protected function getExampleModelFromDatabaseFirst(string $type, array $relations = [])
+    protected function getExampleModelFromDatabaseFirst(string $type, array $relations = [], array $withCount = [])
     {
-        return $type::with($relations)->first();
+        return $type::with($relations)->withCount($withCount)->first();
     }
 
 }
