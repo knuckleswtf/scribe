@@ -3,6 +3,7 @@
 namespace Knuckles\Scribe\Tests\Strategies\Responses;
 
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Foundation\Application;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Schema;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
@@ -794,6 +795,56 @@ class UseApiResourceTagsTest extends BaseLaravelTest
                         "to" => 1,
                     ],
                     'a' => 'b',
+                ]),
+            ],
+        ], $results);
+    }
+
+    /** @test */
+    public function can_parse_apiresourcecollection_tags_with_collection_class_and_cursor_pagination()
+    {
+        $config = new DocumentationConfig([]);
+
+        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+
+        $strategy = new UseApiResourceTags($config);
+        $tags = [
+            new Tag('apiResourceCollection', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResourceCollection'),
+            new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser paginate=1,cursor'),
+        ];
+        $results = $strategy->getApiResourceResponseFromTags($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
+
+        $nextCursor = base64_encode(json_encode(['_pointsToNextItems' => true]));
+        $this->assertArraySubset([
+            [
+                'status' => 200,
+                'content' => json_encode([
+                    'data' => [
+                        [
+                            'id' => 4,
+                            'name' => 'Tested Again',
+                            'email' => 'a@b.com',
+                        ],
+                    ],
+                    'links' => [
+                        'self' => 'link-value',
+                        "first" => null,
+                        "last" => null,
+                        "prev" => null,
+                        "next" => "/?cursor={$nextCursor}",
+                    ],
+                    "meta" => match (version_compare(Application::VERSION, '9.0', '>=')) {
+                        false => [
+                            "path" => '/',
+                            'per_page' => '1',
+                        ],
+                        true => [
+                            "path" => '/',
+                            'per_page' => 1,
+                            'next_cursor' => $nextCursor,
+                            'prev_cursor' => null,
+                        ]
+                    },
                 ]),
             ],
         ], $results);
