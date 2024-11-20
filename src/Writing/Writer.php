@@ -140,14 +140,7 @@ class Writer
     {
         /** @var OpenAPISpecWriter $writer */
         $writer = app()->makeWith(OpenAPISpecWriter::class, ['config' => $this->config]);
-
         $spec = $writer->generateSpecContent($groupedEndpoints);
-        $overrides = $this->config->get('openapi.overrides', []);
-        if (count($overrides)) {
-            foreach ($overrides as $key => $value) {
-                data_set($spec, $key, $value);
-            }
-        }
         return Yaml::dump($spec, 20, 2, Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP);
     }
 
@@ -178,7 +171,7 @@ class Writer
         $contents = str_replace('href="../docs/collection.json"', 'href="{{ route("' . $this->paths->outputPath('postman', '.') . '") }}"', $contents);
         $contents = str_replace('href="../docs/openapi.yaml"', 'href="{{ route("' . $this->paths->outputPath('openapi', '.') . '") }}"', $contents);
         $contents = str_replace('url="../docs/openapi.yaml"', 'url="{{ route("' . $this->paths->outputPath('openapi', '.') . '") }}"', $contents);
-        // With Elements theme, we'd have <elements-api apiDescriptionUrl="../docs/openapi.yaml" 
+        // With Elements theme, we'd have <elements-api apiDescriptionUrl="../docs/openapi.yaml"
         $contents = str_replace('Url="../docs/openapi.yaml"', 'Url="{{ route("' . $this->paths->outputPath('openapi', '.') . '") }}"', $contents);
 
         file_put_contents("$this->laravelTypeOutputPath/index.blade.php", $contents);
