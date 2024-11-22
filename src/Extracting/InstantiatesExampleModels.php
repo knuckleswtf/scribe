@@ -44,7 +44,7 @@ trait InstantiatesExampleModels
         $strategies = [
             'factoryCreate' => fn() => $this->getExampleModelFromFactoryCreate($type, $factoryStates, $relations, $withCount),
             'factoryMake' => fn() => $this->getExampleModelFromFactoryMake($type, $factoryStates, $relations),
-            'databaseFirst' => fn() => $this->getExampleModelFromDatabaseFirst($type, $relations),
+            'databaseFirst' => fn() => $this->getExampleModelFromDatabaseFirst($type, $relations, $withCount),
         ];
 
         foreach ($configuredStrategies as $strategyName) {

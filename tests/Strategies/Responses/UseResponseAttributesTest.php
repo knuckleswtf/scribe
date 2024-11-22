@@ -2,7 +2,9 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\Responses;
 
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Routing\Route;
+use Illuminate\Support\Facades\Schema;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Attributes\Response;
 use Knuckles\Scribe\Attributes\ResponseFromApiResource;
@@ -16,6 +18,7 @@ use Knuckles\Scribe\Tests\Fixtures\TestPet;
 use Knuckles\Scribe\Tests\Fixtures\TestTransformer;
 use Knuckles\Scribe\Tests\Fixtures\TestUser;
 use Knuckles\Scribe\Tests\Fixtures\TestUserApiResource;
+use Knuckles\Scribe\Tests\Fixtures\TestUserTransformer;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\Utils;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
@@ -228,9 +231,180 @@ class UseResponseAttributesTest extends BaseLaravelTest
         ], $results);
     }
 
-    protected function fetch($endpoint): array
+    /** @test */
+    public function can_parse_apiresource_attributes_and_load_children_using_factory_create()
     {
-        $strategy = new UseResponseAttributes(new DocumentationConfig([]));
+        Schema::create('test_users', function (Blueprint $table) {
+            $table->id();
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('email');
+            $table->integer('parent_id')->nullable();
+        });
+
+        $factory = app(\Illuminate\Database\Eloquent\Factory::class);
+        $factory->afterCreating(TestUser::class, function (TestUser $user, $faker) {
+            if ($user->id === 4) {
+                Utils::getModelFactory(TestUser::class)->create(['id' => 5, 'parent_id' => 4]);
+            }
+        });
+        $documentationConfig = ['examples' => ['models_source' => ['factoryCreate']]];
+
+        $results = $this->fetch($this->endpoint("apiResourceAttributesIncludeChildren"), $documentationConfig);
+        $this->assertArraySubset([
+            [
+                'status' => 200,
+                'content' => json_encode([
+                    "data" => [
+                        "id" => 4,
+                        "name" => "Tested Again",
+                        "email" => "a@b.com",
+                        "children" => [
+                            [
+                                "id" => 5,
+                                "name" => "Tested Again",
+                                "email" => "a@b.com",
+                            ]
+                        ],
+                    ],
+                ]),
+            ],
+        ], $results);
+    }
+
+
+    /** @test */
+    public function can_parse_apiresource_attributes_and_load_children_and_children_count_using_factory_create()
+    {
+        Schema::create('test_users', function (Blueprint $table) {
+            $table->id();
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('email');
+            $table->integer('parent_id')->nullable();
+        });
+
+        $factory = app(\Illuminate\Database\Eloquent\Factory::class);
+        $factory->afterCreating(TestUser::class, function (TestUser $user, $faker) {
+            if ($user->id === 4) {
+                Utils::getModelFactory(TestUser::class)->create(['id' => 5, 'parent_id' => 4]);
+            }
+        });
+        $documentationConfig = ['examples' => ['models_source' => ['factoryCreate']]];
+
+        $results = $this->fetch($this->endpoint("apiResourceAttributesIncludeChildrenAndChildrenCount"), $documentationConfig);
+        $this->assertArraySubset([
+            [
+                'status' => 200,
+                'content' => json_encode([
+                    "data" => [
+                        "id" => 4,
+                        "name" => "Tested Again",
+                        "email" => "a@b.com",
+                        "children" => [
+                            [
+                                "id" => 5,
+                                "name" => "Tested Again",
+                                "email" => "a@b.com",
+                            ]
+                        ],
+                        'children_count' => 1,
+                    ],
+                ]),
+            ],
+        ], $results);
+    }
+
+        /** @test */
+    public function can_parse_apiresource_attributes_and_load_children_and_children_count_using_database_first()
+    {
+        Schema::create('test_users', function (Blueprint $table) {
+            $table->id();
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('email');
+            $table->integer('parent_id')->nullable();
+        });
+
+        TestUser::create(['id' => 1, 'first_name' => 'John', 'last_name' => 'Doe', 'email' => 'john.doe@exmaple.com']);
+        TestUser::create(['id' => 2, 'first_name' => 'Jane', 'last_name' => 'Doe', 'email' => 'jane.doe@exmaple.com', 'parent_id' => 1]);
+
+        $documentationConfig = ['examples' => ['models_source' => ['databaseFirst']]];
+
+        $results = $this->fetch($this->endpoint("apiResourceAttributesIncludeChildrenAndChildrenCount"), $documentationConfig);
+        $this->assertArraySubset([
+            [
+                'status' => 200,
+                'content' => json_encode([
+                    "data" => [
+                        "id" => 1,
+                        "name" => "John Doe",
+                        "email" => "john.doe@exmaple.com",
+                        "children" => [
+                            [
+                                "id" => 2,
+                                "name" => "Jane Doe",
+                                "email" => "jane.doe@exmaple.com",
+                            ]
+                        ],
+                        'children_count' => 1,
+                    ],
+                ]),
+            ],
+        ], $results);
+    }
+
+        /** @test */
+    public function can_parse_transformer_attributes_and_load_children_using_factory_create()
+    {
+        Schema::create('test_users', function (Blueprint $table) {
+            $table->id();
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('email');
+            $table->integer('parent_id')->nullable();
+        });
+
+        $factory = app(\Illuminate\Database\Eloquent\Factory::class);
+        $factory->afterCreating(TestUser::class, function (TestUser $user, $faker) {
+            if ($user->id === 4) {
+                Utils::getModelFactory(TestUser::class)->create(['id' => 5, 'parent_id' => 4]);
+            }
+        });
+        $documentationConfig = ['examples' => ['models_source' => ['factoryCreate']]];
+
+        $results = $this->fetch($this->endpoint("transformerAttributesIncludeChildrenAndChildrenCount"), $documentationConfig);
+        $this->assertArraySubset([
+            [
+                'status' => 200,
+                'content' => json_encode([
+                    "data" => [
+                        "id" => 4,
+                        "name" => "Tested Again",
+                        "email" => "a@b.com",
+                        "children_count" => 1,
+                        "children" => [
+                            "data" => [
+                                [
+                                    "id" => 5,
+                                    "name" => "Tested Again",
+                                    "email" => "a@b.com",
+                                    "children_count" => null,
+                                    "children" => [
+                                        "data" => []
+                                    ]
+                                ]
+                            ]
+                        ],
+                    ],
+                ]),
+            ],
+        ], $results);
+    }
+
+    protected function fetch($endpoint, array $documentationConfig = []): array
+    {
+        $strategy = new UseResponseAttributes(new DocumentationConfig($documentationConfig));
         return $strategy($endpoint, []);
     }
 
@@ -279,6 +453,24 @@ class ResponseAttributesTestController
     #[ResponseFromTransformer(TestTransformer::class, TestModel::class, collection: true,
         paginate: [IlluminatePaginatorAdapter::class, 1])]
     public function transformerAttributes()
+    {
+
+    }
+
+    #[ResponseFromApiResource(TestUserApiResource::class, with: ['children'], withCount: ['children'])]
+    public function apiResourceAttributesIncludeChildrenAndChildrenCount()
+    {
+
+    }
+
+    #[ResponseFromApiResource(TestUserApiResource::class, with: ['children'])]
+    public function apiResourceAttributesIncludeChildren()
+    {
+
+    }
+
+    #[ResponseFromTransformer(TestUserTransformer::class, TestUser::class, with: ['children'], withCount: ['children'])]
+    public function transformerAttributesIncludeChildrenAndChildrenCount()
     {
 
     }

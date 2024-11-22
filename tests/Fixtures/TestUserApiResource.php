@@ -32,6 +32,7 @@ class TestUserApiResource extends JsonResource
             'pets' => $this->whenLoaded('pets', function () {
                 return TestPetApiResource::collection($this->pets);
             }),
+            'children_count' => $this->whenCounted('children'),
         ];
 
         if ($this['state1'] && $this['random-state']) {
