@@ -7,6 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Arr;
@@ -85,6 +86,10 @@ class ApiResourceResponseTools
             } elseif (count($paginationStrategy) == 2 && $paginationStrategy[1] == 'simple') {
                 $perPage = $paginationStrategy[0];
                 $paginator = new Paginator($models, $perPage);
+                $list = $paginator;
+            } elseif (count($paginationStrategy) == 2 && $paginationStrategy[1] == 'cursor') {
+                $perPage = $paginationStrategy[0];
+                $paginator = new CursorPaginator($models, $perPage);
                 $list = $paginator;
             } else {
                 $list = collect($models);

@@ -3,6 +3,7 @@
 namespace Knuckles\Scribe\Tests\Strategies\Responses;
 
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Foundation\Application;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Schema;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
@@ -232,6 +233,62 @@ class UseResponseAttributesTest extends BaseLaravelTest
     }
 
     /** @test */
+    public function can_parse_apiresource_attributes_with_cursor_pagination()
+    {
+        $factory = app(\Illuminate\Database\Eloquent\Factory::class);
+        $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
+            if ($user->id === 4) {
+                $child = Utils::getModelFactory(TestUser::class)->make(['id' => 5, 'parent_id' => 4]);
+                $user->setRelation('children', collect([$child]));
+            }
+        });
+
+        $results = $this->fetch($this->endpoint("apiResourceAttributesWithCursorPaginate"));
+
+
+        $nextCursor = base64_encode(json_encode(['_pointsToNextItems' => true]));
+        $this->assertArraySubset([
+            [
+                'status' => 200,
+                'content' => json_encode([
+                    'data' => [
+                        [
+                            'id' => 4,
+                            'name' => 'Tested Again',
+                            'email' => 'a@b.com',
+                            'children' => [
+                                [
+                                    'id' => 5,
+                                    'name' => 'Tested Again',
+                                    'email' => 'a@b.com',
+                                ],
+                            ],
+                        ],
+                    ],
+                    'links' => [
+                        "first" => null,
+                        "last" => null,
+                        "prev" => null,
+                        "next" => "/?cursor={$nextCursor}",
+                    ],
+                    "meta" => match (version_compare(Application::VERSION, '9.0', '>=')) {
+                        false => [
+                            "path" => '/',
+                            'per_page' => 1,
+                        ],
+                        true => [
+                            "path" => '/',
+                            'per_page' => 1,
+                            'next_cursor' => $nextCursor,
+                            'prev_cursor' => null,
+                        ]
+                    },
+                ]),
+            ],
+        ], $results);
+    }
+
+    /** @test */
     public function can_parse_apiresource_attributes_and_load_children_using_factory_create()
     {
         Schema::create('test_users', function (Blueprint $table) {
@@ -404,7 +461,7 @@ class UseResponseAttributesTest extends BaseLaravelTest
 
     protected function fetch($endpoint, array $documentationConfig = []): array
     {
-        $strategy = new UseResponseAttributes(new DocumentationConfig($documentationConfig));
+        $strategy = new UseResponseAttributes(new DocumentationConfig([]));
         return $strategy($endpoint, []);
     }
 
@@ -453,6 +510,12 @@ class ResponseAttributesTestController
     #[ResponseFromTransformer(TestTransformer::class, TestModel::class, collection: true,
         paginate: [IlluminatePaginatorAdapter::class, 1])]
     public function transformerAttributes()
+    {
+
+    }
+
+    #[ResponseFromApiResource(TestUserApiResource::class, collection: true, cursorPaginate: 1)]
+    public function apiResourceAttributesWithCursorPaginate()
     {
 
     }
