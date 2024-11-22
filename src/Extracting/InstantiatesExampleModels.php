@@ -44,7 +44,7 @@ trait InstantiatesExampleModels
         $strategies = [
             'factoryCreate' => fn() => $this->getExampleModelFromFactoryCreate($type, $factoryStates, $relations, $withCount),
             'factoryMake' => fn() => $this->getExampleModelFromFactoryMake($type, $factoryStates, $relations),
-            'databaseFirst' => fn() => $this->getExampleModelFromDatabaseFirst($type, $relations, $withCount),
+            'databaseFirst' => fn() => $this->getExampleModelFromDatabaseFirst($type, $relations),
         ];
 
         foreach ($configuredStrategies as $strategyName) {
@@ -93,13 +93,12 @@ trait InstantiatesExampleModels
     /**
      * @param class-string $type
      * @param string[] $relations
-     * @param string[] $withCount
      *
      * @return \Illuminate\Database\Eloquent\Model|null
      */
-    protected function getExampleModelFromDatabaseFirst(string $type, array $relations = [], array $withCount = [])
+    protected function getExampleModelFromDatabaseFirst(string $type, array $relations = [])
     {
-        return $type::with($relations)->withCount($withCount)->first();
+        return $type::with($relations)->first();
     }
 
 }
