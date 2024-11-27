@@ -44,7 +44,7 @@
         "nikic/fast-route": "^1.3",
         "orchestra/testbench": "^6.0|^7.0|^8.0",
         "pestphp/pest": "^2.0",
-        "phpstan/phpstan": "^1.0",
+        "phpstan/phpstan": "^2.0",
         "phpunit/phpunit": "^9.0|^10.0",
         "symfony/css-selector": "^5.4|^6.0",
         "symfony/dom-crawler": "^5.4|^6.0"
@@ -62,7 +62,7 @@
     },
     "scripts": {
         "lint": "phpstan analyse -c ./phpstan.neon src camel --memory-limit 1G",
-        "test": "pest --stop-on-failure --exclude-group dingo --colors",
+        "test": "pest  --exclude-group dingo --colors",
         "test-ci": "pest --exclude-group dingo --coverage --min=80",
         "test-parallel": "paratest -p16 --stop-on-failure --exclude-group dingo",
         "test-parallel-ci": "paratest -p16 --exclude-group dingo"
