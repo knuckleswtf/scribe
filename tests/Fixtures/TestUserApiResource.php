@@ -39,7 +39,6 @@ class TestUserApiResource extends JsonResource
             $result['children_count'] = $this->whenCounted('children_count');
         }
 
-
         if ($this['state1'] && $this['random-state']) {
             $result['state1'] = $this['state1'];
             $result['random-state'] = $this['random-state'];
