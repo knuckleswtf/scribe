@@ -290,6 +290,10 @@ class UseResponseAttributesTest extends BaseLaravelTest
     /** @test */
     public function can_parse_apiresource_attributes_and_load_children_using_factory_create()
     {
+        if (version_compare(Application::VERSION, '9', '<')) {
+            $this->markTestSkipped('The whenCounted method in JsonResource requires Laravel 9 or higher.');
+        }
+
         Schema::create('test_users', function (Blueprint $table) {
             $table->id();
             $table->string('first_name');
@@ -332,6 +336,10 @@ class UseResponseAttributesTest extends BaseLaravelTest
     /** @test */
     public function can_parse_apiresource_attributes_and_load_children_and_children_count_using_factory_create()
     {
+        if (version_compare(Application::VERSION, '9', '<')) {
+            $this->markTestSkipped('The whenCounted method in JsonResource requires Laravel 9 or higher.');
+        }
+
         Schema::create('test_users', function (Blueprint $table) {
             $table->id();
             $table->string('first_name');

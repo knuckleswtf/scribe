@@ -32,8 +32,13 @@ class TestUserApiResource extends JsonResource
             'pets' => $this->whenLoaded('pets', function () {
                 return TestPetApiResource::collection($this->pets);
             }),
-            'children_count' => $this->whenCounted('children'),
         ];
+
+        // This method was introduced in Laravel v9. See: https://github.com/laravel/framework/pull/43101
+        if (method_exists($this, 'whenCounted')) {
+            $result['children_count'] = $this->whenCounted('children_count');
+        }
+
 
         if ($this['state1'] && $this['random-state']) {
             $result['state1'] = $this['state1'];
