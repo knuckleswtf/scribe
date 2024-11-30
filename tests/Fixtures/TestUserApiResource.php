@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Tests\Fixtures;
 
+use Illuminate\Foundation\Application;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
@@ -34,8 +35,7 @@ class TestUserApiResource extends JsonResource
             }),
         ];
 
-        // This method was introduced in Laravel v9. See: https://github.com/laravel/framework/pull/43101
-        if (method_exists($this, 'whenCounted')) {
+        if (version_compare(Application::VERSION, '9', '>=')) {
             $result['children_count'] = $this->whenCounted('children_count');
         }
 
