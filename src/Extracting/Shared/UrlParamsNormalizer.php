@@ -145,7 +145,7 @@ class UrlParamsNormalizer
      * @return string|null
      */
     protected static function getRouteKeyForUrlParam(
-        Route $route, string $paramName, array $typeHintedEloquentModels = [], string $default = null
+        Route $route, string $paramName, array $typeHintedEloquentModels = [], ?string $default = null
     ): ?string
     {
         if ($binding = self::getInlineRouteKey($route, $paramName)) {
@@ -166,6 +166,7 @@ class UrlParamsNormalizer
     protected static function getInlineRouteKey(Route $route, string $paramName): ?string
     {
         // Was added in Laravel 7.x
+        // @phpstan-ignore-next-line
         if (method_exists($route, 'bindingFieldFor')) {
             return $route->bindingFieldFor($paramName);
         }

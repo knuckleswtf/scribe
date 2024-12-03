@@ -6,7 +6,7 @@ class Output
 {
     public static function with(
         string $theme = 'default',
-        string $title = null,
+        ?string $title = null,
         string $description = '',
         array  $baseUrls = [],
         array  $exampleLanguages = ['bash', 'javascript'],
@@ -45,7 +45,7 @@ class Output
     public static function laravelType(
         bool   $addRoutes = true,
         string $docsUrl = '/docs',
-        string $assetsDirectory = null,
+        ?string $assetsDirectory = null,
         array  $middleware = [],
     ): array
     {
@@ -93,7 +93,7 @@ class Output
 
     public static function tryItOut(
         bool   $enabled = true,
-        string $baseUrl = null,
+        ?string $baseUrl = null,
         bool   $useCsrf = false,
         string $csrfUrl = '/sanctum/csrf-cookie',
     ): array

@@ -190,7 +190,6 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
     protected function writeEndpointsToDisk(array $grouped): void
     {
         Utils::deleteFilesMatching(static::$camelDir, function ($file) {
-            /** @var $file array|\League\Flysystem\StorageAttributes */
             return !Str::startsWith(basename($file['path']), 'custom.');
         });
         Utils::deleteDirectoryAndContents(static::$cacheDir);

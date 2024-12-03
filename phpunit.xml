@@ -1,37 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         backupGlobals="false"
-         backupStaticAttributes="false"
-         bootstrap="vendor/autoload.php"
-         cacheResult="true"
-         colors="false"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         processIsolation="false"
-         stopOnFailure="false"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
-    <coverage>
-        <include>
-            <directory suffix=".php">src/</directory>
-            <directory suffix=".php">camel/</directory>
-        </include>
-        <exclude>
-            <file>src/ScribeServiceProvider.php</file>
-            <file>src/Tools/ConfigDiffer.php</file>
-            <file>src/Commands/DiffConfig.php</file>
-        </exclude>
-    </coverage>
-    <php>
-        <server name="SCRIBE_TESTS" value="1" />
-    </php>
-    <testsuites>
-        <testsuite name="Non-Unit Tests">
-            <directory>tests/GenerateDocumentation/OutputTest.php</directory>
-            <directory>tests/Strategies</directory>
-        </testsuite>
-        <testsuite name="Unit Tests">
-            <directory>tests/Unit</directory>
-        </testsuite>
-    </testsuites>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false" bootstrap="vendor/autoload.php" cacheResult="true" colors="false" processIsolation="false" stopOnFailure="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd" cacheDirectory=".phpunit.cache" backupStaticProperties="false">
+  <php>
+    <server name="SCRIBE_TESTS" value="1"/>
+  </php>
+  <testsuites>
+    <testsuite name="Non-Unit Tests">
+      <file>tests/GenerateDocumentation/OutputTest.php</file>
+      <directory>tests/Strategies</directory>
+    </testsuite>
+    <testsuite name="Unit Tests">
+      <directory>tests/Unit</directory>
+    </testsuite>
+  </testsuites>
+  <source>
+    <include>
+      <directory suffix=".php">src/</directory>
+      <directory suffix=".php">camel/</directory>
+    </include>
+    <exclude>
+      <file>src/ScribeServiceProvider.php</file>
+      <file>src/Tools/ConfigDiffer.php</file>
+      <file>src/Commands/DiffConfig.php</file>
+    </exclude>
+  </source>
 </phpunit>

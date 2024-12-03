@@ -12,7 +12,7 @@ class BladeMarkdownEngine extends CompilerEngine
 {
     private Parsedown $markdown;
 
-    public function __construct(CompilerInterface $compiler, Filesystem $files = null)
+    public function __construct(CompilerInterface $compiler, ?Filesystem $files = null)
     {
         parent::__construct($compiler, $files ?: new Filesystem);
         $this->markdown = Parsedown::instance();

@@ -103,7 +103,7 @@ trait ParamHelpers
         return $fakeFactoriesByType[$baseType] ?? $fakeFactoriesByType['string'];
     }
 
-    private function getDummyDataGeneratorBetween(string $type, $min, $max = 90, string $fieldName = null): \Closure
+    private function getDummyDataGeneratorBetween(string $type, $min, $max = 90, ?string $fieldName = null): \Closure
     {
         $hints = [
             'name' => $fieldName,

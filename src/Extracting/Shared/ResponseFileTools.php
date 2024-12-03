@@ -16,9 +16,7 @@ class ResponseFileTools
             return json_encode(array_merge(json_decode($content, true), json_decode($json, true)));
         }
 
-        if (is_array($merge)) {
-            return json_encode(array_merge(json_decode($content, true), $merge));
-        }
+        return json_encode(array_merge(json_decode($content, true), $merge));
     }
 
     protected static function getFileContents($filePath): string

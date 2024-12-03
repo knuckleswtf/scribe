@@ -91,12 +91,12 @@ paths:
                     in: query
                     name: location_id
                     description: 'The id of the location.'
-                    example: consequatur
+                    example: architecto
                     required: true
                     schema:
                         type: string
                         description: 'The id of the location.'
-                        example: consequatur
+                        example: architecto
                         nullable: false
                 -
                     in: query
@@ -124,12 +124,12 @@ paths:
                     in: query
                     name: filters
                     description: 'The filters.'
-                    example: consequatur
+                    example: architecto
                     required: false
                     schema:
                         type: string
                         description: 'The filters.'
-                        example: consequatur
+                        example: architecto
                         nullable: false
                 -
                     in: query
@@ -193,12 +193,12 @@ paths:
                     in: query
                     name: something
                     description: ''
-                    example: consequatur
+                    example: architecto
                     required: false
                     schema:
                         type: string
                         description: ''
-                        example: consequatur
+                        example: architecto
                         nullable: false
                 -
                     in: header
@@ -216,13 +216,13 @@ paths:
                                 type: object
                                 example:
                                     param: '4'
-                                    param2: consequatur
-                                    param3: consequatur
+                                    param2: architecto
+                                    param3: architecto
                                     param4: null
                                 properties:
                                     param: { type: string, example: '4' }
-                                    param2: { type: string, example: consequatur }
-                                    param3: { type: string, example: consequatur }
+                                    param2: { type: string, example: architecto }
+                                    param3: { type: string, example: architecto }
                                     param4: { type: string, example: null }
             tags:
                 - Other😎
@@ -243,7 +243,7 @@ paths:
                 required: true
                 schema:
                     type: string
-                example: consequatur
+                example: architecto
             -
                 in: path
                 name: param3
@@ -257,7 +257,7 @@ paths:
                         value: ''
                     present:
                         summary: 'When the value is present'
-                        value: consequatur
+                        value: architecto
             -
                 in: path
                 name: param4
