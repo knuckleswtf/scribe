@@ -25,13 +25,14 @@ class RequestValidateFacade
 
         if (
             $expr instanceof Node\Expr\StaticCall
-            && in_array((string) $expr->class, ['Request', \Illuminate\Support\Facades\Request::class])
+            && $expr->class instanceof Node\Name
+            && in_array($expr->class->name, ['Request', \Illuminate\Support\Facades\Request::class])
         ) {
-            if ($expr->name->name == "validate") {
+            if ($expr->name->name === "validate") {
                 return $expr->args[0]->value;
             }
 
-            if ($expr->name->name == "validateWithBag") {
+            if ($expr->name->name === "validateWithBag") {
                 return $expr->args[1]->value;
             }
         }
