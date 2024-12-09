@@ -148,7 +148,7 @@ class Writer
                 data_set($spec, $key, $value);
             }
         }
-        return Yaml::dump($spec, 20, 2, Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP);
+        return Yaml::dump($spec, 20, 2, Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP | Yaml::DUMP_NUMERIC_KEY_AS_STRING);
     }
 
     protected function performFinalTasksForLaravelType(): void
@@ -222,9 +222,9 @@ class Writer
         $writer = app()->makeWith(ExternalHtmlWriter::class, ['config' => $this->config]);
         $writer->generate([], $this->paths->intermediateOutputPath(), $this->staticTypeOutputPath);
 
-       if (!$this->isStatic) {
-           $this->performFinalTasksForLaravelType();
-       }
+        if (!$this->isStatic) {
+            $this->performFinalTasksForLaravelType();
+        }
 
         if ($this->isStatic) {
             $outputPath = rtrim($this->staticTypeOutputPath, '/') . '/';
@@ -254,7 +254,7 @@ class Writer
         return config(
             'view.paths.0',
             function_exists('base_path') ? base_path("resources/views") : "resources/views"
-        ). "/" . $this->paths->outputPath();
+        ) . "/" . $this->paths->outputPath();
     }
 
     /**

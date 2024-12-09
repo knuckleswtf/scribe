@@ -1,28 +1,26 @@
 openapi: 3.0.3
 info:
     title: Laravel
-    description: ''
+    description: ""
     version: 3.9.9
 servers:
-    -
-        url: 'http://localhost'
+    - url: "http://localhost"
 paths:
     /api/withFormDataParams:
         post:
-            summary: 'Endpoint with body form data parameters.'
-            description: ''
+            summary: "Endpoint with body form data parameters."
+            description: ""
             operationId: endpointWithBodyFormDataParameters
             parameters:
-                -
-                    in: header
-                    name: Custom-Header
-                    description: ''
-                    example: NotSoCustom
-                    schema:
-                        type: string
-            responses: {  }
+                - in: header
+                  name: Custom-Header
+                  description: ""
+                  example: NotSoCustom
+                  schema:
+                      type: string
+            responses: {}
             tags:
-                - 'Group A'
+                - "Group A"
             requestBody:
                 required: true
                 content:
@@ -32,13 +30,13 @@ paths:
                             properties:
                                 name:
                                     type: string
-                                    description: 'Name of image.'
+                                    description: "Name of image."
                                     example: cat.jpg
                                     nullable: false
                                 image:
                                     type: string
                                     format: binary
-                                    description: 'The image.'
+                                    description: "The image."
                                     nullable: false
                             required:
                                 - name
@@ -46,19 +44,18 @@ paths:
             security: []
     /api/withResponseTag:
         get:
-            summary: ''
-            description: ''
+            summary: ""
+            description: ""
             operationId: getApiWithResponseTag
             parameters:
-                -
-                    in: header
-                    name: Custom-Header
-                    description: ''
-                    example: NotSoCustom
-                    schema:
-                        type: string
+                - in: header
+                  name: Custom-Header
+                  description: ""
+                  example: NotSoCustom
+                  schema:
+                      type: string
             responses:
-                200:
+                "200":
                     description: ""
                     content:
                         application/json:
@@ -68,216 +65,206 @@ paths:
                                     id: 4
                                     name: banana
                                     color: red
-                                    weight: '1 kg'
+                                    weight: "1 kg"
                                     delicious: true
                                     responseTag: true
                                 properties:
                                     id: { type: integer, example: 4 }
                                     name: { type: string, example: banana }
                                     color: { type: string, example: red }
-                                    weight: { type: string, example: '1 kg' }
+                                    weight: { type: string, example: "1 kg" }
                                     delicious: { type: boolean, example: true }
-                                    responseTag: { type: boolean, example: true }
+                                    responseTag:
+                                        { type: boolean, example: true }
             tags:
-                - 'Group A'
+                - "Group A"
             security: []
     /api/withQueryParameters:
         get:
-            summary: ''
-            description: ''
+            summary: ""
+            description: ""
             operationId: getApiWithQueryParameters
             parameters:
-                -
-                    in: query
-                    name: location_id
-                    description: 'The id of the location.'
-                    example: consequatur
-                    required: true
-                    schema:
-                        type: string
-                        description: 'The id of the location.'
-                        example: consequatur
-                        nullable: false
-                -
-                    in: query
-                    name: user_id
-                    description: 'The id of the user.'
-                    example: me
-                    required: true
-                    schema:
-                        type: string
-                        description: 'The id of the user.'
-                        example: me
-                        nullable: false
-                -
-                    in: query
-                    name: page
-                    description: 'The page number.'
-                    example: '4'
-                    required: true
-                    schema:
-                        type: string
-                        description: 'The page number.'
-                        example: '4'
-                        nullable: false
-                -
-                    in: query
-                    name: filters
-                    description: 'The filters.'
-                    example: consequatur
-                    required: false
-                    schema:
-                        type: string
-                        description: 'The filters.'
-                        example: consequatur
-                        nullable: false
-                -
-                    in: query
-                    name: url_encoded
-                    description: 'Used for testing that URL parameters will be URL-encoded where needed.'
-                    example: '+ []&='
-                    required: false
-                    schema:
-                        type: string
-                        description: 'Used for testing that URL parameters will be URL-encoded where needed.'
-                        example: '+ []&='
-                        nullable: false
-                -
-                    in: header
-                    name: Custom-Header
-                    description: ''
-                    example: NotSoCustom
-                    schema:
-                        type: string
+                - in: query
+                  name: location_id
+                  description: "The id of the location."
+                  example: consequatur
+                  required: true
+                  schema:
+                      type: string
+                      description: "The id of the location."
+                      example: consequatur
+                      nullable: false
+                - in: query
+                  name: user_id
+                  description: "The id of the user."
+                  example: me
+                  required: true
+                  schema:
+                      type: string
+                      description: "The id of the user."
+                      example: me
+                      nullable: false
+                - in: query
+                  name: page
+                  description: "The page number."
+                  example: "4"
+                  required: true
+                  schema:
+                      type: string
+                      description: "The page number."
+                      example: "4"
+                      nullable: false
+                - in: query
+                  name: filters
+                  description: "The filters."
+                  example: consequatur
+                  required: false
+                  schema:
+                      type: string
+                      description: "The filters."
+                      example: consequatur
+                      nullable: false
+                - in: query
+                  name: url_encoded
+                  description: "Used for testing that URL parameters will be URL-encoded where needed."
+                  example: "+ []&="
+                  required: false
+                  schema:
+                      type: string
+                      description: "Used for testing that URL parameters will be URL-encoded where needed."
+                      example: "+ []&="
+                      nullable: false
+                - in: header
+                  name: Custom-Header
+                  description: ""
+                  example: NotSoCustom
+                  schema:
+                      type: string
             responses:
-                200:
+                "200":
                     description: ""
                     content:
-                        'text/plain':
+                        "text/plain":
                             schema:
                                 type: "string"
                                 example: ""
             tags:
-                - 'Group A'
+                - "Group A"
             security: []
     /api/withAuthTag:
         get:
-            summary: ''
-            description: ''
+            summary: ""
+            description: ""
             operationId: getApiWithAuthTag
             parameters:
-                -
-                    in: header
-                    name: Custom-Header
-                    description: ''
-                    example: NotSoCustom
-                    schema:
-                        type: string
+                - in: header
+                  name: Custom-Header
+                  description: ""
+                  example: NotSoCustom
+                  schema:
+                      type: string
             responses:
-                200:
+                "200":
                     description: ""
                     content:
-                        'text/plain':
+                        "text/plain":
                             schema:
                                 type: "string"
                                 example: ""
             tags:
-                - 'Group A'
-    '/api/echoesUrlParameters/{param}/{param2}/{param3}/{param4}':
+                - "Group A"
+    "/api/echoesUrlParameters/{param}/{param2}/{param3}/{param4}":
         get:
-            summary: ''
-            description: ''
+            summary: ""
+            description: ""
             operationId: getApiEchoesUrlParametersParamParam2Param3Param4
             parameters:
-                -
-                    in: query
-                    name: something
-                    description: ''
-                    example: consequatur
-                    required: false
-                    schema:
-                        type: string
-                        description: ''
-                        example: consequatur
-                        nullable: false
-                -
-                    in: header
-                    name: Custom-Header
-                    description: ''
-                    example: NotSoCustom
-                    schema:
-                        type: string
+                - in: query
+                  name: something
+                  description: ""
+                  example: consequatur
+                  required: false
+                  schema:
+                      type: string
+                      description: ""
+                      example: consequatur
+                      nullable: false
+                - in: header
+                  name: Custom-Header
+                  description: ""
+                  example: NotSoCustom
+                  schema:
+                      type: string
             responses:
-                200:
-                    description: ''
+                "200":
+                    description: ""
                     content:
                         application/json:
                             schema:
                                 type: object
                                 example:
-                                    param: '4'
+                                    param: "4"
                                     param2: consequatur
                                     param3: consequatur
                                     param4: null
                                 properties:
-                                    param: { type: string, example: '4' }
-                                    param2: { type: string, example: consequatur }
-                                    param3: { type: string, example: consequatur }
+                                    param: { type: string, example: "4" }
+                                    param2:
+                                        { type: string, example: consequatur }
+                                    param3:
+                                        { type: string, example: consequatur }
                                     param4: { type: string, example: null }
             tags:
                 - Other😎
             security: []
         parameters:
-            -
-                in: path
-                name: param
-                description: ''
-                example: '4'
-                required: true
-                schema:
-                    type: string
-            -
-                in: path
-                name: param2
-                description: ''
-                required: true
-                schema:
-                    type: string
-                example: consequatur
-            -
-                in: path
-                name: param3
-                description: 'Optional parameter.'
-                required: true
-                schema:
-                    type: string
-                examples:
-                    omitted:
-                        summary: 'When the value is omitted'
-                        value: ''
-                    present:
-                        summary: 'When the value is present'
-                        value: consequatur
-            -
-                in: path
-                name: param4
-                description: 'Optional parameter.'
-                required: true
-                schema:
-                    type: string
-                examples:
-                    omitted:
-                        summary: 'When the value is omitted'
-                        value: ''
+            - in: path
+              name: param
+              description: ""
+              example: "4"
+              required: true
+              schema:
+                  type: string
+            - in: path
+              name: param2
+              description: ""
+              required: true
+              schema:
+                  type: string
+              example: consequatur
+            - in: path
+              name: param3
+              description: "Optional parameter."
+              required: true
+              schema:
+                  type: string
+              examples:
+                  omitted:
+                      summary: "When the value is omitted"
+                      value: ""
+                  present:
+                      summary: "When the value is present"
+                      value: consequatur
+            - in: path
+              name: param4
+              description: "Optional parameter."
+              required: true
+              schema:
+                  type: string
+              examples:
+                  omitted:
+                      summary: "When the value is omitted"
+                      value: ""
     /api/withBodyParametersAsArray:
         post:
-            summary: 'Endpoint with body parameters as array.'
-            description: ''
+            summary: "Endpoint with body parameters as array."
+            description: ""
             operationId: endpointWithBodyParametersAsArray
             parameters:
                 - in: header
                   name: Custom-Header
-                  description: ''
+                  description: ""
                   example: NotSoCustom
                   schema:
                       type: string
@@ -292,30 +279,73 @@ paths:
                             type: array
                             description: Details.
                             example:
-                            - first_name: 'John'
-                              last_name: 'Doe'
-                              contacts:
-                              - first_name: Janelle
-                                last_name: Monáe
-                              roles: [Admin]
+                                - first_name: "John"
+                                  last_name: "Doe"
+                                  contacts:
+                                      - first_name: Janelle
+                                        last_name: Monáe
+                                  roles: [Admin]
                             items:
                                 type: object
                                 properties:
-                                    first_name: { type: string, description: 'The first name of the user.', example: John, nullable: false }
-                                    last_name: { type: string, description: 'The last name of the user.', example: Doe, nullable: false}
-                                    contacts: { type: array, description: 'Contact info', example: [ [ ] ], items: { type: object, properties: { first_name: { type: string, description: 'The first name of the contact.', example: Janelle, nullable: false }, last_name: { type: string, description: 'The last name of the contact.', example: Monáe, nullable: false } }, required: [ first_name, last_name ] } }
-                                    roles: { type: array, description: 'The name of the role.', example: [ Admin ], items: { type: string } }
+                                    first_name:
+                                        {
+                                            type: string,
+                                            description: "The first name of the user.",
+                                            example: John,
+                                            nullable: false,
+                                        }
+                                    last_name:
+                                        {
+                                            type: string,
+                                            description: "The last name of the user.",
+                                            example: Doe,
+                                            nullable: false,
+                                        }
+                                    contacts:
+                                        {
+                                            type: array,
+                                            description: "Contact info",
+                                            example: [[]],
+                                            items:
+                                                {
+                                                    type: object,
+                                                    properties:
+                                                        {
+                                                            first_name:
+                                                                {
+                                                                    type: string,
+                                                                    description: "The first name of the contact.",
+                                                                    example: Janelle,
+                                                                    nullable: false,
+                                                                },
+                                                            last_name:
+                                                                {
+                                                                    type: string,
+                                                                    description: "The last name of the contact.",
+                                                                    example: Monáe,
+                                                                    nullable: false,
+                                                                },
+                                                        },
+                                                    required:
+                                                        [first_name, last_name],
+                                                },
+                                        }
+                                    roles:
+                                        {
+                                            type: array,
+                                            description: "The name of the role.",
+                                            example: [Admin],
+                                            items: { type: string },
+                                        }
                                 required:
                                     - first_name
                                     - last_name
                                     - contacts
                                     - roles
-            security: [ ]
+            security: []
 tags:
-    -
-        name: 'Group A'
-        description: ''
-    -
-        name: Other😎
-        description: ''
-
+    - name: "Group A"
+      description: ""
+    - name: Other😎
+      description: ""
