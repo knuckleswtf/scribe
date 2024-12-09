@@ -222,7 +222,7 @@ class PostmanCollectionWriter
             if (!is_array($value)) {
                 $body[] = [
                     'key' => $index,
-                    'value' => $value,
+                    'value' => (string) $value,
                     'type' => 'text',
                     'description' => $paramsFullDetails[$index]->description ?? '',
                 ];
