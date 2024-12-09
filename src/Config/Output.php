@@ -86,6 +86,7 @@ class Output
     public static function openApi(
         bool  $enabled = true,
         array $overrides = [],
+        array $generators = [],
     ): array
     {
         return get_defined_vars();

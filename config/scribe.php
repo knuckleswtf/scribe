@@ -160,6 +160,10 @@ INTRO
         'overrides' => [
             // 'info.version' => '2.0.0',
         ],
+
+        // Additional generators to use when generating the OpenAPI spec.
+        // Should extend `Knuckles\Scribe\Writing\OpenApiSpecGenerators\OpenApiGenerator`.
+        'generators' => [],
     ],
 
     'groups' => [
