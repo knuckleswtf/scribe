@@ -36,7 +36,7 @@ class GetFromDocBlocks extends Strategy
         return $metadata;
     }
 
-    protected function getAuthStatusFromDocBlock(DocBlock $methodDocBlock, DocBlock $classDocBlock = null): ?bool
+    protected function getAuthStatusFromDocBlock(DocBlock $methodDocBlock, ?DocBlock $classDocBlock = null): ?bool
     {
         foreach ($methodDocBlock->getTags() as $tag) {
             if (strtolower($tag->getName()) === 'authenticated') {

@@ -15,12 +15,12 @@
         }
     ],
     "require": {
-        "php": ">=8.0",
+        "php": ">=8.1",
         "ext-fileinfo": "*",
         "ext-json": "*",
         "ext-pdo": "*",
         "erusev/parsedown": "1.7.4",
-        "fakerphp/faker": "^1.9.1",
+        "fakerphp/faker": "^1.23.1",
         "illuminate/console": "^8.0|^9.0|^10.0|^11.0",
         "illuminate/routing": "^8.0|^9.0|^10.0|^11.0",
         "illuminate/support": "^8.0|^9.0|^10.0|^11.0",
@@ -31,20 +31,19 @@
         "ramsey/uuid": "^4.2.2",
         "shalvah/clara": "^3.1.0",
         "shalvah/upgrader": ">=0.6.0",
-        "spatie/data-transfer-object": "^2.6|^3.0",
+        "spatie/data-transfer-object": "^3.1",
         "symfony/var-exporter": "^5.4|^6.0|^7.0",
         "symfony/yaml": "^5.4|^6.0|^7.0"
     },
     "require-dev": {
-        "brianium/paratest": "^6.0",
-        "dms/phpunit-arraysubset-asserts": "^0.4",
+        "brianium/paratest": "^6.0|^7.0",
+        "dms/phpunit-arraysubset-asserts": "^0.4|^0.5",
         "laravel/legacy-factories": "^1.3.0",
-        "laravel/lumen-framework": "^8.0|^9.0|^10.0",
-        "league/fractal": "^0.20",
+        "league/fractal": "^0.20.1",
         "nikic/fast-route": "^1.3",
         "orchestra/testbench": "^6.0|^7.0|^8.0",
-        "pestphp/pest": "^1.21",
-        "phpstan/phpstan": "^1.0",
+        "pestphp/pest": "^2.20",
+        "phpstan/phpstan": "^2.0",
         "phpunit/phpunit": "^9.0|^10.0",
         "symfony/css-selector": "^5.4|^6.0",
         "symfony/dom-crawler": "^5.4|^6.0"
@@ -62,7 +61,7 @@
     },
     "scripts": {
         "lint": "phpstan analyse -c ./phpstan.neon src camel --memory-limit 1G",
-        "test": "pest --stop-on-failure --exclude-group dingo --colors",
+        "test": "pest  --exclude-group dingo --colors",
         "test-ci": "pest --exclude-group dingo --coverage --min=80",
         "test-parallel": "paratest -p16 --stop-on-failure --exclude-group dingo",
         "test-parallel-ci": "paratest -p16 --exclude-group dingo"

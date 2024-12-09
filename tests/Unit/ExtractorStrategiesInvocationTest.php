@@ -200,7 +200,7 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
         $this->assertArraySubset($expectedMetadata, $parsed->metadata->toArray());
     }
 
-    public function responsesToSort(): array
+    public static function responsesToSort(): array
     {
         return [
             '400, 200, 201' => [[DummyResponseStrategy400::class, DummyResponseStrategy200::class, DummyResponseStrategy201::class]],
