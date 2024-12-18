@@ -186,7 +186,7 @@ class GetFromLaravelAPI extends Strategy
      *
      * @return string|null
      */
-    protected function getNameOfUrlThing(string $url, string $paramName, string $alternateParamName = null): ?string
+    protected function getNameOfUrlThing(string $url, string $paramName, ?string $alternateParamName = null): ?string
     {
         $parts = explode("/", $url);
         if (count($parts) === 1) return null; // URL was "/{thing}"

@@ -25,7 +25,7 @@ class Extractor
 
     private static ?Route $routeBeingProcessed = null;
 
-    public function __construct(DocumentationConfig $config = null)
+    public function __construct(?DocumentationConfig $config = null)
     {
         // If no config is injected, pull from global
         $this->config = $config ?: new DocumentationConfig(config('scribe'));

@@ -22,7 +22,7 @@ class OpenAPISpecWriter
 
     private DocumentationConfig $config;
 
-    public function __construct(DocumentationConfig $config = null)
+    public function __construct(?DocumentationConfig $config = null)
     {
         $this->config = $config ?: new DocumentationConfig(config('scribe', []));
     }
@@ -400,7 +400,7 @@ class OpenAPISpecWriter
                             ],
                             'example' => $decoded,
                         ],
-                    ], 
+                    ],
                 ];
 
             case 'object':
@@ -661,7 +661,7 @@ class OpenAPISpecWriter
 
         return $required;
     }
-  
+
     /*
      * Set the description for the schema. If the field has a description, it is set in the schema.
      */
