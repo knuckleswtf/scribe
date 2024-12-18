@@ -19,7 +19,7 @@ class PathConfig
         }
     }
 
-    public function outputPath(string $resolvePath = null, string $separator = '/'): string
+    public function outputPath(?string $resolvePath = null, string $separator = '/'): string
     {
         if (is_null($resolvePath)) {
             return $this->configName;
@@ -36,7 +36,7 @@ class PathConfig
     /**
      * The directory where Scribe writes its intermediate output (default is .<config> ie .scribe)
      */
-    public function intermediateOutputPath(string $resolvePath = null, string $separator = '/'): string
+    public function intermediateOutputPath(?string $resolvePath = null, string $separator = '/'): string
     {
         if (is_null($resolvePath)) {
             return $this->scribeDir;

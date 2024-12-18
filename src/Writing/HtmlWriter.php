@@ -22,7 +22,7 @@ class HtmlWriter
     protected string $assetPathPrefix;
     protected MarkdownParser $markdownParser;
 
-    public function __construct(DocumentationConfig $config = null)
+    public function __construct(?DocumentationConfig $config = null)
     {
         $this->config = $config ?: new DocumentationConfig(config('scribe', []));
         $this->markdownParser = new MarkdownParser();
