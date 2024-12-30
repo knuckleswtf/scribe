@@ -106,7 +106,7 @@ return [
         // Options: query, body, basic, bearer, header (for custom header)
         'in' => 'bearer',
 
-        // The name of the auth parameter (eg token, key, apiKey) or header (eg Authorization, Api-Key).
+        // The name of the auth parameter (e.g. token, key, apiKey) or header (e.g. Authorization, Api-Key).
         'name' => 'key',
 
         // The value of the parameter to be used by Scribe to authenticate response calls.
@@ -189,7 +189,7 @@ INTRO
     'last_updated' => 'Last updated: {date:F j, Y}',
 
     'examples' => [
-        // Set this to any number (eg. 1234) to generate the same example values for parameters on each run,
+        // Set this to any number (e.g. 1234) to generate the same example values for parameters on each run,
         'faker_seed' => null,
 
         // With API resources and transformers, Scribe tries to generate example models to use in your API responses.
