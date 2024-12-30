@@ -26,7 +26,7 @@ class ApiDetails
 
     public function __construct(
         PathConfig          $paths,
-        DocumentationConfig $config = null,
+        ?DocumentationConfig $config = null,
         bool                $preserveUserChanges = true
     ) {
         $this->markdownOutputPath = $paths->intermediateOutputPath(); //.scribe by default

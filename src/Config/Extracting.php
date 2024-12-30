@@ -23,7 +23,7 @@ class Extracting
         bool   $default = false,
         string $in = 'bearer',
         string $name = 'key',
-        string $useValue = null,
+        ?string $useValue = null,
         string $placeholder = '{YOUR_AUTH_KEY}',
         string $extraInfo = ''
     ): array
@@ -48,10 +48,10 @@ class Extracting
         Routes $routes,
         string $defaultGroup = 'Endpoints',
         array $databaseConnectionsToTransact = [],
-        int $fakerSeedForExamples = null,
+        ?int $fakerSeedForExamples = null,
         array $dataSourcesForExampleModels = ['factoryCreate', 'factoryMake', 'databaseFirst'],
-        string $routeMatcher = null,
-        string $fractalSerializer = null,
+        ?string $routeMatcher = null,
+        ?string $fractalSerializer = null,
         array   $auth = [],
         array   $strategies = [],
     ): Extracting

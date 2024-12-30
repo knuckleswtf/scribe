@@ -145,7 +145,7 @@ class UrlParamsNormalizer
      * @return string|null
      */
     protected static function getRouteKeyForUrlParam(
-        Route $route, string $paramName, array $typeHintedEloquentModels = [], string $default = null
+        Route $route, string $paramName, array $typeHintedEloquentModels = [], ?string $default = null
     ): ?string
     {
         if ($binding = self::getInlineRouteKey($route, $paramName)) {
