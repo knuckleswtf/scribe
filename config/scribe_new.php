@@ -58,6 +58,11 @@ return Scribe\Config\Factory::make(
         theme: 'default',
         title: null,
         description: '',
+        contact: [
+            "name" => '',
+            "url" => '',
+            "email" => '',
+        ],
         baseUrls: [
             "production" => config("app.base_url"),
         ],
