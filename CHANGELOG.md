@@ -12,6 +12,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.39.0 (31 December 2024)
+## Added
+- Correctly list required fields for nested objects in OpenAPI spec [#905](https://github.com/knuckleswtf/scribe/pull/905)
+- Cursor pagination support in API responses (`cursorPaginate`/`paginate=cursor`) [#917](https://github.com/knuckleswtf/scribe/pull/917)
+
+## Fixed
+- Fixed type error when attempting to parse Request::validate [#925](https://github.com/knuckleswtf/scribe/pull/925)
+- Don't render empty responses as string "null" in OpenAPI spec [#911](https://github.com/knuckleswtf/scribe/pull/911)
+- Correctly replace `apiDescriptionUrl`for `external_laravel` (Eelements theme) [#906](https://github.com/knuckleswtf/scribe/pull/906)
+- Cast form data values to strings in Postman collection [#926](https://github.com/knuckleswtf/scribe/pull/926)
+
+## Modified
+- Resolve PHP 8.4 deprecations [#929](https://github.com/knuckleswtf/scribe/pull/929)
+
 # 4.38.0 (18 October 2024)
 ## Fixed
 - Elements theme: Fix display of boolean examples [#887](https://github.com/knuckleswtf/scribe/pull/887)
