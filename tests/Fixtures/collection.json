@@ -128,7 +128,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\"user_id\":9,\"room_id\":\"consequatur\",\"forever\":false,\"another_one\":11613.31890586,\"yet_another_param\":{\"name\":\"consequatur\"},\"even_more_param\":[11613.31890586],\"book\":{\"name\":\"consequatur\",\"author_id\":17,\"pages_count\":17},\"ids\":[17],\"users\":[{\"first_name\":\"John\",\"last_name\":\"Doe\"}]}"
+              "raw": "{\"user_id\":9,\"room_id\":\"architecto\",\"forever\":false,\"another_one\":4326.41688,\"yet_another_param\":{\"name\":\"architecto\"},\"even_more_param\":[4326.41688],\"book\":{\"name\":\"architecto\",\"author_id\":16,\"pages_count\":16},\"ids\":[16],\"users\":[{\"first_name\":\"John\",\"last_name\":\"Doe\"}]}"
             },
             "description": "",
             "auth": {
@@ -146,7 +146,7 @@
               "query": [
                 {
                   "key": "location_id",
-                  "value": "consequatur",
+                  "value": "architecto",
                   "description": "The id of the location.",
                   "disabled": false
                 },
@@ -164,7 +164,7 @@
                 },
                 {
                   "key": "filters",
-                  "value": "consequatur",
+                  "value": "architecto",
                   "description": "The filters.",
                   "disabled": false
                 },
@@ -175,7 +175,7 @@
                   "disabled": false
                 }
               ],
-              "raw": "{{baseUrl}}/api/withQueryParameters?location_id=consequatur&user_id=me&page=4&filters=consequatur&url_encoded=%2B+%5B%5D%26%3D"
+              "raw": "{{baseUrl}}/api/withQueryParameters?location_id=architecto&user_id=me&page=4&filters=architecto&url_encoded=%2B+%5B%5D%26%3D"
             },
             "method": "GET",
             "header": [
@@ -268,12 +268,12 @@
               "query": [
                 {
                   "key": "something",
-                  "value": "consequatur",
+                  "value": "architecto",
                   "description": "",
                   "disabled": false
                 }
               ],
-              "raw": "{{baseUrl}}/api/echoesUrlParameters/:param/:param2/:param3/:param4?something=consequatur",
+              "raw": "{{baseUrl}}/api/echoesUrlParameters/:param/:param2/:param3/:param4?something=architecto",
               "variable": [
                 {
                   "id": "param",
@@ -284,13 +284,13 @@
                 {
                   "id": "param2",
                   "key": "param2",
-                  "value": "consequatur",
+                  "value": "architecto",
                   "description": ""
                 },
                 {
                   "id": "param3",
                   "key": "param3",
-                  "value": "consequatur",
+                  "value": "architecto",
                   "description": ""
                 },
                 {
@@ -331,7 +331,7 @@
                 }
               ],
               "code": 200,
-              "body": "{\"param\":\"4\",\"param2\":\"consequatur\",\"param3\":\"consequatur\",\"param4\":null}",
+              "body": "{\"param\":\"4\",\"param2\":\"architecto\",\"param3\":\"architecto\",\"param4\":null}",
               "name": null
             }
           ]
