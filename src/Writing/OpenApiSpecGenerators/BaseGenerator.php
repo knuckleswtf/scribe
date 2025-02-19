@@ -549,11 +549,12 @@ class BaseGenerator extends OpenApiGenerator
                 $schema['items']['properties'] = collect($sample)->mapWithKeys(function ($v, $k) use ($endpoint, $path) {
                     return [$k => $this->generateSchemaForResponseValue($v, $endpoint, "$path.$k")];
                 })->toArray();
-            }
-
-            $required = $this->filterRequiredResponseFields($endpoint, array_keys($schema['items']['properties']), $path);
-            if ($required) {
-                $schema['required'] = $required;
+                
+                $required = $this->filterRequiredResponseFields($endpoint, array_keys($schema['items']['properties']),
+                    $path);
+                if ($required) {
+                    $schema['required'] = $required;
+                }
             }
         }
 
