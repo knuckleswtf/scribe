@@ -284,9 +284,9 @@ trait ParsesValidationRules
                     $parameterData['setter'] = fn() => true;
                     break;
 
-                    /*
-                    * Primitive types. No description should be added
-                    */
+                /*
+                * Primitive types. No description should be added
+                */
                 case 'bool':
                 case 'boolean':
                     $parameterData['setter'] = function () {
@@ -327,9 +327,9 @@ trait ParsesValidationRules
                     };
                     break;
 
-                    /**
-                     * Special string types
-                     */
+                /**
+                 * Special string types
+                 */
                 case 'alpha':
                     $parameterData['description'] .= " Must contain only letters.";
                     $parameterData['setter'] = function () {
@@ -426,9 +426,9 @@ trait ParsesValidationRules
                     $parameterData['setter'] = fn() => $this->getFaker()->regexify($arguments[0]);;
                     break;
 
-                    /**
-                     * Special number types.
-                     */
+                /**
+                 * Special number types.
+                 */
                 case 'digits':
                     $parameterData['description'] .= ' ' . $this->getDescription($rule, [':digits' => $arguments[0]]);
                     $parameterData['setter'] = fn() => $this->getFaker()->numerify(str_repeat("#", $arguments[0]));
@@ -440,39 +440,39 @@ trait ParsesValidationRules
                     $parameterData['type'] = 'string';
                     break;
 
-                    /**
-                     * These rules can apply to numbers, strings, arrays or files
-                     */
+                /**
+                 * These rules can apply to numbers, strings, arrays or files
+                 */
                 case 'size':
                     $parameterData['description'] .= ' ' . $this->getDescription(
-                        $rule, [':size' => $arguments[0]], $this->getLaravelValidationBaseTypeMapping($parameterData['type'])
-                    );
+                            $rule, [':size' => $arguments[0]], $this->getLaravelValidationBaseTypeMapping($parameterData['type'])
+                        );
                     $parameterData['setter'] = $this->getDummyValueGenerator($parameterData['type'], ['size' => $arguments[0]]);
                     break;
                 case 'min':
                     $parameterData['description'] .= ' ' . $this->getDescription(
-                        $rule, [':min' => $arguments[0]], $this->getLaravelValidationBaseTypeMapping($parameterData['type'])
-                    );
+                            $rule, [':min' => $arguments[0]], $this->getLaravelValidationBaseTypeMapping($parameterData['type'])
+                        );
                     $parameterData['setter'] = $this->getDummyDataGeneratorBetween($parameterData['type'], floatval($arguments[0]), fieldName: $parameterData['name']);
                     break;
                 case 'max':
                     $parameterData['description'] .= ' ' . $this->getDescription(
-                        $rule, [':max' => $arguments[0]], $this->getLaravelValidationBaseTypeMapping($parameterData['type'])
-                    );
+                            $rule, [':max' => $arguments[0]], $this->getLaravelValidationBaseTypeMapping($parameterData['type'])
+                        );
                     $max = min($arguments[0], 25);
                     $parameterData['setter'] = $this->getDummyDataGeneratorBetween($parameterData['type'], 1, $max, $parameterData['name']);
                     break;
                 case 'between':
                     $parameterData['description'] .= ' ' . $this->getDescription(
-                        $rule, [':min' => $arguments[0], ':max' => $arguments[1]], $this->getLaravelValidationBaseTypeMapping($parameterData['type'])
-                    );
+                            $rule, [':min' => $arguments[0], ':max' => $arguments[1]], $this->getLaravelValidationBaseTypeMapping($parameterData['type'])
+                        );
                     // Avoid exponentially complex operations by using the minimum length
                     $parameterData['setter'] = $this->getDummyDataGeneratorBetween($parameterData['type'], floatval($arguments[0]), floatval($arguments[0]) + 1, $parameterData['name']);
                     break;
 
-                    /**
-                     * Special file types.
-                     */
+                /**
+                 * Special file types.
+                 */
                 case 'image':
                     $parameterData['type'] = 'file';
                     $parameterData['description'] .= ' ' . $this->getDescription($rule) . ' ';
@@ -482,9 +482,9 @@ trait ParsesValidationRules
                     };
                     break;
 
-                    /**
-                     * Other rules.
-                     */
+                /**
+                 * Other rules.
+                 */
                 case 'in':
                     $parameterData['enumValues'] = $arguments;
                     $parameterData['setter'] = function () use ($arguments) {
@@ -492,9 +492,9 @@ trait ParsesValidationRules
                     };
                     break;
 
-                    /**
-                     * These rules only add a description. Generating valid examples is too complex.
-                     */
+                /**
+                 * These rules only add a description. Generating valid examples is too complex.
+                 */
                 case 'not_in':
                     $parameterData['description'] .= ' Must not be one of ' . w::getListOfValuesAsFriendlyHtmlString($arguments) . ' ';
                     break;
@@ -598,9 +598,9 @@ trait ParsesValidationRules
             if (isset($parameterData['setter'])) {
                 return $parameterData['setter']();
             } else {
-            return $parameterData['required']
-                ? $this->generateDummyValue($parameterData['type'])
-                : null;
+                return $parameterData['required']
+                    ? $this->generateDummyValue($parameterData['type'])
+                    : null;
             }
         } else if (!is_null($parameterData['example']) && $parameterData['example'] !== self::$MISSING_VALUE) {
             if($parameterData['example'] === 'No-example' && !$parameterData['required']){
