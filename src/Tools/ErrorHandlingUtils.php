@@ -7,12 +7,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ErrorHandlingUtils
 {
-    public static function dumpExceptionIfVerbose(\Throwable $e, $completelySilent = false): void
+    public static function dumpExceptionIfVerbose(\Throwable $e): void
     {
-        if ($completelySilent) {
-            return;
-        }
-
         if (Globals::$shouldBeVerbose) {
             self::dumpException($e);
             return;
