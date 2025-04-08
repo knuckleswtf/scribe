@@ -142,7 +142,7 @@ class Writer
         /** @var OpenAPISpecWriter $writer */
         $writer = app()->makeWith(OpenAPISpecWriter::class, ['config' => $this->config]);
         $spec = $writer->generateSpecContent($groupedEndpoints);
-        return Yaml::dump($spec, 20, 2, Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP);
+        return Yaml::dump($spec, 20, 2, Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP | Yaml::DUMP_NUMERIC_KEY_AS_STRING);
     }
 
     protected function performFinalTasksForLaravelType(): void
