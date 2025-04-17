@@ -15,7 +15,9 @@ use Knuckles\Scribe\Exceptions\CouldntFindFactory;
 use Knuckles\Scribe\Exceptions\CouldntGetRouteDetails;
 use Knuckles\Scribe\ScribeServiceProvider;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
+use League\Flysystem\DirectoryListing;
 use League\Flysystem\Filesystem;
+use League\Flysystem\FilesystemException;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use Mpociot\Reflection\DocBlock\Tag;
 use ReflectionClass;
@@ -125,6 +127,11 @@ class Utils
         $fs->deleteDirectory($dir);
     }
 
+    /**
+     * @param string $dir
+     * @return DirectoryListing<\League\Flysystem\StorageAttributes>
+     * @throws FilesystemException
+     */
     public static function listDirectoryContents(string $dir)
     {
         $adapter = new LocalFilesystemAdapter(getcwd());

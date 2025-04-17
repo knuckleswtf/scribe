@@ -55,7 +55,7 @@ trait InstantiatesExampleModels
                 if ($model) return $model;
             } catch (Throwable $e) {
                 c::warn("Couldn't get example model for {$type} via $strategyName.");
-                e::dumpExceptionIfVerbose($e, true);
+                e::dumpExceptionIfVerbose($e);
             }
         }
 

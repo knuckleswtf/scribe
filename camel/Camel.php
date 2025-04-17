@@ -64,12 +64,10 @@ class Camel
         $contents = Utils::listDirectoryContents($folder);
 
         foreach ($contents as $object) {
-            // todo Flysystem v1 had items as arrays; v2 has objects.
-            // v2 allows ArrayAccess, but when we drop v1 support (Laravel <9), we should switch to methods
             if (
-                $object['type'] == 'file'
-                && Str::endsWith(basename($object['path']), '.yaml')
-                && !Str::startsWith(basename($object['path']), 'custom.')
+                $object->isFile()
+                && Str::endsWith(basename($object->path()), '.yaml')
+                && !Str::startsWith(basename($object->path()), 'custom.')
             ) {
                 $group = Yaml::parseFile($object['path']);
                 $callback($group);
@@ -83,14 +81,12 @@ class Camel
 
         $userDefinedEndpoints = [];
         foreach ($contents as $object) {
-            // todo Flysystem v1 had items as arrays; v2 has objects.
-            // v2 allows ArrayAccess, but when we drop v1 support (Laravel <9), we should switch to methods
             if (
-                $object['type'] == 'file'
-                && Str::endsWith(basename($object['path']), '.yaml')
-                && Str::startsWith(basename($object['path']), 'custom.')
+                $object->isFile()
+                && Str::endsWith(basename($object->path()), '.yaml')
+                && Str::startsWith(basename($object->path()), 'custom.')
             ) {
-                $endpoints = Yaml::parseFile($object['path']);
+                $endpoints = Yaml::parseFile($object->path());
                 foreach (($endpoints ?: []) as $endpoint) {
                     $userDefinedEndpoints[] = $endpoint;
                 }

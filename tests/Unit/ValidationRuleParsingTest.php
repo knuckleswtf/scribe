@@ -13,7 +13,6 @@ use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tests\Fixtures;
 
-$invokableRulesSupported = interface_exists(\Illuminate\Contracts\Validation\InvokableRule::class);
 $laravel10Rules = version_compare(Application::VERSION, '10.0', '>=');
 
 class ValidationRuleParsingTest extends BaseLaravelTest
@@ -81,7 +80,6 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             $results['in_param']['enumValues']
         );
     }
-
 
     /** @test */
     public function can_transform_arrays_and_objects()
@@ -531,10 +529,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             'param1' => ['bail', 'required', new DummyWithDocsValidationRule],
         ];
 
-        global $invokableRulesSupported;
-        if ($invokableRulesSupported) {
-            $ruleset['param2'] = [new DummyInvokableValidationRule];
-        }
+        $ruleset['param2'] = [new DummyInvokableValidationRule];
         global $laravel10Rules;
         if ($laravel10Rules) {
             $ruleset['param3'] = [new DummyL10ValidationRule];
@@ -543,7 +538,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         $results = $this->strategy->parse($ruleset);
         $this->assertEquals(true, $results['param1']['required']);
         $this->assertEquals('This is a dummy test rule.', $results['param1']['description']);
-        if (isset($results['param2'])) $this->assertEquals('This rule is invokable.', $results['param2']['description']);
+        $this->assertEquals('This rule is invokable.', $results['param2']['description']);
        if (isset($results['param3'])) $this->assertEquals('This is a custom rule.', $results['param3']['description']);
     }
 
@@ -553,9 +548,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         $results = $this->strategy->parse([
             'enum' => [
                 'required',
-                new \Illuminate\Validation\Rules\Enum(Fixtures\TestStringBackedEnum::class),
-                // Not supported in Laravel 8
-                // Rule::enum(Fixtures\TestStringBackedEnum::class)
+                Rule::enum(Fixtures\TestStringBackedEnum::class)
             ],
         ]);
         $this->assertEquals('string', $results['enum']['type']);
@@ -720,28 +713,27 @@ class DummyWithDocsValidationRule implements \Illuminate\Contracts\Validation\Ru
     }
 }
 
-if ($invokableRulesSupported) {
-    class DummyInvokableValidationRule implements \Illuminate\Contracts\Validation\InvokableRule
+// Laravel 9 introduced InvokableRule
+class DummyInvokableValidationRule implements \Illuminate\Contracts\Validation\InvokableRule
+{
+    public function __invoke($attribute, $value, $fail)
     {
-        public function __invoke($attribute, $value, $fail)
-        {
-            if (strtoupper($value) !== $value) {
-                $fail(':attribute must be uppercase.');
-            }
+        if (strtoupper($value) !== $value) {
+            $fail(':attribute must be uppercase.');
         }
+    }
 
-        public function docs()
-        {
+    public function docs()
+    {
 
-            return [
-                'description' => 'This rule is invokable.',
-            ];
-        }
+        return [
+            'description' => 'This rule is invokable.',
+        ];
     }
 }
 
 if ($laravel10Rules) {
-// Laravel 10 deprecated the previous Rule and InvokableRule classes for a single interface
+    // Laravel 10 deprecated the previous Rule and InvokableRule classes for a single interface
     // (https://github.com/laravel/framework/pull/45954)
     class DummyL10ValidationRule implements \Illuminate\Contracts\Validation\ValidationRule
     {

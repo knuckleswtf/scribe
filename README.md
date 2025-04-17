@@ -7,7 +7,7 @@
 </p>
 
 
-> [v5 is out now](https://scribe.knuckles.wtf/migrating)!
+> [v5 is out now](https://scribe.knuckles.wtf/laravel/migrating)!
 
 Scribe helps you generate API documentation for humans from your Laravel codebase. See a live example at [demo.scribe.knuckles.wtf](https://demo.scribe.knuckles.wtf).
 
