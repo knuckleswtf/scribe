@@ -81,7 +81,6 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         );
     }
 
-
     /** @test */
     public function can_transform_arrays_and_objects()
     {

@@ -141,8 +141,10 @@ trait ParsesValidationRules
     }
 
     /**
-     * Transform validation rules from:
+     * Transform validation rules:
+     * 1. from strings to arrays:
      * 'param1' => 'int|required'  TO  'param1' => ['int', 'required']
+     * 2. from '*.foo' to '
      *
      * @param array<string,string|string[]> $rules
      *
@@ -169,7 +171,10 @@ trait ParsesValidationRules
         return collect($newRules)->mapWithKeys(function ($val, $paramName) use ($rules) {
             // Transform the key names back from '__asterisk__' to '*'
             if (Str::contains($paramName, '__asterisk__')) {
-                $paramName = str_replace('__asterisk__', '*', $paramName);
+                // In Laravel < v11.44, * keys were replaced with only "__asterisk__"
+                // After that, * keys were replaced with "__asterisk__<random placeholder>", eg "__asterisk__dkjiu78gujjhb
+                // See https://github.com/laravel/framework/pull/54845/
+                $paramName = preg_replace('/__asterisk__[^.]*\b/', '*', $paramName);
             }
 
             // Transform the key names back from 'ids.0' to 'ids.*'
