@@ -129,6 +129,22 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
+    public function adds_deprecation_info_correctly()
+    {
+        $endpointData1 = $this->createMockEndpointData(['uri' => 'path1', 'httpMethods' => ['GET'], 'metadata.deprecated' => true]);
+        $endpointData2 = $this->createMockEndpointData(['uri' => 'path2', 'httpMethods' => ['GET'], 'metadata.deprecated' => false]);
+        $groups = [$this->createGroup([$endpointData1, $endpointData2])];
+
+        $results = $this->generate($groups);
+
+        $this->assertIsArray($results['paths']);
+        $this->assertCount(2, $results['paths']);
+        $this->assertArrayHasKey('deprecated', $results['paths']['/path1']['get']);
+        $this->assertTrue(true, $results['paths']['/path1']['get']['deprecated']);
+        $this->assertArrayNotHasKey('deprecated', $results['paths']['/path2']['get']);
+    }
+
+    /** @test */
     public function adds_url_parameters_correctly_as_parameters_on_path_item_object()
     {
         $endpointData1 = $this->createMockEndpointData([

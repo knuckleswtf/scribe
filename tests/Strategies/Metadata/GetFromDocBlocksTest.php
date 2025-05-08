@@ -52,6 +52,7 @@ DOCBLOCK;
         $results = $strategy->getMetadataFromDocBlock(new DocBlock($methodDocblock), new DocBlock($classDocblock));
 
         $this->assertArrayNotHasKey('authenticated', $results);
+        $this->assertFalse($results['deprecated']);
         $this->assertNull($results['subgroup']);
         $this->assertSame('Group A', $results['groupName']);
         $this->assertSame('Group description.', $results['groupDescription']);
@@ -69,11 +70,13 @@ DOCBLOCK;
   * @authenticated
   * @subgroup Scheiße
   * @subgroupDescription Heilige Scheiße
+  * @deprecated
   */
 DOCBLOCK;
         $results = $strategy->getMetadataFromDocBlock(new DocBlock($methodDocblock), new DocBlock($classDocblock));
 
         $this->assertTrue($results['authenticated']);
+        $this->assertTrue($results['deprecated']);
         $this->assertSame(null, $results['groupName']);
         $this->assertSame('Scheiße', $results['subgroup']);
         $this->assertSame('Heilige Scheiße', $results['subgroupDescription']);
@@ -91,6 +94,7 @@ DOCBLOCK;
   * Endpoint title.
   * This is the endpoint description.
   * @authenticated
+  * @deprecated
   * @group Group from method
   */
 DOCBLOCK;
@@ -103,6 +107,7 @@ DOCBLOCK;
         $results = $strategy->getMetadataFromDocBlock(new DocBlock($methodDocblock), new DocBlock($classDocblock));
 
         $this->assertTrue($results['authenticated']);
+        $this->assertTrue($results['deprecated']);
         $this->assertSame('Group from method', $results['groupName']);
         $this->assertSame("", $results['groupDescription']);
         $this->assertSame("This is the endpoint description.", $results['description']);

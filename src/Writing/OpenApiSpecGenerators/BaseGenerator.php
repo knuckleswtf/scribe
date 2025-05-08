@@ -52,6 +52,10 @@ class BaseGenerator extends OpenApiGenerator
             })['name']],
         ];
 
+        if ($endpoint->metadata->deprecated) {
+            $spec['deprecated'] = true;
+        }
+
         if (count($endpoint->bodyParameters)) {
             $spec['requestBody'] = $this->generateEndpointRequestBodySpec($endpoint);
         }
@@ -549,7 +553,7 @@ class BaseGenerator extends OpenApiGenerator
                 $schema['items']['properties'] = collect($sample)->mapWithKeys(function ($v, $k) use ($endpoint, $path) {
                     return [$k => $this->generateSchemaForResponseValue($v, $endpoint, "$path.$k")];
                 })->toArray();
-                
+
                 $required = $this->filterRequiredResponseFields($endpoint, array_keys($schema['items']['properties']),
                     $path);
                 if ($required) {

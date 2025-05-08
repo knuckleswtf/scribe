@@ -37,6 +37,12 @@
                             >requires authentication
                             </div>
                         @endif
+                        @if($endpoint->metadata->deprecated)
+                            <div class="sl-font-prose sl-font-semibold sl-px-1.5 sl-py-0.5 sl-text-on-primary sl-rounded-lg"
+                                 style="background-color: darkgoldenrod"
+                            >deprecated
+                            </div>
+                        @endif
             </div>
         </div>
 
