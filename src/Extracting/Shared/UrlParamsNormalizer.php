@@ -62,7 +62,12 @@ class UrlParamsNormalizer
                 if (!$alreadyFoundResourceParam) {
                     // This is the first resource param (from the end).
                     // We set it to `params/{id}` (or whatever field it's bound to)
-                    $replaceWith = ["$pluralResource/{{$binding}}", "$pluralResource/{{$binding}?}"];
+                    $replaceWith = [
+                        "$pluralResource/{{$binding}}",
+                        "$pluralResource/{{$binding}}",
+                        "$pluralResource/{{$binding}?}",
+                        "$pluralResource/{{$binding}?}",
+                    ];
                     $alreadyFoundResourceParam = true;
                 } else {
                     // Other resource parameters will be `params/{<param>_id}`
