@@ -549,7 +549,7 @@ trait ParsesValidationRules
                     $parameterData['nullable'] = true;
                     break;
                 case 'exists':
-                    $parameterData['description'] .= " The <code>{$ruleArguments[1]}</code> value must exist.";
+                    $parameterData['description'] .= " The <code>{$ruleArguments[1]}</code> of an existing record";
                     break;
                 default:
                     // Other rules not supported
