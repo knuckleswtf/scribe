@@ -129,7 +129,7 @@ class Writer
                 data_set($collection, $key, $value);
             }
         }
-        return json_encode($collection, JSON_PRETTY_PRINT);
+        return json_encode($collection, JSON_PRETTY_PRINT|JSON_INVALID_UTF8_SUBSTITUTE);
     }
 
     /**
