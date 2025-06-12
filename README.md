@@ -16,9 +16,9 @@ Scribe helps you generate API documentation for humans from your Laravel codebas
   - Pretty single-page HTML doc, with human-friendly text, code samples, and in-browser API tester ("Try It Out")
   - Generates Postman collection and OpenAPI spec
 - Smarts. Scribe can:
-  - extract request parameter details from FormRequests or validation rules
-  - safely call API endpoints to get sample responses
-  - generate sample responses from Eloquent API Resources or Transformers
+  - Extract request parameter details from FormRequests or validation rules
+  - Safely call API endpoints to get sample responses
+  - Generate sample responses from Eloquent API Resources or Transformers
 - Customisable to different levels:
   - Customise the UI by adjusting text, ordering, examples, or change the UI itself
   - Add custom strategies to adjust how data is extracted
