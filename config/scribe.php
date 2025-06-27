@@ -60,6 +60,9 @@ return [
         // Whether to automatically create a docs route for you to view your generated docs. You can still set up routing manually.
         'add_routes' => true,
 
+        // Domain to use for the docs endpoint for example: https://docs.yourdomain.com/.
+        'domain' => null,
+
         // URL path to use for the docs endpoint (if `add_routes` is true).
         // By default, `/docs` opens the HTML page, `/docs.postman` opens the Postman collection, and `/docs.openapi` the OpenAPI spec.
         'docs_url' => '/docs',

@@ -4,10 +4,12 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
+$domain = config('scribe.laravel.domain', null);
 $prefix = config('scribe.laravel.docs_url', '/docs');
 $middleware = config('scribe.laravel.middleware', []);
 
-Route::middleware($middleware)
+Route::domain($domain)
+    ->middleware($middleware)
     ->group(function () use ($prefix) {
         Route::view($prefix, 'scribe.index')->name('scribe');
 
