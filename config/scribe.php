@@ -61,7 +61,7 @@ return [
         'add_routes' => true,
 
         // Domain to use for the docs endpoint for example: https://docs.yourdomain.com/.
-        'domain' => null,
+        'domain' => env('SCRIBE_DOCS_DOMAIN', null),
 
         // URL path to use for the docs endpoint (if `add_routes` is true).
         // By default, `/docs` opens the HTML page, `/docs.postman` opens the Postman collection, and `/docs.openapi` the OpenAPI spec.
