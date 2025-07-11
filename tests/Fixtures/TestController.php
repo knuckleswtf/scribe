@@ -646,6 +646,29 @@ class TestController extends Controller
 
         }
     }
+    public function withInlineValidatorMakeValidate(Request $request)
+    {
+        // Some stuff
+        Validator::make($request, [
+            // The id of the user. Example: 9
+            'user_id' => 'int|required',
+            // The id of the room.
+            'room_id' => ['string', 'in:3,5,6'],
+            // Whether to ban the user forever. Example: false
+            'forever' => 'boolean',
+            // Just need something here. No-example
+            'another_one' => 'numeric',
+            'even_more_param' => 'array',
+            'book.name' => 'string',
+            'book.author_id' => 'integer',
+            'book.pages_count' => 'integer',
+            'ids.*' => 'integer',
+            // The first name of the user. Example: John
+            'users.*.first_name' => ['string'],
+            // The last name of the user. Example: Doe
+            'users.*.last_name' => 'string',
+        ])->validate();
+    }
 
     public function withInlineRequestValidateWithBag(Request $request)
     {
