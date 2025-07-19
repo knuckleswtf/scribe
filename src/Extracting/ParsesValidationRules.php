@@ -20,7 +20,7 @@ use Throwable;
 
 trait ParsesValidationRules
 {
-    use ParamHelpers;
+    use ParamHelpers; 
 
     public static \stdClass $MISSING_VALUE;
 
@@ -547,6 +547,26 @@ trait ParsesValidationRules
                     break;
                 case 'nullable':
                     $parameterData['nullable'] = true;
+                    break;
+                case 'unique':
+                    $table = $ruleArguments[0] ?? 'table';
+                    $column = isset($ruleArguments[1])
+                        ? ($ruleArguments[1] === 'NULL' ? 'id' : $ruleArguments[1])
+                        : 'id'; // If the column is not specified, assume it is 'id'.
+
+                    // For cases where an ID is passed to be ignored in an update.
+                    if (count($ruleArguments) >= 3 && !empty($ruleArguments[2]) && $ruleArguments[2] !== 'NULL') {
+                        $except = $ruleArguments[2];
+                        $idColumn = $ruleArguments[3] ?? 'id';
+                        $parameterData['description'] .= " Must be unique in the <code>{$table}</code> table for column <code>{$column}</code> (ignoring record with <code>{$idColumn}</code> = <code>{$except}</code>).";
+                    } else {
+                        $parameterData['description'] .= " Must be unique in the <code>{$table}</code> table for column <code>{$column}</code>.";
+                    }
+
+                    $parameterData['setter'] = fn() => $this->getFaker()->unique()->word();
+                    $parameterData['type'] = 'string';
+
+                    dump($parameterData['setter']);
                     break;
                 case 'exists':
                     $parameterData['description'] .= " The <code>{$ruleArguments[1]}</code> of an existing record in the {$ruleArguments[0]} table.";
