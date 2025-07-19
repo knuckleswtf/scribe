@@ -565,8 +565,6 @@ trait ParsesValidationRules
 
                     $parameterData['setter'] = fn() => $this->getFaker()->unique()->word();
                     $parameterData['type'] = 'string';
-
-                    dump($parameterData['setter']);
                     break;
                 case 'exists':
                     $parameterData['description'] .= " The <code>{$ruleArguments[1]}</code> of an existing record in the {$ruleArguments[0]} table.";
