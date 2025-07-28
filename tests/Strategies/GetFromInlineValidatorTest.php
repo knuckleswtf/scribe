@@ -209,6 +209,19 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
     }
 
     /** @test */
+    public function can_fetch_from_validator_make_validate()
+    {
+        $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
+            $e->method = new \ReflectionMethod(TestController::class, 'withInlineValidatorMakeValidate');
+        });
+
+        $results = $this->fetchViaBodyParams($endpoint);
+
+        $this->assertArraySubset(self::$expected, $results);
+        $this->assertIsArray($results['ids']['example']);
+    }
+
+    /** @test */
     public function respects_query_params_comment()
     {
         $queryParamsEndpoint = $this->endpoint(function (ExtractedEndpointData $e) {
