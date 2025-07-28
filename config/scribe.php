@@ -9,10 +9,18 @@ use function Knuckles\Scribe\Config\{removeStrategies, configureStrategy};
 
 return [
     // The HTML <title> for the generated documentation.
-    'title' => config('app.name').' API Documentation',
+    'title' => config('app.name') . ' API Documentation',
 
     // A short description of your API. Will be included in the docs webpage, Postman collection and OpenAPI spec.
     'description' => '',
+
+    // Text to place in the "Introduction" section, right after the `description`. Markdown and HTML are supported.
+    'intro_text' => <<<INTRO
+        This documentation aims to provide all the information you need to work with our API.
+
+        <aside>As you scroll, you'll see code examples for working with the API in different programming languages in the dark area to the right (or as part of the content on mobile).
+        You can switch the language used with the tabs at the top right (or from the nav menu at the top left on mobile).</aside>
+    INTRO,
 
     // The base URL displayed in the docs.
     // If you're using `laravel` type, you can set this to a dynamic string, like '{{ config("app.tenant_url") }}' to get a dynamic base URL.
@@ -118,14 +126,6 @@ return [
         // Any extra authentication-related info for your users. Markdown and HTML are supported.
         'extra_info' => 'You can retrieve your token by visiting your dashboard and clicking <b>Generate API token</b>.',
     ],
-
-    // Text to place in the "Introduction" section, right after the `description`. Markdown and HTML are supported.
-    'intro_text' => <<<INTRO
-        This documentation aims to provide all the information you need to work with our API.
-
-        <aside>As you scroll, you'll see code examples for working with the API in different programming languages in the dark area to the right (or as part of the content on mobile).
-        You can switch the language used with the tabs at the top right (or from the nav menu at the top left on mobile).</aside>
-    INTRO,
 
     // Example requests for each endpoint will be shown in each of these languages.
     // Supported options are: bash, javascript, php, python
