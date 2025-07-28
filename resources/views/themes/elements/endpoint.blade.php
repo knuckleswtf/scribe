@@ -15,7 +15,7 @@
         </div>
 
         <div class="sl-relative">
-            <div title="{{ rtrim($baseUrl, '/') . '/'. ltrim($endpoint->uri, '/') }}"
+            <div title="{!! rtrim($baseUrl, '/') . '/'. ltrim($endpoint->uri, '/') !!}"
                      class="sl-stack sl-stack--horizontal sl-stack--3 sl-inline-flex sl-flex-row sl-items-center sl-max-w-full sl-font-mono sl-py-2 sl-pr-4 sl-bg-canvas-50 sl-rounded-lg"
                 >
                     @foreach($endpoint->httpMethods as $method)
@@ -27,7 +27,7 @@
                     @endforeach
                     <div class="sl-flex sl-overflow-x-hidden sl-text-lg sl-select-all">
                         <div dir="rtl"
-                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">{{ rtrim($baseUrl, '/') }}</div>
+                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">{!! rtrim($baseUrl, '/') !!}</div>
                         <div class="sl-flex-1 sl-font-semibold">/{{ ltrim($endpoint->uri, '/') }}</div>
                     </div>
 

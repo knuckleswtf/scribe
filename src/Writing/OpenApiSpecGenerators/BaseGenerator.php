@@ -229,41 +229,42 @@ class BaseGenerator extends OpenApiGenerator
         $responses = [];
 
         foreach ($endpoint->responses as $response) {
+            $code = $response->status; // OpenAPI spec requires status codes to be integers
             // OpenAPI groups responses by status code
             // Only one response type per status code, so only the last one will be used
-            if (intval($response->status) === 204) {
+            if ($code === '204') {
                 // Must not add content for 204
-                $responses[204] = [
+                $responses[$code] = [
                     'description' => $this->getResponseDescription($response),
                 ];
-            } elseif (isset($responses[$response->status])) {
+            } elseif (isset($responses[$code])) {
                 // If we already have a response for this status code and content type,
                 // we change to a `oneOf` which includes all the responses
                 $content = $this->generateResponseContentSpec($response->content, $endpoint);
                 $contentType = array_keys($content)[0];
-                if (isset($responses[$response->status]['content'][$contentType])) {
+                if (isset($responses[$code]['content'][$contentType])) {
                     $newResponseExample = array_replace([
                         'description' => $this->getResponseDescription($response),
                     ], $content[$contentType]['schema']);
 
                     // If we've already created the oneOf object, add this response
-                    if (isset($responses[$response->status]['content'][$contentType]['schema']['oneOf'])) {
-                        $responses[$response->status]['content'][$contentType]['schema']['oneOf'][] = $newResponseExample;
+                    if (isset($responses[$code]['content'][$contentType]['schema']['oneOf'])) {
+                        $responses[$code]['content'][$contentType]['schema']['oneOf'][] = $newResponseExample;
                     } else {
                         // Create the oneOf object
                         $existingResponseExample = array_replace([
-                            'description' => $responses[$response->status]['description'],
-                        ], $responses[$response->status]['content'][$contentType]['schema']);
+                            'description' => $responses[$code]['description'],
+                        ], $responses[$code]['content'][$contentType]['schema']);
 
-                        $responses[$response->status]['description'] = '';
-                        $responses[$response->status]['content'][$contentType]['schema'] = [
+                        $responses[$code]['description'] = '';
+                        $responses[$code]['content'][$contentType]['schema'] = [
                             'oneOf' => [$existingResponseExample, $newResponseExample]
                         ];
                     }
                 }
             } else {
                 // Store as the response for this status
-                $responses[$response->status] = [
+                $responses[$code] = [
                     'description' => $this->getResponseDescription($response),
                     'content' => $this->generateResponseContentSpec($response->content, $endpoint),
                 ];
