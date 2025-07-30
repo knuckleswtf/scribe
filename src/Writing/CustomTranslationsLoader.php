@@ -33,7 +33,6 @@ class CustomTranslationsLoader extends FileLoader
             } elseif ($this->files->exists($full = "{$this->hints[$namespace]}/scribe.php")) {
                 $this->scribeTranslationsCache = $this->files->getRequire($full);
                 // getRequire() requires the Scribe file, which will return an array
-                // @phpstan-ignore-next-line nullCoalesce.offset
                 $lines = $this->scribeTranslationsCache[$group] ?? [];
             } else {
                 return [];
