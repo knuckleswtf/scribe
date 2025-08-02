@@ -147,7 +147,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['unique_param' => 'unique:users,email'],
             [],
             [
-                'description' => 'Must be unique in the <code>users</code> table for column <code>email</code>.',
+                'description' => 'Must be unique in the <code>users</code> table.',
                 'type' => 'string',
             ],
         ];
@@ -155,7 +155,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['unique_except_param' => 'unique:users,email,1,id'],
             [],
             [
-                'description' => 'Must be unique in the <code>users</code> table for column <code>email</code> (ignoring record with <code>id</code> = <code>1</code>).',
+                'description' => 'Must be unique in the <code>users</code> table (ignoring current record during updates).',
                 'type' => 'string',
             ],
         ];

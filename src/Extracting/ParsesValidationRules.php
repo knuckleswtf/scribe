@@ -552,16 +552,17 @@ trait ParsesValidationRules
                     $table = $ruleArguments[0] ?? null;
                     $column = $ruleArguments[1] ?? null;
                     
-                    // When column is not specified, we keep the description generic.
-                    if (!$column || $column === 'NULL') {
-                        $parameterData['description'] .= " Must be unique.";
+                    $isUpdate = count($ruleArguments) >= 3 && !empty($ruleArguments[2]) && $ruleArguments[2] !== 'NULL';
+                    $hasTable = $column && $column !== 'NULL';
+
+                    if ($isUpdate) {
+                        $parameterData['description'] .= $hasTable 
+                            ? " Must be unique in the <code>{$table}</code> table (ignoring current record during updates)."
+                            : " Must be unique (ignoring current record during updates).";
                     } else {
-                        $parameterData['description'] .= " Must be unique in the <code>{$table}</code> table.";
-                    }
-                    
-                    // If the user specified a third argument, it means this is an update and we should ignore the current record.
-                    if (count($ruleArguments) >= 3 && !empty($ruleArguments[2]) && $ruleArguments[2] !== 'NULL') {
-                        $parameterData['description'] .= " Must be unique in the <code>{$table}</code> table (ignoring current record during updates).";
+                        $parameterData['description'] .= $hasTable 
+                            ? " Must be unique in the <code>{$table}</code> table."
+                            : " Must be unique.";
                     }
                     
                     $parameterData['setter'] = fn() => $this->getFaker()->unique()->word();
