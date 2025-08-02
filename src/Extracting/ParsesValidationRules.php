@@ -549,20 +549,21 @@ trait ParsesValidationRules
                     $parameterData['nullable'] = true;
                     break;
                 case 'unique':
-                    $table = $ruleArguments[0] ?? 'table';
-                    $column = isset($ruleArguments[1])
-                        ? ($ruleArguments[1] === 'NULL' ? 'id' : $ruleArguments[1])
-                        : 'id'; // If the column is not specified, assume it is 'id'.
-
-                    // For cases where an ID is passed to be ignored in an update.
-                    if (count($ruleArguments) >= 3 && !empty($ruleArguments[2]) && $ruleArguments[2] !== 'NULL') {
-                        $except = $ruleArguments[2];
-                        $idColumn = $ruleArguments[3] ?? 'id';
-                        $parameterData['description'] .= " Must be unique in the <code>{$table}</code> table for column <code>{$column}</code> (ignoring record with <code>{$idColumn}</code> = <code>{$except}</code>).";
+                    $table = $ruleArguments[0] ?? null;
+                    $column = $ruleArguments[1] ?? null;
+                    
+                    // When column is not specified, we keep the description generic.
+                    if (!$column || $column === 'NULL') {
+                        $parameterData['description'] .= " Must be unique.";
                     } else {
-                        $parameterData['description'] .= " Must be unique in the <code>{$table}</code> table for column <code>{$column}</code>.";
+                        $parameterData['description'] .= " Must be unique in the <code>{$table}</code> table.";
                     }
-
+                    
+                    // If the user specified a third argument, it means this is an update and we should ignore the current record.
+                    if (count($ruleArguments) >= 3 && !empty($ruleArguments[2]) && $ruleArguments[2] !== 'NULL') {
+                        $parameterData['description'] .= " Must be unique in the <code>{$table}</code> table (ignoring current record during updates).";
+                    }
+                    
                     $parameterData['setter'] = fn() => $this->getFaker()->unique()->word();
                     $parameterData['type'] = 'string';
                     break;

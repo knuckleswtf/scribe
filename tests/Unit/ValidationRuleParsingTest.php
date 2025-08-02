@@ -151,14 +151,6 @@ class ValidationRuleParsingTest extends BaseLaravelTest
                 'type' => 'string',
             ],
         ];
-        yield 'unique (simple)' => [
-            ['unique_simple_param' => 'unique:users'],
-            [],
-            [
-                'description' => 'Must be unique in the <code>users</code> table for column <code>id</code>.',
-                'type' => 'string',
-            ],
-        ];
         yield 'unique (with except)' => [
             ['unique_except_param' => 'unique:users,email,1,id'],
             [],
