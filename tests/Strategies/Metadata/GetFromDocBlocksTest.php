@@ -83,6 +83,25 @@ DOCBLOCK;
         $this->assertSame('', $results['groupDescription']);
         $this->assertSame('Endpoint title.', $results['title']);
         $this->assertSame("", $results['description']);
+
+        $classDocblock = <<<DOCBLOCK
+/**
+  * @authenticated
+  * @subgroup Scheiße
+  * @subgroupDescription Heilige Scheiße
+  * @deprecated 2025-01-01
+  */
+DOCBLOCK;
+        $results = $strategy->getMetadataFromDocBlock(new DocBlock($methodDocblock), new DocBlock($classDocblock));
+
+        $this->assertTrue($results['authenticated']);
+        $this->assertSame('2025-01-01', $results['deprecated']);
+        $this->assertSame(null, $results['groupName']);
+        $this->assertSame('Scheiße', $results['subgroup']);
+        $this->assertSame('Heilige Scheiße', $results['subgroupDescription']);
+        $this->assertSame('', $results['groupDescription']);
+        $this->assertSame('Endpoint title.', $results['title']);
+        $this->assertSame("", $results['description']);
     }
 
     /** @test */

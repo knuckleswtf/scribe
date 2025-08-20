@@ -8,7 +8,7 @@
 <p>
 @component('scribe::components.badges.auth', ['authenticated' => $endpoint->isAuthed()])
 @endcomponent
-@component('scribe::components.badges.deprecated', ['deprecated' => $endpoint->isDeprecated()])
+@component('scribe::components.badges.deprecated', ['deprecated' => $endpoint->metadata->deprecated])
 @endcomponent
 </p>
 

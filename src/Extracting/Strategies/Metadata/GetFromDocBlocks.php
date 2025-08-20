@@ -54,15 +54,19 @@ class GetFromDocBlocks extends Strategy
             : null;
     }
 
-    protected function getDeprecatedStatusFromDocBlock(DocBlock $methodDocBlock, ?DocBlock $classDocBlock = null): bool
+    protected function getDeprecatedStatusFromDocBlock(DocBlock $methodDocBlock, ?DocBlock $classDocBlock = null): bool|string
     {
         foreach ($methodDocBlock->getTags() as $tag) {
             if (strtolower($tag->getName()) === 'deprecated') {
-                return true;
+                return $tag->getContent() === '' ? true : $tag->getContent();
             }
         }
 
-        return $classDocBlock && $this->getDeprecatedStatusFromDocBlock($classDocBlock);
+        if ($classDocBlock instanceof DocBlock) {
+            return $this->getDeprecatedStatusFromDocBlock($classDocBlock);
+        }
+
+        return false;
     }
 
     /**

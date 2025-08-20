@@ -8,7 +8,7 @@ use Attribute;
 class Deprecated
 {
     public function __construct(
-        public ?bool $deprecated = true,
+        public bool|string|null $deprecated = true,
     )
     {
     }
