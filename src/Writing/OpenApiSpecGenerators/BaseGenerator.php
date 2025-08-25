@@ -359,6 +359,26 @@ class BaseGenerator extends OpenApiGenerator
                 }
 
                 // Non-empty array
+                if (is_object($decoded[0])) {
+                    // If the first item is an object, we assume it's an array of objects'
+                    $properties = collect($decoded[0])->mapWithKeys(function ($value, $key) use ($endpoint) {
+                        return [$key => $this->generateSchemaForResponseValue($value, $endpoint, $key)];
+                    })->toArray();
+
+                    return [
+                        'application/json' => [
+                            'schema' => [
+                                'type' => 'array',
+                                'items' => [
+                                    'type' => $this->convertScribeOrPHPTypeToOpenAPIType(gettype($decoded[0])),
+                                    'properties' => $this->objectIfEmpty($properties),
+                                ],
+                                'example' => $decoded,
+                            ],
+                        ],
+                    ];
+                }
+
                 return [
                     'application/json' => [
                         'schema' => [

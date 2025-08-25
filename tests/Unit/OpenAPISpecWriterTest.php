@@ -617,6 +617,52 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
+    public function adds_responses_correctly_as_array_of_objects()
+    {
+        $endpointData1 = $this->createMockEndpointData([
+            'httpMethods' => ['GET'],
+            'uri' => '/path1',
+            'responses' => [
+                [
+                    'status' => 200,
+                    'description' => 'Successfully.',
+                    'content' => '[{"id": 1, "name": "John"}, {"id": 2, "name": "Jane"}]',
+                ],
+            ],
+        ]);
+        $groups = [$this->createGroup([$endpointData1])];
+
+        $results = $this->generate($groups);
+
+        $this->assertCount(1, $results['paths']['/path1']['get']['responses']);
+        $this->assertArraySubset([
+            '200' => [
+                'description' => 'Successfully.',
+                'content' => [
+                    'application/json' => [
+                        'schema' => [
+                            'type' => 'array',
+                            'items' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'id' => [
+                                        'type' => 'integer',
+                                        'example' => 1,
+                                    ],
+                                    'name' => [
+                                        'type' => 'string',
+                                        'example' => 'John',
+                                    ],
+                                ]
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ], $results['paths']['/path1']['get']['responses']);
+    }
+
+    /** @test */
     public function adds_required_fields_on_array_of_objects()
     {
         $endpointData = $this->createMockEndpointData([
