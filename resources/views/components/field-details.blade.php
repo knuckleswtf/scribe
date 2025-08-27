@@ -4,6 +4,7 @@
 <b style="line-height: 2;"><code>{{ $name }}</code></b>&nbsp;&nbsp;
 @if($type)<small>{{ $type }}</small>@endif&nbsp;
 @if($isInput && !$required)<i>optional</i>@endif &nbsp;
+@if($isInput && $deprecated)<i>deprecated</i>@endif &nbsp;
 @if($isInput && empty($hasChildren))
     @php
         $isList = Str::endsWith($type, '[]');

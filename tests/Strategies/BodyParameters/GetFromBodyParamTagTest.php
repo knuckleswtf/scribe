@@ -32,6 +32,11 @@ class GetFromBodyParamTagTest extends TestCase
             new Tag('bodyParam', 'yet_another_param object required Some object params.'),
             new Tag('bodyParam', 'yet_another_param.name string required'),
             new Tag('bodyParam', 'even_more_param number[] A list of numbers'),
+            new Tag('bodyParam', 'book_id string required deprecated Book ID'),
+            new Tag('bodyParam', 'team_id string deprecated Team ID'),
+            new Tag('bodyParam', 'teams array deprecated Teams Example: ["1", "2"]'),
+            new Tag('bodyParam', 'device object deprecated Device'),
+            new Tag('bodyParam', 'devices array deprecated'),
             new Tag('bodyParam', 'book object Book information'),
             new Tag('bodyParam', 'book.name string'),
             new Tag('bodyParam', 'book.author_id integer'),
@@ -49,6 +54,7 @@ class GetFromBodyParamTagTest extends TestCase
                 'required' => true,
                 'description' => 'The id of the user.',
                 'example' => 9,
+                'deprecated' => false,
             ],
             'room_id' => [
                 'type' => 'string',
@@ -80,6 +86,37 @@ class GetFromBodyParamTagTest extends TestCase
                 'type' => 'number[]',
                 'description' => 'A list of numbers',
                 'required' => false,
+            ],
+            'book_id' => [
+                'type' => 'string',
+                'description' => 'Book ID',
+                'required' => true,
+                'deprecated' => true,
+            ],
+            'team_id' => [
+                'type' => 'string',
+                'description' => 'Team ID',
+                'required' => false,
+                'deprecated' => true,
+            ],
+            'device' => [
+                'type' => 'object',
+                'description' => 'Device',
+                'required' => false,
+                'deprecated' => true,
+            ],
+            'devices' => [
+                'type' => 'string[]',
+                'description' => '',
+                'required' => false,
+                'deprecated' => true,
+            ],
+            'teams' => [
+                'type' => 'string[]',
+                'description' => 'Teams',
+                'required' => false,
+                'deprecated' => true,
+                'example' => ['1', '2']
             ],
             'book' => [
                 'type' => 'object',

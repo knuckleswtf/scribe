@@ -12,28 +12,34 @@ class GetFromQueryParamTag extends GetFieldsFromTagStrategy
     public function parseTag(string $tagContent): array
     {
         // Format:
-        // @queryParam <name> <type (optional)> <"required" (optional)> <description>
+        // @queryParam <name> <type (optional)> <"required" (optional)> <"deprecated" (optional)> <description>
         // Examples:
         // @queryParam text required The text.
         // @queryParam user_id integer The ID of the user.
-        preg_match('/(.+?)\s+([a-zA-Z\[\]]+\s+)?(required\s+)?([\s\S]*)/', $tagContent, $content);
+        // @queryParam sort string deprecated Use `order` parameter instead.
+        preg_match('/(.+?)\s+([a-zA-Z\[\]]+\s+)?(required\s+)?(deprecated\s+)?([\s\S]*)/', $tagContent, $content);
 
         if (empty($content)) {
             // This means only name was supplied
             $name = $tagContent;
             $required = false;
+            $deprecated = false;
             $description = '';
             $type = 'string';
         } else {
-            [$_, $name, $type, $required, $description] = $content;
+            [$_, $name, $type, $required, $deprecated, $description] = $content;
 
             $description = trim(str_replace(['No-example.', 'No-example'], '', $description));
             if ($description === 'required') {
                 // No description was supplied
                 $required = true;
                 $description = '';
+            } elseif ($description === 'deprecated') {
+                $deprecated = true;
+                $description = '';
             } else {
                 $required = trim($required) === 'required';
+                $deprecated = trim($deprecated) === 'deprecated';
             }
 
             $type = trim($type);
@@ -42,6 +48,10 @@ class GetFromQueryParamTag extends GetFieldsFromTagStrategy
                     // Type wasn't supplied
                     $type = 'string';
                     $required = true;
+                } elseif ($type === 'deprecated') {
+                    // Type wasn't supplied but deprecated was
+                    $type = 'string';
+                    $deprecated = true;
                 } else {
                     $type = static::normalizeTypeName($type);
                     // Type in annotation is optional
@@ -66,6 +76,6 @@ class GetFromQueryParamTag extends GetFieldsFromTagStrategy
         [$description, $example, $enumValues, $exampleWasSpecified] =
             $this->getDescriptionAndExample($description, $type, $tagContent, $name);
 
-        return compact('name', 'description', 'required', 'example', 'type', 'enumValues', 'exampleWasSpecified');
+        return compact('name', 'description', 'required', 'deprecated', 'example', 'type', 'enumValues', 'exampleWasSpecified');
     }
 }
