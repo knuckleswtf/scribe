@@ -140,8 +140,72 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $this->assertIsArray($results['paths']);
         $this->assertCount(2, $results['paths']);
         $this->assertArrayHasKey('deprecated', $results['paths']['/path1']['get']);
-        $this->assertTrue(true, $results['paths']['/path1']['get']['deprecated']);
+        $this->assertTrue($results['paths']['/path1']['get']['deprecated']);
         $this->assertArrayNotHasKey('deprecated', $results['paths']['/path2']['get']);
+    }
+
+    /** @test */
+    public function adds_deprecated_params_info_correctly()
+    {
+        $endpointData1 = $this->createMockEndpointData([
+            'uri' => 'path1',
+            'httpMethods' => ['GET'],
+            'queryParameters' => [
+                'param' => [
+                    'description' => 'A query param',
+                    'required' => false,
+                    'example' => 'hahoho',
+                    'type' => 'string',
+                    'name' => 'param',
+                    'nullable' => false,
+                    'deprecated' => true,
+                ],
+            ],
+        ]);
+        $endpointData2 = $this->createMockEndpointData([
+            'uri' => 'path2',
+            'httpMethods' => ['POST'],
+            'bodyParameters' => [
+                'param' => [
+                    'description' => 'A body param',
+                    'required' => false,
+                    'example' => 'hahoho',
+                    'type' => 'string',
+                    'name' => 'param',
+                    'nullable' => false,
+                    'deprecated' => true,
+                ],
+                'array_param' => [
+                    'description' => 'A body array_param',
+                    'required' => false,
+                    'type' => 'array',
+                    'name' => 'array_param',
+                    'nullable' => false,
+                    'deprecated' => true,
+                ],
+                'object_param' => [
+                    'description' => 'A body object_param',
+                    'required' => false,
+                    'type' => 'object',
+                    'name' => 'object_param',
+                    'nullable' => false,
+                    'deprecated' => true,
+                ],
+            ],
+        ]);
+        $groups = [$this->createGroup([$endpointData1, $endpointData2])];
+
+        $results = $this->generate($groups);
+
+        $this->assertIsArray($results['paths']);
+        $this->assertCount(2, $results['paths']);
+        $this->assertTrue($results['paths']['/path1']['get']['parameters'][0]['deprecated']);
+
+        $properties = $results['paths']['/path2']['post']['requestBody']['content']['application/json']['schema']['properties'];
+        $this->assertCount(3, $properties);
+        $this->assertTrue($properties['param']['deprecated']);
+        $this->assertTrue($properties['array_param']['deprecated']);
+        $this->assertTrue($properties['object_param']['deprecated']);
     }
 
     /** @test */
