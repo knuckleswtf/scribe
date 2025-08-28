@@ -242,10 +242,13 @@
                                                         Headers
                                                     </small>
                                                 </summary>
-                                                <pre><code class="language-http">@foreach($response->headers as $header => $value)
-                                                            {{ $header }}
-                                                            : {{ is_array($value) ? implode('; ', $value) : $value }}
-                                                        @endforeach </code></pre>
+                                                @php
+                                                    $headerLines = [];
+                                                    foreach($response->headers as $header => $value) {
+                                                        $headerLines[] = $header . ': ' . (is_array($value) ? implode('; ', $value) : $value);
+                                                    }
+                                                @endphp
+                                                <pre><code class="language-http">{{ implode("\n", $headerLines) }}</code></pre>
                                             </details>
                                         @endif
                                         @if(is_string($response->content) && Str::startsWith($response->content, "<<binary>>"))
