@@ -5,6 +5,7 @@ namespace Knuckles\Scribe\Tests\Strategies\QueryParameters;
 use Closure;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Attributes\Authenticated;
+use Knuckles\Scribe\Attributes\Deprecated;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
 use Knuckles\Scribe\Attributes\Subgroup;
@@ -125,6 +126,24 @@ class UseMetadataAttributesTest extends TestCase
         $this->assertArraySubset([
             "title" => "Endpoint C"
         ], $results);
+
+        $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
+            $e->controller = new ReflectionClass(MetadataAttributesTestController4::class);
+            $e->method = $e->controller->getMethod('c1');
+        });
+        $results = $this->fetch($endpoint);
+        $this->assertArraySubset([
+            "deprecated" => true,
+        ], $results);
+
+        $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
+            $e->controller = new ReflectionClass(MetadataAttributesTestController5::class);
+            $e->method = $e->controller->getMethod('c1');
+        });
+        $results = $this->fetch($endpoint);
+        $this->assertArraySubset([
+            "deprecated" => true,
+        ], $results);
     }
 
     protected function fetch($endpoint): array
@@ -201,6 +220,22 @@ class MetadataAttributesTestController2
 #[Endpoint("Endpoint C")]
 class MetadataAttributesTestController3
 {
+    public function c1()
+    {
+    }
+}
+
+#[Deprecated]
+class MetadataAttributesTestController4
+{
+    public function c1()
+    {
+    }
+}
+
+class MetadataAttributesTestController5
+{
+    #[Deprecated]
     public function c1()
     {
     }

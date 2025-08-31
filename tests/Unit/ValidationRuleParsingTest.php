@@ -73,7 +73,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
     public function can_parse_rule_objects()
     {
         $results = $this->strategy->parse([
-            'in_param' => ['numeric', Rule::in([3,5,6])]
+            'in_param' => ['numeric', Rule::in([3, 5, 6])]
         ]);
         $this->assertEquals(
             [3, 5, 6],
@@ -246,9 +246,9 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['in_param' => 'in:3,5,6'],
             ['in_param' => ['description' => $description]],
             [
-                'description' => $description.".",
+                'description' => $description . ".",
                 'type' => 'string',
-                'enumValues' => [3,5,6]
+                'enumValues' => [3, 5, 6]
             ],
         ];
         yield 'not_in' => [
@@ -402,6 +402,11 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             [],
             ['description' => "Must be a file. Must not be greater than 6 kilobytes."],
         ];
+        yield 'max (untyped)' => [
+            ['max_param' => 'max:6'],
+            [],
+            ['description' => "Must not be greater than 6 characters."],
+        ];
         yield 'min (number)' => [
             ['min_param' => 'numeric|min:6'],
             [],
@@ -539,7 +544,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         $this->assertEquals(true, $results['param1']['required']);
         $this->assertEquals('This is a dummy test rule.', $results['param1']['description']);
         $this->assertEquals('This rule is invokable.', $results['param2']['description']);
-       if (isset($results['param3'])) $this->assertEquals('This is a custom rule.', $results['param3']['description']);
+        if (isset($results['param3'])) $this->assertEquals('This is a custom rule.', $results['param3']['description']);
     }
 
     /** @test */
@@ -558,7 +563,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         );
         $this->assertTrue(in_array(
             $results['enum']['example'],
-            array_map(fn ($case) => $case->value, Fixtures\TestStringBackedEnum::cases())
+            array_map(fn($case) => $case->value, Fixtures\TestStringBackedEnum::cases())
         ));
 
 
@@ -577,7 +582,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         );
         $this->assertTrue(in_array(
             $results['enum']['example'],
-            array_map(fn ($case) => $case->value, Fixtures\TestIntegerBackedEnum::cases())
+            array_map(fn($case) => $case->value, Fixtures\TestIntegerBackedEnum::cases())
         ));
 
         $results = $this->strategy->parse([
@@ -597,7 +602,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         );
         $this->assertTrue(in_array(
             $results['enum']['example'],
-            array_map(fn ($case) => $case->value, Fixtures\TestStringBackedEnum::cases())
+            array_map(fn($case) => $case->value, Fixtures\TestStringBackedEnum::cases())
         ));
     }
 
@@ -628,7 +633,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_valid_parse_nullable_rules()
+    public function can_parse_nullable_rules()
     {
         $ruleset = [
             'nullable_param' => 'nullable|string',
@@ -636,7 +641,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
 
         $results = $this->strategy->parse($ruleset);
 
-        $this->assertEquals(true, $results['nullable_param']['nullable']);
+        $this->assertTrue($results['nullable_param']['nullable']);
 
         $ruleset = [
             'nullable_param' => 'string',
@@ -644,7 +649,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
 
         $results = $this->strategy->parse($ruleset);
 
-        $this->assertEquals(false, $results['nullable_param']['nullable']);
+        $this->assertFalse($results['nullable_param']['nullable']);
 
         $ruleset = [
             'required_param' => 'required|nullable|string',
@@ -652,7 +657,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
 
         $results = $this->strategy->parse($ruleset);
 
-        $this->assertEquals(false, $results['required_param']['nullable']);
+        $this->assertFalse($results['required_param']['nullable']);
 
 
         $ruleset = [
@@ -662,8 +667,8 @@ class ValidationRuleParsingTest extends BaseLaravelTest
 
         $results = $this->strategy->parse($ruleset);
 
-        $this->assertEquals(false, $results['array_param']['nullable']);
-        $this->assertEquals(true, $results['array_param[].field']['nullable']);
+        $this->assertFalse($results['array_param']['nullable']);
+        $this->assertTrue($results['array_param[].field']['nullable']);
 
         $ruleset = [
             'object' => 'array',
@@ -673,9 +678,25 @@ class ValidationRuleParsingTest extends BaseLaravelTest
 
         $results = $this->strategy->parse($ruleset);
 
-        $this->assertEquals(false, $results['object']['nullable']);
-        $this->assertEquals(false, $results['object.field1']['nullable']);
-        $this->assertEquals(true, $results['object.field2']['nullable']);
+        $this->assertFalse($results['object']['nullable']);
+        $this->assertFalse($results['object.field1']['nullable']);
+        $this->assertTrue($results['object.field2']['nullable']);
+    }
+
+    /** @test */
+    public function can_parse_rules_which_reference_other_fields()
+    {
+        $ruleset = [
+            'to_time' => 'date|max:6',
+            'from_time' => [
+                'date',
+                'before:to_time',
+            ],
+        ];
+
+        $results = $this->strategy->parse($ruleset);
+
+        $this->assertEquals("Must be a valid date. Must be a date before <code>to_time</code>.", $results['from_time']['description']);
     }
 }
 

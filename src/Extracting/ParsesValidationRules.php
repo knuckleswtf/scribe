@@ -34,7 +34,7 @@ trait ParsesValidationRules
         foreach ($validationRulesByParameters as $parameter => $ruleset) {
             $userSpecifiedParameterInfo = $customParameterData[$parameter] ?? [];
             $stringRules = array_filter($ruleset, fn($rule) => is_string($rule));
-            $rulesWhichRefineAType = ['before', 'after', 'before_or_equal', 'after_or_equal'];
+            $rulesAndArguments = array_map(fn($rule) => $this->parseStringRuleIntoRuleAndArguments($rule), $stringRules);
 
             try {
                 $this->warnAboutMissingCustomParameterData($parameter, $customParameterData);
@@ -85,14 +85,14 @@ trait ParsesValidationRules
                     "nullable",
                 ];
 
-                $firstPassRules = array_filter($stringRules, fn($rule) => Str::is($firstPassRuleNames, $rule));
-                foreach ($firstPassRules as $rule) {
-                    $this->processRule($rule, $parameterData);
+                $firstPassRules = array_filter($rulesAndArguments, fn($ruleAndArgs) => Str::is($firstPassRuleNames, $ruleAndArgs[0]));
+                foreach ($firstPassRules as $ruleAndArgs) {
+                    $this->processRule($ruleAndArgs[0], $ruleAndArgs[1], $parameterData, $validationRulesByParameters);
                 }
 
-                $secondPassRules = array_filter($stringRules, fn($rule) => !Str::is($firstPassRuleNames, $rule) && !in_array($rule, $rulesWhichDependOnType));
-                foreach ($secondPassRules as $rule) {
-                    $this->processRule($rule, $parameterData);
+                $secondPassRules = array_filter($rulesAndArguments, fn($ruleAndArgs) => !Str::is($firstPassRuleNames, $ruleAndArgs[0]) && !in_array($ruleAndArgs[0], $rulesWhichDependOnType));
+                foreach ($secondPassRules as $ruleAndArgs) {
+                    $this->processRule($ruleAndArgs[0], $ruleAndArgs[1], $parameterData, $validationRulesByParameters);
                 }
 
                 // The second pass should have set a type. If not, set a default type
@@ -105,9 +105,9 @@ trait ParsesValidationRules
                 }
 
                 // Now parse any "dependent" rules and set examples. At this point, we should know all field's types.
-                $thirdPassRules = array_filter($stringRules, fn($rule) => in_array($rule, $rulesWhichDependOnType));
-                foreach ($thirdPassRules as $rule) {
-                    $this->processRule($rule, $parameterData);
+                $thirdPassRules = array_filter($rulesAndArguments, fn($ruleAndArgs) => in_array($ruleAndArgs[0], $rulesWhichDependOnType));
+                foreach ($thirdPassRules as $ruleAndArgs) {
+                    $this->processRule($ruleAndArgs[0], $ruleAndArgs[1], $parameterData, $validationRulesByParameters);
                 }
 
                 // Make sure the user-specified example overwrites ours.
@@ -266,13 +266,13 @@ trait ParsesValidationRules
 
     /**
      * Parse a validation rule and extract a parameter type, description and setter (used to generate an example).
+     * @param array $allParameters All parameters, used to check if an argument in the date rules (eg `before:some_date`)
+     *   is a parameter in the request body.
      */
-    protected function processRule($rule, array &$parameterData, array $allParameters = []): bool
+    protected function processRule($rule, $ruleArguments, array &$parameterData, array $allParameters = []): bool
     {
         // Reminder: Always append to the description (with a leading space); don't overwrite.
         try {
-            [$rule, $ruleArguments] = $this->parseStringRuleIntoRuleAndArguments($rule);
-
             switch ($rule) {
                 case 'required':
                     $parameterData['required'] = true;
@@ -402,7 +402,7 @@ trait ParsesValidationRules
                     $parameterData['description'] .= ' ' . $this->getDescription($rule, [':date' => "<code>{$ruleArguments[0]}</code>"]);
                     // TODO introduce the concept of "modifiers", like date_format
                     // The startDate may refer to another field, in which case, we just ignore it for now.
-                    $startDate = isset($allParameters[$ruleArguments[0]]) ? 'today' : $ruleArguments[0];
+                    $startDate =  array_key_exists($ruleArguments[0], $allParameters) ? 'today' : $ruleArguments[0];
                     $parameterData['setter'] = fn() => $this->getFaker()->dateTimeBetween($startDate, '+100 years')->format('Y-m-d');
                     break;
                 case 'before':
@@ -410,7 +410,7 @@ trait ParsesValidationRules
                     $parameterData['type'] = 'string';
                     // The argument can be either another field or a date
                     // The endDate may refer to another field, in which case, we just ignore it for now.
-                    $endDate = isset($allParameters[$ruleArguments[0]]) ? 'today' : $ruleArguments[0];
+                    $endDate = array_key_exists($ruleArguments[0], $allParameters) ? 'today' : $ruleArguments[0];
                     $parameterData['description'] .= ' ' . $this->getDescription($rule, [':date' => "<code>{$ruleArguments[0]}</code>"]);
                     $parameterData['setter'] = fn() => $this->getFaker()->dateTimeBetween('-30 years', $endDate)->format('Y-m-d');
                     break;

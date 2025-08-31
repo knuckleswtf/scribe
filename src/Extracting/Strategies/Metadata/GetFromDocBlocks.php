@@ -29,6 +29,7 @@ class GetFromDocBlocks extends Strategy
             'subgroupDescription' => $this->getEndpointSubGroupDescription($methodDocBlock, $classDocBlock),
             'title' => $title ?: $methodDocBlock->getShortDescription(),
             'description' => $methodDocBlock->getLongDescription()->getContents(),
+            'deprecated' => $this->getDeprecatedStatusFromDocBlock($methodDocBlock, $classDocBlock),
         ];
         if (!is_null($authStatus = $this->getAuthStatusFromDocBlock($methodDocBlock, $classDocBlock))) {
             $metadata['authenticated'] = $authStatus;
@@ -51,6 +52,17 @@ class GetFromDocBlocks extends Strategy
         return $classDocBlock
             ? $this->getAuthStatusFromDocBlock($classDocBlock)
             : null;
+    }
+
+    protected function getDeprecatedStatusFromDocBlock(DocBlock $methodDocBlock, ?DocBlock $classDocBlock = null): bool
+    {
+        foreach ($methodDocBlock->getTags() as $tag) {
+            if (strtolower($tag->getName()) === 'deprecated') {
+                return true;
+            }
+        }
+
+        return $classDocBlock && $this->getDeprecatedStatusFromDocBlock($classDocBlock);
     }
 
     /**

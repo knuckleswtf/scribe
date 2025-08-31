@@ -141,6 +141,22 @@ class GetFromLaravelAPITest extends BaseLaravelTest
         $property->setValue($this->app, $oldNamespace);
     }
 
+    /** @test */
+    public function can_infer_correct_uri_from_route_with_optional_parameter_and_named_resource_routename()
+    {
+        $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
+            $e->method = new \ReflectionMethod(TestController::class, 'dummy');
+            $e->route = app(Router::class)
+                ->addRoute(['GET'], "/users/{user?}/show", ['uses' => [TestController::class, 'dummy']])
+                ->name('users.show')
+            ;
+            $e->uri = UrlParamsNormalizer::normalizeParameterNamesInRouteUri($e->route, $e->method);
+
+        });
+
+        $this->assertEquals('users/{id?}/show', $endpoint->uri);
+    }
+
     protected function endpointForRoute($path, $controller, $method): ExtractedEndpointData
     {
         return $this->endpoint(function (ExtractedEndpointData $e) use ($path, $method, $controller) {

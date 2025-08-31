@@ -1037,6 +1037,10 @@ html {
     background-color: green;
 }
 
+.badge.badge-darkgoldenrod {
+    background-color: darkgoldenrod;
+}
+
 .badge.badge-darkgreen {
     background-color: darkgreen;
 }

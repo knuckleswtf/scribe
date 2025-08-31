@@ -32,6 +32,7 @@ class CustomTranslationsLoader extends FileLoader
                 $lines = $this->scribeTranslationsCache[$group] ?? [];
             } elseif ($this->files->exists($full = "{$this->hints[$namespace]}/scribe.php")) {
                 $this->scribeTranslationsCache = $this->files->getRequire($full);
+                // getRequire() requires the Scribe file, which will return an array
                 $lines = $this->scribeTranslationsCache[$group] ?? [];
             } else {
                 return [];

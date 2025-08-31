@@ -4,6 +4,7 @@ namespace Knuckles\Scribe\Extracting\Strategies\Metadata;
 
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Attributes\Authenticated;
+use Knuckles\Scribe\Attributes\Deprecated;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
 use Knuckles\Scribe\Attributes\Subgroup;
@@ -24,6 +25,7 @@ class GetFromMetadataAttributes extends PhpAttributeStrategy
         Endpoint::class,
         Authenticated::class,
         Unauthenticated::class,
+        Deprecated::class,
     ];
 
     protected function extractFromAttributes(
