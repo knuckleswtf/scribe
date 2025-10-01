@@ -617,6 +617,227 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
+    public function adds_response_content_type_correctly()
+    {
+        $endpointData1 = $this->createMockEndpointData([
+            'httpMethods' => ['GET'],
+            'uri' => '/path1',
+            'responses' => [
+                [
+                    'status' => 404,
+                    'description' => 'No Found',
+                    'content' => '{"this": "shouldn\'t be ignored"}',
+                    'headers' => [
+                        'Content-Type' => 'application/problem+json',
+                    ]
+                ],
+            ]
+        ]);
+        $endpointData2 = $this->createMockEndpointData([
+            'httpMethods' => ['GET'],
+            'uri' => '/path2',
+            'responses' => [
+                [
+                    'status' => 404,
+                    'description' => 'No Found',
+                    'content' => '{"this": "shouldn\'t be ignored"}',
+                    'headers' => [
+                        'content-type' => 'application/problem+json',
+                    ]
+                ],
+            ]
+        ]);
+        $endpointData3 = $this->createMockEndpointData([
+            'httpMethods' => ['GET'],
+            'uri' => '/path3',
+            'responses' => [
+                [
+                    'status' => 404,
+                    'description' => 'No Found',
+                    'content' => '{"this": "shouldn\'t be ignored"}',
+                ],
+            ]
+        ]);
+
+        $groups = [$this->createGroup([$endpointData1, $endpointData2, $endpointData3])];
+        $results = $this->generate($groups);
+
+        $this->assertCount(1, $results['paths']['/path1']['get']['responses']);
+        $this->assertArraySubset([
+            '404' => [
+                'description' => 'No Found',
+                'content' => [
+                    'application/problem+json' => [
+                        'schema' => [
+                            'type' => 'object',
+                            'properties' => [
+                                'this' => [
+                                    'example' => "shouldn't be ignored",
+                                    'type' => 'string',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ], $results['paths']['/path1']['get']['responses']);
+
+        $this->assertCount(1, $results['paths']['/path2']['get']['responses']);
+        $this->assertArraySubset([
+            '404' => [
+                'description' => 'No Found',
+                'content' => [
+                    'application/problem+json' => [
+                        'schema' => [
+                            'type' => 'object',
+                            'properties' => [
+                                'this' => [
+                                    'example' => "shouldn't be ignored",
+                                    'type' => 'string',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ], $results['paths']['/path2']['get']['responses']);
+
+        $this->assertCount(1, $results['paths']['/path3']['get']['responses']);
+        $this->assertArraySubset([
+            '404' => [
+                'description' => 'No Found',
+                'content' => [
+                    'application/json' => [
+                        'schema' => [
+                            'type' => 'object',
+                            'properties' => [
+                                'this' => [
+                                    'example' => "shouldn't be ignored",
+                                    'type' => 'string',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ], $results['paths']['/path3']['get']['responses']);
+    }
+
+    /** @test */
+    public function handles_custom_content_type_with_various_response_body_types()
+    {
+        $customJsonType = 'application/vnd.api+json';
+
+        $endpointWithArray = $this->createMockEndpointData([
+            'httpMethods' => ['GET'],
+            'uri' => '/array-response',
+            'responses' => [[
+                'status' => 200,
+                'content' => '["foo", "bar"]',
+                'headers' => ['Content-Type' => $customJsonType],
+            ]],
+        ]);
+
+        $endpointWithString = $this->createMockEndpointData([
+            'httpMethods' => ['GET'],
+            'uri' => '/string-response',
+            'responses' => [[
+                'status' => 200,
+                'content' => '"a simple string"',
+                'headers' => ['Content-Type' => $customJsonType],
+            ]],
+        ]);
+
+        $endpointWithInteger = $this->createMockEndpointData([
+            'httpMethods' => ['GET'],
+            'uri' => '/integer-response',
+            'responses' => [[
+                'status' => 200,
+                'content' => '123',
+                'headers' => ['Content-Type' => $customJsonType],
+            ]],
+        ]);
+
+
+        $groups = [$this->createGroup([$endpointWithArray, $endpointWithString, $endpointWithInteger])];
+        $results = $this->generate($groups);
+
+        $arrayResponseSpec = $results['paths']['/array-response']['get']['responses']['200'];
+        $this->assertArrayHasKey($customJsonType, $arrayResponseSpec['content']);
+        $this->assertEquals('array', $arrayResponseSpec['content'][$customJsonType]['schema']['type']);
+        $this->assertEquals(['foo', 'bar'], $arrayResponseSpec['content'][$customJsonType]['schema']['example']);
+
+        $stringResponseSpec = $results['paths']['/string-response']['get']['responses']['200'];
+        $this->assertArrayHasKey($customJsonType, $stringResponseSpec['content']);
+        $this->assertEquals('string', $stringResponseSpec['content'][$customJsonType]['schema']['type']);
+        $this->assertEquals('a simple string', $stringResponseSpec['content'][$customJsonType]['schema']['example']);
+
+        $integerResponseSpec = $results['paths']['/integer-response']['get']['responses']['200'];
+        $this->assertArrayHasKey($customJsonType, $integerResponseSpec['content']);
+        $this->assertEquals('integer', $integerResponseSpec['content'][$customJsonType]['schema']['type']);
+        $this->assertEquals(123, $integerResponseSpec['content'][$customJsonType]['schema']['example']);
+    }
+
+    /** @test */
+    public function handles_non_json_response_content_as_text_plain()
+    {
+        $endpoint = $this->createMockEndpointData([
+            'httpMethods' => ['GET'],
+            'uri' => '/text-response',
+            'responses' => [[
+                'status' => 200,
+                'content' => 'This is a simple text response.',
+            ]],
+        ]);
+
+        $groups = [$this->createGroup([$endpoint])];
+        $results = $this->generate($groups);
+
+        $responseSpec = $results['paths']['/text-response']['get']['responses']['200'];
+        $this->assertArrayHasKey('text/plain', $responseSpec['content']);
+        $this->assertEquals('string', $responseSpec['content']['text/plain']['schema']['type']);
+        $this->assertEquals('This is a simple text response.', $responseSpec['content']['text/plain']['schema']['example']);
+    }
+
+    /** @test */
+    public function handles_null_and_empty_array_response_content()
+    {
+        $endpointWithNullContent = $this->createMockEndpointData([
+            'uri' => '/null-response',
+            'httpMethods' => ['GET'],
+            'responses' => [[
+                'status' => 200,
+                'content' => null,
+            ]],
+        ]);
+
+        $endpointWithEmptyArray = $this->createMockEndpointData([
+            'uri' => '/empty-array-response',
+            'httpMethods' => ['GET'],
+            'responses' => [[
+                'status' => 200,
+                'content' => '[]',
+            ]],
+        ]);
+
+        $groups = [$this->createGroup([$endpointWithNullContent, $endpointWithEmptyArray])];
+        $results = $this->generate($groups);
+
+        $nullResponseSpec = $results['paths']['/null-response']['get']['responses']['200'];
+        $this->assertArrayHasKey('application/json', $nullResponseSpec['content']);
+        $schemaForNull = $nullResponseSpec['content']['application/json']['schema'];
+        $this->assertEquals('object', $schemaForNull['type']);
+        $this->assertTrue($schemaForNull['nullable']);
+
+        $emptyArrayResponseSpec = $results['paths']['/empty-array-response']['get']['responses']['200'];
+        $this->assertArrayHasKey('application/json', $emptyArrayResponseSpec['content']);
+        $schemaForEmptyArray = $emptyArrayResponseSpec['content']['application/json']['schema'];
+        $this->assertEquals('array', $schemaForEmptyArray['type']);
+        $this->assertEquals(['type' => 'object'], $schemaForEmptyArray['items']); // Scribe defaults items to 'object' for empty arrays
+        $this->assertEquals([], $schemaForEmptyArray['example']);
+    }
+
+    /** @test */
     public function adds_required_fields_on_array_of_objects()
     {
         $endpointData = $this->createMockEndpointData([
