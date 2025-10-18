@@ -79,8 +79,10 @@ trait ParsesValidationRules
 
                 // First pass: process rules which provide no type or example info
                 $firstPassRuleNames = [
+                    "sometimes",
                     "required",
                     "required_*",
+                    "accepted",
                     "same",
                     "different",
                     "nullable",
