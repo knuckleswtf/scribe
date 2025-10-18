@@ -31,7 +31,7 @@ class SecurityGenerator extends OpenApiGenerator
             default => [],
         };
 
-        return array_merge($root, [
+        return array_merge_recursive($root, [
             // All security schemes must be registered in `components.securitySchemes`...
             'components' => [
                 'securitySchemes' => [

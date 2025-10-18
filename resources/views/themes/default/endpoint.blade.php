@@ -8,6 +8,8 @@
 <p>
 @component('scribe::components.badges.auth', ['authenticated' => $endpoint->isAuthed()])
 @endcomponent
+@component('scribe::components.badges.deprecated', ['deprecated' => $endpoint->isDeprecated()])
+@endcomponent
 </p>
 
 {!! Parsedown::instance()->text($endpoint->metadata->description ?: '') !!}
