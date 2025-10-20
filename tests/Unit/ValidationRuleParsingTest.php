@@ -440,7 +440,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         yield 'regex' => [
             ['regex_param' => 'regex:/\d/'],
             [],
-            ['description' => 'Must match the regex /\d/.'],
+            ['description' => 'Must match the regex <code>/\d/</code>.'],
         ];
         yield 'accepted' => [
             ['accepted_param' => 'accepted'],

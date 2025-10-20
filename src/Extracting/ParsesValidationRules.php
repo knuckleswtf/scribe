@@ -809,7 +809,7 @@ trait ParsesValidationRules
     protected function getDescription(string $rule, array $arguments = [], $baseType = 'string'): string
     {
         if ($rule == 'regex') {
-            return "Must match the regex {$arguments[':regex']}.";
+            return "Must match the regex <code>{$arguments[':regex']}</code>.";
         }
 
         $translationString = "validation.{$rule}";
