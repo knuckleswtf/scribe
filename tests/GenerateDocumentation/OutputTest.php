@@ -450,6 +450,7 @@ class OutputTest extends BaseLaravelTest
             'custom' => [],
             'exampleWasSpecified' => false,
             'nullable' => false,
+            'deprecated' => false,
         ];
         $group['endpoints'][0]['urlParameters']['a_param'] = $extraParam;
         file_put_contents($firstGroupFilePath, Yaml::dump(

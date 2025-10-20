@@ -87,6 +87,37 @@ class GetFromQueryParamAttributeTest extends TestCase
                 'description' => 'Something',
                 'example' => null
             ],
+            'book_id' => [
+                'type' => 'string',
+                'description' => 'Book ID',
+                'required' => true,
+                'deprecated' => true,
+            ],
+            'team_id' => [
+                'type' => 'string',
+                'description' => 'Team ID',
+                'required' => true,
+                'deprecated' => true,
+            ],
+            'device' => [
+                'type' => 'object',
+                'description' => 'Device',
+                'required' => false,
+                'deprecated' => true,
+            ],
+            'devices' => [
+                'type' => 'string[]',
+                'description' => '',
+                'required' => true,
+                'deprecated' => true,
+            ],
+            'teams' => [
+                'type' => 'string[]',
+                'description' => 'Teams',
+                'required' => true,
+                'deprecated' => true,
+                'example' => ['1', '2']
+            ],
         ], $results);
     }
 
@@ -116,6 +147,11 @@ class QueryParamAttributeTestController
     #[QueryParam("with_type", "number", example: 13.0, required: false)]
     #[QueryParam("with_list_type", type: "int[]", required: false)]
     #[QueryParam("fields", "string[]", "The fields.", required: false, example: ["age", "name"])]
+    #[QueryParam("book_id", "string", "Book ID", required: true, deprecated: true)]
+    #[QueryParam("team_id", "string", "Team ID", required: true, deprecated: true)]
+    #[QueryParam("teams", "string[]", "Teams", example: ["1", "2"], deprecated: true)]
+    #[QueryParam("device", "object", "Device", required: false, deprecated: true)]
+    #[QueryParam("devices", "string[]", deprecated: true)]
     #[QueryParam("filters", "object", "The filters. ", required: false)]
     #[QueryParam("filters.class", "double", required: false, example: 11.0, description: "Class.")]
     #[QueryParam("filters.other", "string", description: "Other things.")]

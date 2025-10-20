@@ -4,10 +4,9 @@ namespace Knuckles\Camel;
 
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Collection;
-use Spatie\DataTransferObject\DataTransferObjectCollection;
 
 /**
- * @template T of \Spatie\DataTransferObject\DataTransferObject
+ * @template T of \Knuckles\Camel\BaseDTO
  */
 class BaseDTOCollection extends Collection
 {

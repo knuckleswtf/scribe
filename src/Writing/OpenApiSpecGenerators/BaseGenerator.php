@@ -138,6 +138,9 @@ class BaseGenerator extends OpenApiGenerator
                     'required' => $details->required,
                     'schema' => $this->generateFieldData($details),
                 ];
+                if ($details->deprecated) {
+                    $parameterData['deprecated'] = true;
+                }
                 $parameters[] = $parameterData;
             }
         }
@@ -196,6 +199,9 @@ class BaseGenerator extends OpenApiGenerator
                 }
 
                 $fieldData = $this->generateFieldData($details);
+                if ($details['deprecated']) {
+                    $fieldData['deprecated'] = true;
+                }
 
                 $schema['properties'][$name] = $fieldData;
             }

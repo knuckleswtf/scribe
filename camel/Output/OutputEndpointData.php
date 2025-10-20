@@ -313,11 +313,6 @@ class OutputEndpointData extends BaseDTO
         return $this->metadata->authenticated;
     }
 
-    public function isDeprecated(): bool
-    {
-        return $this->metadata->deprecated;
-    }
-
     public function hasJsonBody(): bool
     {
         if ($this->hasFiles() || empty($this->nestedBodyParameters))
