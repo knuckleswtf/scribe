@@ -15,6 +15,7 @@ class Parameter extends BaseDTO
     public array $enumValues = [];
     public bool $exampleWasSpecified = false;
     public bool $nullable = false;
+    public bool $deprecated = false;
 
     public function __construct(array $parameters = [])
     {

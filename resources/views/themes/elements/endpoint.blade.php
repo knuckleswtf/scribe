@@ -15,7 +15,7 @@
         </div>
 
         <div class="sl-relative">
-            <div title="{{ rtrim($baseUrl, '/') . '/'. ltrim($endpoint->uri, '/') }}"
+            <div title="{!! rtrim($baseUrl, '/') . '/'. ltrim($endpoint->uri, '/') !!}"
                      class="sl-stack sl-stack--horizontal sl-stack--3 sl-inline-flex sl-flex-row sl-items-center sl-max-w-full sl-font-mono sl-py-2 sl-pr-4 sl-bg-canvas-50 sl-rounded-lg"
                 >
                     @foreach($endpoint->httpMethods as $method)
@@ -27,7 +27,7 @@
                     @endforeach
                     <div class="sl-flex sl-overflow-x-hidden sl-text-lg sl-select-all">
                         <div dir="rtl"
-                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">{{ rtrim($baseUrl, '/') }}</div>
+                             class="sl-overflow-x-hidden sl-truncate sl-text-muted">{!! rtrim($baseUrl, '/') !!}</div>
                         <div class="sl-flex-1 sl-font-semibold">/{{ ltrim($endpoint->uri, '/') }}</div>
                     </div>
 
@@ -37,10 +37,16 @@
                             >requires authentication
                             </div>
                         @endif
-                        @if($endpoint->metadata->deprecated)
+                        @if($endpoint->metadata->deprecated === true)
                             <div class="sl-font-prose sl-font-semibold sl-px-1.5 sl-py-0.5 sl-text-on-primary sl-rounded-lg"
                                  style="background-color: darkgoldenrod"
                             >deprecated
+                            </div>
+                        @endif
+                        @if(is_string($endpoint->metadata->deprecated))
+                            <div class="sl-font-prose sl-font-semibold sl-px-1.5 sl-py-0.5 sl-text-on-primary sl-rounded-lg"
+                                 style="background-color: darkgoldenrod"
+                            >deprecated:{{$endpoint->metadata->deprecated}}
                             </div>
                         @endif
             </div>
@@ -63,6 +69,7 @@
                                       'name' => $header,
                                       'type' => null,
                                       'required' => false,
+                                      'deprecated' => false,
                                       'description' => null,
                                       'example' => $value,
                                       'endpointId' => $endpoint->endpointId(),
@@ -85,6 +92,7 @@
                                       'name' => $parameter->name,
                                       'type' => $parameter->type ?? 'string',
                                       'required' => $parameter->required,
+                                      'deprecated' => $parameter->deprecated,
                                       'description' => $parameter->description,
                                       'example' => $parameter->example ?? '',
                                       'enumValues' => $parameter->enumValues,
@@ -109,6 +117,7 @@
                                           'name' => $parameter->name,
                                           'type' => $parameter->type,
                                           'required' => $parameter->required,
+                                          'deprecated' => $parameter->deprecated,
                                           'description' => $parameter->description,
                                           'example' => $parameter->example ?? '',
                                           'enumValues' => $parameter->enumValues,
