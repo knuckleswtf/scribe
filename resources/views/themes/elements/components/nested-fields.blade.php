@@ -13,6 +13,7 @@
           'name' => $name,
           'type' => $field['type'] ?? 'string',
           'required' => $field['required'] ?? false,
+          'deprecated' => $field['deprecated'] ?? false,
           'description' => $field['description'] ?? '',
           'example' => $field['example'] ?? '',
           'enumValues' => $field['enumValues'] ?? null,

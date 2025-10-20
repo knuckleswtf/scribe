@@ -144,6 +144,15 @@ class UseMetadataAttributesTest extends TestCase
         $this->assertArraySubset([
             "deprecated" => true,
         ], $results);
+
+        $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
+            $e->controller = new ReflectionClass(MetadataAttributesTestController6::class);
+            $e->method = $e->controller->getMethod('c1');
+        });
+        $results = $this->fetch($endpoint);
+        $this->assertArraySubset([
+            "deprecated" => "2023-01-01",
+        ], $results);
     }
 
     protected function fetch($endpoint): array
@@ -236,6 +245,14 @@ class MetadataAttributesTestController4
 class MetadataAttributesTestController5
 {
     #[Deprecated]
+    public function c1()
+    {
+    }
+}
+
+#[Deprecated("2023-01-01")]
+class MetadataAttributesTestController6
+{
     public function c1()
     {
     }

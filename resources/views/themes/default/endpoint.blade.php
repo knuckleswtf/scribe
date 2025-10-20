@@ -8,7 +8,7 @@
 <p>
 @component('scribe::components.badges.auth', ['authenticated' => $endpoint->isAuthed()])
 @endcomponent
-@component('scribe::components.badges.deprecated', ['deprecated' => $endpoint->isDeprecated()])
+@component('scribe::components.badges.deprecated', ['deprecated' => $endpoint->metadata->deprecated])
 @endcomponent
 </p>
 
@@ -113,6 +113,7 @@
                   'name' => $name,
                   'type' => null,
                   'required' => true,
+                  'deprecated' => false,
                   'description' => null,
                   'example' => $example,
                   'endpointId' => $endpoint->endpointId(),
@@ -132,6 +133,7 @@
                   'name' => $parameter->name,
                   'type' => $parameter->type ?? 'string',
                   'required' => $parameter->required,
+                  'deprecated' => $parameter->deprecated,
                   'description' => $parameter->description,
                   'example' => $parameter->example ?? '',
                   'enumValues' => $parameter->enumValues,
@@ -157,6 +159,7 @@
                   'name' => $parameter->name,
                   'type' => $parameter->type,
                   'required' => $parameter->required,
+                  'deprecated' => $parameter->deprecated,
                   'description' => $parameter->description,
                   'example' => $parameter->example ?? '',
                   'enumValues' => $parameter->enumValues,
