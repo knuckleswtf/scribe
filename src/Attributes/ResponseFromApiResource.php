@@ -44,7 +44,6 @@ class ResponseFromApiResource
             return $this->collection;
         }
 
-        $className = $this->name;
-        return (new $className(new \Illuminate\Http\Resources\MissingValue)) instanceof ResourceCollection;
+        return is_subclass_of($this->name, ResourceCollection::class);
     }
 }

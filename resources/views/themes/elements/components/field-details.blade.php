@@ -25,10 +25,17 @@
                         <span class="sl-truncate sl-text-muted">{{ $type }}</span>
                     @endif
                 </div>
-                @if($required)
-                    <div class="sl-flex-1 sl-h-px sl-mx-3"></div>
-                    <span class="sl-ml-2 sl-text-warning">required</span>
-                @endif
+                    @if($required || $deprecated)
+                        <div class="sl-flex-1 sl-h-px sl-mx-3"></div>
+                        <div class="sl-flex sl-items-center">
+                            @if($required)
+                                <span class="sl-ml-2 sl-text-warning">required</span>
+                            @endif
+                            @if($deprecated)
+                                <span class="sl-ml-2 sl-text-warning">deprecated</span>
+                            @endif
+                        </div>
+                    @endif
             @endunless
         </div>
         @if($description)

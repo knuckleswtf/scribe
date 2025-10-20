@@ -47,6 +47,7 @@ trait ParsesValidationRules
                 $parameterData = [
                     'name' => $parameter,
                     'required' => false,
+                    'sometimes' => false,
                     'type' => null,
                     'example' => self::$MISSING_VALUE,
                     'description' => $description,
@@ -78,8 +79,10 @@ trait ParsesValidationRules
 
                 // First pass: process rules which provide no type or example info
                 $firstPassRuleNames = [
+                    "sometimes",
                     "required",
                     "required_*",
+                    "accepted",
                     "same",
                     "different",
                     "nullable",
@@ -274,11 +277,18 @@ trait ParsesValidationRules
         // Reminder: Always append to the description (with a leading space); don't overwrite.
         try {
             switch ($rule) {
+                case 'sometimes':
+                    $parameterData['sometimes'] = true;
+                    break;
                 case 'required':
-                    $parameterData['required'] = true;
+                    if (!$parameterData['sometimes']) {
+                        $parameterData['required'] = true;
+                    }
                     break;
                 case 'accepted':
-                    $parameterData['required'] = true;
+                    if (!$parameterData['sometimes']) {
+                        $parameterData['required'] = true;
+                    }
                     $parameterData['type'] = 'boolean';
                     $parameterData['description'] .= ' Must be accepted.';
                     $parameterData['setter'] = fn() => true;

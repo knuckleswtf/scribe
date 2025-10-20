@@ -138,6 +138,9 @@ class BaseGenerator extends OpenApiGenerator
                     'required' => $details->required,
                     'schema' => $this->generateFieldData($details),
                 ];
+                if ($details->deprecated) {
+                    $parameterData['deprecated'] = true;
+                }
                 $parameters[] = $parameterData;
             }
         }
@@ -196,6 +199,9 @@ class BaseGenerator extends OpenApiGenerator
                 }
 
                 $fieldData = $this->generateFieldData($details);
+                if ($details['deprecated']) {
+                    $fieldData['deprecated'] = true;
+                }
 
                 $schema['properties'][$name] = $fieldData;
             }
@@ -362,6 +368,26 @@ class BaseGenerator extends OpenApiGenerator
                 }
 
                 // Non-empty array
+                if (is_object($decoded[0])) {
+                    // If the first item is an object, we assume it's an array of objects'
+                    $properties = collect($decoded[0])->mapWithKeys(function ($value, $key) use ($endpoint) {
+                        return [$key => $this->generateSchemaForResponseValue($value, $endpoint, $key)];
+                    })->toArray();
+
+                    return [
+                        'application/json' => [
+                            'schema' => [
+                                'type' => 'array',
+                                'items' => [
+                                    'type' => $this->convertScribeOrPHPTypeToOpenAPIType(gettype($decoded[0])),
+                                    'properties' => $this->objectIfEmpty($properties),
+                                ],
+                                'example' => $decoded,
+                            ],
+                        ],
+                    ];
+                }
+
                 return [
                     $contentType => [
                         'schema' => [

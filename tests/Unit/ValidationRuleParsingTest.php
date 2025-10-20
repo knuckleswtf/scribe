@@ -698,6 +698,85 @@ class ValidationRuleParsingTest extends BaseLaravelTest
 
         $this->assertEquals("Must be a valid date. Must be a date before <code>to_time</code>.", $results['from_time']['description']);
     }
+
+    /** @test */
+    public function sometimes_rule_prevents_required_from_required_rule()
+    {
+        $ruleset = [
+            'optional_field' => 'sometimes|required',
+        ];
+
+        $results = $this->strategy->parse($ruleset);
+
+        $this->assertFalse($results['optional_field']['required'], 'Field with "sometimes|required" should not be required');
+        $this->assertTrue($results['optional_field']['sometimes'], 'Field should have "sometimes" flag set');
+    }
+
+    /** @test */
+    public function sometimes_rule_prevents_required_from_accepted_rule()
+    {
+        $ruleset = [
+            'consent_cgu' => 'sometimes|accepted',
+        ];
+
+        $results = $this->strategy->parse($ruleset);
+
+        $this->assertTrue($results['consent_cgu']['sometimes'], 'Field should have "sometimes" flag set');
+        $this->assertFalse($results['consent_cgu']['required'], 'Field with "sometimes|accepted" should not be required');
+    }
+
+    /** @test */
+    public function required_before_sometimes_remains_required()
+    {
+        $ruleset = [
+            'should_be_required' => 'required|sometimes',
+        ];
+
+        $results = $this->strategy->parse($ruleset);
+
+        $this->assertTrue($results['should_be_required']['required'], 'Field with "required|sometimes" should remain required');
+        $this->assertTrue($results['should_be_required']['sometimes'], 'Field should have "sometimes" flag set');
+    }
+
+    /** @test */
+    public function accepted_before_sometimes_remains_required()
+    {
+        $ruleset = [
+            'should_be_required' => 'accepted|sometimes',
+        ];
+
+        $results = $this->strategy->parse($ruleset);
+
+        $this->assertTrue($results['should_be_required']['required'], 'Field with "accepted|sometimes" should remain required');
+        $this->assertTrue($results['should_be_required']['sometimes'], 'Field should have "sometimes" flag set');
+    }
+
+    /** @test */
+    public function sometimes_with_other_validation_rules()
+    {
+        $ruleset = [
+            'sometimes_email' => 'sometimes|email',
+            'sometimes_numeric' => 'sometimes|numeric|min:5',
+            'sometimes_array' => 'sometimes|array',
+        ];
+
+        $results = $this->strategy->parse($ruleset);
+
+        // All should not be required
+        $this->assertFalse($results['sometimes_email']['required']);
+        $this->assertFalse($results['sometimes_numeric']['required']);
+        $this->assertFalse($results['sometimes_array']['required']);
+
+        // All should have sometimes flag
+        $this->assertTrue($results['sometimes_email']['sometimes']);
+        $this->assertTrue($results['sometimes_numeric']['sometimes']);
+        $this->assertTrue($results['sometimes_array']['sometimes']);
+
+        // Types should be set correctly
+        $this->assertEquals('string', $results['sometimes_email']['type']);
+        $this->assertEquals('number', $results['sometimes_numeric']['type']);
+        $this->assertEquals('object', $results['sometimes_array']['type']);
+    }
 }
 
 class DummyValidationRule implements \Illuminate\Contracts\Validation\Rule
