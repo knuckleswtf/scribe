@@ -9,10 +9,6 @@ class Parameter extends \Knuckles\Camel\Extraction\Parameter
 
     public function toArray(): array
     {
-        if (empty($this->exceptKeys)) {
-            return $this->except('__fields')->toArray();
-        }
-
-        return parent::toArray();
+        return $this->except('__fields');
     }
 }

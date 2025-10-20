@@ -71,6 +71,37 @@ class GetFromBodyParamAttributeTest extends TestCase
                 'required' => false,
                 'nullable' => false,
             ],
+            'book_id' => [
+                'type' => 'string',
+                'description' => 'Book ID',
+                'required' => true,
+                'deprecated' => true,
+            ],
+            'team_id' => [
+                'type' => 'string',
+                'description' => 'Team ID',
+                'required' => true,
+                'deprecated' => true,
+            ],
+            'device' => [
+                'type' => 'object',
+                'description' => 'Device',
+                'required' => false,
+                'deprecated' => true,
+            ],
+            'devices' => [
+                'type' => 'string[]',
+                'description' => '',
+                'required' => true,
+                'deprecated' => true,
+            ],
+            'teams' => [
+                'type' => 'string[]',
+                'description' => 'Teams',
+                'required' => true,
+                'deprecated' => true,
+                'example' => ['1', '2']
+            ],
             'book' => [
                 'type' => 'object',
                 'description' => 'Book information',
@@ -248,6 +279,11 @@ class BodyParamAttributeTestController
     #[BodyParam("yet_another_param.name", "string")]
     #[BodyParam("even_more_param", "number[]", "A list of numbers", required: false)]
     #[BodyParam("book", "object", "Book information", required: false)]
+    #[BodyParam("book_id", "string", "Book ID", required: true, deprecated: true)]
+    #[BodyParam("team_id", "string", "Team ID", required: true, deprecated: true)]
+    #[BodyParam("teams", "string[]", "Teams", example: ["1", "2"], deprecated: true)]
+    #[BodyParam("device", "object", "Device", required: false, deprecated: true)]
+    #[BodyParam("devices", "string[]", deprecated: true)]
     #[BodyParam("book.name", type: "string")]
     #[BodyParam("book.author_id", type: "integer")]
     #[BodyParam("book.pages_count", type: "integer")]
