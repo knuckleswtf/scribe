@@ -442,6 +442,11 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             [],
             ['description' => 'Must match the regex <code>/\d/</code>.'],
         ];
+        yield 'regex with pipe and special chars' => [
+            ['document' => 'regex:/^\d{11}|\d{14}$/'],
+            [],
+            ['description' => 'Must match the regex <code>/^\d{11}|\d{14}$/</code>.'],
+        ];
         yield 'accepted' => [
             ['accepted_param' => 'accepted'],
             [],
