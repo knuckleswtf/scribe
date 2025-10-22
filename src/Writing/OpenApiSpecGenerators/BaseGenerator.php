@@ -375,7 +375,7 @@ class BaseGenerator extends OpenApiGenerator
                     })->toArray();
 
                     return [
-                        'application/json' => [
+                        $contentType => [
                             'schema' => [
                                 'type' => 'array',
                                 'items' => [
