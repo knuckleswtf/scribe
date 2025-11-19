@@ -44,6 +44,14 @@ class OpenAPISpecWriter
     }
 
     /**
+     * Get the OpenAPI spec version to use from config, defaulting to 3.0.3
+     */
+    public function getSpecVersion(): string
+    {
+        return $this->config->get('openapi.version', self::SPEC_VERSION);
+    }
+
+    /**
      * See https://swagger.io/specification/
      *
      * @param array<int, array{description: string, name: string, endpoints: OutputEndpointData[]}> $groupedEndpoints
