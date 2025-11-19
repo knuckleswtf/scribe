@@ -9,6 +9,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Modified
 
 ### Added
+- Add support for OpenAPI v3.1 specification ([#issue_number](https://github.com/knuckleswtf/scribe/pull/pr_number))
+  - Added `openapi.version` configuration option to choose between OpenAPI 3.0.3 (default) and 3.1.0
+  - OpenAPI 3.1 uses JSON Schema Draft 2020-12 compatible nullable syntax: `type: ["string", "null"]`
+  - OpenAPI 3.0 continues to use `nullable: true` property
+  - Fully backward compatible - defaults to 3.0.3 if not configured
 
 ### Removed
 
