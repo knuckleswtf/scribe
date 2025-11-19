@@ -44,7 +44,10 @@ class OpenAPISpecWriter
     }
 
     /**
-     * Get the OpenAPI spec version to use from config, defaulting to 3.0.3
+     * Get the OpenAPI spec version to use from config, defaulting to 3.0.3.
+     * Supported versions: '3.0.3', '3.1.0'
+     *
+     * @return string The OpenAPI version
      */
     public function getSpecVersion(): string
     {
