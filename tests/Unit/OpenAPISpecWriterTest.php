@@ -1501,6 +1501,121 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         return OutputEndpointData::create($data);
     }
 
+    /** @test */
+    public function uses_openapi_31_when_configured()
+    {
+        $config = array_merge($this->config, [
+            'openapi' => ['version' => '3.1.0'],
+        ]);
+        $endpointData = $this->createMockEndpointData();
+        $groups = [$this->createGroup([$endpointData])];
+
+        $writer = new OpenAPISpecWriter(new DocumentationConfig($config));
+        $results = $writer->generateSpecContent($groups);
+
+        $this->assertEquals('3.1.0', $results['openapi']);
+    }
+
+    /** @test */
+    public function uses_json_schema_nullable_syntax_in_openapi_31()
+    {
+        $config = array_merge($this->config, [
+            'openapi' => ['version' => '3.1.0'],
+        ]);
+        
+        $endpointWithNullableParam = $this->createMockEndpointData([
+            'uri' => '/test',
+            'httpMethods' => ['POST'],
+            'bodyParameters' => [
+                'nullable_field' => [
+                    'name' => 'nullable_field',
+                    'type' => 'string',
+                    'required' => false,
+                    'description' => 'A nullable field',
+                    'example' => 'test',
+                    'nullable' => true,
+                ],
+            ],
+        ]);
+
+        $groups = [$this->createGroup([$endpointWithNullableParam])];
+        $writer = new OpenAPISpecWriter(new DocumentationConfig($config));
+        $results = $writer->generateSpecContent($groups);
+
+        $requestBodySchema = $results['paths']['/test']['post']['requestBody']['content']['application/json']['schema'];
+        $nullableFieldSchema = $requestBodySchema['properties']['nullable_field'];
+        
+        // In OpenAPI 3.1, nullable fields use JSON Schema's type array syntax
+        $this->assertIsArray($nullableFieldSchema['type']);
+        $this->assertContains('string', $nullableFieldSchema['type']);
+        $this->assertContains('null', $nullableFieldSchema['type']);
+        $this->assertArrayNotHasKey('nullable', $nullableFieldSchema);
+    }
+
+    /** @test */
+    public function uses_nullable_property_in_openapi_30()
+    {
+        $config = array_merge($this->config, [
+            'openapi' => ['version' => '3.0.3'],
+        ]);
+        
+        $endpointWithNullableParam = $this->createMockEndpointData([
+            'uri' => '/test',
+            'httpMethods' => ['POST'],
+            'bodyParameters' => [
+                'nullable_field' => [
+                    'name' => 'nullable_field',
+                    'type' => 'string',
+                    'required' => false,
+                    'description' => 'A nullable field',
+                    'example' => 'test',
+                    'nullable' => true,
+                ],
+            ],
+        ]);
+
+        $groups = [$this->createGroup([$endpointWithNullableParam])];
+        $writer = new OpenAPISpecWriter(new DocumentationConfig($config));
+        $results = $writer->generateSpecContent($groups);
+
+        $requestBodySchema = $results['paths']['/test']['post']['requestBody']['content']['application/json']['schema'];
+        $nullableFieldSchema = $requestBodySchema['properties']['nullable_field'];
+        
+        // In OpenAPI 3.0, nullable fields use the nullable property
+        $this->assertEquals('string', $nullableFieldSchema['type']);
+        $this->assertTrue($nullableFieldSchema['nullable']);
+    }
+
+    /** @test */
+    public function handles_null_response_content_in_openapi_31()
+    {
+        $config = array_merge($this->config, [
+            'openapi' => ['version' => '3.1.0'],
+        ]);
+        
+        $endpointWithNullContent = $this->createMockEndpointData([
+            'uri' => '/null-response',
+            'httpMethods' => ['GET'],
+            'responses' => [[
+                'status' => 200,
+                'content' => null,
+            ]],
+        ]);
+
+        $groups = [$this->createGroup([$endpointWithNullContent])];
+        $writer = new OpenAPISpecWriter(new DocumentationConfig($config));
+        $results = $writer->generateSpecContent($groups);
+
+        $nullResponseSpec = $results['paths']['/null-response']['get']['responses']['200'];
+        $schemaForNull = $nullResponseSpec['content']['application/json']['schema'];
+        
+        // In OpenAPI 3.1, null responses use JSON Schema's type array syntax
+        $this->assertIsArray($schemaForNull['type']);
+        $this->assertContains('object', $schemaForNull['type']);
+        $this->assertContains('null', $schemaForNull['type']);
+        $this->assertArrayNotHasKey('nullable', $schemaForNull);
+    }
+
     protected function createGroup(array $endpoints)
     {
         $faker = Factory::create();
