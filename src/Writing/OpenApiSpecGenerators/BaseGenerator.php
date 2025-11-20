@@ -557,6 +557,7 @@ class BaseGenerator extends OpenApiGenerator
                 $schema['required'] = $required;
             }
             $this->setDescription($schema, $endpoint, $path);
+            $this->setNullable($schema, $endpoint, $path, $value);
 
             return $schema;
         }
@@ -566,9 +567,10 @@ class BaseGenerator extends OpenApiGenerator
             'example' => $value,
         ];
         $this->setDescription($schema, $endpoint, $path);
+        $this->setNullable($schema, $endpoint, $path, $value);
 
         // Set enum values for the property if they exist
-        if (isset($endpoint->responseFields[$path]->enumValues)) {
+        if (! empty($endpoint->responseFields[$path]->enumValues)) {
             $schema['enum'] = $endpoint->responseFields[$path]->enumValues;
         }
 
@@ -617,8 +619,30 @@ class BaseGenerator extends OpenApiGenerator
      */
     private function setDescription(array &$schema, OutputEndpointData $endpoint, string $path): void
     {
-        if (isset($endpoint->responseFields[$path]->description)) {
+        if (! empty($endpoint->responseFields[$path]->description)) {
             $schema['description'] = $endpoint->responseFields[$path]->description;
+        }
+    }
+
+    /*
+     * Set the nullable for the schema. If the field is nullable, it is set in the schema.
+     */
+    private function setNullable(array &$schema, OutputEndpointData $endpoint, string $path, mixed $value): void
+    {
+        $field = $endpoint->responseFields[$path] ?? null;
+    
+        // prefer explicite values
+        if ($field && isset($field->nullable)) {
+            if ($field->nullable) {
+                $schema['nullable'] = true;
+            }
+            // false => do not set and do not use example
+            return;
+        }
+    
+        // example is null
+        if ($value === null) {
+            $schema['nullable'] = true;
         }
     }
 
