@@ -76,8 +76,7 @@
         "process-timeout": 600,
         "allow-plugins": {
             "pestphp/pest-plugin": true
-        },
-        "use-github-api": false
+        }
     },
     "replace": {
         "mpociot/laravel-apidoc-generator": "*"
