@@ -631,15 +631,6 @@ class BaseGenerator extends OpenApiGenerator
     }
 
     /**
-     * Check if we're using OpenAPI 3.1 or later
-     */
-    protected function isOpenApi31OrLater(): bool
-    {
-        $version = $this->config->get('openapi.version', OpenAPISpecWriter::SPEC_VERSION);
-        return version_compare($version, '3.1.0', '>=');
-    }
-
-    /**
      * Handle nullable fields based on OpenAPI version.
      * In OpenAPI 3.0, use 'nullable: true'.
      * In OpenAPI 3.1, use JSON Schema's type array syntax: 'type: ["string", "null"]'.
@@ -650,18 +641,6 @@ class BaseGenerator extends OpenApiGenerator
             return;
         }
 
-        if ($this->isOpenApi31OrLater()) {
-            // OpenAPI 3.1 uses JSON Schema's type array syntax
-            if (isset($schema['type'])) {
-                $currentType = $schema['type'];
-                // Don't modify if already an array
-                if (!is_array($currentType)) {
-                    $schema['type'] = [$currentType, 'null'];
-                }
-            }
-        } else {
-            // OpenAPI 3.0 uses nullable property
-            $schema['nullable'] = true;
-        }
+        $schema['nullable'] = true;
     }
 }

@@ -205,6 +205,7 @@ class OutputTest extends BaseLaravelTest
 
         $this->setConfig([
             'openapi.enabled' => true,
+            'openapi.version' => '3.1.0',
             'openapi.overrides' => [
                 'info.version' => '3.9.9',
             ],
@@ -222,7 +223,7 @@ class OutputTest extends BaseLaravelTest
         ]);
 
         $generatedSpec = Yaml::parseFile($this->openapiOutputPath());
-        $fixtureSpec = Yaml::parseFile(__DIR__ . '/../Fixtures/openapi.yaml');
+        $fixtureSpec = Yaml::parseFile(__DIR__ . '/../Fixtures/openapi-3_1.yaml');
         $this->assertEquals($fixtureSpec, $generatedSpec);
     }
 
