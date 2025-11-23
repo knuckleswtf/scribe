@@ -52,7 +52,7 @@ class Base31Generator extends BaseGenerator
     /**
      * Override parent's generateResponseContentSpec to convert 'example' to 'examples' for OpenAPI 3.1.
      */
-    protected function generateResponseContentSpec(?string $responseContent, \Knuckles\Camel\Output\OutputEndpointData $endpoint)
+    protected function generateResponseContentSpec(?string $responseContent, \Knuckles\Camel\Output\OutputEndpointData $endpoint): array
     {
         $contentSpec = parent::generateResponseContentSpec($responseContent, $endpoint);
         
