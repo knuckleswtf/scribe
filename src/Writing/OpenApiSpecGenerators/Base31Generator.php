@@ -72,8 +72,13 @@ class Base31Generator extends BaseGenerator
      */
     protected function convertExampleToExamples(array &$schema): void
     {
-        if (isset($schema['example']) && !isset($schema['examples'])) {
-            $schema['examples'] = [$schema['example']];
+        // Only convert if 'example' exists and 'examples' doesn't already exist
+        // If both exist, prioritize 'examples' and remove 'example' to avoid conflicts
+        if (isset($schema['example'])) {
+            if (!isset($schema['examples'])) {
+                $schema['examples'] = [$schema['example']];
+            }
+            // Remove 'example' to ensure only 'examples' is present in OpenAPI 3.1
             unset($schema['example']);
         }
 
