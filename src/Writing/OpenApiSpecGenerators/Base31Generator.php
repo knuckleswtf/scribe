@@ -50,6 +50,23 @@ class Base31Generator extends BaseGenerator
     }
 
     /**
+     * Override parent's generateResponseContentSpec to convert 'example' to 'examples' for OpenAPI 3.1.
+     */
+    protected function generateResponseContentSpec(?string $responseContent, \Knuckles\Camel\Output\OutputEndpointData $endpoint)
+    {
+        $contentSpec = parent::generateResponseContentSpec($responseContent, $endpoint);
+        
+        // Convert example to examples in all schemas within the content spec
+        foreach ($contentSpec as $contentType => &$content) {
+            if (isset($content['schema'])) {
+                $this->convertExampleToExamples($content['schema']);
+            }
+        }
+        
+        return $contentSpec;
+    }
+
+    /**
      * Convert 'example' to 'examples' for OpenAPI 3.1 compatibility.
      * OpenAPI 3.1 uses JSON Schema, which prefers 'examples' (plural, as an array).
      */
