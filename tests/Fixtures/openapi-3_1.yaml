@@ -298,7 +298,7 @@ paths:
                                     contacts:
                                         type: array
                                         description: 'Contact info'
-                                        examples:
+                                        example:
                                             - []
                                         items:
                                             type: object

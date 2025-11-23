@@ -157,7 +157,6 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                     'example' => 'hahoho',
                     'type' => 'string',
                     'name' => 'param',
-                    'nullable' => false,
                     'deprecated' => true,
                 ],
             ],
@@ -172,7 +171,6 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                     'example' => 'hahoho',
                     'type' => 'string',
                     'name' => 'param',
-                    'nullable' => false,
                     'deprecated' => true,
                 ],
                 'array_param' => [
@@ -180,7 +178,6 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                     'required' => false,
                     'type' => 'array',
                     'name' => 'array_param',
-                    'nullable' => false,
                     'deprecated' => true,
                 ],
                 'object_param' => [
@@ -188,7 +185,6 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                     'required' => false,
                     'type' => 'object',
                     'name' => 'object_param',
-                    'nullable' => false,
                     'deprecated' => true,
                 ],
             ],
@@ -292,7 +288,6 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                     'example' => 'hahoho',
                     'type' => 'string',
                     'name' => 'param',
-                    'nullable' => false
                 ],
             ],
         ]);
@@ -313,8 +308,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
             'schema' => [
                 'type' => 'string',
                 'description' => 'A query param',
-                'example' => 'hahoho',
-                'nullable' => false
+                'example' => 'hahoho'
             ],
         ], $results['paths']['/path1']['get']['parameters'][0]);
     }
@@ -332,7 +326,6 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                     'required' => false,
                     'example' => 'hahoho',
                     'type' => 'string',
-                    'nullable' => false,
                 ],
                 'integerParam' => [
                     'name' => 'integerParam',
@@ -340,7 +333,6 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                     'required' => true,
                     'example' => 99,
                     'type' => 'integer',
-                    'nullable' => false,
                 ],
                 'booleanParam' => [
                     'name' => 'booleanParam',
@@ -348,7 +340,6 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                     'required' => true,
                     'example' => false,
                     'type' => 'boolean',
-                    'nullable' => false,
                 ],
                 'objectParam' => [
                     'name' => 'objectParam',
@@ -356,7 +347,6 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                     'required' => false,
                     'example' => [],
                     'type' => 'object',
-                    'nullable' => false,
                 ],
                 'objectParam.field' => [
                     'name' => 'objectParam.field',
@@ -364,7 +354,6 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                     'required' => false,
                     'example' => 119.0,
                     'type' => 'number',
-                    'nullable' => false,
                 ],
             ],
         ]);
@@ -427,31 +416,26 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                                 'description' => 'String param',
                                 'example' => 'hahoho',
                                 'type' => 'string',
-                                'nullable' => false,
                             ],
                             'booleanParam' => [
                                 'description' => 'Boolean param',
                                 'example' => false,
                                 'type' => 'boolean',
-                                'nullable' => false,
                             ],
                             'integerParam' => [
                                 'description' => 'Integer param',
                                 'example' => 99,
                                 'type' => 'integer',
-                                'nullable' => false,
                             ],
                             'objectParam' => [
                                 'description' => 'Object param',
                                 'example' => [],
                                 'type' => 'object',
-                                'nullable' => false,
                                 'properties' => [
                                     'field' => [
                                         'description' => 'Object param field',
                                         'example' => 119.0,
                                         'type' => 'number',
-                                        'nullable' => false,
                                     ],
                                 ],
                             ],
@@ -475,7 +459,6 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                                 'description' => 'File param',
                                 'type' => 'string',
                                 'format' => 'binary',
-                                'nullable' => false,
                             ],
                             'numberArrayParam' => [
                                 'description' => 'Number array param',
@@ -505,7 +488,6 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                                             'type' => 'string',
                                             'description' => '',
                                             'example' => "hi",
-                                            'nullable' => false,
                                         ],
                                     ],
                                 ],
@@ -1354,7 +1336,6 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                     'required' => true,
                     'example' => 'abc',
                     'type' => 'string',
-                    'nullable' => false,
                 ],
                 'other_field.nested_field' => [
                     'name' => 'nested_field',
@@ -1362,7 +1343,6 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                     'required' => true,
                     'example' => 'abc',
                     'type' => 'string',
-                    'nullable' => false,
                 ],
             ],
         ]);
