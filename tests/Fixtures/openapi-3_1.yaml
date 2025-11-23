@@ -1,0 +1,310 @@
+openapi: 3.1.0
+info:
+    title: Laravel API Documentation
+    description: ''
+    version: 3.9.9
+servers:
+    -
+        url: 'http://localhost'
+paths:
+    /api/withFormDataParams:
+        post:
+            summary: 'Endpoint with body form data parameters.'
+            description: ''
+            operationId: endpointWithBodyFormDataParameters
+            parameters:
+                -
+                    in: header
+                    name: Custom-Header
+                    description: ''
+                    example: NotSoCustom
+                    schema:
+                        type: string
+            responses: {  }
+            tags:
+                - 'Group A'
+            requestBody:
+                required: true
+                content:
+                    multipart/form-data:
+                        schema:
+                            type: object
+                            properties:
+                                name:
+                                    type: string
+                                    description: 'Name of image.'
+                                    example: cat.jpg
+                                image:
+                                    type: string
+                                    format: binary
+                                    description: 'The image.'
+                            required:
+                                - name
+                                - image
+            security: []
+    /api/withResponseTag:
+        get:
+            summary: ''
+            description: ''
+            operationId: getApiWithResponseTag
+            parameters:
+                -
+                    in: header
+                    name: Custom-Header
+                    description: ''
+                    example: NotSoCustom
+                    schema:
+                        type: string
+            responses:
+                200:
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                example:
+                                    id: 4
+                                    name: banana
+                                    color: red
+                                    weight: '1 kg'
+                                    delicious: true
+                                    responseTag: true
+                                properties:
+                                    id: { type: integer, example: 4 }
+                                    name: { type: string, example: banana }
+                                    color: { type: string, example: red }
+                                    weight: { type: string, example: '1 kg' }
+                                    delicious: { type: boolean, example: true }
+                                    responseTag: { type: boolean, example: true }
+            tags:
+                - 'Group A'
+            security: []
+    /api/withQueryParameters:
+        get:
+            summary: ''
+            description: ''
+            operationId: getApiWithQueryParameters
+            parameters:
+                -
+                    in: query
+                    name: location_id
+                    description: 'The id of the location.'
+                    example: architecto
+                    required: true
+                    schema:
+                        type: string
+                        description: 'The id of the location.'
+                        example: architecto
+                -
+                    in: query
+                    name: user_id
+                    description: 'The id of the user.'
+                    example: me
+                    required: true
+                    schema:
+                        type: string
+                        description: 'The id of the user.'
+                        example: me
+                -
+                    in: query
+                    name: page
+                    description: 'The page number.'
+                    example: '4'
+                    required: true
+                    schema:
+                        type: string
+                        description: 'The page number.'
+                        example: '4'
+                -
+                    in: query
+                    name: filters
+                    description: 'The filters.'
+                    example: architecto
+                    required: false
+                    schema:
+                        type: string
+                        description: 'The filters.'
+                        example: architecto
+                -
+                    in: query
+                    name: url_encoded
+                    description: 'Used for testing that URL parameters will be URL-encoded where needed.'
+                    example: '+ []&='
+                    required: false
+                    schema:
+                        type: string
+                        description: 'Used for testing that URL parameters will be URL-encoded where needed.'
+                        example: '+ []&='
+                -
+                    in: header
+                    name: Custom-Header
+                    description: ''
+                    example: NotSoCustom
+                    schema:
+                        type: string
+            responses:
+                200:
+                    description: ""
+                    content:
+                        'text/plain':
+                            schema:
+                                type: "string"
+                                example: ""
+            tags:
+                - 'Group A'
+            security: []
+    /api/withAuthTag:
+        get:
+            summary: ''
+            description: ''
+            operationId: getApiWithAuthTag
+            parameters:
+                -
+                    in: header
+                    name: Custom-Header
+                    description: ''
+                    example: NotSoCustom
+                    schema:
+                        type: string
+            responses:
+                200:
+                    description: ""
+                    content:
+                        'text/plain':
+                            schema:
+                                type: "string"
+                                example: ""
+            tags:
+                - 'Group A'
+    '/api/echoesUrlParameters/{param}/{param2}/{param3}/{param4}':
+        get:
+            summary: ''
+            description: ''
+            operationId: getApiEchoesUrlParametersParamParam2Param3Param4
+            parameters:
+                -
+                    in: query
+                    name: something
+                    description: ''
+                    example: architecto
+                    required: false
+                    schema:
+                        type: string
+                        description: ''
+                        example: architecto
+                -
+                    in: header
+                    name: Custom-Header
+                    description: ''
+                    example: NotSoCustom
+                    schema:
+                        type: string
+            responses:
+                200:
+                    description: ''
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                example:
+                                    param: '4'
+                                    param2: architecto
+                                    param3: architecto
+                                    param4: null
+                                properties:
+                                    param: { type: string, example: '4' }
+                                    param2: { type: string, example: architecto }
+                                    param3: { type: string, example: architecto }
+                                    param4: { type: string, example: null }
+            tags:
+                - Other😎
+            security: []
+        parameters:
+            -
+                in: path
+                name: param
+                description: ''
+                example: '4'
+                required: true
+                schema:
+                    type: string
+            -
+                in: path
+                name: param2
+                description: ''
+                required: true
+                schema:
+                    type: string
+                example: architecto
+            -
+                in: path
+                name: param3
+                description: 'Optional parameter.'
+                required: true
+                schema:
+                    type: string
+                examples:
+                    omitted:
+                        summary: 'When the value is omitted'
+                        value: ''
+                    present:
+                        summary: 'When the value is present'
+                        value: architecto
+            -
+                in: path
+                name: param4
+                description: 'Optional parameter.'
+                required: true
+                schema:
+                    type: string
+                examples:
+                    omitted:
+                        summary: 'When the value is omitted'
+                        value: ''
+    /api/withBodyParametersAsArray:
+        post:
+            summary: 'Endpoint with body parameters as array.'
+            description: ''
+            operationId: endpointWithBodyParametersAsArray
+            parameters:
+                - in: header
+                  name: Custom-Header
+                  description: ''
+                  example: NotSoCustom
+                  schema:
+                      type: string
+            responses: {}
+            tags:
+                - Group A
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: array
+                            description: Details.
+                            example:
+                            - first_name: 'John'
+                              last_name: 'Doe'
+                              contacts:
+                              - first_name: Janelle
+                                last_name: Monáe
+                              roles: [Admin]
+                            items:
+                                type: object
+                                properties:
+                                    roles: { type: array, description: 'The name of the role.', example: [ Admin ], items: { type: string } }
+                                required:
+                                    - first_name
+                                    - last_name
+                                    - contacts
+                                    - roles
+            security: [ ]
+tags:
+    -
+        name: 'Group A'
+        description: ''
+    -
+        name: Other😎
+        description: ''
+
