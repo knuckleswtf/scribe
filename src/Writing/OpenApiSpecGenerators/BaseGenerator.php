@@ -629,17 +629,18 @@ class BaseGenerator extends OpenApiGenerator
      */
     private function setNullable(array &$schema, OutputEndpointData $endpoint, string $path, mixed $value): void
     {
+        /** @var \Knuckles\Camel\Extraction\ResponseField|null $field */
         $field = $endpoint->responseFields[$path] ?? null;
-    
-        // prefer explicite values
-        if ($field && isset($field->nullable)) {
+
+        // prefer explicit values
+        if ($field !== null && $field->nullable !== null) {
             if ($field->nullable) {
                 $schema['nullable'] = true;
             }
             // false => do not set and do not use example
             return;
         }
-    
+
         // example is null
         if ($value === null) {
             $schema['nullable'] = true;
