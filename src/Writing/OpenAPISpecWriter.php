@@ -12,6 +12,7 @@ use Knuckles\Camel\Output\Parameter;
 use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\Utils;
+use Knuckles\Scribe\Writing\OpenApiSpecGenerators\Base31Generator;
 use Knuckles\Scribe\Writing\OpenApiSpecGenerators\BaseGenerator;
 use Knuckles\Scribe\Writing\OpenApiSpecGenerators\OpenApiGenerator;
 use Knuckles\Scribe\Writing\OpenApiSpecGenerators\OverridesGenerator;
@@ -34,13 +35,25 @@ class OpenAPISpecWriter
     public function __construct(?DocumentationConfig $config = null)
     {
         $this->config = $config ?: new DocumentationConfig(config('scribe', []));
-        $this->generators = collect([
-                BaseGenerator::class,
-                SecurityGenerator::class,
-                OverridesGenerator::class,
-            ])
+        $generators = [
+            $this->isOpenApi31OrLater() ? Base31Generator::class : BaseGenerator::class,
+            SecurityGenerator::class,
+            OverridesGenerator::class,
+        ];
+        $this->generators = collect($generators)
             ->merge($this->config->get('openapi.generators',[]))
             ->map(fn($generatorClass) => app()->makeWith($generatorClass, ['config' => $this->config]));
+    }
+
+    /**
+     * Get the OpenAPI spec version to use from config, defaulting to 3.0.3.
+     * Supported versions: '3.0.3', '3.1.0'
+     *
+     * @return string The OpenAPI version
+     */
+    public function getSpecVersion(): string
+    {
+        return $this->config->get('openapi.version', self::SPEC_VERSION);
     }
 
     /**
@@ -103,5 +116,11 @@ class OpenAPISpecWriter
 
             return [$path => $pathItem];
         })->toArray();
+    }
+
+    protected function isOpenApi31OrLater(): bool
+    {
+        $version = $this->config->get('openapi.version', OpenAPISpecWriter::SPEC_VERSION);
+        return version_compare($version, '3.1.0', '>=');
     }
 }

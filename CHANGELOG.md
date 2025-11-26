@@ -12,6 +12,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+## 5.6.0 (23 November 2025)
+- Add support for OpenAPI v3.1 specification ([#1040](https://github.com/knuckleswtf/scribe/pull/1040))
+    - Added `openapi.version` configuration option to choose between OpenAPI 3.0.3 (default) and 3.1.0
+    - OpenAPI 3.1 uses JSON Schema Draft 2020-12 compatible nullable syntax: `type: ["string", "null"]`
+    - OpenAPI 3.0 continues to use `nullable: true` property
+    - Fully backward compatible - defaults to 3.0.3 if not configured
+
 ## 5.5.0 (25 October 2025)
 ### Modified
 - Change shalvah/clara constraint

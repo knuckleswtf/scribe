@@ -157,7 +157,6 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                     'example' => 'hahoho',
                     'type' => 'string',
                     'name' => 'param',
-                    'nullable' => false,
                     'deprecated' => true,
                 ],
             ],
@@ -172,7 +171,6 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                     'example' => 'hahoho',
                     'type' => 'string',
                     'name' => 'param',
-                    'nullable' => false,
                     'deprecated' => true,
                 ],
                 'array_param' => [
@@ -180,7 +178,6 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                     'required' => false,
                     'type' => 'array',
                     'name' => 'array_param',
-                    'nullable' => false,
                     'deprecated' => true,
                 ],
                 'object_param' => [
@@ -188,7 +185,6 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                     'required' => false,
                     'type' => 'object',
                     'name' => 'object_param',
-                    'nullable' => false,
                     'deprecated' => true,
                 ],
             ],
@@ -292,7 +288,6 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                     'example' => 'hahoho',
                     'type' => 'string',
                     'name' => 'param',
-                    'nullable' => false
                 ],
             ],
         ]);
@@ -313,8 +308,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
             'schema' => [
                 'type' => 'string',
                 'description' => 'A query param',
-                'example' => 'hahoho',
-                'nullable' => false
+                'example' => 'hahoho'
             ],
         ], $results['paths']['/path1']['get']['parameters'][0]);
     }
@@ -332,7 +326,6 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                     'required' => false,
                     'example' => 'hahoho',
                     'type' => 'string',
-                    'nullable' => false,
                 ],
                 'integerParam' => [
                     'name' => 'integerParam',
@@ -340,7 +333,6 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                     'required' => true,
                     'example' => 99,
                     'type' => 'integer',
-                    'nullable' => false,
                 ],
                 'booleanParam' => [
                     'name' => 'booleanParam',
@@ -348,7 +340,6 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                     'required' => true,
                     'example' => false,
                     'type' => 'boolean',
-                    'nullable' => false,
                 ],
                 'objectParam' => [
                     'name' => 'objectParam',
@@ -356,7 +347,6 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                     'required' => false,
                     'example' => [],
                     'type' => 'object',
-                    'nullable' => false,
                 ],
                 'objectParam.field' => [
                     'name' => 'objectParam.field',
@@ -364,7 +354,6 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                     'required' => false,
                     'example' => 119.0,
                     'type' => 'number',
-                    'nullable' => false,
                 ],
             ],
         ]);
@@ -427,31 +416,26 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                                 'description' => 'String param',
                                 'example' => 'hahoho',
                                 'type' => 'string',
-                                'nullable' => false,
                             ],
                             'booleanParam' => [
                                 'description' => 'Boolean param',
                                 'example' => false,
                                 'type' => 'boolean',
-                                'nullable' => false,
                             ],
                             'integerParam' => [
                                 'description' => 'Integer param',
                                 'example' => 99,
                                 'type' => 'integer',
-                                'nullable' => false,
                             ],
                             'objectParam' => [
                                 'description' => 'Object param',
                                 'example' => [],
                                 'type' => 'object',
-                                'nullable' => false,
                                 'properties' => [
                                     'field' => [
                                         'description' => 'Object param field',
                                         'example' => 119.0,
                                         'type' => 'number',
-                                        'nullable' => false,
                                     ],
                                 ],
                             ],
@@ -475,7 +459,6 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                                 'description' => 'File param',
                                 'type' => 'string',
                                 'format' => 'binary',
-                                'nullable' => false,
                             ],
                             'numberArrayParam' => [
                                 'description' => 'Number array param',
@@ -505,7 +488,6 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                                             'type' => 'string',
                                             'description' => '',
                                             'example' => "hi",
-                                            'nullable' => false,
                                         ],
                                     ],
                                 ],
@@ -681,7 +663,6 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-
     public function adds_responses_correctly_as_array_of_objects()
     {
         $endpointData1 = $this->createMockEndpointData([
@@ -726,7 +707,8 @@ class OpenAPISpecWriterTest extends BaseUnitTest
             ],
         ], $results['paths']['/path1']['get']['responses']);
     }
-  
+
+    /** @test */
     public function adds_response_content_type_correctly()
     {
         $endpointData1 = $this->createMockEndpointData([
@@ -1354,7 +1336,6 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                     'required' => true,
                     'example' => 'abc',
                     'type' => 'string',
-                    'nullable' => false,
                 ],
                 'other_field.nested_field' => [
                     'name' => 'nested_field',
@@ -1362,7 +1343,6 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                     'required' => true,
                     'example' => 'abc',
                     'type' => 'string',
-                    'nullable' => false,
                 ],
             ],
         ]);
@@ -1409,6 +1389,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $extraGenerator = TestOpenApiGenerator::class;
         $config = array_merge($this->config, [
             'openapi' => [
+                'version' => '3.0.3',
                 'generators' => [
                     $extraGenerator,
                 ],
@@ -1418,6 +1399,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
 
         $results = $writer->generateSpecContent($groups);
 
+        $this->assertEquals('3.0.3', $results['openapi']);
         $this->assertEquals([['default' => ['post:view']]], $results['paths']['/path']['post']['security']);
     }
 
@@ -1440,6 +1422,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $extraGenerator = ComponentsOpenApiGenerator::class;
         $config = array_merge($this->config, [
             'openapi' => [
+                'version' => '3.0.3',
                 'generators' => [
                     $extraGenerator,
                 ],
@@ -1449,6 +1432,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
 
         $results = $writer->generateSpecContent($groups);
 
+        $this->assertEquals('3.0.3', $results['openapi']);
         $actualParameters = $results['paths']['/{slug}/path']['parameters'];
         $this->assertCount(1, $actualParameters);
         $this->assertEquals(['$ref' =>  "#/components/parameters/slugParam"], $actualParameters[0]);
@@ -1499,6 +1483,121 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         }
 
         return OutputEndpointData::create($data);
+    }
+
+    /** @test */
+    public function uses_openapi_31_when_configured()
+    {
+        $config = array_merge($this->config, [
+            'openapi' => ['version' => '3.1.0'],
+        ]);
+        $endpointData = $this->createMockEndpointData();
+        $groups = [$this->createGroup([$endpointData])];
+
+        $writer = new OpenAPISpecWriter(new DocumentationConfig($config));
+        $results = $writer->generateSpecContent($groups);
+
+        $this->assertEquals('3.1.0', $results['openapi']);
+    }
+
+    /** @test */
+    public function uses_json_schema_nullable_syntax_in_openapi_31()
+    {
+        $config = array_merge($this->config, [
+            'openapi' => ['version' => '3.1.0'],
+        ]);
+
+        $endpointWithNullableParam = $this->createMockEndpointData([
+            'uri' => '/test',
+            'httpMethods' => ['POST'],
+            'bodyParameters' => [
+                'nullable_field' => [
+                    'name' => 'nullable_field',
+                    'type' => 'string',
+                    'required' => false,
+                    'description' => 'A nullable field',
+                    'example' => 'test',
+                    'nullable' => true,
+                ],
+            ],
+        ]);
+
+        $groups = [$this->createGroup([$endpointWithNullableParam])];
+        $writer = new OpenAPISpecWriter(new DocumentationConfig($config));
+        $results = $writer->generateSpecContent($groups);
+
+        $requestBodySchema = $results['paths']['/test']['post']['requestBody']['content']['application/json']['schema'];
+        $nullableFieldSchema = $requestBodySchema['properties']['nullable_field'];
+
+        // In OpenAPI 3.1, nullable fields use JSON Schema's type array syntax
+        $this->assertIsArray($nullableFieldSchema['type']);
+        $this->assertContains('string', $nullableFieldSchema['type']);
+        $this->assertContains('null', $nullableFieldSchema['type']);
+        $this->assertArrayNotHasKey('nullable', $nullableFieldSchema);
+    }
+
+    /** @test */
+    public function uses_nullable_property_in_openapi_30()
+    {
+        $config = array_merge($this->config, [
+            'openapi' => ['version' => '3.0.3'],
+        ]);
+
+        $endpointWithNullableParam = $this->createMockEndpointData([
+            'uri' => '/test',
+            'httpMethods' => ['POST'],
+            'bodyParameters' => [
+                'nullable_field' => [
+                    'name' => 'nullable_field',
+                    'type' => 'string',
+                    'required' => false,
+                    'description' => 'A nullable field',
+                    'example' => 'test',
+                    'nullable' => true,
+                ],
+            ],
+        ]);
+
+        $groups = [$this->createGroup([$endpointWithNullableParam])];
+        $writer = new OpenAPISpecWriter(new DocumentationConfig($config));
+        $results = $writer->generateSpecContent($groups);
+
+        $requestBodySchema = $results['paths']['/test']['post']['requestBody']['content']['application/json']['schema'];
+        $nullableFieldSchema = $requestBodySchema['properties']['nullable_field'];
+
+        // In OpenAPI 3.0, nullable fields use the nullable property
+        $this->assertEquals('string', $nullableFieldSchema['type']);
+        $this->assertTrue($nullableFieldSchema['nullable']);
+    }
+
+    /** @test */
+    public function handles_null_response_content_in_openapi_31()
+    {
+        $config = array_merge($this->config, [
+            'openapi' => ['version' => '3.1.0'],
+        ]);
+
+        $endpointWithNullContent = $this->createMockEndpointData([
+            'uri' => '/null-response',
+            'httpMethods' => ['GET'],
+            'responses' => [[
+                'status' => 200,
+                'content' => null,
+            ]],
+        ]);
+
+        $groups = [$this->createGroup([$endpointWithNullContent])];
+        $writer = new OpenAPISpecWriter(new DocumentationConfig($config));
+        $results = $writer->generateSpecContent($groups);
+
+        $nullResponseSpec = $results['paths']['/null-response']['get']['responses']['200'];
+        $schemaForNull = $nullResponseSpec['content']['application/json']['schema'];
+
+        // In OpenAPI 3.1, null responses use JSON Schema's type array syntax
+        $this->assertIsArray($schemaForNull['type']);
+        $this->assertContains('object', $schemaForNull['type']);
+        $this->assertContains('null', $schemaForNull['type']);
+        $this->assertArrayNotHasKey('nullable', $schemaForNull);
     }
 
     protected function createGroup(array $endpoints)

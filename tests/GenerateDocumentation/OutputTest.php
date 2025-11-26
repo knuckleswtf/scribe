@@ -227,6 +227,45 @@ class OutputTest extends BaseLaravelTest
     }
 
     /** @test */
+    public function generated_openapi_31_spec_file_is_correct()
+    {
+        if (phpversion() < 8.3) {
+            // See https://github.com/FakerPHP/Faker/issues/694
+            $this->markTestSkipped('Faker seeding changed in PHP 8.3');
+        }
+
+        RouteFacade::post('/api/withBodyParametersAsArray', [TestController::class, 'withBodyParametersAsArray']);
+        RouteFacade::post('/api/withFormDataParams', [TestController::class, 'withFormDataParams']);
+        RouteFacade::get('/api/withResponseTag', [TestController::class, 'withResponseTag']);
+        RouteFacade::get('/api/withQueryParameters', [TestController::class, 'withQueryParameters']);
+        RouteFacade::get('/api/withAuthTag', [TestController::class, 'withAuthenticatedTag']);
+        RouteFacade::get('/api/echoesUrlParameters/{param}/{param2}/{param3?}/{param4?}', [TestController::class, 'echoesUrlParameters']);
+
+        $this->setConfig([
+            'openapi.enabled' => true,
+            'openapi.version' => '3.1.0',
+            'openapi.overrides' => [
+                'info.version' => '3.9.9',
+            ],
+            'strategies.headers' =>  [
+                ...config('scribe.strategies.headers'),
+                Strategies\StaticData::withSettings(data: ['Custom-Header' => 'NotSoCustom']),
+            ],
+        ]);
+        $this->enableResponseCalls();
+
+        $this->generateAndExpectConsoleOutput(expected: [
+            "Wrote Blade docs to: vendor/orchestra/testbench-core/laravel/resources/views/scribe",
+            "Wrote Laravel assets to: vendor/orchestra/testbench-core/laravel/public/vendor/scribe",
+            "Wrote OpenAPI specification to: vendor/orchestra/testbench-core/laravel/storage/app/scribe/openapi.yaml",
+        ]);
+
+        $generatedSpec = Yaml::parseFile($this->openapiOutputPath());
+        $fixtureSpec = Yaml::parseFile(__DIR__ . '/../Fixtures/openapi-3_1.yaml');
+        $this->assertEquals($fixtureSpec, $generatedSpec);
+    }
+
+    /** @test */
     public function can_parse_utf8_response()
     {
         RouteFacade::get('/api/utf8', [TestController::class, 'withUtf8ResponseTag']);

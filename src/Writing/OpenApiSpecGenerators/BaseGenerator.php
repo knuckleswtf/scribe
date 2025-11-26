@@ -19,7 +19,7 @@ class BaseGenerator extends OpenApiGenerator
     public function root(array $root, array $groupedEndpoints): array
     {
         return array_merge($root, [
-            'openapi' => OpenAPISpecWriter::SPEC_VERSION,
+            'openapi' => $this->config->get('openapi.version', OpenAPISpecWriter::SPEC_VERSION),
             'info' => [
                 'title' => $this->config->get('title') ?: config('app.name', ''),
                 'description' => $this->config->get('description', ''),
@@ -311,13 +311,13 @@ class BaseGenerator extends OpenApiGenerator
         }
 
         if ($responseContent === null) {
+            $schema = [
+                'type' => 'object',
+            ];
+            $this->applyNullable($schema, true);
             return [
                 'application/json' => [
-                    'schema' => [
-                        'type' => 'object',
-                        // See https://swagger.io/docs/specification/data-models/data-types/#null
-                        'nullable' => true,
-                    ],
+                    'schema' => $schema,
                 ],
             ];
         }
@@ -448,12 +448,13 @@ class BaseGenerator extends OpenApiGenerator
 
         if ($field->type === 'file') {
             // See https://swagger.io/docs/specification/describing-request-body/file-upload/
-            return [
+            $fieldData = [
                 'type' => 'string',
                 'format' => 'binary',
                 'description' => $field->description ?: '',
-                'nullable' => $field->nullable,
             ];
+            $this->applyNullable($fieldData, $field->nullable);
+            return $fieldData;
         } else if (Utils::isArrayType($field->type)) {
             $baseType = Utils::getBaseTypeFromArrayType($field->type);
             $baseItem = ($baseType === 'file') ? [
@@ -465,9 +466,7 @@ class BaseGenerator extends OpenApiGenerator
                 $baseItem['enum'] = $field->enumValues;
             }
 
-            if ($field->nullable) {
-                $baseItem['nullable'] = true;
-            }
+            $this->applyNullable($baseItem, $field->nullable);
 
             $fieldData = [
                 'type' => 'array',
@@ -505,12 +504,12 @@ class BaseGenerator extends OpenApiGenerator
                 'type' => 'object',
                 'description' => $field->description ?: '',
                 'example' => $field->example,
-                'nullable'=> $field->nullable,
                 'properties' => $this->objectIfEmpty(collect($field->__fields)->mapWithKeys(function ($subfield, $subfieldName) {
                     return [$subfieldName => $this->generateFieldData($subfield)];
                 })->all()),
                 'required' => collect($field->__fields)->filter(fn ($f) => $f['required'])->keys()->toArray(),
             ];
+            $this->applyNullable($data, $field->nullable);
             // The spec doesn't allow for an empty `required` array. Must have something there.
             if (empty($data['required'])) {
                 unset($data['required']);
@@ -521,11 +520,11 @@ class BaseGenerator extends OpenApiGenerator
                 'type' => static::normalizeTypeName($field->type),
                 'description' => $field->description ?: '',
                 'example' => $field->example,
-                'nullable' => $field->nullable,
             ];
             if (!empty($field->enumValues)) {
                 $schema['enum'] = $field->enumValues;
             }
+            $this->applyNullable($schema, $field->nullable);
 
             return $schema;
         }
@@ -654,5 +653,19 @@ class BaseGenerator extends OpenApiGenerator
             'NULL' => 'string',
             default => $type,
         };
+    }
+
+    /**
+     * Handle nullable fields based on OpenAPI version.
+     * In OpenAPI 3.0, use 'nullable: true'.
+     * In OpenAPI 3.1, use JSON Schema's type array syntax: 'type: ["string", "null"]'.
+     */
+    protected function applyNullable(array &$schema, bool $nullable): void
+    {
+        if (!$nullable) {
+            return;
+        }
+
+        $schema['nullable'] = true;
     }
 }

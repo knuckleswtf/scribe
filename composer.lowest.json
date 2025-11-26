@@ -79,7 +79,11 @@
         },
         "platform": {
           "php": "8.1"
-        }
+        },
+       "audit": {
+         "block-insecure": false,
+         "ignore-severity": ["low", "medium", "high"]
+       }
     },
     "replace": {
         "mpociot/laravel-apidoc-generator": "*"
