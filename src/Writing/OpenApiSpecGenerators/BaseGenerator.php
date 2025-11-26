@@ -634,7 +634,7 @@ class BaseGenerator extends OpenApiGenerator
         // prefer explicit values
         if ($field !== null && $field->nullable !== null) {
             if ($field->nullable) {
-                $schema['nullable'] = true;
+                $this->applyNullable($schema, true);
             }
             // false => do not set and do not use example
             return;
@@ -642,7 +642,7 @@ class BaseGenerator extends OpenApiGenerator
 
         // example is null
         if ($value === null) {
-            $schema['nullable'] = true;
+            $this->applyNullable($schema, true);
         }
     }
 
