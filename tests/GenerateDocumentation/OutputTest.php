@@ -182,6 +182,12 @@ class OutputTest extends BaseLaravelTest
             foreach ($group["item"] as &$endpoint) {
                 foreach ($endpoint["response"] as &$response) {
                     $response["header"] = array_filter($response["header"], fn ($header) => $header["key"] !== "access-control-allow-origin");
+                    $response['header'] = array_map(
+                        fn (array $header) => strtolower($header['key']) === 'content-type'
+                            ? [...$header, 'value' => strtolower($header['value'])]
+                            : $header,
+                        $response['header']
+                    );
                 }
             }
         }
