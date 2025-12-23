@@ -567,7 +567,7 @@ class BaseGenerator extends OpenApiGenerator
         $this->setDescription($schema, $endpoint, $path);
 
         // Set enum values for the property if they exist
-        if (isset($endpoint->responseFields[$path]->enumValues)) {
+        if (!empty($endpoint->responseFields[$path]->enumValues)) {
             $schema['enum'] = $endpoint->responseFields[$path]->enumValues;
         }
 

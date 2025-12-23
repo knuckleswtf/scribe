@@ -1324,6 +1324,88 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
+    public function does_not_add_empty_enum_arrays_when_response_field_has_no_enum_values()
+    {
+        $endpointData = $this->createMockEndpointData([
+            'httpMethods' => ['GET'],
+            'uri' => '/test',
+            'responses' => [
+                [
+                    'status' => 200,
+                    'description' => 'Success response',
+                    'content' => '{"status":"active","message":"Hello world"}',
+                ],
+            ],
+            'responseFields' => [
+                'status' => [
+                    'name' => 'status',
+                    'type' => 'string',
+                    'required' => true,
+                    // enumValues is not set, which means it defaults to an empty array
+                ],
+                'message' => [
+                    'name' => 'message',
+                    'type' => 'string',
+                    'required' => true,
+                    'enumValues' => [], // explicitly empty enum array
+                ],
+            ],
+        ]);
+
+        $groups = [$this->createGroup([$endpointData])];
+        $results = $this->generate($groups);
+
+        $responseSchema = $results['paths']['/test']['get']['responses']['200']['content']['application/json']['schema'];
+        $statusProperty = $responseSchema['properties']['status'];
+        $messageProperty = $responseSchema['properties']['message'];
+
+        // Empty enum array should not be added to the schema
+        $this->assertArrayNotHasKey('enum', $statusProperty, 'ResponseField with only required parameter should not have empty enum array');
+        $this->assertArrayNotHasKey('enum', $messageProperty, 'ResponseField with empty enumValues should not have empty enum array in schema');
+
+        // Assert that the required fields are correctly set
+        $this->assertContains('status', $responseSchema['required']);
+        $this->assertContains('message', $responseSchema['required']);
+    }
+
+    /** @test */
+    public function adds_enum_values_to_response_properties_when_specified()
+    {
+        $endpointData = $this->createMockEndpointData([
+            'httpMethods' => ['GET'],
+            'uri' => '/test',
+            'responses' => [
+                [
+                    'status' => 200,
+                    'description' => 'Success response',
+                    'content' => '{"status":"active"}',
+                ],
+            ],
+            'responseFields' => [
+                'status' => [
+                    'name' => 'status',
+                    'type' => 'string',
+                    'required' => true,
+                    'enumValues' => ['active', 'inactive', 'pending'],
+                ],
+            ],
+        ]);
+
+        $groups = [$this->createGroup([$endpointData])];
+        $results = $this->generate($groups);
+
+        $responseSchema = $results['paths']['/test']['get']['responses']['200']['content']['application/json']['schema'];
+        $statusProperty = $responseSchema['properties']['status'];
+
+        // Correct enum values should be added to the schema
+        $this->assertArrayHasKey('enum', $statusProperty, 'ResponseField with enumValues should have enum array in schema');
+        $this->assertEquals(['active', 'inactive', 'pending'], $statusProperty['enum']);
+
+        // Assert that the required field is correctly set
+        $this->assertContains('status', $responseSchema['required']);
+    }
+
+    /** @test */
     public function lists_required_properties_in_request_body()
     {
         $endpointData = $this->createMockEndpointData([
