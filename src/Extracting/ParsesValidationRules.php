@@ -20,7 +20,7 @@ use Throwable;
 
 trait ParsesValidationRules
 {
-    use ParamHelpers;
+    use ParamHelpers; 
 
     public static \stdClass $MISSING_VALUE;
 
@@ -557,6 +557,26 @@ trait ParsesValidationRules
                     break;
                 case 'nullable':
                     $parameterData['nullable'] = true;
+                    break;
+                case 'unique':
+                    $table = $ruleArguments[0] ?? null;
+                    $column = $ruleArguments[1] ?? null;
+                    
+                    $isUpdate = count($ruleArguments) >= 3 && !empty($ruleArguments[2]) && $ruleArguments[2] !== 'NULL';
+                    $hasTable = $column && $column !== 'NULL';
+
+                    if ($isUpdate) {
+                        $parameterData['description'] .= $hasTable 
+                            ? " Must be unique in the <code>{$table}</code> table (ignoring current record during updates)."
+                            : " Must be unique (ignoring current record during updates).";
+                    } else {
+                        $parameterData['description'] .= $hasTable 
+                            ? " Must be unique in the <code>{$table}</code> table."
+                            : " Must be unique.";
+                    }
+                    
+                    $parameterData['setter'] = fn() => $this->getFaker()->unique()->word();
+                    $parameterData['type'] = 'string';
                     break;
                 case 'exists':
                     $parameterData['description'] .= " The <code>{$ruleArguments[1]}</code> of an existing record in the {$ruleArguments[0]} table.";

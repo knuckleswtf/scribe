@@ -40,9 +40,10 @@ class ValidationRuleParsingTest extends BaseLaravelTest
      */
     public function can_parse_supported_rules(array $ruleset, array $customInfo, array $expected)
     {
-        // Needed for `exists` rule
+        // Needed for `exists` and `unique` rules
         Schema::create('users', function ($table) {
             $table->id();
+            $table->string('email')->unique();
         });
 
         $results = $this->strategy->parse($ruleset, $customInfo);
@@ -55,7 +56,11 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         }
 
         // Validate that the generated values actually pass validation (for rules where we can generate some data)
-        if (is_string($ruleset[$parameterName]) && str_contains($ruleset[$parameterName], "exists")) return;
+        // Skip validation for exists and unique rules as they require database data
+        if (is_string($ruleset[$parameterName]) && 
+            (str_contains($ruleset[$parameterName], "exists") || str_contains($ruleset[$parameterName], "unique"))) {
+            return;
+        }
 
         $exampleData = [$parameterName => $results[$parameterName]['example']];
         $validator = Validator::make($exampleData, $ruleset);
@@ -138,6 +143,22 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         // Second is custom information (from bodyParameters() or comments)
         // Third is expected result
 
+        yield 'unique' => [
+            ['unique_param' => 'unique:users,email'],
+            [],
+            [
+                'description' => 'Must be unique in the <code>users</code> table.',
+                'type' => 'string',
+            ],
+        ];
+        yield 'unique (with except)' => [
+            ['unique_except_param' => 'unique:users,email,1,id'],
+            [],
+            [
+                'description' => 'Must be unique in the <code>users</code> table (ignoring current record during updates).',
+                'type' => 'string',
+            ],
+        ];
         yield 'string' => [
             ['string_param' => 'string'],
             ['string_param' => ['description' => $description]],
