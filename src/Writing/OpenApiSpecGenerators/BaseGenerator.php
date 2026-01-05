@@ -556,6 +556,7 @@ class BaseGenerator extends OpenApiGenerator
                 $schema['required'] = $required;
             }
             $this->setDescription($schema, $endpoint, $path);
+            $this->setNullable($schema, $endpoint, $path, $value);
 
             return $schema;
         }
@@ -565,9 +566,10 @@ class BaseGenerator extends OpenApiGenerator
             'example' => $value,
         ];
         $this->setDescription($schema, $endpoint, $path);
+        $this->setNullable($schema, $endpoint, $path, $value);
 
         // Set enum values for the property if they exist
-        if (!empty($endpoint->responseFields[$path]->enumValues)) {
+        if (! empty($endpoint->responseFields[$path]->enumValues)) {
             $schema['enum'] = $endpoint->responseFields[$path]->enumValues;
         }
 
@@ -616,8 +618,31 @@ class BaseGenerator extends OpenApiGenerator
      */
     private function setDescription(array &$schema, OutputEndpointData $endpoint, string $path): void
     {
-        if (isset($endpoint->responseFields[$path]->description)) {
+        if (! empty($endpoint->responseFields[$path]->description)) {
             $schema['description'] = $endpoint->responseFields[$path]->description;
+        }
+    }
+
+    /*
+     * Set the nullable for the schema. If the field is nullable, it is set in the schema.
+     */
+    private function setNullable(array &$schema, OutputEndpointData $endpoint, string $path, mixed $value): void
+    {
+        /** @var \Knuckles\Camel\Extraction\ResponseField|null $field */
+        $field = $endpoint->responseFields[$path] ?? null;
+
+        // prefer explicit values
+        if ($field !== null && $field->nullable !== null) {
+            if ($field->nullable) {
+                $this->applyNullable($schema, true);
+            }
+            // false => do not set and do not use example
+            return;
+        }
+
+        // example is null
+        if ($value === null) {
+            $this->applyNullable($schema, true);
         }
     }
 

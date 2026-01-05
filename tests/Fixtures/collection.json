@@ -199,7 +199,7 @@
               "header": [
                 {
                   "key": "content-type",
-                  "value": "text/html; charset=UTF-8"
+                  "value": "text/html; charset=utf-8"
                 },
                 {
                   "key": "cache-control",
@@ -240,7 +240,7 @@
               "header": [
                 {
                   "key": "content-type",
-                  "value": "text/html; charset=UTF-8"
+                  "value": "text/html; charset=utf-8"
                 },
                 {
                   "key": "cache-control",

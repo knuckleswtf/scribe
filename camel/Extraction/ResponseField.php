@@ -26,4 +26,7 @@ class ResponseField extends BaseDTO
     public $example;
 
     public array $enumValues = [];
+
+    /** @var boolean */
+    public $nullable;
 }
