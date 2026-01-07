@@ -997,9 +997,9 @@ class OpenAPISpecWriterTest extends BaseUnitTest
             'httpMethods' => ['GET'],
             'uri' => '/array-response',
             'responses' => [[
-                    'status' => 200,
-                    'content' => '["foo", "bar"]',
-                    'headers' => ['Content-Type' => $customJsonType],
+                'status' => 200,
+                'content' => '["foo", "bar"]',
+                'headers' => ['Content-Type' => $customJsonType],
             ]],
         ]);
 
@@ -1007,9 +1007,9 @@ class OpenAPISpecWriterTest extends BaseUnitTest
             'httpMethods' => ['GET'],
             'uri' => '/string-response',
             'responses' => [[
-                    'status' => 200,
-                    'content' => '"a simple string"',
-                    'headers' => ['Content-Type' => $customJsonType],
+                'status' => 200,
+                'content' => '"a simple string"',
+                'headers' => ['Content-Type' => $customJsonType],
             ]],
         ]);
 
@@ -1017,9 +1017,9 @@ class OpenAPISpecWriterTest extends BaseUnitTest
             'httpMethods' => ['GET'],
             'uri' => '/integer-response',
             'responses' => [[
-                    'status' => 200,
-                    'content' => '123',
-                    'headers' => ['Content-Type' => $customJsonType],
+                'status' => 200,
+                'content' => '123',
+                'headers' => ['Content-Type' => $customJsonType],
             ]],
         ]);
 
@@ -1050,8 +1050,8 @@ class OpenAPISpecWriterTest extends BaseUnitTest
             'httpMethods' => ['GET'],
             'uri' => '/text-response',
             'responses' => [[
-                    'status' => 200,
-                    'content' => 'This is a simple text response.',
+                'status' => 200,
+                'content' => 'This is a simple text response.',
             ]],
         ]);
 
@@ -1071,8 +1071,8 @@ class OpenAPISpecWriterTest extends BaseUnitTest
             'uri' => '/null-response',
             'httpMethods' => ['GET'],
             'responses' => [[
-                    'status' => 200,
-                    'content' => null,
+                'status' => 200,
+                'content' => null,
             ]],
         ]);
 
@@ -1080,8 +1080,8 @@ class OpenAPISpecWriterTest extends BaseUnitTest
             'uri' => '/empty-array-response',
             'httpMethods' => ['GET'],
             'responses' => [[
-                    'status' => 200,
-                    'content' => '[]',
+                'status' => 200,
+                'content' => '[]',
             ]],
         ]);
 
@@ -1754,8 +1754,8 @@ class OpenAPISpecWriterTest extends BaseUnitTest
             'uri' => '/null-response',
             'httpMethods' => ['GET'],
             'responses' => [[
-                    'status' => 200,
-                    'content' => null,
+                'status' => 200,
+                'content' => null,
             ]],
         ]);
 

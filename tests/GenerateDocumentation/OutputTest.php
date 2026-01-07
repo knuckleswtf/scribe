@@ -368,16 +368,16 @@ class OutputTest extends BaseLaravelTest
     public function sorts_groups_and_endpoints_in_the_specified_order_with_wildcard()
     {
         $this->setConfig(['groups.order' => [
-                '10. Group 10',
-                '*',
-                '13. Group 13' => [
-                    'SG B' => [
-                        'POST /api/action13d',
-                        'GET /api/action13a',
-                    ],
-                    'SG A',
-                    'PUT /api/action13c',
+            '10. Group 10',
+            '*',
+            '13. Group 13' => [
+                'SG B' => [
+                    'POST /api/action13d',
+                    'GET /api/action13a',
                 ],
+                'SG A',
+                'PUT /api/action13c',
+            ],
         ]]);
 
         RouteFacade::get('/api/action1', [TestGroupController::class, 'action1']);
