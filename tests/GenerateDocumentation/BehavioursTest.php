@@ -56,8 +56,8 @@ class BehavioursTest extends BaseLaravelTest
         RouteFacade::get('/api/array/test', [TestController::class, 'withEndpointDescription']);
 
         $this->generateAndExpectConsoleOutput(expected: [
-            'Processed route: [GET] api/test',
-            'Processed route: [GET] api/array/test',
+            '[GET] api/test',
+            '[GET] api/array/test',
         ]);
     }
 
@@ -65,7 +65,7 @@ class BehavioursTest extends BaseLaravelTest
     public function processesHeadRoutesAsHeadNotGet()
     {
         RouteFacade::addRoute('HEAD', '/api/test', [TestController::class, 'withEndpointDescription']);
-        $this->generateAndExpectConsoleOutput(expected: ['Processed route: [HEAD] api/test']);
+        $this->generateAndExpectConsoleOutput(expected: ['[HEAD] api/test']);
     }
 
     /**
@@ -76,7 +76,7 @@ class BehavioursTest extends BaseLaravelTest
     public function canProcessClosureRoutes()
     {
         RouteFacade::get('/api/closure', fn () => 'hi');
-        $this->generateAndExpectConsoleOutput(expected: ['Processed route: [GET] api/closure']);
+        $this->generateAndExpectConsoleOutput(expected: ['[GET] api/closure']);
     }
 
     /** @test */
@@ -160,7 +160,7 @@ class BehavioursTest extends BaseLaravelTest
         $this->generateAndExpectConsoleOutput(expected: [
             'Skipping route: [GET] api/skip',
             'Skipping route: [GET] api/skipClass',
-            'Processed route: [GET] api/test',
+            '[GET] api/test',
         ]);
     }
 
@@ -178,12 +178,12 @@ class BehavioursTest extends BaseLaravelTest
 
         $this->generateAndExpectConsoleOutput(
             expected: [
-                'Processed route: [GET] api/users',
-                'Processed route: [POST] api/users',
+                '[GET] api/users',
+                '[POST] api/users',
             ],
             notExpected: [
-                'Processed route: [PUT,PATCH] api/users/{user}',
-                'Processed route: [DELETE] api/users/{user}', ]
+                '[PUT|PATCH] api/users/{user}',
+                '[DELETE] api/users/{user}', ]
         );
     }
 
@@ -193,8 +193,8 @@ class BehavioursTest extends BaseLaravelTest
         RouteFacade::resource('/api/users', TestPartialResourceController::class);
 
         $this->generateAndExpectConsoleOutput(expected: [
-            'Processed route: [GET] api/users',
-            'Processed route: [PUT,PATCH] api/users/{user}',
+            '[GET] api/users',
+            '[PUT|PATCH] api/users/{user}',
         ]);
     }
 
@@ -219,7 +219,7 @@ class BehavioursTest extends BaseLaravelTest
         RouteFacade::get('/api/test', [TestController::class, 'withEmptyApiResource']);
         $this->generateAndExpectConsoleOutput(expected: [
             "Couldn't detect an Eloquent API resource model",
-            'Processed route: [GET] api/test',
+            '[GET] api/test',
         ]);
     }
 }

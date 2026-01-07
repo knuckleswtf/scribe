@@ -66,8 +66,7 @@ class OutputTest extends BaseLaravelTest
         $this->setConfig(['openapi.enabled' => true]);
 
         $this->generateAndExpectConsoleOutput(expected: [
-            'Wrote HTML docs and assets to: public/docs/',
-            'Wrote Postman collection to: public/docs/collection.json',
+            "Writing HTML docs",
         ]);
 
         $this->assertFileExists($this->postmanOutputPath(true));
@@ -141,9 +140,7 @@ class OutputTest extends BaseLaravelTest
         $this->enableResponseCalls();
 
         $this->generateAndExpectConsoleOutput(expected: [
-            'Wrote Blade docs to: vendor/orchestra/testbench-core/laravel/resources/views/scribe',
-            'Wrote Laravel assets to: vendor/orchestra/testbench-core/laravel/public/vendor/scribe',
-            'Wrote Postman collection to: vendor/orchestra/testbench-core/laravel/storage/app/scribe/collection.json',
+            'Writing Blade docs',
         ]);
 
         $generatedCollection = json_decode(file_get_contents($this->postmanOutputPath()), true);
@@ -196,9 +193,7 @@ class OutputTest extends BaseLaravelTest
         $this->enableResponseCalls();
 
         $this->generateAndExpectConsoleOutput(expected: [
-            'Wrote Blade docs to: vendor/orchestra/testbench-core/laravel/resources/views/scribe',
-            'Wrote Laravel assets to: vendor/orchestra/testbench-core/laravel/public/vendor/scribe',
-            'Wrote OpenAPI specification to: vendor/orchestra/testbench-core/laravel/storage/app/scribe/openapi.yaml',
+            'Writing Blade docs',
         ]);
 
         $generatedSpec = Yaml::parseFile($this->openapiOutputPath());
@@ -235,9 +230,7 @@ class OutputTest extends BaseLaravelTest
         $this->enableResponseCalls();
 
         $this->generateAndExpectConsoleOutput(expected: [
-            'Wrote Blade docs to: vendor/orchestra/testbench-core/laravel/resources/views/scribe',
-            'Wrote Laravel assets to: vendor/orchestra/testbench-core/laravel/public/vendor/scribe',
-            'Wrote OpenAPI specification to: vendor/orchestra/testbench-core/laravel/storage/app/scribe/openapi.yaml',
+            'Writing Blade docs',
         ]);
 
         $generatedSpec = Yaml::parseFile($this->openapiOutputPath());
