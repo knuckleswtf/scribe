@@ -184,8 +184,8 @@ class OutputTest extends BaseLaravelTest
                     $response["header"] = array_filter($response["header"], fn ($header) => $header["key"] !== "access-control-allow-origin");
                     $response['header'] = array_map(
                         fn (array $header) => strtolower($header['key']) === 'content-type'
-                        ? [...$header, 'value' => strtolower($header['value'])]
-                        : $header,
+                            ? [...$header, 'value' => strtolower($header['value'])]
+                            : $header,
                         $response['header']
                     );
                 }
@@ -306,19 +306,19 @@ class OutputTest extends BaseLaravelTest
     public function sorts_groups_and_endpoints_in_the_specified_order()
     {
         $this->setConfig(['groups.order' => [
-                '10. Group 10',
-                '1. Group 1' => [
-                    'GET /api/action1b',
-                    'GET /api/action1',
+            '10. Group 10',
+            '1. Group 1' => [
+                'GET /api/action1b',
+                'GET /api/action1',
+            ],
+            '13. Group 13' => [
+                'SG B' => [
+                    'POST /api/action13d',
+                    'GET /api/action13a',
                 ],
-                '13. Group 13' => [
-                    'SG B' => [
-                        'POST /api/action13d',
-                        'GET /api/action13a',
-                    ],
-                    'SG A',
-                    'PUT /api/action13c',
-                ],
+                'SG A',
+                'PUT /api/action13c',
+            ],
         ]]);
 
         RouteFacade::get('/api/action1', [TestGroupController::class, 'action1']);
