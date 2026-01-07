@@ -174,15 +174,26 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
             }
 
             try {
-                c::info('Processing route: '.c::getRouteRepresentation($route));
-                $currentEndpointData = $extractor->processRoute($route, $routeItem->getRules());
-                // If latest data is different from cached data, merge latest into current
-                $currentEndpointData = $this->mergeAnyEndpointDataUpdates($currentEndpointData, $cachedEndpoints, $latestEndpointsData);
-                $parsedEndpoints[] = $currentEndpointData;
-                c::success('Processed route: '.c::getRouteRepresentation($route));
+                // Start buffering warnings so they don't break the task output.
+                c::startWarningBuffer();
+
+                $this->command->outputComponents()->task(
+                    c::getRouteRepresentation($route),
+                    function () use ($extractor, $route, $routeItem, $cachedEndpoints, $latestEndpointsData, &$parsedEndpoints) {
+                        $currentEndpointData = $extractor->processRoute($route, $routeItem->getRules());
+                        // If latest data is different from cached data, merge latest into current.
+                        $currentEndpointData = $this->mergeAnyEndpointDataUpdates($currentEndpointData, $cachedEndpoints, $latestEndpointsData);
+                        $parsedEndpoints[] = $currentEndpointData;
+
+                        return true;
+                    }
+                );
+
+                // Flush buffered warnings after a task completes.
+                c::flushWarningBuffer();
             } catch (\Exception $exception) {
                 $this->encounteredErrors = true;
-                c::error('Failed processing route: '.c::getRouteRepresentation($route).' - Exception encountered.');
+                c::flushWarningBuffer(); // Flush warnings even in error.
                 e::dumpExceptionIfVerbose($exception);
             }
         }

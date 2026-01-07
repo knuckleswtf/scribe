@@ -95,6 +95,7 @@ class GenerateDocumentation extends Command
         Globals::$shouldBeVerbose = $this->option('verbose');
 
         c::bootstrapOutput($this->output);
+        c::setCommand($this);
 
         $configName = $this->option('config');
         if (!config($configName)) {
@@ -216,22 +217,28 @@ class GenerateDocumentation extends Command
 
     protected function sayGoodbye(bool $errored = false): void
     {
-        $message = 'All done. ';
+        $message = 'All done.';
+        $url = null;
+
         if ($this->docConfig->outputRoutedThroughLaravel()) {
             if ($this->docConfig->get('laravel.add_routes')) {
-                $message .= 'Visit your docs at '.url($this->docConfig->get('laravel.docs_url'));
+                $url = url($this->docConfig->get('laravel.docs_url'));
             }
-        } elseif (Str::endsWith(base_path('public'), 'public') && Str::startsWith($this->docConfig->get('static.output_path'), 'public/')) {
-            $message = 'Visit your docs at '.url(str_replace('public/', '', $this->docConfig->get('static.output_path')));
+        } else if (Str::endsWith(base_path('public'), 'public') && Str::startsWith($this->docConfig->get('static.output_path'), 'public/')) {
+            $url = url(str_replace('public/', '', $this->docConfig->get('static.output_path')));
         }
 
         $this->newLine();
-        c::success($message);
+        if ($url) {
+            $this->components->twoColumnDetail($message, $url);
+        } else {
+            $this->components->info($message);
+        }
 
         if ($errored) {
-            c::warn('Generated docs, but encountered some errors while processing routes.');
-            c::warn('Check the output above for details.');
-            if (empty($_SERVER['SCRIBE_TESTS'])) {
+            $this->components->warn('Generated docs, but encountered some errors while processing routes.');
+            $this->components->warn('Check the output above for details.');
+            if (empty($_SERVER["SCRIBE_TESTS"])) {
                 exit(2);
             }
         }
