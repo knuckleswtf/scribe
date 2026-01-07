@@ -6,6 +6,7 @@ use Closure;
 use DirectoryIterator;
 use Exception;
 use FastRoute\RouteParser\Std;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Routing\Route;
@@ -233,12 +234,50 @@ class Utils
         return substr($typeName, 0, -2);
     }
 
+    public static function findFactoryClassForModel(string $modelName): string
+    {
+        $baseFactoryPath = base_path('database/factories');
+        $targetFactoryFile = class_basename($modelName) . 'Factory.php';
+
+        $rii = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($baseFactoryPath));
+        foreach ($rii as $file) {
+            if ($file->isDir()) continue;
+
+            if ($file->getFilename() === $targetFactoryFile) {
+                $relativePath = str_replace($baseFactoryPath . DIRECTORY_SEPARATOR, '', $file->getPathname());
+                $classPath = str_replace(['/', '\\', '.php'], ['\\', '\\', ''], $relativePath);
+                return 'Database\\Factories\\' . $classPath;
+            }
+        }
+
+        throw CouldntFindFactory::forModel($modelName);
+    }
+
+    public static function resolveFactory(string $modelName): ?Factory
+    {
+        if (method_exists($modelName, 'factory')) {
+            return call_user_func_array([$modelName, 'factory'], []);
+        }
+
+        try {
+            $factoryClass = self::findFactoryClassForModel($modelName);
+        } catch (\Throwable $e) {
+            return null;
+        }
+
+        if (!class_exists($factoryClass)) {
+            return null;
+        }
+
+        return app($factoryClass)->new();
+    }
+
     /**
      * @param string $modelName
      * @param string[] $states
      * @param string[] $relations
      *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     * @return Factory
      * @throws \Throwable
      */
     public static function getModelFactory(string $modelName, array $states = [], array $relations = [])
@@ -247,9 +286,10 @@ class Utils
         // but the user might write it that way in a comment. Let's be safe.
         $modelName = ltrim($modelName, '\\');
 
-        if (method_exists($modelName, 'factory')) { // Laravel 8 type factory
-            /** @var \Illuminate\Database\Eloquent\Factories\Factory $factory */
-            $factory = call_user_func_array([$modelName, 'factory'], []);
+        /** @var \Illuminate\Database\Eloquent\Factories\Factory $factory */
+        $factory = self::resolveFactory($modelName);
+
+        if ($factory) { // Laravel 8 type factory
             foreach ($states as $state) {
                 if (method_exists(get_class($factory), $state)) {
                     $factory = $factory->$state();
