@@ -7,7 +7,7 @@
         "documentation",
         "laravel"
     ],
-    "homepage": "http://github.com/knuckleswtf/scribe",
+    "homepage": "https://github.com/knuckleswtf/scribe",
     "authors": [
         {
             "name": "Shalvah",
@@ -27,7 +27,6 @@
         "nikic/php-parser": "^5.0",
         "nunomaduro/collision": "^6.0",
         "ramsey/uuid": "^4.2.2",
-        "shalvah/clara": "dev-master",
         "shalvah/upgrader": ">=0.6.0",
         "spatie/data-transfer-object": "^2.6|^3.0",
         "symfony/var-exporter": "^6.0",
