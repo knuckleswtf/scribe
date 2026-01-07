@@ -8,6 +8,7 @@ use Knuckles\Camel\Extraction\ResponseCollection;
 use Knuckles\Scribe\Attributes\ResponseField;
 use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 use Knuckles\Scribe\Extracting\Strategies\ResponseFields\GetFromResponseFieldAttribute;
+use Knuckles\Scribe\Tests\Fixtures\TestNestedOuterResource;
 use Knuckles\Scribe\Tests\Fixtures\TestPet;
 use Knuckles\Scribe\Tests\Fixtures\TestPetApiResource;
 use Knuckles\Scribe\Tools\DocumentationConfig;
@@ -73,15 +74,36 @@ class GetFromResponseFieldAttributesTest extends TestCase
         $results = $this->fetch($endpoint);
 
         $this->assertArraySubset([
-            'id' => [
+            'data.id' => [
                 'type' => '',
                 'description' => 'The id of the pet.',
             ],
-            'species' => [
+            'data.species' => [
                 'type' => 'string',
                 'description' => 'The breed',
             ],
         ], $results);
+    }
+
+    /** @test */
+    public function attributes_from_nested_api_resources_are_correctly_merged()
+    {
+        $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
+            $e->controller = new ReflectionClass(ResponseFieldAttributeTestController::class);
+            $e->method = $e->controller->getMethod('methodWithNestedApiResourceResponse');
+            $e->responses = new ResponseCollection([]);
+        });
+        $results = $this->fetch($endpoint);
+
+        $this->assertArrayHasKey('data.outer1', $results);
+        $this->assertArrayHasKey('data.outer1.inner1', $results);
+        $this->assertArrayHasKey('data.outer2', $results);
+        $this->assertArrayHasKey('data.outer2.inner2', $results);
+
+        $this->assertTrue($results['data.outer1']['required']);
+        $this->assertTrue($results['data.outer1.inner1']['required']);
+        $this->assertTrue($results['data.outer2']['required']);
+        $this->assertTrue($results['data.outer2.inner2']['required']);
     }
 
     protected function fetch($endpoint): array
@@ -114,6 +136,12 @@ class ResponseFieldAttributeTestController
 
     #[ResponseFromApiResource(TestPetApiResource::class, TestPet::class)]
     public function methodWithApiResourceResponse()
+    {
+    }
+
+
+    #[ResponseFromApiResource(TestNestedOuterResource::class)]
+    public function methodWithNestedApiResourceResponse()
     {
     }
 }
