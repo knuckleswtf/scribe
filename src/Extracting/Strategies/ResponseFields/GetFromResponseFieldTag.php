@@ -31,7 +31,7 @@ class GetFromResponseFieldTag extends GetFieldsFromTagStrategy
             if($required !== "required"){
                 $description = $required . " " . $description;
             }
-            
+
             $required = $required === "required";
             $description = trim($description);
         }
@@ -57,21 +57,63 @@ class GetFromResponseFieldTag extends GetFieldsFromTagStrategy
      */
     public function getFromTags(array $tagsOnMethod, array $tagsOnClass = []): array
     {
+        $nonApiResourceFields = parent::getFromTags($tagsOnMethod, $tagsOnClass);
+        $apiResourceFields = $this->getApiResourceFields($tagsOnMethod);
+
+        return [...$nonApiResourceFields, ...$apiResourceFields];
+    }
+
+    protected function getApiResourceFields(array $tagsOnMethod): array
+    {
+        $apiResourceClassName = $this->getApiResourceClassName($tagsOnMethod);
+
+        if (empty($apiResourceClassName)) {
+            return [];
+        }
+
+        return $this->extractFieldsFromApiResource($apiResourceClassName);
+    }
+
+    protected function getApiResourceClassName(array $tagsOnMethod): ?string
+    {
         $apiResourceTags = array_values(
             array_filter($tagsOnMethod, function ($tag) {
                 return in_array(strtolower($tag->getName()), ['apiresource', 'apiresourcecollection']);
             })
         );
 
-        if (!empty($apiResourceTags) &&
-            !empty($className = $this->getClassNameFromApiResourceTag($apiResourceTags[0]->getContent()))
-        ) {
-            $method = u::getReflectedRouteMethod([$className, 'toArray']);
-            $docBlock = new DocBlock($method->getDocComment() ?: '');
-            $tagsOnApiResource = $docBlock->getTags();
+        if (empty($apiResourceTags)) {
+            return null;
         }
 
-        return parent::getFromTags(array_merge($tagsOnMethod, $tagsOnApiResource ?? []), $tagsOnClass);
+        return $this->getClassNameFromApiResourceTag($apiResourceTags[0]->getContent());
+    }
+
+    protected function extractFieldsFromApiResource(string $className): array
+    {
+        $method = u::getReflectedRouteMethod([$className, 'toArray']);
+        $docBlock = new DocBlock($method->getDocComment() ?: '');
+        $tagsOnApiResource = $docBlock->getTags();
+
+        $wrapKey = $className::$wrap ?? null;
+        $fields = parent::getFromTags($tagsOnApiResource, []);
+
+        return $this->applyWrapKeyPrefix($fields, $wrapKey);
+    }
+
+    protected function applyWrapKeyPrefix(array $fields, ?string $wrapKey): array
+    {
+        if ($wrapKey === null) {
+            return $fields;
+        }
+
+        $wrappedFields = [];
+        foreach ($fields as $fieldName => $fieldData) {
+            $fieldData['name'] = $wrapKey . '.' . $fieldData['name'];
+            $wrappedFields[$fieldData['name']] = $fieldData;
+        }
+
+        return $wrappedFields;
     }
 
     public function getClassNameFromApiResourceTag(string $apiResourceTag): string

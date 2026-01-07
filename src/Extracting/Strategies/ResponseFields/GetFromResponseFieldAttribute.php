@@ -19,24 +19,51 @@ class GetFromResponseFieldAttribute extends PhpAttributeStrategy
 
     protected function extractFromAttributes(
         ExtractedEndpointData $endpointData,
-        array $attributesOnMethod, array $attributesOnFormRequest = [], array $attributesOnController = []
-    ): ?array
+        array $attributesOnMethod,
+        array $attributesOnFormRequest = [],
+        array $attributesOnController = []
+    ): ?array {
+        return [
+            ...$this->getNonApiResourceFields($endpointData, $attributesOnMethod, $attributesOnFormRequest, $attributesOnController),
+            ...$this->getApiResourceFields($endpointData)
+        ];
+    }
+
+    protected function getApiResourceFields(ExtractedEndpointData $endpointData): array
     {
-        $attributesOnApiResourceMethods = [];
         $apiResourceAttributes = $endpointData->method->getAttributes(ResponseFromApiResource::class);
 
-        if (!empty($apiResourceAttributes)) {
-            $attributesOnApiResourceMethods = collect($apiResourceAttributes)
-                ->flatMap(function (ReflectionAttribute $attribute) {
-                    $className = $attribute->newInstance()->name;
-                    $method = u::getReflectedRouteMethod([$className, 'toArray']);
-                    return collect($method->getAttributes(ResponseField::class))
-                        ->map(fn (ReflectionAttribute $attr) => $attr->newInstance());
-                });
-        }
+        return collect($apiResourceAttributes)
+            ->flatMap(fn(ReflectionAttribute $attribute) => $this->extractFieldsFromApiResource($attribute, $endpointData))
+            ->toArray();
+    }
 
+    protected function extractFieldsFromApiResource(ReflectionAttribute $attribute, ExtractedEndpointData $endpointData): array
+    {
+        $className = $attribute->newInstance()->name;
+        $method = u::getReflectedRouteMethod([$className, 'toArray']);
+        $wrapKey = $className::$wrap ?? null;
 
-        return collect([...$attributesOnController, ...$attributesOnFormRequest, ...$attributesOnMethod, ...$attributesOnApiResourceMethods])
+        return collect($method->getAttributes(ResponseField::class))
+            ->mapWithKeys(function (ReflectionAttribute $attr) use ($endpointData, $wrapKey) {
+                $data = $attr->newInstance()->toArray();
+                $data['type'] = ResponseFieldTools::inferTypeOfResponseField($data, $endpointData);
+
+                if ($wrapKey !== null) {
+                    $data['name'] = $wrapKey . '.' . $data['name'];
+                }
+
+                return [$data['name'] => $data];
+            })->toArray();
+    }
+
+    protected function getNonApiResourceFields(
+        ExtractedEndpointData $endpointData,
+        array $attributesOnMethod,
+        array $attributesOnFormRequest,
+        array $attributesOnController
+    ): array {
+        return collect([...$attributesOnController, ...$attributesOnFormRequest, ...$attributesOnMethod])
             ->mapWithKeys(function ($attributeInstance) use ($endpointData) {
                 /** @var ResponseField $attributeInstance */
                 $data = $attributeInstance->toArray();
