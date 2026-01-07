@@ -89,6 +89,16 @@ class GenerateDocumentation extends Command
         return $this->docConfig;
     }
 
+    /**
+     * Get access to output components for task-based output.
+     *
+     * @return \Illuminate\Console\View\Components\Factory
+     */
+    public function outputComponents()
+    {
+        return $this->components;
+    }
+
     public function bootstrap(): void
     {
         // The --verbose option is included with all Artisan commands.

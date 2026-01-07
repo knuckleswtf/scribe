@@ -60,7 +60,12 @@ class ConsoleOutputUtils
     public static function task(string $description, callable $task): mixed
     {
         if (self::$command) {
-            return self::$command->outputComponents()->task($description, $task);
+            // Laravel's task() method doesn't return the callback result, so we capture it.
+            $result = null;
+            self::$command->outputComponents()->task($description, function () use (&$result, $task) {
+                $result = $task();
+            });
+            return $result;
         }
 
         // Fallback for contexts without command

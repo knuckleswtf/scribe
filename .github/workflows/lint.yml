@@ -16,7 +16,9 @@ jobs:
     name: Lint code (PHP ${{ matrix.php }})
 
     steps:
-      - uses: actions/checkout@v3
+      - name: '🛎 Checkout'
+        uses: actions/checkout@v6
+
       - name: Setup PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
         with:
@@ -25,7 +27,7 @@ jobs:
           extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite, bcmath, intl, gd
 
       - name: Cache composer dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: vendor
           key: composer-${{ hashFiles('composer.lock') }}
