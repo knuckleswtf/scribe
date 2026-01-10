@@ -163,6 +163,6 @@ class ConsoleOutputUtils
         $routeMethods = implode('|', $methods);
         $routePath = $route->uri();
 
-        return "[{$routeMethods}] {$routePath}";
+        return "[<fg=cyan>$routeMethods</>] $routePath";
     }
 }

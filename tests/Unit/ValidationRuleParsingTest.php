@@ -27,9 +27,10 @@ class ValidationRuleParsingTest extends BaseLaravelTest
 {
     private $strategy;
 
-    public function __construct(?string $name = null, array $data = [], $dataName = '')
+    protected function setUp(): void
     {
-        parent::__construct($name, $data, $dataName);
+        parent::setUp();
+
         $this->strategy = new class {
             use ParsesValidationRules;
 
