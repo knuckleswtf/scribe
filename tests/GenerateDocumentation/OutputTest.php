@@ -622,6 +622,32 @@ class OutputTest extends BaseLaravelTest
 
     }
 
+    /** @test */
+    public function html_special_characters_in_json_body_are_properly_escaped_in_elements_theme()
+    {
+        RouteFacade::post('/api/withHtmlSpecialCharsInBody', [TestController::class, 'withHtmlSpecialCharsInBody']);
+        
+        $this->setConfig([
+            'type' => 'laravel',
+            'theme' => 'elements',
+        ]);
+        
+        $this->generate();
+        
+        $bladeContent = file_get_contents($this->bladeOutputPath());
+        
+        // Check that the JSON body doesn't contain raw HTML special characters
+        // The < and > should be escaped as \u003C and \u003E
+        // The & should be escaped as \u0026
+        $this->assertStringContainsString('\\u003C', $bladeContent);
+        $this->assertStringContainsString('\\u003E', $bladeContent);
+        $this->assertStringContainsString('\\u0026', $bladeContent);
+        
+        // Verify the actual JSON contains the expected escaped values
+        $this->assertStringContainsString('"username": "user\\u003Ctest\\u003E"', $bladeContent);
+        $this->assertStringContainsString('"password": "pass\\u0026word\\u003C123\\u003E"', $bladeContent);
+    }
+
     protected function postmanOutputPath(bool $staticType = false): string
     {
         return $staticType

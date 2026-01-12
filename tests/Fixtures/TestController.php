@@ -744,6 +744,18 @@ class TestController extends Controller
     {
         return null;
     }
+
+    /**
+     * Endpoint with HTML special characters in body parameters.
+     *
+     * @bodyParam username string The username. Example: user<test>
+     * @bodyParam password string The password with special chars. Example: pass&word<123>
+     * @bodyParam email string The email. Example: test@example.com
+     */
+    public function withHtmlSpecialCharsInBody()
+    {
+        return '';
+    }
 }
 
 enum Category: string

@@ -208,7 +208,7 @@
                                 <div class="code-editor language-json"
                                      id="json-body-{{ $endpoint->endpointId() }}"
                                      style="font-family: var(--font-code); font-size: 12px; line-height: var(--lh-code);"
-                                >{!! json_encode($endpoint->getSampleBody(), JSON_PRETTY_PRINT) !!}</div>
+                                >{!! json_encode($endpoint->getSampleBody(), JSON_PRETTY_PRINT | JSON_HEX_TAG | JSON_HEX_AMP) !!}</div>
                             </div>
                         @else
                             <div class="ParameterGrid sl-p-4">
