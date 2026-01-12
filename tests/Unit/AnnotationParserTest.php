@@ -5,13 +5,19 @@ namespace Knuckles\Scribe\Tests\Unit;
 use Knuckles\Scribe\Tests\BaseUnitTest;
 use Knuckles\Scribe\Tools\AnnotationParser;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class AnnotationParserTest extends BaseUnitTest
 {
     /**
      * @test
+     *
      * @dataProvider annotationsWithContentAndFields
      */
-    public function can_parse_annotation_into_content_and_fields(string $annotation, array $expected)
+    public function canParseAnnotationIntoContentAndFields(string $annotation, array $expected)
     {
         $result = AnnotationParser::parseIntoContentAndFields($annotation, ['status', 'scenario']);
 
@@ -21,28 +27,28 @@ class AnnotationParserTest extends BaseUnitTest
     public static function annotationsWithContentAndFields()
     {
         return [
-            "when fields come first" => [
+            'when fields come first' => [
                 'status=400 scenario="things go wrong" {"message": "failed"}',
                 [
                     'fields' => ['status' => '400', 'scenario' => 'things go wrong'],
                     'content' => '{"message": "failed"}',
                 ],
             ],
-            "when fields come last" => [
+            'when fields come last' => [
                 '{"message": "failed"} status=400 scenario="things go wrong"',
                 [
                     'fields' => ['status' => '400', 'scenario' => 'things go wrong'],
                     'content' => '{"message": "failed"}',
                 ],
             ],
-            "when there are no fields" => [
+            'when there are no fields' => [
                 '{"message": "failed"} ',
                 [
                     'fields' => ['status' => null, 'scenario' => null],
                     'content' => '{"message": "failed"}',
                 ],
             ],
-            "when there are some fields" => [
+            'when there are some fields' => [
                 ' status=hey {"message": "failed"} ',
                 [
                     'fields' => ['status' => 'hey', 'scenario' => null],
@@ -54,9 +60,10 @@ class AnnotationParserTest extends BaseUnitTest
 
     /**
      * @test
+     *
      * @dataProvider annotationsWithFields
      */
-    public function can_parse_annotation_into_fields(string $annotation, array $expected)
+    public function canParseAnnotationIntoFields(string $annotation, array $expected)
     {
         $result = AnnotationParser::parseIntoFields($annotation);
 
@@ -66,25 +73,25 @@ class AnnotationParserTest extends BaseUnitTest
     public static function annotationsWithFields()
     {
         return [
-            "with or without quotes" => [
+            'with or without quotes' => [
                 'title=This message="everything good" "dummy field"="dummy data", "snaked_data"=value',
                 [
                     'title' => 'This',
-                    'message' => "everything good",
+                    'message' => 'everything good',
                     'dummy field' => 'dummy data',
-                    'snaked_data' => 'value'
-                ]
+                    'snaked_data' => 'value',
+                ],
             ],
-            "no fields" => [
+            'no fields' => [
                 '{"message": "failed"}',
-                []
+                [],
             ],
-            "fields with empty values" => [
+            'fields with empty values' => [
                 'title= message="everything good"',
                 [
-                    'message' => 'everything good'
-                ]
-            ]
+                    'message' => 'everything good',
+                ],
+            ],
         ];
     }
 }

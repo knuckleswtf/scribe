@@ -6,7 +6,6 @@ use Illuminate\Routing\Route;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\Utils as u;
 use Mpociot\Reflection\DocBlock;
-use ReflectionClass;
 
 /**
  * Class RouteDocBlocker
@@ -28,6 +27,9 @@ class RouteDocBlocker
     }
 
     /**
+     * @param mixed      $className
+     * @param null|mixed $methodName
+     *
      * @return array{method: DocBlock, class: DocBlock} Method and class docblocks
      */
     public static function getDocBlocks(Route $route, $className, $methodName = null): array
@@ -43,10 +45,10 @@ class RouteDocBlocker
             return $docBlocks;
         }
 
-        $class = new ReflectionClass($className);
+        $class = new \ReflectionClass($className);
 
-        if (! $class->hasMethod($methodName)) {
-            throw new \Exception("Error while fetching docblock for route ". c::getRouteRepresentation($route).": Class $className does not contain method $methodName");
+        if (!$class->hasMethod($methodName)) {
+            throw new \Exception('Error while fetching docblock for route '.c::getRouteRepresentation($route).": Class {$className} does not contain method {$methodName}");
         }
 
         $method = u::getReflectedRouteMethod([$className, $methodName]);
@@ -61,15 +63,13 @@ class RouteDocBlocker
     }
 
     /**
-     * @param string|object $classNameOrInstance
-     *
-     * @return string
+     * @param object|string $classNameOrInstance
      */
     protected static function normalizeClassName($classNameOrInstance): string
     {
         if (is_object($classNameOrInstance)) {
             // Route handlers are not destroyed until the script ends so this should be perfectly safe.
-            $classNameOrInstance = get_class($classNameOrInstance) . '::' . spl_object_id($classNameOrInstance);
+            $classNameOrInstance = get_class($classNameOrInstance).'::'.spl_object_id($classNameOrInstance);
         }
 
         return $classNameOrInstance;
@@ -91,9 +91,9 @@ class RouteDocBlocker
     private static function getRouteCacheId(Route $route, string $className, string $methodName): string
     {
         return $route->uri()
-            . ':'
-            . implode(array_diff($route->methods(), ['HEAD']))
-            . $className
-            . $methodName;
+            .':'
+            .implode(array_diff($route->methods(), ['HEAD']))
+            .$className
+            .$methodName;
     }
 }

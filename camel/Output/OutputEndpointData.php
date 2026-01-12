@@ -14,7 +14,6 @@ use Knuckles\Scribe\Extracting\Extractor;
 use Knuckles\Scribe\Tools\Utils as u;
 use Knuckles\Scribe\Tools\WritingUtils;
 
-
 /**
  * Endpoint DTO, optimized for generating HTML output.
  * Unneeded properties removed, extra properties and helper methods added.
@@ -36,7 +35,7 @@ class OutputEndpointData extends BaseDTO
     public array $headers = [];
 
     /**
-     * @var array<string,\Knuckles\Camel\Output\Parameter>
+     * @var array<string,Parameter>
      */
     public array $urlParameters = [];
 
@@ -46,7 +45,7 @@ class OutputEndpointData extends BaseDTO
     public array $cleanUrlParameters = [];
 
     /**
-     * @var array<string,\Knuckles\Camel\Output\Parameter>
+     * @var array<string,Parameter>
      */
     public array $queryParameters = [];
 
@@ -56,7 +55,7 @@ class OutputEndpointData extends BaseDTO
     public array $cleanQueryParameters = [];
 
     /**
-     * @var array<string, \Knuckles\Camel\Output\Parameter>
+     * @var array<string, Parameter>
      */
     public array $bodyParameters = [];
 
@@ -66,14 +65,14 @@ class OutputEndpointData extends BaseDTO
     public array $cleanBodyParameters = [];
 
     /**
-     * @var array<string,\Illuminate\Http\UploadedFile>
+     * @var array<string,UploadedFile>
      */
     public array $fileParameters = [];
 
     public ResponseCollection $responses;
 
     /**
-     * @var array<string,\Knuckles\Camel\Extraction\ResponseField>
+     * @var array<string,ResponseField>
      */
     public array $responseFields = [];
 
@@ -81,6 +80,7 @@ class OutputEndpointData extends BaseDTO
      * The same as bodyParameters, but organized in a hierarchy.
      * So, top-level items first, with a __fields property containing their children, and so on.
      * Useful so we can easily render and nest on the frontend.
+     *
      * @var array<string, array>
      */
     public array $nestedBodyParameters = [];
@@ -96,10 +96,10 @@ class OutputEndpointData extends BaseDTO
     {
         // spatie/dto currently doesn't auto-cast nested DTOs like that
         $parameters['responses'] = new ResponseCollection($parameters['responses'] ?? []);
-        $parameters['bodyParameters'] = array_map(fn($param) => new Parameter($param), $parameters['bodyParameters'] ?? []);
-        $parameters['queryParameters'] = array_map(fn($param) => new Parameter($param), $parameters['queryParameters'] ?? []);
-        $parameters['urlParameters'] = array_map(fn($param) => new Parameter($param), $parameters['urlParameters'] ?? []);
-        $parameters['responseFields'] = array_map(fn($param) => new ResponseField($param), $parameters['responseFields'] ?? []);
+        $parameters['bodyParameters'] = array_map(fn ($param) => new Parameter($param), $parameters['bodyParameters'] ?? []);
+        $parameters['queryParameters'] = array_map(fn ($param) => new Parameter($param), $parameters['queryParameters'] ?? []);
+        $parameters['urlParameters'] = array_map(fn ($param) => new Parameter($param), $parameters['urlParameters'] ?? []);
+        $parameters['responseFields'] = array_map(fn ($param) => new ResponseField($param), $parameters['responseFields'] ?? []);
 
         parent::__construct($parameters);
 
@@ -121,8 +121,6 @@ class OutputEndpointData extends BaseDTO
     }
 
     /**
-     * @param Route $route
-     *
      * @return array<string>
      */
     public static function getMethods(Route $route): array
@@ -131,7 +129,7 @@ class OutputEndpointData extends BaseDTO
 
         // Laravel adds an automatic "HEAD" endpoint for each GET request, so we'll strip that out,
         // but not if there's only one method (means it was intentional)
-        if (count($methods) === 1) {
+        if (1 === count($methods)) {
             return $methods;
         }
 
@@ -166,11 +164,7 @@ class OutputEndpointData extends BaseDTO
      *         ],
      *       ],
      *   ],
-     * ]]
-     *
-     * @param array $parameters
-     *
-     * @return array
+     * ]].
      */
     public static function nestArrayAndObjectFields(array $parameters, array $cleanParameters = []): array
     {
@@ -197,17 +191,17 @@ class OutputEndpointData extends BaseDTO
                     }
 
                     $details = [
-                        "name" => $parentName,
-                        "type" => $parentName === '[]' ? "object[]" : "object",
-                        "description" => "",
-                        "required" => false,
+                        'name' => $parentName,
+                        'type' => '[]' === $parentName ? 'object[]' : 'object',
+                        'description' => '',
+                        'required' => false,
                     ];
 
                     if ($parameter instanceof ResponseField) {
                         $ancestors[] = [$parentName, new ResponseField($details)];
                     } else {
-                        $lastParentExample = $details["example"] =
-                            [$fieldName => $lastParentExample ?? $parameter->example];
+                        $lastParentExample = $details['example']
+                            = [$fieldName => $lastParentExample ?? $parameter->example];
                         $ancestors[] = [$parentName, new Parameter($details)];
                     }
 
@@ -241,11 +235,11 @@ class OutputEndpointData extends BaseDTO
                 $dotPathToParent = str_replace('[]', '', $baseName);
                 // When the body is an array, param names will be  "[].paramname",
                 // so $parts is ['[]']
-                if ($parts[0] == '[]') {
-                    $dotPathToParent = '[]' . $dotPathToParent;
+                if ('[]' == $parts[0]) {
+                    $dotPathToParent = '[]'.$dotPathToParent;
                 }
 
-                $dotPath = $dotPathToParent . '.__fields.' . $fieldName;
+                $dotPath = $dotPathToParent.'.__fields.'.$fieldName;
                 Arr::set($finalParameters, $dotPath, $parameter);
             } else { // A regular field, not a subfield of anything
                 // Note: we're assuming any subfields of this field are listed *after* it,
@@ -254,16 +248,15 @@ class OutputEndpointData extends BaseDTO
                 $parameter['__fields'] = [];
                 $finalParameters[$name] = $parameter;
             }
-
         }
 
         // Finally, if the body is an array, remove any other items.
         if (isset($finalParameters['[]'])) {
-            $finalParameters = ["[]" => $finalParameters['[]']];
+            $finalParameters = ['[]' => $finalParameters['[]']];
             // At this point, the examples are likely [[], []],
             // but have been correctly set in clean parameters, so let's update them
-            if ($finalParameters["[]"]["example"][0] == [] && !empty($cleanParameters)) {
-                $finalParameters["[]"]["example"] = $cleanParameters;
+            if ([] == $finalParameters['[]']['example'][0] && !empty($cleanParameters)) {
+                $finalParameters['[]']['example'] = $cleanParameters;
             }
         }
 
@@ -272,19 +265,20 @@ class OutputEndpointData extends BaseDTO
 
     public function endpointId(): string
     {
-        return $this->httpMethods[0] . str_replace(['/', '?', '{', '}', ':', '\\', '+', '|', '.'], '-', $this->uri);
+        return $this->httpMethods[0].str_replace(['/', '?', '{', '}', ':', '\\', '+', '|', '.'], '-', $this->uri);
     }
 
     public function name(): string
     {
-        return $this->metadata->title ?: ($this->httpMethods[0] . " " . $this->uri);
+        return $this->metadata->title ?: ($this->httpMethods[0].' '.$this->uri);
     }
 
     public function fullSlug(): string
     {
         $groupSlug = Str::slug($this->metadata->groupName);
         $endpointId = $this->endpointId();
-        return "$groupSlug-$endpointId";
+
+        return "{$groupSlug}-{$endpointId}";
     }
 
     public function hasResponses(): bool
@@ -299,8 +293,8 @@ class OutputEndpointData extends BaseDTO
 
     public function isArrayBody(): bool
     {
-        return count($this->nestedBodyParameters) === 1
-            && array_keys($this->nestedBodyParameters)[0] === "[]";
+        return 1 === count($this->nestedBodyParameters)
+            && '[]' === array_keys($this->nestedBodyParameters)[0];
     }
 
     public function isGet(): bool
@@ -315,11 +309,13 @@ class OutputEndpointData extends BaseDTO
 
     public function hasJsonBody(): bool
     {
-        if ($this->hasFiles() || empty($this->nestedBodyParameters))
+        if ($this->hasFiles() || empty($this->nestedBodyParameters)) {
             return false;
+        }
 
-        $contentType = data_get($this->headers, "Content-Type", data_get($this->headers, "content-type", ""));
-        return str_contains($contentType, "json");
+        $contentType = data_get($this->headers, 'Content-Type', data_get($this->headers, 'content-type', ''));
+
+        return str_contains($contentType, 'json');
     }
 
     public function getSampleBody()
@@ -341,7 +337,7 @@ class OutputEndpointData extends BaseDTO
         foreach ($parameters as $name => $example) {
             if ($example instanceof UploadedFile) {
                 $files[$name] = $example;
-            } else if (is_array($example) && !empty($example)) {
+            } elseif (is_array($example) && !empty($example)) {
                 [$subFiles, $subRegulars] = static::splitIntoFileAndRegularParameters($example);
                 foreach ($subFiles as $subName => $subExample) {
                     $files[$name][$subName] = $subExample;
@@ -353,6 +349,7 @@ class OutputEndpointData extends BaseDTO
                 $regularParameters[$name] = $example;
             }
         }
+
         return [$files, $regularParameters];
     }
 }

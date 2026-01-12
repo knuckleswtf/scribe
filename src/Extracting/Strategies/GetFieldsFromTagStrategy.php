@@ -8,21 +8,25 @@ abstract class GetFieldsFromTagStrategy extends TagStrategyWithFormRequestFallba
 {
     use ParamHelpers;
 
-    protected string $tagName = "";
+    protected string $tagName = '';
 
     public function getFromTags(array $tagsOnMethod, array $tagsOnClass = []): array
     {
         $fields = [];
 
         foreach ($tagsOnClass as $tag) {
-            if (strtolower($tag->getName()) !== strtolower($this->tagName)) continue;
+            if (strtolower($tag->getName()) !== strtolower($this->tagName)) {
+                continue;
+            }
 
             $fieldData = $this->parseTag(trim($tag->getContent()));
             $fields[$fieldData['name']] = $fieldData;
         }
 
         foreach ($tagsOnMethod as $tag) {
-            if (strtolower($tag->getName()) !== strtolower($this->tagName)) continue;
+            if (strtolower($tag->getName()) !== strtolower($this->tagName)) {
+                continue;
+            }
 
             $fieldData = $this->parseTag(trim($tag->getContent()));
             $fields[$fieldData['name']] = $fieldData;
@@ -34,24 +38,29 @@ abstract class GetFieldsFromTagStrategy extends TagStrategyWithFormRequestFallba
     abstract protected function parseTag(string $tagContent): array;
 
     protected function getDescriptionAndExample(
-        string $description, string $type, string $tagContent, string $fieldName
-    ): array
-    {
+        string $description,
+        string $type,
+        string $tagContent,
+        string $fieldName
+    ): array {
         [$description, $example, $enumValues, $exampleWasSpecified] = $this->parseExampleFromParamDescription($description, $type);
 
-        if($exampleWasSpecified && $example === null) {
+        if ($exampleWasSpecified && null === $example) {
             $example = null;
         } else {
             $example = $this->setExampleIfNeeded($example, $type, $tagContent, $fieldName, $enumValues);
         }
-        
+
         return [$description, $example, $enumValues, $exampleWasSpecified];
     }
 
     protected function setExampleIfNeeded(
-        mixed $currentExample, string $type, string $tagContent, string $fieldName, ?array $enumValues = []
-    ): mixed
-    {
+        mixed $currentExample,
+        string $type,
+        string $tagContent,
+        string $fieldName,
+        ?array $enumValues = []
+    ): mixed {
         return (is_null($currentExample) && !$this->shouldExcludeExample($tagContent))
             ? $this->generateDummyValue($type, hints: ['name' => $fieldName, 'enumValues' => $enumValues])
             : $currentExample;

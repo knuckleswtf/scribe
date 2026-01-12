@@ -2,19 +2,15 @@
 
 namespace Knuckles\Scribe\Attributes;
 
-use Attribute;
-
-#[Attribute(Attribute::TARGET_FUNCTION | Attribute::TARGET_METHOD | Attribute::TARGET_CLASS)]
+#[\Attribute(\Attribute::TARGET_FUNCTION | \Attribute::TARGET_METHOD | \Attribute::TARGET_CLASS)]
 class Deprecated
 {
     public function __construct(
         public bool|string|null $deprecated = true,
-    )
-    {
-    }
+    ) {}
 
     public function toArray()
     {
-        return ["deprecated" => $this->deprecated];
+        return ['deprecated' => $this->deprecated];
     }
 }

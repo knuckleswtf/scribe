@@ -9,11 +9,10 @@ use Knuckles\Camel\Output\OutputEndpointData;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\MarkdownParser;
 use Knuckles\Scribe\Tools\Utils;
-use Knuckles\Scribe\Tools\Utils as u;
 use Knuckles\Scribe\Tools\WritingUtils;
 
 /**
- * Transforms the extracted data (endpoints YAML, API details Markdown) into a HTML site
+ * Transforms the extracted data (endpoints YAML, API details Markdown) into a HTML site.
  */
 class HtmlWriter
 {
@@ -31,7 +30,7 @@ class HtmlWriter
         // then use '../docs/{asset}', so assets can work via Laravel app or via index.html
         $this->assetPathPrefix = '../docs/';
         if (in_array($this->config->get('type'), ['static', 'external_static'])
-            && rtrim($this->config->get('static.output_path', ''), '/') != 'public/docs'
+            && 'public/docs' != rtrim($this->config->get('static.output_path', ''), '/')
         ) {
             $this->assetPathPrefix = './';
         }
@@ -39,20 +38,20 @@ class HtmlWriter
 
     public function generate(array $groupedEndpoints, string $sourceFolder, string $destinationFolder)
     {
-        $intro = $this->transformMarkdownFileToHTML($sourceFolder . '/intro.md');
-        $auth = $this->transformMarkdownFileToHTML($sourceFolder . '/auth.md');
+        $intro = $this->transformMarkdownFileToHTML($sourceFolder.'/intro.md');
+        $auth = $this->transformMarkdownFileToHTML($sourceFolder.'/auth.md');
         $headingsBeforeEndpoints = $this->markdownParser->headings;
 
         $this->markdownParser->headings = [];
-        $appendFile = rtrim($sourceFolder, '/') . '/' . 'append.md';
+        $appendFile = rtrim($sourceFolder, '/').'/append.md';
         $append = file_exists($appendFile) ? $this->transformMarkdownFileToHTML($appendFile) : '';
         $headingsAfterEndpoints = $this->markdownParser->headings;
 
         foreach ($groupedEndpoints as &$group) {
-                $group['subgroups'] = collect($group['endpoints'])->groupBy('metadata.subgroup')->all();
+            $group['subgroups'] = collect($group['endpoints'])->groupBy('metadata.subgroup')->all();
         }
         $theme = $this->config->get('theme') ?? 'default';
-        $output = View::make("scribe::themes.$theme.index", [
+        $output = View::make("scribe::themes.{$theme}.index", [
             'metadata' => $this->getMetadata(),
             'baseUrl' => $this->baseUrl,
             'tryItOut' => $this->config->get('try_it_out'),
@@ -65,45 +64,40 @@ class HtmlWriter
         ])->render();
 
         if (!is_dir($destinationFolder)) {
-            mkdir($destinationFolder, 0777, true);
+            mkdir($destinationFolder, 0o777, true);
         }
 
-        file_put_contents($destinationFolder . '/index.html', $output);
+        file_put_contents($destinationFolder.'/index.html', $output);
 
         // Copy assets
-        $assetsFolder = __DIR__ . '/../../resources';
+        $assetsFolder = __DIR__.'/../../resources';
         // Prune older versioned assets
-        if (is_dir($destinationFolder . '/css')) {
-            Utils::deleteDirectoryAndContents($destinationFolder . '/css');
+        if (is_dir($destinationFolder.'/css')) {
+            Utils::deleteDirectoryAndContents($destinationFolder.'/css');
         }
-        if (is_dir($destinationFolder . '/js')) {
-            Utils::deleteDirectoryAndContents($destinationFolder . '/js');
+        if (is_dir($destinationFolder.'/js')) {
+            Utils::deleteDirectoryAndContents($destinationFolder.'/js');
         }
         Utils::copyDirectory("{$assetsFolder}/images/", "{$destinationFolder}/images");
 
         $assets = [
-            "{$assetsFolder}/css/theme-$theme.style.css" => ["$destinationFolder/css/", "theme-$theme.style.css"],
-            "{$assetsFolder}/css/theme-$theme.print.css" => ["$destinationFolder/css/", "theme-$theme.print.css"],
-            "{$assetsFolder}/js/theme-$theme.js" => ["$destinationFolder/js/", WritingUtils::getVersionedAsset("theme-$theme.js")],
+            "{$assetsFolder}/css/theme-{$theme}.style.css" => ["{$destinationFolder}/css/", "theme-{$theme}.style.css"],
+            "{$assetsFolder}/css/theme-{$theme}.print.css" => ["{$destinationFolder}/css/", "theme-{$theme}.print.css"],
+            "{$assetsFolder}/js/theme-{$theme}.js" => ["{$destinationFolder}/js/", WritingUtils::getVersionedAsset("theme-{$theme}.js")],
         ];
 
         if ($this->config->get('try_it_out.enabled', true)) {
-            $assets["{$assetsFolder}/js/tryitout.js"] = ["$destinationFolder/js/", WritingUtils::getVersionedAsset('tryitout.js')];
+            $assets["{$assetsFolder}/js/tryitout.js"] = ["{$destinationFolder}/js/", WritingUtils::getVersionedAsset('tryitout.js')];
         }
 
         foreach ($assets as $path => [$destination, $fileName]) {
             if (file_exists($path)) {
                 if (!is_dir($destination)) {
-                    mkdir($destination, 0777, true);
+                    mkdir($destination, 0o777, true);
                 }
-                copy($path, $destination . $fileName);
+                copy($path, $destination.$fileName);
             }
         }
-    }
-
-    protected function transformMarkdownFileToHTML(string $markdownFilePath): string
-    {
-        return $this->markdownParser->text(file_get_contents($markdownFilePath));
     }
 
     public function getMetadata(): array
@@ -118,10 +112,10 @@ class HtmlWriter
 
         $auth = $this->config->get('auth');
         if ($auth) {
-            if ($auth['in'] === 'bearer' || $auth['in'] === 'basic') {
+            if ('bearer' === $auth['in'] || 'basic' === $auth['in']) {
                 $auth['name'] = 'Authorization';
                 $auth['location'] = 'header';
-                $auth['prefix'] = ucfirst($auth['in']) . ' ';
+                $auth['prefix'] = ucfirst($auth['in']).' ';
             } else {
                 $auth['location'] = $auth['in'];
                 $auth['prefix'] = '';
@@ -129,15 +123,20 @@ class HtmlWriter
         }
 
         return [
-            'title' => $this->config->get('title') ?: config('app.name', '') . ' Documentation',
+            'title' => $this->config->get('title') ?: config('app.name', '').' Documentation',
             'example_languages' => $this->config->get('example_languages'),
             'logo' => $this->config->get('logo') ?? false,
             'last_updated' => $this->getLastUpdated(),
             'auth' => $auth,
             'try_it_out' => $this->config->get('try_it_out'),
-            "postman_collection_url" => $postmanCollectionUrl ?? null,
-            "openapi_spec_url" => $openApiSpecUrl ?? null,
+            'postman_collection_url' => $postmanCollectionUrl ?? null,
+            'openapi_spec_url' => $openApiSpecUrl ?? null,
         ];
+    }
+
+    protected function transformMarkdownFileToHTML(string $markdownFilePath): string
+    {
+        return $this->markdownParser->text(file_get_contents($markdownFilePath));
     }
 
     protected function getLastUpdated()
@@ -145,17 +144,17 @@ class HtmlWriter
         $lastUpdated = $this->config->get('last_updated', 'Last updated: {date:F j, Y}');
 
         $tokens = [
-            "date" => fn($format) => date($format),
-            "git" => fn($format) => match ($format) {
-                "short" => trim(shell_exec('git rev-parse --short HEAD')),
-                "long" => trim(shell_exec('git rev-parse HEAD')),
-                default => throw new InvalidArgumentException("The `git` token only supports formats 'short' and 'long', but you specified $format"),
+            'date' => fn ($format) => date($format),
+            'git' => fn ($format) => match ($format) {
+                'short' => trim(shell_exec('git rev-parse --short HEAD')),
+                'long' => trim(shell_exec('git rev-parse HEAD')),
+                default => throw new InvalidArgumentException("The `git` token only supports formats 'short' and 'long', but you specified {$format}"),
             },
         ];
 
         foreach ($tokens as $token => $resolver) {
             $matches = [];
-            if(preg_match('#(\{'.$token.':(.+?)})#', $lastUpdated, $matches)) {
+            if (preg_match('#(\{'.$token.':(.+?)})#', $lastUpdated, $matches)) {
                 $lastUpdated = str_replace($matches[1], $resolver($matches[2]), $lastUpdated);
             }
         }
@@ -173,11 +172,11 @@ class HtmlWriter
                 'slug' => $heading['slug'],
                 'name' => $heading['text'],
                 'subheadings' => [],
-            ];;
-            if ($heading['level'] === 1) {
+            ];
+            if (1 === $heading['level']) {
                 $headings[] = $element;
                 $lastL1ElementIndex = count($headings) - 1;
-            } elseif ($heading['level'] === 2 && !is_null($lastL1ElementIndex)) {
+            } elseif (2 === $heading['level'] && !is_null($lastL1ElementIndex)) {
                 $headings[$lastL1ElementIndex]['subheadings'][] = $element;
             }
         }
@@ -189,22 +188,22 @@ class HtmlWriter
                 'slug' => $groupSlug,
                 'name' => $group['name'],
                 'subheadings' => collect($group['subgroups'])->flatMap(function ($endpoints, $subgroupName) use ($groupSlug) {
-                    if ($subgroupName === "") {
-                        return $endpoints->map(fn(OutputEndpointData $endpoint) => [
+                    if ('' === $subgroupName) {
+                        return $endpoints->map(fn (OutputEndpointData $endpoint) => [
                             'slug' => $endpoint->fullSlug(),
                             'name' => $endpoint->name(),
-                            'subheadings' => []
+                            'subheadings' => [],
                         ])->values();
                     }
 
                     return [
                         [
-                            'slug' => "$groupSlug-" . Str::slug($subgroupName),
+                            'slug' => "{$groupSlug}-".Str::slug($subgroupName),
                             'name' => $subgroupName,
-                            'subheadings' => $endpoints->map(fn($endpoint) => [
+                            'subheadings' => $endpoints->map(fn ($endpoint) => [
                                 'slug' => $endpoint->fullSlug(),
                                 'name' => $endpoint->name(),
-                                'subheadings' => []
+                                'subheadings' => [],
                             ])->values(),
                         ],
                     ];
@@ -218,11 +217,11 @@ class HtmlWriter
                 'slug' => $heading['slug'],
                 'name' => $heading['text'],
                 'subheadings' => [],
-            ];;
-            if ($heading['level'] === 1) {
+            ];
+            if (1 === $heading['level']) {
                 $headings[] = $element;
                 $lastL1ElementIndex = count($headings) - 1;
-            } elseif ($heading['level'] === 2 && !is_null($lastL1ElementIndex)) {
+            } elseif (2 === $heading['level'] && !is_null($lastL1ElementIndex)) {
                 $headings[$lastL1ElementIndex]['subheadings'][] = $element;
             }
         }

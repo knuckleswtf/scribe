@@ -10,13 +10,13 @@ class TestTag extends Model
 {
     use HasFactory;
 
-    protected static function newFactory()
-    {
-        return TestTagFactory::new();
-    }
-
     public function posts(): MorphToMany
     {
         return $this->morphedByMany(TestPost::class, 'taggable')->withPivot('priority');
+    }
+
+    protected static function newFactory()
+    {
+        return TestTagFactory::new();
     }
 }

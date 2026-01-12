@@ -2,7 +2,6 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 
-use Exception;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -25,7 +24,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  */
 class ResponseCalls extends Strategy
 {
-    use ParamHelpers, DatabaseTransactionHelpers;
+    use ParamHelpers;
+    use DatabaseTransactionHelpers;
 
     protected array $previousConfigs = [];
 
@@ -51,33 +51,50 @@ class ResponseCalls extends Strategy
 
         if ($endpointData->auth) {
             [$where, $name, $value] = $endpointData->auth;
+
             switch ($where) {
                 case 'queryParameters':
                     $queryParameters[$name] = $value;
+
                     break;
+
                 case 'bodyParameters':
                     $bodyParameters[$name] = $value;
+
                     break;
+
                 case 'headers':
                     $headers[$name] = $value;
+
                     break;
+
                 default:
-                    throw new \InvalidArgumentException("Unknown auth location: $where");
+                    throw new \InvalidArgumentException("Unknown auth location: {$where}");
             }
         }
 
         $hardcodedFileParams = $settings['fileParams'] ?? [];
         $hardcodedFileParams = collect($hardcodedFileParams)->map(function ($filePath) {
             $fileName = basename($filePath);
+
             return new UploadedFile(
-                $filePath, $fileName, mime_content_type($filePath), test: true
+                $filePath,
+                $fileName,
+                mime_content_type($filePath),
+                test: true
             );
         })->toArray();
         $fileParameters = array_merge($endpointData->fileParameters, $hardcodedFileParams);
 
         $request = $this->prepareRequest(
-            $endpointData->route, $endpointData->uri, $settings, $urlParameters,
-            $bodyParameters, $queryParameters, $fileParameters, $headers
+            $endpointData->route,
+            $endpointData->uri,
+            $settings,
+            $urlParameters,
+            $bodyParameters,
+            $queryParameters,
+            $fileParameters,
+            $headers
         );
 
         $this->runPreRequestHook($request, $endpointData);
@@ -94,8 +111,8 @@ class ResponseCalls extends Strategy
                     'headers' => $this->getResponseHeaders($response),
                 ],
             ];
-        } catch (Exception $e) {
-            c::warn('Exception thrown during response call for' . $endpointData->name());
+        } catch (\Exception $e) {
+            c::warn('Exception thrown during response call for'.$endpointData->name());
             e::dumpExceptionIfVerbose($e);
 
             $response = null;
@@ -106,34 +123,56 @@ class ResponseCalls extends Strategy
         return $response;
     }
 
-    /**
-     * @param array $settings
-     *
-     * @return void
-     */
-    private function configureEnvironment(array $settings)
+    public function getMethods(Route $route): array
     {
-        $this->startDbTransaction();
-        $this->setLaravelConfigs($settings['config'] ?? []);
+        return array_diff($route->methods(), ['HEAD']);
     }
 
     /**
-     * @param Route $route
-     * @param array $settings
-     * @param array $urlParams
-     * @param array $bodyParams
-     * @param array $queryParams
-     *
-     * @param array $fileParameters
-     * @param array $headers
-     *
-     * @return Request
+     * @param array $only        The routes which this strategy should be applied to. Can not be specified with $except.
+     *                           Specify route names ("users.index", "users.*"), or method and path ("GET *", "POST /safe/*").
+     * @param array $except      The routes which this strategy should be applied to. Can not be specified with $only.
+     *                           Specify route names ("users.index", "users.*"), or method and path ("GET *", "POST /safe/*").
+     * @param array $config      any extra Laravel config() values to before starting the response call
+     * @param array $queryParams Query params to always send with the response call. Key-value array.
+     * @param array $bodyParams  Body params to always send with the response call. Key-value array.
+     * @param array $fileParams  File params to always send with the response call. Key-value array. Key is param name, value is file path.
+     * @param array $cookies     Cookies to always send with the response call. Key-value array.
      */
+    public static function withSettings(
+        array $only = [],
+        array $except = [],
+        array $config = [],
+        array $queryParams = [],
+        array $bodyParams = [],
+        array $fileParams = [
+            // 'key' => 'storage/app/image.png',
+        ],
+        array $cookies = [],
+    ): array {
+        return static::wrapWithSettings(
+            only: $only,
+            except: $except,
+            otherSettings: compact(
+                'config',
+                'queryParams',
+                'bodyParams',
+                'fileParams',
+                'cookies',
+            )
+        );
+    }
+
     protected function prepareRequest(
-        Route $route, string $url, array $settings, array $urlParams,
-        array $bodyParams, array $queryParams, array $fileParameters, array $headers
-    ): Request
-    {
+        Route $route,
+        string $url,
+        array $settings,
+        array $urlParams,
+        array $bodyParams,
+        array $queryParams,
+        array $fileParameters,
+        array $headers
+    ): Request {
         $uri = Utils::getUrlWithBoundParameters($url, $urlParams);
         $routeMethods = $this->getMethods($route);
         $method = array_shift($routeMethods);
@@ -150,8 +189,13 @@ class ResponseCalls extends Strategy
         // Always use the current app domain for response calls
         $rootUrl = config('app.url');
         $request = Request::create(
-            "$rootUrl/$uri", $method, [], $cookies, $fileParameters,
-            $this->transformHeadersToServerVars($headers), json_encode($bodyParams)
+            "{$rootUrl}/{$uri}",
+            $method,
+            [],
+            $cookies,
+            $fileParameters,
+            $this->transformHeadersToServerVars($headers),
+            json_encode($bodyParams)
         );
         // Add headers again to catch any ones we didn't transform properly.
         $this->addHeaders($request, $route, $headers);
@@ -173,6 +217,85 @@ class ResponseCalls extends Strategy
         if (is_callable(Globals::$__afterResponseCall)) {
             call_user_func_array(Globals::$__afterResponseCall, [$request, $endpointData, $response]);
         }
+    }
+
+    /**
+     * @return Response
+     *
+     * @throws \Exception
+     */
+    protected function makeApiCall(Request $request, Route $route)
+    {
+        return $this->callLaravelRoute($request);
+    }
+
+    protected function callLaravelRoute(Request $request): Response
+    {
+        /** @var \Illuminate\Foundation\Http\Kernel $kernel */
+        $kernel = app(Kernel::class);
+        $response = $kernel->handle($request);
+        $kernel->terminate($request, $response);
+
+        return $response;
+    }
+
+    /**
+     * Transform headers array to array of $_SERVER vars with HTTP_* format.
+     */
+    protected function transformHeadersToServerVars(array $headers): array
+    {
+        $server = [];
+        $prefix = 'HTTP_';
+        foreach ($headers as $name => $value) {
+            $name = strtr(strtoupper($name), '-', '_');
+            if (!Str::startsWith($name, $prefix) && 'CONTENT_TYPE' !== $name) {
+                $name = $prefix.$name;
+            }
+            $server[$name] = $value;
+        }
+
+        return $server;
+    }
+
+    protected function getResponseHeaders($response): array
+    {
+        $headers = $response->headers->all();
+        $formattedHeaders = [];
+
+        foreach ($headers as $header => $values) {
+            $formattedHeaders[$header] = implode('; ', $values);
+        }
+
+        return $formattedHeaders;
+    }
+
+    protected function getContentFromResponse(Response $response): false|string
+    {
+        if (!$response instanceof StreamedResponse) {
+            return $response->getContent();
+        }
+
+        // For streamed responses, the content is null, and only output directly via "echo" when we call "sendContent".
+        // We use output buffering to capture the output into a new fake response.
+        $renderedResponse = new Response('', $response->getStatusCode());
+        $originalCallback = $response->getCallback();
+        $response->setCallback(function () use ($originalCallback, $renderedResponse) {
+            ob_start(function ($output) use ($renderedResponse) {
+                $renderedResponse->setContent($output);
+            });
+            $originalCallback();
+            ob_end_flush();
+        });
+        $response->sendContent();
+        $renderedResponse->headers = $response->headers;
+
+        return $renderedResponse->getContent();
+    }
+
+    private function configureEnvironment(array $settings)
+    {
+        $this->startDbTransaction();
+        $this->setLaravelConfigs($settings['config'] ?? []);
     }
 
     private function setLaravelConfigs(array $config)
@@ -198,11 +321,6 @@ class ResponseCalls extends Strategy
     {
         $this->endDbTransaction();
         $this->rollbackLaravelConfigChanges();
-    }
-
-    public function getMethods(Route $route): array
-    {
-        return array_diff($route->methods(), ['HEAD']);
     }
 
     private function addHeaders(Request $request, Route $route, ?array $headers): void
@@ -234,116 +352,5 @@ class ResponseCalls extends Strategy
     private function addBodyParameters(Request $request, array $body): void
     {
         $request->request->add($body);
-    }
-
-    /**
-     * @param Request $request
-     *
-     * @param Route $route
-     *
-     * @return Response
-     * @throws Exception
-     */
-    protected function makeApiCall(Request $request, Route $route)
-    {
-        return $this->callLaravelRoute($request);
-    }
-
-    protected function callLaravelRoute(Request $request): Response
-    {
-        /** @var \Illuminate\Foundation\Http\Kernel $kernel */
-        $kernel = app(Kernel::class);
-        $response = $kernel->handle($request);
-        $kernel->terminate($request, $response);
-
-        return $response;
-    }
-
-    /**
-     * Transform headers array to array of $_SERVER vars with HTTP_* format.
-     */
-    protected function transformHeadersToServerVars(array $headers): array
-    {
-        $server = [];
-        $prefix = 'HTTP_';
-        foreach ($headers as $name => $value) {
-            $name = strtr(strtoupper($name), '-', '_');
-            if (!Str::startsWith($name, $prefix) && $name !== 'CONTENT_TYPE') {
-                $name = $prefix . $name;
-            }
-            $server[$name] = $value;
-        }
-
-        return $server;
-    }
-
-    protected function getResponseHeaders($response): array
-    {
-        $headers = $response->headers->all();
-        $formattedHeaders = [];
-
-        foreach ($headers as $header => $values) {
-            $formattedHeaders[$header] = implode('; ', $values);
-        }
-
-        return $formattedHeaders;
-    }
-
-    /**
-     * @param array $only The routes which this strategy should be applied to. Can not be specified with $except.
-     *   Specify route names ("users.index", "users.*"), or method and path ("GET *", "POST /safe/*").
-     * @param array $except The routes which this strategy should be applied to. Can not be specified with $only.
-     *   Specify route names ("users.index", "users.*"), or method and path ("GET *", "POST /safe/*").
-     * @param array $config Any extra Laravel config() values to before starting the response call.
-     * @param array $queryParams Query params to always send with the response call. Key-value array.
-     * @param array $bodyParams Body params to always send with the response call. Key-value array.
-     * @param array $fileParams File params to always send with the response call. Key-value array. Key is param name, value is file path.
-     * @param array $cookies Cookies to always send with the response call. Key-value array.
-     * @return array
-     */
-    public static function withSettings(
-        array $only = [],
-        array $except = [],
-        array $config = [],
-        array $queryParams = [],
-        array $bodyParams = [],
-        array $fileParams = [
-            // 'key' => 'storage/app/image.png',
-        ],
-        array $cookies = [],
-    ): array
-    {
-        return static::wrapWithSettings(
-            only: $only,
-            except: $except,
-            otherSettings: compact(
-                'config',
-                'queryParams',
-                'bodyParams',
-                'fileParams',
-                'cookies',
-            ));
-    }
-
-    protected function getContentFromResponse(Response $response): string|false
-    {
-        if (!$response instanceof StreamedResponse) {
-            return $response->getContent();
-        }
-
-        // For streamed responses, the content is null, and only output directly via "echo" when we call "sendContent".
-        // We use output buffering to capture the output into a new fake response.
-        $renderedResponse = new Response('', $response->getStatusCode());
-        $originalCallback = $response->getCallback();
-        $response->setCallback(function () use ($originalCallback, $renderedResponse) {
-            ob_start(function ($output) use ($renderedResponse) {
-                $renderedResponse->setContent($output);
-            });
-            $originalCallback();
-            ob_end_flush();
-        });
-        $response->sendContent();
-        $renderedResponse->headers = $response->headers;
-        return $renderedResponse->getContent();
     }
 }

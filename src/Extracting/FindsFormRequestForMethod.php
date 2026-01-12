@@ -3,26 +3,26 @@
 namespace Knuckles\Scribe\Extracting;
 
 use Illuminate\Foundation\Http\FormRequest;
-use ReflectionClass;
-use ReflectionException;
-use ReflectionFunctionAbstract;
-use ReflectionUnionType;
 
 trait FindsFormRequestForMethod
 {
-    protected function getFormRequestReflectionClass(ReflectionFunctionAbstract $method): ?ReflectionClass
+    protected function getFormRequestReflectionClass(\ReflectionFunctionAbstract $method): ?\ReflectionClass
     {
         foreach ($method->getParameters() as $argument) {
             $argType = $argument->getType();
-            if ($argType === null || $argType instanceof ReflectionUnionType) continue;
+            if (null === $argType || $argType instanceof \ReflectionUnionType) {
+                continue;
+            }
 
             $argumentClassName = $argType->getName();
 
-            if (!class_exists($argumentClassName)) continue;
+            if (!class_exists($argumentClassName)) {
+                continue;
+            }
 
             try {
-                $argumentClass = new ReflectionClass($argumentClassName);
-            } catch (ReflectionException $e) {
+                $argumentClass = new \ReflectionClass($argumentClassName);
+            } catch (\ReflectionException $e) {
                 continue;
             }
 

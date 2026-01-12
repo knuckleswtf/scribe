@@ -8,7 +8,7 @@ use Knuckles\Scribe\Tools\PathConfig;
 use Knuckles\Scribe\Tools\Utils as u;
 
 /**
- * Handles extracting other API details — intro, auth
+ * Handles extracting other API details — intro, auth.
  */
 class ApiDetails
 {
@@ -25,26 +25,26 @@ class ApiDetails
     private array $lastKnownFileContentHashes = [];
 
     public function __construct(
-        PathConfig          $paths,
+        PathConfig $paths,
         ?DocumentationConfig $config = null,
-        bool                $preserveUserChanges = true
+        bool $preserveUserChanges = true
     ) {
-        $this->markdownOutputPath = $paths->intermediateOutputPath(); //.scribe by default
+        $this->markdownOutputPath = $paths->intermediateOutputPath(); // .scribe by default
         // If no config is injected, pull from global. Makes testing easier.
         $this->config = $config ?: new DocumentationConfig(config($paths->configName));
         $this->baseUrl = $this->config->get('base_url') ?? config('app.url');
         $this->preserveUserChanges = $preserveUserChanges;
 
-        $this->fileHashesTrackingFile = $this->markdownOutputPath . '/.filehashes';
+        $this->fileHashesTrackingFile = $this->markdownOutputPath.'/.filehashes';
         $this->lastKnownFileContentHashes = [];
     }
 
     public function writeMarkdownFiles(): void
     {
-        c::info('Extracting intro and auth Markdown files to: ' . $this->markdownOutputPath);
+        c::info('Extracting intro and auth Markdown files to: '.$this->markdownOutputPath);
 
         if (!is_dir($this->markdownOutputPath)) {
-            mkdir($this->markdownOutputPath, 0777, true);
+            mkdir($this->markdownOutputPath, 0o777, true);
         }
 
         $this->fetchFileHashesFromTrackingFile();
@@ -54,38 +54,41 @@ class ApiDetails
 
         $this->writeContentsTrackingFile();
 
-        c::success('Extracted intro and auth Markdown files to: ' . $this->markdownOutputPath);
+        c::success('Extracted intro and auth Markdown files to: '.$this->markdownOutputPath);
     }
 
     public function writeIntroMarkdownFile(): void
     {
-        $introMarkdownFile = $this->markdownOutputPath . '/intro.md';
+        $introMarkdownFile = $this->markdownOutputPath.'/intro.md';
         if ($this->hasFileBeenModified($introMarkdownFile)) {
             if ($this->preserveUserChanges) {
-                c::warn("Skipping modified file $introMarkdownFile");
+                c::warn("Skipping modified file {$introMarkdownFile}");
+
                 return;
             }
 
-            c::warn("Discarding manual changes for file $introMarkdownFile because you specified --force");
+            c::warn("Discarding manual changes for file {$introMarkdownFile} because you specified --force");
         }
 
         $introMarkdown = view('scribe::markdown.intro')
             ->with('description', $this->config->get('description', ''))
             ->with('introText', $this->config->get('intro_text', ''))
-            ->with('baseUrl', $this->baseUrl)->render();
+            ->with('baseUrl', $this->baseUrl)->render()
+        ;
         $this->writeMarkdownFileAndRecordHash($introMarkdownFile, $introMarkdown);
     }
 
     public function writeAuthMarkdownFile(): void
     {
-        $authMarkdownFile = $this->markdownOutputPath . '/auth.md';
+        $authMarkdownFile = $this->markdownOutputPath.'/auth.md';
         if ($this->hasFileBeenModified($authMarkdownFile)) {
             if ($this->preserveUserChanges) {
-                c::warn("Skipping modified file $authMarkdownFile");
+                c::warn("Skipping modified file {$authMarkdownFile}");
+
                 return;
             }
 
-            c::warn("Discarding manual changes for file $authMarkdownFile because you specified --force");
+            c::warn("Discarding manual changes for file {$authMarkdownFile} because you specified --force");
         }
 
         $isAuthed = $this->config->get('auth.enabled', false);
@@ -95,11 +98,13 @@ class ApiDetails
         if ($isAuthed) {
             $strategy = $this->config->get('auth.in');
             $parameterName = $this->config->get('auth.name');
-            $authDescription = u::trans("scribe::auth.instruction.$strategy", [
-                'parameterName' => $parameterName,
-                'placeholder' => $this->config->get('auth.placeholder') ?: 'your-token']
+            $authDescription = u::trans(
+                "scribe::auth.instruction.{$strategy}",
+                [
+                    'parameterName' => $parameterName,
+                    'placeholder' => $this->config->get('auth.placeholder') ?: 'your-token']
             );
-            $authDescription .= "\n\n".u::trans("scribe::auth.details");
+            $authDescription .= "\n\n".u::trans('scribe::auth.details');
             $extraInfo = $this->config->get('auth.extra_info', '');
         }
 
@@ -111,8 +116,6 @@ class ApiDetails
         $this->writeMarkdownFileAndRecordHash($authMarkdownFile, $authMarkdown);
     }
 
-    /**
-     */
     protected function writeMarkdownFileAndRecordHash(string $filePath, string $markdown): void
     {
         file_put_contents($filePath, $markdown);
@@ -124,7 +127,8 @@ class ApiDetails
         $content = "# GENERATED. YOU SHOULDN'T MODIFY OR DELETE THIS FILE.\n";
         $content .= "# Scribe uses this file to know when you change something manually in your docs.\n";
         $content .= collect($this->lastKnownFileContentHashes)
-            ->map(fn($hash, $filePath) => "$filePath=$hash")->implode("\n");
+            ->map(fn ($hash, $filePath) => "{$filePath}={$hash}")->implode("\n")
+        ;
         file_put_contents($this->fileHashesTrackingFile, $content);
     }
 
@@ -138,10 +142,9 @@ class ApiDetails
 
         if ($oldFileHash) {
             $currentFileHash = hash_file('md5', $filePath);
-            // No danger of a timing attack, so no need for hash_equals() comparison
-            $wasFileModifiedManually = $currentFileHash != $oldFileHash;
 
-            return $wasFileModifiedManually;
+            // No danger of a timing attack, so no need for hash_equals() comparison
+            return $currentFileHash != $oldFileHash;
         }
 
         return false;
@@ -156,9 +159,11 @@ class ApiDetails
             array_shift($lastKnownFileHashes);
             $this->lastKnownFileContentHashes = collect($lastKnownFileHashes)
                 ->mapWithKeys(function ($line) {
-                    [$filePath, $hash] = explode("=", $line);
+                    [$filePath, $hash] = explode('=', $line);
+
                     return [$filePath => $hash];
-                })->toArray();
+                })->toArray()
+            ;
         }
     }
 }

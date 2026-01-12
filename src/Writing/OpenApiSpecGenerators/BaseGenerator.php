@@ -6,6 +6,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Knuckles\Camel\Camel;
 use Knuckles\Camel\Extraction\Response;
+use Knuckles\Camel\Extraction\ResponseField;
 use Knuckles\Camel\Output\OutputEndpointData;
 use Knuckles\Camel\Output\Parameter;
 use Knuckles\Scribe\Tools\Utils;
@@ -63,7 +64,6 @@ class BaseGenerator extends OpenApiGenerator
         return array_merge($pathItem, $spec);
     }
 
-
     public function pathParameters(array $parameters, array $endpoints, array $urlParameters): array
     {
         foreach ($urlParameters as $name => $details) {
@@ -80,7 +80,7 @@ class BaseGenerator extends OpenApiGenerator
             ];
             // Workaround for optional parameters
             if (empty($details->required)) {
-                $parameterData['description'] = rtrim('Optional parameter. ' . $parameterData['description']);
+                $parameterData['description'] = rtrim('Optional parameter. '.$parameterData['description']);
                 $parameterData['examples'] = [
                     'omitted' => [
                         'summary' => 'When the value is omitted',
@@ -88,7 +88,7 @@ class BaseGenerator extends OpenApiGenerator
                     ],
                 ];
 
-                if ($parameterData['example'] !== null) {
+                if (null !== $parameterData['example']) {
                     $parameterData['examples']['present'] = [
                         'summary' => 'When the value is present',
                         'value' => $parameterData['example'],
@@ -104,19 +104,199 @@ class BaseGenerator extends OpenApiGenerator
         return $parameters;
     }
 
+    /**
+     * @param array|Parameter $field
+     */
+    public function generateFieldData($field): array
+    {
+        if (is_array($field)) {
+            $field = new Parameter($field);
+        }
+
+        if ('file' === $field->type) {
+            // See https://swagger.io/docs/specification/describing-request-body/file-upload/
+            $fieldData = [
+                'type' => 'string',
+                'format' => 'binary',
+                'description' => $field->description ?: '',
+            ];
+            $this->applyNullable($fieldData, $field->nullable);
+
+            return $fieldData;
+        }
+        if (Utils::isArrayType($field->type)) {
+            $baseType = Utils::getBaseTypeFromArrayType($field->type);
+            $baseItem = ('file' === $baseType) ? [
+                'type' => 'string',
+                'format' => 'binary',
+            ] : ['type' => $baseType];
+
+            if (!empty($field->enumValues)) {
+                $baseItem['enum'] = $field->enumValues;
+            }
+
+            $this->applyNullable($baseItem, $field->nullable);
+
+            $fieldData = [
+                'type' => 'array',
+                'description' => $field->description ?: '',
+                'example' => $field->example,
+                'items' => Utils::isArrayType($baseType)
+                    ? $this->generateFieldData([
+                        'name' => '',
+                        'type' => $baseType,
+                        'example' => ($field->example ?: [null])[0],
+                        'nullable' => $field->nullable,
+                    ])
+                    : $baseItem,
+            ];
+            if ('file' === str_replace('[]', '', $field->type)) {
+                // Don't include example for file params in OAS; it's hard to translate it correctly
+                unset($fieldData['example']);
+            }
+
+            if ('object' === $baseType && !empty($field->__fields)) {
+                if ('object' === $fieldData['items']['type']) {
+                    $fieldData['items']['properties'] = [];
+                }
+                foreach ($field->__fields as $fieldSimpleName => $subfield) {
+                    $fieldData['items']['properties'][$fieldSimpleName] = $this->generateFieldData($subfield);
+                    if ($subfield['required']) {
+                        $fieldData['items']['required'][] = $fieldSimpleName;
+                    }
+                }
+            }
+
+            return $fieldData;
+        }
+        if ('object' === $field->type) {
+            $data = [
+                'type' => 'object',
+                'description' => $field->description ?: '',
+                'example' => $field->example,
+                'properties' => $this->objectIfEmpty(collect($field->__fields)->mapWithKeys(function ($subfield, $subfieldName) {
+                    return [$subfieldName => $this->generateFieldData($subfield)];
+                })->all()),
+                'required' => collect($field->__fields)->filter(fn ($f) => $f['required'])->keys()->toArray(),
+            ];
+            $this->applyNullable($data, $field->nullable);
+            // The spec doesn't allow for an empty `required` array. Must have something there.
+            if (empty($data['required'])) {
+                unset($data['required']);
+            }
+
+            return $data;
+        }
+        $schema = [
+            'type' => static::normalizeTypeName($field->type),
+            'description' => $field->description ?: '',
+            'example' => $field->example,
+        ];
+        if (!empty($field->enumValues)) {
+            $schema['enum'] = $field->enumValues;
+        }
+        $this->applyNullable($schema, $field->nullable);
+
+        return $schema;
+    }
+
+    /**
+     * Given a value, generate the schema for it. The schema consists of: {type:, example:, properties: (if value is an
+     * object)}, and possibly a description for each property. The $endpoint and $path are used for looking up response
+     * field descriptions.
+     */
+    public function generateSchemaForResponseValue(mixed $value, OutputEndpointData $endpoint, string $path): array
+    {
+        if ($value instanceof \stdClass) {
+            $value = (array) $value;
+            $properties = [];
+            // Recurse into the object
+            foreach ($value as $subField => $subValue) {
+                $subFieldPath = sprintf('%s.%s', $path, $subField);
+                $properties[$subField] = $this->generateSchemaForResponseValue($subValue, $endpoint, $subFieldPath);
+            }
+            $required = $this->filterRequiredResponseFields($endpoint, array_keys($properties), $path);
+
+            $schema = [
+                'type' => 'object',
+                'properties' => $this->objectIfEmpty($properties),
+            ];
+            if ($required) {
+                $schema['required'] = $required;
+            }
+            $this->setDescription($schema, $endpoint, $path);
+            $this->setNullable($schema, $endpoint, $path, $value);
+
+            return $schema;
+        }
+
+        $schema = [
+            'type' => $this->convertScribeOrPHPTypeToOpenAPIType(gettype($value)),
+            'example' => $value,
+        ];
+        $this->setDescription($schema, $endpoint, $path);
+        $this->setNullable($schema, $endpoint, $path, $value);
+
+        // Set enum values for the property if they exist
+        if (!empty($endpoint->responseFields[$path]->enumValues)) {
+            $schema['enum'] = $endpoint->responseFields[$path]->enumValues;
+        }
+
+        if ('array' === $schema['type'] && !empty($value)) {
+            $schema['example'] = json_decode(json_encode($schema['example']), true); // Convert stdClass to array
+
+            $sample = $value[0];
+            $typeOfEachItem = $this->convertScribeOrPHPTypeToOpenAPIType(gettype($sample));
+            $schema['items']['type'] = $typeOfEachItem;
+
+            if ('object' === $typeOfEachItem) {
+                $schema['items']['properties'] = collect($sample)->mapWithKeys(function ($v, $k) use ($endpoint, $path) {
+                    return [$k => $this->generateSchemaForResponseValue($v, $endpoint, "{$path}.{$k}")];
+                })->toArray();
+
+                $required = $this->filterRequiredResponseFields(
+                    $endpoint,
+                    array_keys($schema['items']['properties']),
+                    $path
+                );
+                if ($required) {
+                    $schema['required'] = $required;
+                }
+            }
+        }
+
+        return $schema;
+    }
+
+    /**
+     * Given an enpoint and a set of object keys at a path, return the properties that are specified as required.
+     */
+    public function filterRequiredResponseFields(OutputEndpointData $endpoint, array $properties, string $path = ''): array
+    {
+        $required = [];
+        foreach ($properties as $property) {
+            $responseField = $endpoint->responseFields["{$path}.{$property}"] ?? $endpoint->responseFields[$property] ?? null;
+            if ($responseField && $responseField->required) {
+                $required[] = $property;
+            }
+        }
+
+        return $required;
+    }
 
     protected function operationId(OutputEndpointData $endpoint): string
     {
-        if ($endpoint->metadata->title) return preg_replace('/[^\w+]/', '', Str::camel($endpoint->metadata->title));
+        if ($endpoint->metadata->title) {
+            return preg_replace('/[^\w+]/', '', Str::camel($endpoint->metadata->title));
+        }
 
         $parts = preg_split('/[^\w+]/', $endpoint->uri, -1, PREG_SPLIT_NO_EMPTY);
-        return Str::lower($endpoint->httpMethods[0]) . join('', array_map(fn($part) => ucfirst($part), $parts));
+
+        return Str::lower($endpoint->httpMethods[0]).join('', array_map(fn ($part) => ucfirst($part), $parts));
     }
 
     /**
      * Add query parameters and headers.
-     *
-     * @param OutputEndpointData $endpoint
      *
      * @return array<int, array<string,mixed>>
      */
@@ -126,7 +306,7 @@ class BaseGenerator extends OpenApiGenerator
 
         if (count($endpoint->queryParameters)) {
             /**
-             * @var string $name
+             * @var string    $name
              * @var Parameter $details
              */
             foreach ($endpoint->queryParameters as $name => $details) {
@@ -147,10 +327,11 @@ class BaseGenerator extends OpenApiGenerator
 
         if (count($endpoint->headers)) {
             foreach ($endpoint->headers as $name => $value) {
-                if (in_array(strtolower($name), ['content-type', 'accept', 'authorization']))
+                if (in_array(strtolower($name), ['content-type', 'accept', 'authorization'])) {
                     // These headers are not allowed in the spec.
                     // https://swagger.io/docs/specification/describing-parameters/#header-parameters
                     continue;
+                }
 
                 $parameters[] = [
                     'in' => 'header',
@@ -181,9 +362,10 @@ class BaseGenerator extends OpenApiGenerator
             $hasFileParameter = false;
 
             foreach ($endpoint->nestedBodyParameters as $name => $details) {
-                if ($name === "[]") { // Request body is an array
+                if ('[]' === $name) { // Request body is an array
                     $hasRequiredParameter = true;
                     $schema = $this->generateFieldData($details);
+
                     break;
                 }
 
@@ -194,7 +376,7 @@ class BaseGenerator extends OpenApiGenerator
                     $schema['required'][] = $name;
                 }
 
-                if ($details['type'] === 'file') {
+                if ('file' === $details['type']) {
                     $hasFileParameter = true;
                 }
 
@@ -222,7 +404,6 @@ class BaseGenerator extends OpenApiGenerator
             }
 
             $body['content'][$contentType]['schema'] = $schema;
-
         }
 
         // return object rather than empty array, so can get properly serialised as object
@@ -238,7 +419,7 @@ class BaseGenerator extends OpenApiGenerator
             $code = $response->status; // OpenAPI spec requires status codes to be integers
             // OpenAPI groups responses by status code
             // Only one response type per status code, so only the last one will be used
-            if ($code === '204') {
+            if ('204' === $code) {
                 // Must not add content for 204
                 $responses[$code] = [
                     'description' => $this->getResponseDescription($response),
@@ -264,7 +445,7 @@ class BaseGenerator extends OpenApiGenerator
 
                         $responses[$code]['description'] = '';
                         $responses[$code]['content'][$contentType]['schema'] = [
-                            'oneOf' => [$existingResponseExample, $newResponseExample]
+                            'oneOf' => [$existingResponseExample, $newResponseExample],
                         ];
                     }
                 }
@@ -283,17 +464,18 @@ class BaseGenerator extends OpenApiGenerator
 
     protected function getResponseDescription(Response $response): string
     {
-        if (Str::startsWith($response->content, "<<binary>>")) {
-            return trim(str_replace("<<binary>>", "", $response->content));
+        if (Str::startsWith($response->content, '<<binary>>')) {
+            return trim(str_replace('<<binary>>', '', $response->content));
         }
 
         $description = strval($response->description);
         // Don't include the status code in description; see https://github.com/knuckleswtf/scribe/issues/271
-        if (preg_match("/\d{3},\s+(.+)/", $description, $matches)) {
+        if (preg_match('/\\d{3},\\s+(.+)/', $description, $matches)) {
             $description = $matches[1];
-        } else if ($description === strval($response->status)) {
+        } elseif ($description === strval($response->status)) {
             $description = '';
         }
+
         return $description;
     }
 
@@ -310,11 +492,12 @@ class BaseGenerator extends OpenApiGenerator
             ];
         }
 
-        if ($responseContent === null) {
+        if (null === $responseContent) {
             $schema = [
                 'type' => 'object',
             ];
             $this->applyNullable($schema, true);
+
             return [
                 'application/json' => [
                     'schema' => $schema,
@@ -323,7 +506,7 @@ class BaseGenerator extends OpenApiGenerator
         }
 
         $decoded = json_decode($responseContent);
-        if ($decoded === null) { // Decoding failed, so we return the content string as is
+        if (null === $decoded) { // Decoding failed, so we return the content string as is
             return [
                 'text/plain' => [
                     'schema' => [
@@ -345,7 +528,7 @@ class BaseGenerator extends OpenApiGenerator
                 return [
                     $contentType => [
                         'schema' => [
-                            'type' => $type === 'double' ? 'number' : $type,
+                            'type' => 'double' === $type ? 'number' : $type,
                             'example' => $decoded,
                         ],
                     ],
@@ -420,6 +603,7 @@ class BaseGenerator extends OpenApiGenerator
                 }
 
                 return $data;
+
             default:
                 return [];
         }
@@ -432,218 +616,6 @@ class BaseGenerator extends OpenApiGenerator
     protected function objectIfEmpty(array $field): array|\stdClass
     {
         return count($field) > 0 ? $field : new \stdClass();
-    }
-
-
-    /**
-     * @param Parameter|array $field
-     *
-     * @return array
-     */
-    public function generateFieldData($field): array
-    {
-        if (is_array($field)) {
-            $field = new Parameter($field);
-        }
-
-        if ($field->type === 'file') {
-            // See https://swagger.io/docs/specification/describing-request-body/file-upload/
-            $fieldData = [
-                'type' => 'string',
-                'format' => 'binary',
-                'description' => $field->description ?: '',
-            ];
-            $this->applyNullable($fieldData, $field->nullable);
-            return $fieldData;
-        } else if (Utils::isArrayType($field->type)) {
-            $baseType = Utils::getBaseTypeFromArrayType($field->type);
-            $baseItem = ($baseType === 'file') ? [
-                'type' => 'string',
-                'format' => 'binary',
-            ] : ['type' => $baseType];
-
-            if (!empty($field->enumValues)) {
-                $baseItem['enum'] = $field->enumValues;
-            }
-
-            $this->applyNullable($baseItem, $field->nullable);
-
-            $fieldData = [
-                'type' => 'array',
-                'description' => $field->description ?: '',
-                'example' => $field->example,
-                'items' => Utils::isArrayType($baseType)
-                    ? $this->generateFieldData([
-                        'name' => '',
-                        'type' => $baseType,
-                        'example' => ($field->example ?: [null])[0],
-                        'nullable' => $field->nullable,
-                    ])
-                    : $baseItem,
-            ];
-            if (str_replace('[]', "", $field->type) === 'file') {
-                // Don't include example for file params in OAS; it's hard to translate it correctly
-                unset($fieldData['example']);
-            }
-
-            if ($baseType === 'object' && !empty($field->__fields)) {
-                if ($fieldData['items']['type'] === 'object') {
-                    $fieldData['items']['properties'] = [];
-                }
-                foreach ($field->__fields as $fieldSimpleName => $subfield) {
-                    $fieldData['items']['properties'][$fieldSimpleName] = $this->generateFieldData($subfield);
-                    if ($subfield['required']) {
-                        $fieldData['items']['required'][] = $fieldSimpleName;
-                    }
-                }
-            }
-
-            return $fieldData;
-        } else if ($field->type === 'object') {
-            $data = [
-                'type' => 'object',
-                'description' => $field->description ?: '',
-                'example' => $field->example,
-                'properties' => $this->objectIfEmpty(collect($field->__fields)->mapWithKeys(function ($subfield, $subfieldName) {
-                    return [$subfieldName => $this->generateFieldData($subfield)];
-                })->all()),
-                'required' => collect($field->__fields)->filter(fn ($f) => $f['required'])->keys()->toArray(),
-            ];
-            $this->applyNullable($data, $field->nullable);
-            // The spec doesn't allow for an empty `required` array. Must have something there.
-            if (empty($data['required'])) {
-                unset($data['required']);
-            }
-            return $data;
-        } else {
-            $schema = [
-                'type' => static::normalizeTypeName($field->type),
-                'description' => $field->description ?: '',
-                'example' => $field->example,
-            ];
-            if (!empty($field->enumValues)) {
-                $schema['enum'] = $field->enumValues;
-            }
-            $this->applyNullable($schema, $field->nullable);
-
-            return $schema;
-        }
-    }
-
-
-    /**
-     * Given a value, generate the schema for it. The schema consists of: {type:, example:, properties: (if value is an
-     * object)}, and possibly a description for each property. The $endpoint and $path are used for looking up response
-     * field descriptions.
-     */
-    public function generateSchemaForResponseValue(mixed $value, OutputEndpointData $endpoint, string $path): array
-    {
-        if ($value instanceof \stdClass) {
-            $value = (array)$value;
-            $properties = [];
-            // Recurse into the object
-            foreach ($value as $subField => $subValue) {
-                $subFieldPath = sprintf('%s.%s', $path, $subField);
-                $properties[$subField] = $this->generateSchemaForResponseValue($subValue, $endpoint, $subFieldPath);
-            }
-            $required = $this->filterRequiredResponseFields($endpoint, array_keys($properties), $path);
-
-            $schema = [
-                'type' => 'object',
-                'properties' => $this->objectIfEmpty($properties),
-            ];
-            if ($required) {
-                $schema['required'] = $required;
-            }
-            $this->setDescription($schema, $endpoint, $path);
-            $this->setNullable($schema, $endpoint, $path, $value);
-
-            return $schema;
-        }
-
-        $schema = [
-            'type' => $this->convertScribeOrPHPTypeToOpenAPIType(gettype($value)),
-            'example' => $value,
-        ];
-        $this->setDescription($schema, $endpoint, $path);
-        $this->setNullable($schema, $endpoint, $path, $value);
-
-        // Set enum values for the property if they exist
-        if (! empty($endpoint->responseFields[$path]->enumValues)) {
-            $schema['enum'] = $endpoint->responseFields[$path]->enumValues;
-        }
-
-        if ($schema['type'] === 'array' && !empty($value)) {
-            $schema['example'] = json_decode(json_encode($schema['example']), true); // Convert stdClass to array
-
-            $sample = $value[0];
-            $typeOfEachItem = $this->convertScribeOrPHPTypeToOpenAPIType(gettype($sample));
-            $schema['items']['type'] = $typeOfEachItem;
-
-            if ($typeOfEachItem === 'object') {
-                $schema['items']['properties'] = collect($sample)->mapWithKeys(function ($v, $k) use ($endpoint, $path) {
-                    return [$k => $this->generateSchemaForResponseValue($v, $endpoint, "$path.$k")];
-                })->toArray();
-
-                $required = $this->filterRequiredResponseFields($endpoint, array_keys($schema['items']['properties']),
-                    $path);
-                if ($required) {
-                    $schema['required'] = $required;
-                }
-            }
-        }
-
-        return $schema;
-    }
-
-
-    /**
-     * Given an enpoint and a set of object keys at a path, return the properties that are specified as required.
-     */
-    public function filterRequiredResponseFields(OutputEndpointData $endpoint, array $properties, string $path = ''): array
-    {
-        $required = [];
-        foreach ($properties as $property) {
-            $responseField = $endpoint->responseFields["$path.$property"] ?? $endpoint->responseFields[$property] ?? null;
-            if ($responseField && $responseField->required) {
-                $required[] = $property;
-            }
-        }
-
-        return $required;
-    }
-
-    /*
-     * Set the description for the schema. If the field has a description, it is set in the schema.
-     */
-    private function setDescription(array &$schema, OutputEndpointData $endpoint, string $path): void
-    {
-        if (! empty($endpoint->responseFields[$path]->description)) {
-            $schema['description'] = $endpoint->responseFields[$path]->description;
-        }
-    }
-
-    /*
-     * Set the nullable for the schema. If the field is nullable, it is set in the schema.
-     */
-    private function setNullable(array &$schema, OutputEndpointData $endpoint, string $path, mixed $value): void
-    {
-        /** @var \Knuckles\Camel\Extraction\ResponseField|null $field */
-        $field = $endpoint->responseFields[$path] ?? null;
-
-        // prefer explicit values
-        if ($field !== null && $field->nullable !== null) {
-            if ($field->nullable) {
-                $this->applyNullable($schema, true);
-            }
-            // false => do not set and do not use example
-            return;
-        }
-
-        // example is null
-        if ($value === null) {
-            $this->applyNullable($schema, true);
-        }
     }
 
     protected function convertScribeOrPHPTypeToOpenAPIType($type)
@@ -667,5 +639,35 @@ class BaseGenerator extends OpenApiGenerator
         }
 
         $schema['nullable'] = true;
+    }
+
+    // Set the description for the schema. If the field has a description, it is set in the schema.
+    private function setDescription(array &$schema, OutputEndpointData $endpoint, string $path): void
+    {
+        if (!empty($endpoint->responseFields[$path]->description)) {
+            $schema['description'] = $endpoint->responseFields[$path]->description;
+        }
+    }
+
+    // Set the nullable for the schema. If the field is nullable, it is set in the schema.
+    private function setNullable(array &$schema, OutputEndpointData $endpoint, string $path, mixed $value): void
+    {
+        /** @var null|ResponseField $field */
+        $field = $endpoint->responseFields[$path] ?? null;
+
+        // prefer explicit values
+        if (null !== $field && null !== $field->nullable) {
+            if ($field->nullable) {
+                $this->applyNullable($schema, true);
+            }
+
+            // false => do not set and do not use example
+            return;
+        }
+
+        // example is null
+        if (null === $value) {
+            $this->applyNullable($schema, true);
+        }
     }
 }

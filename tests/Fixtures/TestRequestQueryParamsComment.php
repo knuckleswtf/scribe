@@ -5,7 +5,7 @@ namespace Knuckles\Scribe\Tests\Fixtures;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * Query parameters
+ * Query parameters.
  */
 class TestRequestQueryParamsComment extends FormRequest
 {

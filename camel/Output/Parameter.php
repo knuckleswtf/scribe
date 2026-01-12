@@ -2,7 +2,6 @@
 
 namespace Knuckles\Camel\Output;
 
-
 class Parameter extends \Knuckles\Camel\Extraction\Parameter
 {
     public array $__fields = [];

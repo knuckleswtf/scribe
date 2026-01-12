@@ -7,48 +7,53 @@ use Knuckles\Camel\Extraction\ResponseField;
 use Knuckles\Camel\Output\OutputEndpointData;
 use Knuckles\Scribe\Tests\BaseUnitTest;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class OutputEndpointDataTest extends BaseUnitTest
 {
     /** @test */
-    public function can_nest_array_and_object_parameters_correctly()
+    public function canNestArrayAndObjectParametersCorrectly()
     {
         $parameters = [
-            "dad" => Parameter::create([
-                "name" => 'dad',
+            'dad' => Parameter::create([
+                'name' => 'dad',
             ]),
-            "dad.age" => ResponseField::create([
-                "name" => 'dad.age',
+            'dad.age' => ResponseField::create([
+                'name' => 'dad.age',
             ]),
-            "dad.cars[]" => Parameter::create([
-                "name" => 'dad.cars[]',
+            'dad.cars[]' => Parameter::create([
+                'name' => 'dad.cars[]',
             ]),
-            "dad.cars[].model" => Parameter::create([
-                "name" => 'dad.cars[].model',
+            'dad.cars[].model' => Parameter::create([
+                'name' => 'dad.cars[].model',
             ]),
-            "dad.cars[].price" => ResponseField::create([
-                "name" => 'dad.cars[].price',
+            'dad.cars[].price' => ResponseField::create([
+                'name' => 'dad.cars[].price',
             ]),
         ];
         $cleanParameters = [];
 
         $nested = OutputEndpointData::nestArrayAndObjectFields($parameters, $cleanParameters);
 
-        $this->assertEquals(["dad"], array_keys($nested));
+        $this->assertEquals(['dad'], array_keys($nested));
         $this->assertArraySubset([
-            "dad" => [
-                "name" => "dad",
-                "__fields" => [
-                    "age" => [
-                        "name" => "dad.age",
+            'dad' => [
+                'name' => 'dad',
+                '__fields' => [
+                    'age' => [
+                        'name' => 'dad.age',
                     ],
-                    "cars" => [
-                        "name" => "dad.cars",
-                        "__fields" => [
-                            "model" => [
-                                "name" => "dad.cars[].model",
+                    'cars' => [
+                        'name' => 'dad.cars',
+                        '__fields' => [
+                            'model' => [
+                                'name' => 'dad.cars[].model',
                             ],
-                            "price" => [
-                                "name" => "dad.cars[].price",
+                            'price' => [
+                                'name' => 'dad.cars[].price',
                             ],
                         ],
                     ],
@@ -58,46 +63,46 @@ class OutputEndpointDataTest extends BaseUnitTest
     }
 
     /** @test */
-    public function sets_missing_ancestors_for_object_fields_properly()
+    public function setsMissingAncestorsForObjectFieldsProperly()
     {
         $parameters = [
-            "dad.cars[]" => Parameter::create([
-                "name" => 'dad.cars[]',
+            'dad.cars[]' => Parameter::create([
+                'name' => 'dad.cars[]',
             ]),
-            "dad.cars[].model" => Parameter::create([
-                "name" => 'dad.cars[].model',
+            'dad.cars[].model' => Parameter::create([
+                'name' => 'dad.cars[].model',
             ]),
-            "parent.not.specified" => Parameter::create([
-                "name" => "parent.not.specified",
+            'parent.not.specified' => Parameter::create([
+                'name' => 'parent.not.specified',
             ]),
         ];
         $cleanParameters = [];
 
         $nested = OutputEndpointData::nestArrayAndObjectFields($parameters, $cleanParameters);
 
-        $this->assertEquals(["dad", "parent"], array_keys($nested));
+        $this->assertEquals(['dad', 'parent'], array_keys($nested));
         $this->assertArraySubset([
-            "dad" => [
-                "name" => "dad",
-                "__fields" => [
-                    "cars" => [
-                        "name" => "dad.cars",
-                        "__fields" => [
-                            "model" => [
-                                "name" => "dad.cars[].model",
+            'dad' => [
+                'name' => 'dad',
+                '__fields' => [
+                    'cars' => [
+                        'name' => 'dad.cars',
+                        '__fields' => [
+                            'model' => [
+                                'name' => 'dad.cars[].model',
                             ],
                         ],
                     ],
                 ],
             ],
-            "parent" => [
-                "name" => "parent",
-                "__fields" => [
-                    "not" => [
-                        "name" => "parent.not",
-                        "__fields" => [
-                            "specified" => [
-                                "name" => "parent.not.specified",
+            'parent' => [
+                'name' => 'parent',
+                '__fields' => [
+                    'not' => [
+                        'name' => 'parent.not',
+                        '__fields' => [
+                            'specified' => [
+                                'name' => 'parent.not.specified',
                             ],
                         ],
                     ],

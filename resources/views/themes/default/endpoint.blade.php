@@ -104,9 +104,9 @@
         @foreach($endpoint->headers as $name => $example)
             <?php
                 $htmlOptions = [];
-                if ($endpoint->isAuthed() && $metadata['auth']['location'] == 'header' && $metadata['auth']['name'] == $name) {
-                  $htmlOptions = [ 'class' => 'auth-value', ];
-                  }
+            if ($endpoint->isAuthed() && 'header' == $metadata['auth']['location'] && $metadata['auth']['name'] == $name) {
+                $htmlOptions = ['class' => 'auth-value'];
+            }
             ?>
             <div style="padding-left: 28px; clear: unset;">
                 @component('scribe::components.field-details', [
@@ -150,10 +150,10 @@
         @foreach($endpoint->queryParameters as $attribute => $parameter)
                 <?php
                 $htmlOptions = [];
-                if ($endpoint->isAuthed() && $metadata['auth']['location'] == 'query' && $metadata['auth']['name'] == $attribute) {
-                    $htmlOptions = [ 'class' => 'auth-value', ];
-                }
-                ?>
+            if ($endpoint->isAuthed() && 'query' == $metadata['auth']['location'] && $metadata['auth']['name'] == $attribute) {
+                $htmlOptions = ['class' => 'auth-value'];
+            }
+            ?>
             <div style="padding-left: 28px; clear: unset;">
                 @component('scribe::components.field-details', [
                   'name' => $parameter->name,

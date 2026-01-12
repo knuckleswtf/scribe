@@ -3,6 +3,7 @@
 namespace Knuckles\Scribe\Tests\Strategies\Responses;
 
 use Illuminate\Routing\Route;
+use Illuminate\Support\Facades\Route as LaravelRouteFacade;
 use Illuminate\Support\Facades\Route as RouteFacade;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Camel\Extraction\ResponseCollection;
@@ -12,13 +13,17 @@ use Knuckles\Scribe\Scribe;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
-use Illuminate\Support\Facades\Route as LaravelRouteFacade;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class ResponseCallsTest extends BaseLaravelTest
 {
     /** @test */
-    public function can_call_route_and_fetch_response()
+    public function canCallRouteAndFetchResponse()
     {
         $route = LaravelRouteFacade::post('/shouldFetchRouteResponse', [TestController::class, 'shouldFetchRouteResponse']);
 
@@ -35,7 +40,7 @@ class ResponseCallsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_upload_file_parameters_in_response_calls()
+    public function canUploadFileParametersInResponseCalls()
     {
         $route = RouteFacade::post('/withFormDataParams', [TestController::class, 'withFormDataParams']);
 
@@ -49,23 +54,23 @@ class ResponseCallsTest extends BaseLaravelTest
         $this->setConfig([
             'strategies.responses' => [
                 [ResponseCalls::class,
-                    ['only' => 'POST *']
+                    ['only' => 'POST *'],
                 ],
-            ]
+            ],
         ]);
         $parsed = (new Extractor())->processRoute($route);
         $responses = $parsed->responses->toArray();
 
         $this->assertCount(1, $responses);
         $this->assertArraySubset([
-            "status" => 200,
-            "description" => null,
-            "content" => '{"filename":"scribe.php","filepath":"config","name":"cat.jpg"}',
+            'status' => 200,
+            'description' => null,
+            'content' => '{"filename":"scribe.php","filepath":"config","name":"cat.jpg"}',
         ], $responses[0]);
     }
 
     /** @test */
-    public function uses_configured_settings_when_calling_route()
+    public function usesConfiguredSettingsWhenCallingRoute()
     {
         $route = LaravelRouteFacade::post('/echo/{id}', [TestController::class, 'echoesRequestValues']);
 
@@ -97,7 +102,7 @@ class ResponseCallsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_override_application_config_during_response_call()
+    public function canOverrideApplicationConfigDuringResponseCall()
     {
         $route = LaravelRouteFacade::post('/echoesConfig', [TestController::class, 'echoesConfig']);
         $responses = $this->invokeStrategy($route);
@@ -108,20 +113,20 @@ class ResponseCallsTest extends BaseLaravelTest
             'config' => [
                 'app.env' => $now,
             ],
-        ],);
+        ], );
         $newValue = json_decode($responses[0]['content'], true)['app.env'];
         $this->assertEquals($now, $newValue);
         $this->assertNotEquals($originalValue, $newValue);
     }
 
     /** @test */
-    public function calls_beforeResponseCall_hook()
+    public function callsBeforeResponseCallHook()
     {
         Scribe::beforeResponseCall(function (Request $request, ExtractedEndpointData $endpointData) {
-            $request->headers->set("header", "overridden_".$request->headers->get("header"));
-            $request->headers->set("Authorization", "overridden_".$request->headers->get("Authorization"));
-            $request->query->set("queryParam", "overridden_".$request->query->get("queryParam"));
-            $request->request->set("bodyParam", "overridden_".$endpointData->uri.$request->request->get("bodyParam"));
+            $request->headers->set('header', 'overridden_'.$request->headers->get('header'));
+            $request->headers->set('Authorization', 'overridden_'.$request->headers->get('Authorization'));
+            $request->query->set('queryParam', 'overridden_'.$request->query->get('queryParam'));
+            $request->request->set('bodyParam', 'overridden_'.$endpointData->uri.$request->request->get('bodyParam'));
         });
 
         $route = LaravelRouteFacade::post('/echo/{id}', [TestController::class, 'echoesRequestValues']);
@@ -151,11 +156,11 @@ class ResponseCallsTest extends BaseLaravelTest
         $this->assertEquals('overridden_Bearer bearerToken', $responseContent['auth']);
         $this->assertEquals('overridden_echo/{id}bodyValue', $responseContent['bodyParam']);
 
-        Scribe::beforeResponseCall(fn() => null);
+        Scribe::beforeResponseCall(fn () => null);
     }
 
     /** @test */
-    public function does_not_make_response_call_if_success_response_already_gotten()
+    public function doesNotMakeResponseCallIfSuccessResponseAlreadyGotten()
     {
         $route = LaravelRouteFacade::post('/shouldFetchRouteResponse', [TestController::class, 'shouldFetchRouteResponse']);
 
@@ -173,7 +178,7 @@ class ResponseCallsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_get_content_from_streamed_response()
+    public function canGetContentFromStreamedResponse()
     {
         $route = LaravelRouteFacade::post('/withStreamedResponse', [TestController::class, 'withStreamedResponse']);
 
@@ -185,7 +190,7 @@ class ResponseCallsTest extends BaseLaravelTest
             'items' => [
                 'one',
                 'two',
-            ]
+            ],
         ], json_decode($responses[0]['content'], true));
     }
 
@@ -197,8 +202,10 @@ class ResponseCallsTest extends BaseLaravelTest
     protected function invokeStrategy(ExtractedEndpointData|Route $route, $settings = []): ?array
     {
         $strategy = new ResponseCalls(new DocumentationConfig([]));
+
         return $strategy(
-            $route instanceof ExtractedEndpointData ? $route : ExtractedEndpointData::fromRoute($route), $settings
+            $route instanceof ExtractedEndpointData ? $route : ExtractedEndpointData::fromRoute($route),
+            $settings
         );
     }
 }

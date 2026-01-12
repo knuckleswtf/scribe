@@ -2,20 +2,25 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\QueryParameters;
 
+use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Illuminate\Routing\Route;
 use Knuckles\Scribe\Extracting\Strategies\QueryParameters\GetFromQueryParamTag;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Mpociot\Reflection\DocBlock\Tag;
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class GetFromQueryParamTagTest extends TestCase
 {
     use ArraySubsetAsserts;
 
     /** @test */
-    public function can_fetch_from_queryparam_tag()
+    public function canFetchFromQueryparamTag()
     {
         $strategy = new GetFromQueryParamTag(new DocumentationConfig([]));
         $tags = [
@@ -73,7 +78,7 @@ class GetFromQueryParamTagTest extends TestCase
                 'type' => 'string[]',
                 'required' => false,
                 'description' => 'The fields.',
-                'example' => ['age', 'name']
+                'example' => ['age', 'name'],
             ],
             'filters' => [
                 'type' => 'object',
@@ -84,7 +89,7 @@ class GetFromQueryParamTagTest extends TestCase
                 'type' => 'number',
                 'required' => false,
                 'description' => 'Class.',
-                'example' => 11.0
+                'example' => 11.0,
             ],
             'filters.other' => [
                 'type' => 'string',
@@ -95,13 +100,13 @@ class GetFromQueryParamTagTest extends TestCase
                 'type' => 'string',
                 'required' => false,
                 'description' => '',
-                'example' => null
+                'example' => null,
             ],
             'noExample' => [
                 'type' => 'string',
                 'required' => false,
                 'description' => 'Something',
-                'example' => null
+                'example' => null,
             ],
             'book_id' => [
                 'type' => 'string',
@@ -138,17 +143,17 @@ class GetFromQueryParamTagTest extends TestCase
                 'description' => 'Teams',
                 'required' => false,
                 'deprecated' => true,
-                'example' => ['1', '2']
+                'example' => ['1', '2'],
             ],
         ], $results);
     }
 
     /** @test */
-    public function can_fetch_from_form_request_method_argument()
+    public function canFetchFromFormRequestMethodArgument()
     {
         $methodName = 'withFormRequestParameter';
         $method = new \ReflectionMethod(TestController::class, $methodName);
-        $route = new Route(['POST'], "/$methodName", ['uses' => [TestController::class, $methodName]]);
+        $route = new Route(['POST'], "/{$methodName}", ['uses' => [TestController::class, $methodName]]);
 
         $strategy = new GetFromQueryParamTag(new DocumentationConfig([]));
         $results = $strategy->getParametersFromDocBlockInFormRequestOrMethod($route, $method);
@@ -170,5 +175,4 @@ class GetFromQueryParamTagTest extends TestCase
             ],
         ], $results);
     }
-
 }

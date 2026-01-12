@@ -7,14 +7,10 @@ class TestPartialResourceController
     /**
      * @group Group A
      */
-    public function index()
-    {
-    }
+    public function index() {}
 
     /**
      * @group Group B
      */
-    public function update()
-    {
-    }
+    public function update() {}
 }

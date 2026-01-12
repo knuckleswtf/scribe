@@ -2,13 +2,14 @@
 
 namespace Knuckles\Scribe\Extracting\Shared\ValidationRulesFinders;
 
+use Illuminate\Support\Facades\Request;
 use PhpParser\Node;
 
 /**
  * This class looks for
  *   $anyVariable = Request::validate(...);
  * or just
- *   Request::validate(...);
+ *   Request::validate(...);.
  *
  * Also supports `->validateWithBag('', ...)`
  */
@@ -16,7 +17,9 @@ class RequestValidateFacade
 {
     public static function find(Node $node)
     {
-        if (!($node instanceof Node\Stmt\Expression)) return;
+        if (!$node instanceof Node\Stmt\Expression) {
+            return;
+        }
 
         $expr = $node->expr;
         if ($expr instanceof Node\Expr\Assign) {
@@ -26,13 +29,13 @@ class RequestValidateFacade
         if (
             $expr instanceof Node\Expr\StaticCall
             && $expr->class instanceof Node\Name
-            && in_array($expr->class->name, ['Request', \Illuminate\Support\Facades\Request::class])
+            && in_array($expr->class->name, ['Request', Request::class])
         ) {
-            if ($expr->name->name === "validate") {
+            if ('validate' === $expr->name->name) {
                 return $expr->args[0]->value;
             }
 
-            if ($expr->name->name === "validateWithBag") {
+            if ('validateWithBag' === $expr->name->name) {
                 return $expr->args[1]->value;
             }
         }

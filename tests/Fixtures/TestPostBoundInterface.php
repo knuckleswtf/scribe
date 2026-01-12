@@ -2,6 +2,4 @@
 
 namespace Knuckles\Scribe\Tests\Fixtures;
 
-interface TestPostBoundInterface
-{
-}
+interface TestPostBoundInterface {}

@@ -166,7 +166,7 @@
                                             <input aria-label="{{ $name }}" name="{{ $name }}"
                                                    id="queryparam-{{ $endpoint->endpointId() }}-{{ $name }}"
                                                    placeholder="{{ $parameter->description }}"
-                                                   value="{{ json_encode($parameter->example) }}" data-component="query"
+                                                   value="{{ json_encode($parameter->example, JSON_HEX_TAG | JSON_HEX_AMP) }}" data-component="query"
                                                    class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border"
                                             >
                                         @else
@@ -208,7 +208,7 @@
                                 <div class="code-editor language-json"
                                      id="json-body-{{ $endpoint->endpointId() }}"
                                      style="font-family: var(--font-code); font-size: 12px; line-height: var(--lh-code);"
-                                >{!! json_encode($endpoint->getSampleBody(), JSON_PRETTY_PRINT) !!}</div>
+                                >{!! json_encode($endpoint->getSampleBody(), JSON_PRETTY_PRINT | JSON_HEX_TAG | JSON_HEX_AMP) !!}</div>
                             </div>
                         @else
                             <div class="ParameterGrid sl-p-4">
@@ -236,7 +236,7 @@
                                                 <input aria-label="{{ $name }}" name="{{ $name }}"
                                                        id="bodyparam-{{ $endpoint->endpointId() }}-{{ $name }}"
                                                        placeholder="{{ $parameter->description }}"
-                                                       value="{{ json_encode($parameter->example) }}" data-component="body"
+                                                       value="{{ json_encode($parameter->example, JSON_HEX_TAG | JSON_HEX_AMP) }}" data-component="body"
                                                        class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border"
                                                 >
                                             @else

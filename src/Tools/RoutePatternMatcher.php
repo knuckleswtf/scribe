@@ -11,7 +11,7 @@ class RoutePatternMatcher
     {
         $routeName = $route->getName();
         $routePathWithoutInitialSlash = $route->uri();
-        $routePathWithInitialSlash = "/$routePathWithoutInitialSlash";
+        $routePathWithInitialSlash = "/{$routePathWithoutInitialSlash}";
         $routeMethods = $route->methods();
         if (Str::is($patterns, $routeName)
             || Str::is($patterns, $routePathWithoutInitialSlash)
@@ -20,8 +20,8 @@ class RoutePatternMatcher
         }
 
         foreach ($routeMethods as $httpMethod) {
-            if (Str::is($patterns, "$httpMethod $routePathWithoutInitialSlash")
-                || Str::is($patterns, "$httpMethod $routePathWithInitialSlash")) {
+            if (Str::is($patterns, "{$httpMethod} {$routePathWithoutInitialSlash}")
+                || Str::is($patterns, "{$httpMethod} {$routePathWithInitialSlash}")) {
                 return true;
             }
         }

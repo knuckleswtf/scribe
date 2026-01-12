@@ -5,19 +5,24 @@ namespace Knuckles\Scribe\Tests\Unit;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tools\Utils;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class UtilsTest extends BaseLaravelTest
 {
     /** @test */
-    public function make_directory_recursive()
+    public function makeDirectoryRecursive()
     {
-        $dir = __DIR__ . '/test_dir';
+        $dir = __DIR__.'/test_dir';
         Utils::makeDirectoryRecursive($dir);
         $this->assertDirectoryExists($dir); // Directory exists
 
         if (rmdir($dir)) { // Remove the directory
-            dump("Directory deleted successfully: $dir");
+            dump("Directory deleted successfully: {$dir}");
         } else { // If deletion fails, you can handle the error as needed
-            dump("Failed to delete directory: $dir");
+            dump("Failed to delete directory: {$dir}");
         }
     }
 }

@@ -29,7 +29,7 @@ class ComponentsOpenApiGenerator extends OpenApiGenerator
 
     public function pathParameters(array $parameters, array $endpoints, array $urlParameters): array
     {
-        $parameters['slug'] = ['$ref' =>  "#/components/parameters/slugParam"];
+        $parameters['slug'] = ['$ref' => '#/components/parameters/slugParam'];
 
         return $parameters;
     }

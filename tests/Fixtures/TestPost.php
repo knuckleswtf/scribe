@@ -15,13 +15,13 @@ class TestPost extends Model
         return 'slug';
     }
 
-    protected static function newFactory()
-    {
-        return TestPostFactory::new();
-    }
-
     public function tags(): MorphToMany
     {
         return $this->morphToMany(TestTag::class, 'taggable')->withPivot('priority');
+    }
+
+    protected static function newFactory()
+    {
+        return TestPostFactory::new();
     }
 }

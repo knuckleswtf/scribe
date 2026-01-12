@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe;
 
+use Illuminate\Routing\Route;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Commands\GenerateDocumentation;
 use Knuckles\Scribe\Tools\Globals;
@@ -34,7 +35,7 @@ class Scribe
     }
 
     /**
-     * Specify a callback that will be executed just before the generate command is executed
+     * Specify a callback that will be executed just before the generate command is executed.
      *
      * @param callable(GenerateDocumentation): mixed $callable
      */
@@ -58,7 +59,7 @@ class Scribe
      *     'css' => '/path/to/css/assets/folder',
      *     'images' => '/path/to/images/assets/folder',
      *   ]
-     * ]
+     * ].
      *
      * If you disabled `postman` or `openapi`, their values will be null.
      *
@@ -74,7 +75,7 @@ class Scribe
      * to instantiate Form Requests. his callback takes the name of the form request class,
      * the current Laravel route being processed, and the controller method.
      *
-     * @param ?callable(string,\Illuminate\Routing\Route,\ReflectionFunctionAbstract): mixed $callable
+     * @param ?callable(string,Route,\ReflectionFunctionAbstract): mixed $callable
      */
     public static function instantiateFormRequestUsing(?callable $callable)
     {
@@ -88,7 +89,7 @@ class Scribe
      * to a general style (`users/{user_id}/projects/{id}`).
      * The callback will be passed the default Laravel URL, the route object, the controller method and class.
      *
-     * @param ?callable(string,\Illuminate\Routing\Route,\ReflectionFunctionAbstract,?\ReflectionClass): string $callable
+     * @param ?callable(string,Route,\ReflectionFunctionAbstract,?\ReflectionClass): string $callable
      */
     public static function normalizeEndpointUrlUsing(?callable $callable)
     {

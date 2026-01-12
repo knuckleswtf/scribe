@@ -2,24 +2,30 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\Responses;
 
+use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseFileTag;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Mpociot\Reflection\DocBlock\Tag;
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class UseResponseFileTagTest extends TestCase
 {
     use ArraySubsetAsserts;
 
     /**
      * @test
+     *
      * @dataProvider responseFileTags
      */
-    public function allows_multiple_responsefile_tags_for_multiple_statuses_and_scenarios(array $tags, array $expected)
+    public function allowsMultipleResponsefileTagsForMultipleStatusesAndScenarios(array $tags, array $expected)
     {
-        $filePath = __DIR__ . '/../../Fixtures/response_test.json';
-        $filePath2 = __DIR__ . '/../../Fixtures/response_error_test.json';
+        $filePath = __DIR__.'/../../Fixtures/response_test.json';
+        $filePath2 = __DIR__.'/../../Fixtures/response_error_test.json';
 
         $strategy = new UseResponseFileTag(new DocumentationConfig([]));
         $results = $strategy->getFileResponses($tags);
@@ -41,7 +47,7 @@ class UseResponseFileTagTest extends TestCase
     public static function responseFileTags()
     {
         return [
-            "with status as initial position" => [
+            'with status as initial position' => [
                 [
                     new Tag('responseFile', 'tests/Fixtures/response_test.json'),
                     new Tag('responseFile', '401 tests/Fixtures/response_error_test.json'),
@@ -58,7 +64,7 @@ class UseResponseFileTagTest extends TestCase
                 ],
             ],
 
-            "with fields" => [
+            'with fields' => [
                 [
                     new Tag('responseFile', 'scenario="success" tests/Fixtures/response_test.json'),
                     new Tag('responseFile', 'status=401 scenario=\'auth problem\' tests/Fixtures/response_error_test.json'),
@@ -78,7 +84,7 @@ class UseResponseFileTagTest extends TestCase
     }
 
     /** @test */
-    public function can_add_or_replace_key_value_pair_in_response_file()
+    public function canAddOrReplaceKeyValuePairInResponseFile()
     {
         $strategy = new UseResponseFileTag(new DocumentationConfig([]));
         $tags = [
@@ -95,9 +101,9 @@ class UseResponseFileTagTest extends TestCase
     }
 
     /** @test */
-    public function supports_relative_or_absolute_paths()
+    public function supportsRelativeOrAbsolutePaths()
     {
-        $filePath = __DIR__ . '/../../Fixtures/response_test.json';
+        $filePath = __DIR__.'/../../Fixtures/response_test.json';
         $strategy = new UseResponseFileTag(new DocumentationConfig([]));
 
         $tags = [new Tag('responseFile', 'tests/Fixtures/response_test.json')];
@@ -107,7 +113,6 @@ class UseResponseFileTagTest extends TestCase
                 'content' => file_get_contents($filePath),
             ],
         ], $strategy->getFileResponses($tags));
-
 
         $tags = [new Tag('responseFile', realpath($filePath))];
         $this->assertArraySubset([

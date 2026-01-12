@@ -3,12 +3,38 @@
 namespace Knuckles\Scribe\Extracting;
 
 use Faker\Factory;
+use Faker\Generator;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 trait ParamHelpers
 {
+    /**
+     * Normalizes the stated "type" of a parameter (eg "int", "integer", "double", "array"...)
+     * to a number of standard JSON types (integer, boolean, number, object...).
+     * Will return the input if no match.
+     *
+     * @param mixed $value
+     */
+    public static function normalizeTypeName(?string $typeName, $value = null): string
+    {
+        if (!$typeName) {
+            return 'string';
+        }
+
+        $base = str_replace('[]', '', strtolower($typeName));
+
+        return match ($base) {
+            'bool' => str_replace($base, 'boolean', $typeName),
+            'int' => str_replace($base, 'integer', $typeName),
+            'float', 'double' => str_replace($base, 'number', $typeName),
+            'array' => (empty($value) || 0 === array_keys($value)[0])
+                ? static::normalizeTypeName(gettype($value[0] ?? '')).'[]'
+                : 'object',
+            default => $typeName
+        };
+    }
 
     protected function getFakeFactoryByName(string $name): ?\Closure
     {
@@ -25,29 +51,30 @@ trait ParamHelpers
         };
 
         return match ($normalizedName) {
-            'email' => fn() => $faker->safeEmail(),
-            'password', 'pwd' => fn() => $faker->password(),
-            'url' => fn() => $faker->url(),
-            'description' => fn() => $faker->sentence(),
-            'uuid' => fn() => $faker->uuid(),
-            'locale' => fn() => $faker->locale(),
-            'timezone' => fn() => $faker->timezone(),
+            'email' => fn () => $faker->safeEmail(),
+            'password', 'pwd' => fn () => $faker->password(),
+            'url' => fn () => $faker->url(),
+            'description' => fn () => $faker->sentence(),
+            'uuid' => fn () => $faker->uuid(),
+            'locale' => fn () => $faker->locale(),
+            'timezone' => fn () => $faker->timezone(),
             default => null,
         };
     }
 
-    protected function getFaker(): \Faker\Generator
+    protected function getFaker(): Generator
     {
         $faker = Factory::create();
         if ($seed = $this->config->get('examples.faker_seed')) {
             $faker->seed($seed);
         }
+
         return $faker;
     }
 
     protected function generateDummyValue(string $type, array $hints = [])
     {
-        if(!empty($hints['enumValues'])) {
+        if (!empty($hints['enumValues'])) {
             return Arr::random($hints['enumValues']);
         }
 
@@ -70,13 +97,15 @@ trait ParamHelpers
         if ($isListType) {
             // Return a one-array item for a list by default.
             return $size
-                ? fn() => [$this->generateDummyValue($baseType, range(0, min($size - 1, 5)))]
-                : fn() => [$this->generateDummyValue($baseType, $hints)];
+                ? fn () => [$this->generateDummyValue($baseType, range(0, min($size - 1, 5)))]
+                : fn () => [$this->generateDummyValue($baseType, $hints)];
         }
 
-        if (($hints['name'] ?? false) && $baseType != 'file') {
+        if (($hints['name'] ?? false) && 'file' != $baseType) {
             $fakeFactoryByName = $this->getFakeFactoryByName($hints['name']);
-            if ($fakeFactoryByName) return $fakeFactoryByName;
+            if ($fakeFactoryByName) {
+                return $fakeFactoryByName;
+            }
         }
 
         $faker = $this->getFaker();
@@ -87,32 +116,26 @@ trait ParamHelpers
 
         $fakeFactoriesByType = [
             'integer' => function () use ($size, $isExactSize, $max, $faker, $min) {
-                if ($isExactSize) return $size;
-                return $max ? $faker->numberBetween((int)$min, (int)$max) : $faker->numberBetween(1, 20);
+                if ($isExactSize) {
+                    return $size;
+                }
+
+                return $max ? $faker->numberBetween((int) $min, (int) $max) : $faker->numberBetween(1, 20);
             },
             'number' => function () use ($size, $isExactSize, $max, $faker, $min) {
-                if ($isExactSize) return $size;
-                return $max ? $faker->numberBetween((int)$min, (int)$max) : $faker->randomFloat();
+                if ($isExactSize) {
+                    return $size;
+                }
+
+                return $max ? $faker->numberBetween((int) $min, (int) $max) : $faker->randomFloat();
             },
-            'boolean' => fn() => $faker->boolean(),
-            'string' => fn() => $size ? $faker->lexify(str_repeat("?", $size)) : $faker->word(),
-            'object' => fn() => [],
-            'file' => fn() => UploadedFile::fake()->create('test.jpg')->size($size ?: 10),
+            'boolean' => fn () => $faker->boolean(),
+            'string' => fn () => $size ? $faker->lexify(str_repeat('?', $size)) : $faker->word(),
+            'object' => fn () => [],
+            'file' => fn () => UploadedFile::fake()->create('test.jpg')->size($size ?: 10),
         ];
 
         return $fakeFactoriesByType[$baseType] ?? $fakeFactoriesByType['string'];
-    }
-
-    private function getDummyDataGeneratorBetween(string $type, $min, $max = 90, ?string $fieldName = null): \Closure
-    {
-        $hints = [
-            'name' => $fieldName,
-            'size' => $this->getFaker()->numberBetween($min, $max),
-            'min' => $min,
-            'max' => $max,
-        ];
-
-        return $this->getDummyValueGenerator($type, $hints);
     }
 
     protected function isSupportedTypeInDocBlocks(string $type): bool
@@ -128,6 +151,7 @@ trait ParamHelpers
             'string',
             'object',
         ];
+
         return in_array(str_replace('[]', '', $type), $types);
     }
 
@@ -135,28 +159,28 @@ trait ParamHelpers
      * Cast a value to a specified type.
      *
      * @param mixed $value
-     * @param string $type
      *
      * @return mixed
      */
     protected function castToType($value, string $type)
     {
-        if ($value === null) {
+        if (null === $value) {
             return null;
         }
 
-        if ($type === "array") {
-            $type = "string[]";
+        if ('array' === $type) {
+            $type = 'string[]';
         }
 
         if (Str::endsWith($type, '[]')) {
             $baseType = strtolower(substr($type, 0, strlen($type) - 2));
+
             return is_array($value) ? array_map(function ($v) use ($baseType) {
                 return $this->castToType($v, $baseType);
             }, $value) : json_decode($value);
         }
 
-        if ($type === 'object') {
+        if ('object' === $type) {
             return is_array($value) ? $value : json_decode($value, true);
         }
 
@@ -172,7 +196,7 @@ trait ParamHelpers
 
         // First, we handle booleans. We can't use a regular cast,
         // because PHP considers string 'false' as true.
-        if ($value == 'false' && ($type == 'boolean' || $type == 'bool')) {
+        if ('false' == $value && ('boolean' == $type || 'bool' == $type)) {
             return false;
         }
 
@@ -185,54 +209,23 @@ trait ParamHelpers
     }
 
     /**
-     * Normalizes the stated "type" of a parameter (eg "int", "integer", "double", "array"...)
-     * to a number of standard JSON types (integer, boolean, number, object...).
-     * Will return the input if no match.
-     *
-     * @param string|null $typeName
-     * @param mixed $value
-     *
-     * @return string
-     */
-    public static function normalizeTypeName(?string $typeName, $value = null): string
-    {
-        if (!$typeName) {
-            return 'string';
-        }
-
-        $base = str_replace('[]', '', strtolower($typeName));
-        return match ($base) {
-            'bool' => str_replace($base, 'boolean', $typeName),
-            'int' => str_replace($base, 'integer', $typeName),
-            'float', 'double' => str_replace($base, 'number', $typeName),
-            'array' => (empty($value) || array_keys($value)[0] === 0)
-                ? static::normalizeTypeName(gettype($value[0] ?? '')) . '[]'
-                : 'object',
-            default => $typeName
-        };
-    }
-
-    /**
      * Allows users to specify that we shouldn't generate an example for the parameter
      * by writing 'No-example'.
      *
-     * @param string $description
-     *
-     * @return bool If true, don't generate an example for this.
+     * @return bool if true, don't generate an example for this
      */
     protected function shouldExcludeExample(string $description): bool
     {
-        return strpos($description, ' No-example') !== false;
+        return false !== strpos($description, ' No-example');
     }
 
     /**
      * Allows users to specify an example for the parameter by writing 'Example: the-example',
      * to be used in example requests and response calls.
      *
-     * @param string $description
      * @param string $type The type of the parameter. Used to cast the example provided, if any.
      *
-     * @return array The description and included example.
+     * @return array the description and included example
      */
     protected function parseExampleFromParamDescription(string $description, string $type): array
     {
@@ -244,7 +237,7 @@ trait ParamHelpers
             $exampleWasSpecified = true;
             $description = trim($content[1]);
 
-            if ($content[2] == 'null') {
+            if ('null' == $content[2]) {
                 // If we intentionally put null as example we return null as example
                 $example = null;
             } else {
@@ -263,5 +256,17 @@ trait ParamHelpers
         }
 
         return [$description, $example, $enumValues, $exampleWasSpecified];
+    }
+
+    private function getDummyDataGeneratorBetween(string $type, $min, $max = 90, ?string $fieldName = null): \Closure
+    {
+        $hints = [
+            'name' => $fieldName,
+            'size' => $this->getFaker()->numberBetween($min, $max),
+            'min' => $min,
+            'max' => $max,
+        ];
+
+        return $this->getDummyValueGenerator($type, $hints);
     }
 }

@@ -8,17 +8,22 @@ use Knuckles\Camel\Extraction\Parameter;
 use Knuckles\Scribe\Extracting\Extractor;
 use Knuckles\Scribe\Extracting\Strategies;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
-use Knuckles\Scribe\Tests\BaseUnitTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
+use Knuckles\Scribe\Tests\Fixtures\TestCustomEndpointMetadata;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class ExtractorTest extends BaseLaravelTest
 {
     protected array $config = [
         'strategies' => [
             'metadata' => [
                 Strategies\Metadata\GetFromDocBlocks::class,
-                \Knuckles\Scribe\Tests\Fixtures\TestCustomEndpointMetadata::class,
+                TestCustomEndpointMetadata::class,
             ],
             'urlParameters' => [
                 Strategies\UrlParameters\GetFromLaravelAPI::class,
@@ -44,7 +49,7 @@ class ExtractorTest extends BaseLaravelTest
     ];
 
     /** @test */
-    public function clean_can_properly_parse_array_keys()
+    public function cleanCanProperlyParseArrayKeys()
     {
         $parameters = Parameter::arrayOf([
             'object' => [
@@ -117,7 +122,7 @@ class ExtractorTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function does_not_generate_values_for_excluded_params_and_excludes_them_from_clean_params()
+    public function doesNotGenerateValuesForExcludedParamsAndExcludesThemFromCleanParams()
     {
         $route = $this->createRouteOldSyntax('POST', '/api/test', 'withExcludedExamples');
         $parsed = $this->process($route)->toArray();
@@ -150,7 +155,7 @@ class ExtractorTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_parse_route_methods()
+    public function canParseRouteMethods()
     {
         $route = $this->createRouteOldSyntax('GET', '/get', 'withEndpointDescription');
         $parsed = $this->process($route);
@@ -170,14 +175,14 @@ class ExtractorTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function invokes_strategy_based_on_new_strategy_configs()
+    public function invokesStrategyBasedOnNewStrategyConfigs()
     {
         $route = $this->createRoute('GET', '/get', 'shouldFetchRouteResponse');
         $this->config['strategies']['responses'] = [
             [
                 Strategies\Responses\ResponseCalls::class,
-                ['only' => 'POST *']
-            ]
+                ['only' => 'POST *'],
+            ],
         ];
         $parsed = $this->process($route);
         $this->assertEmpty($parsed->responses);
@@ -185,15 +190,15 @@ class ExtractorTest extends BaseLaravelTest
         $this->config['strategies']['responses'] = [
             [
                 Strategies\Responses\ResponseCalls::class,
-                ['only' => 'GET *']
-            ]
+                ['only' => 'GET *'],
+            ],
         ];
         $parsed = $this->process($route);
         $this->assertNotEmpty($parsed->responses);
     }
 
     /** @test */
-    public function overrides_headers_based_on_short_strategy_config()
+    public function overridesHeadersBasedOnShortStrategyConfig()
     {
         $route = $this->createRoute('GET', '/get', 'dummy');
         $this->config['strategies']['headers'] = [Strategies\Headers\GetFromHeaderAttribute::class];
@@ -207,7 +212,7 @@ class ExtractorTest extends BaseLaravelTest
         $this->config['strategies']['headers'] = [
             Strategies\Headers\GetFromHeaderAttribute::class,
             [
-                'static_data', $headers
+                'static_data', $headers,
             ],
         ];
         $parsed = $this->process($route);
@@ -215,7 +220,7 @@ class ExtractorTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function overrides_headers_based_on_extended_strategy_config()
+    public function overridesHeadersBasedOnExtendedStrategyConfig()
     {
         $route = $this->createRoute('GET', '/get', 'dummy');
         $this->config['strategies']['headers'] = [Strategies\Headers\GetFromHeaderAttribute::class];
@@ -242,7 +247,7 @@ class ExtractorTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function overrides_headers_based_on_full_strategy_config()
+    public function overridesHeadersBasedOnFullStrategyConfig()
     {
         $route = $this->createRoute('GET', '/get', 'dummy');
         $this->config['strategies']['headers'] = [Strategies\Headers\GetFromHeaderAttribute::class];
@@ -270,9 +275,13 @@ class ExtractorTest extends BaseLaravelTest
 
     /**
      * @test
+     *
      * @dataProvider authRules
+     *
+     * @param mixed $config
+     * @param mixed $expected
      */
-    public function adds_appropriate_field_based_on_configured_auth_type($config, $expected)
+    public function addsAppropriateFieldBasedOnConfiguredAuthType($config, $expected)
     {
         $route = $this->createRouteOldSyntax('POST', '/withAuthenticatedTag', 'withAuthenticatedTag');
         $generator = $this->makeExtractor(array_merge($this->config, $config));
@@ -280,116 +289,6 @@ class ExtractorTest extends BaseLaravelTest
         $this->assertNotNull($parsed[$expected['where']][$expected['name']]);
         $this->assertEquals($expected['where'], $parsed['auth'][0]);
         $this->assertEquals($expected['name'], $parsed['auth'][1]);
-    }
-
-    /** @test */
-    public function generates_consistent_examples_when_faker_seed_is_set()
-    {
-        $route = $this->createRouteOldSyntax('POST', '/withBodyParameters', 'withBodyParameters');
-
-        $paramName = 'room_id';
-        $results = [];
-        $results[$this->process($route)->cleanBodyParameters[$paramName]] = true;
-        $results[$this->process($route)->cleanBodyParameters[$paramName]] = true;
-        $results[$this->process($route)->cleanBodyParameters[$paramName]] = true;
-        $results[$this->process($route)->cleanBodyParameters[$paramName]] = true;
-        $results[$this->process($route)->cleanBodyParameters[$paramName]] = true;
-        // Examples should have different values
-        $this->assertNotCount(1, $results);
-
-        $generator = $this->makeExtractor($this->config + ['examples' => ['faker_seed' => 12345]]);
-        $results = [];
-        $results[$generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
-        $results[$generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
-        $results[$generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
-        $results[$generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
-        // Examples should have same values
-        $this->assertCount(1, $results);
-    }
-
-    /** @test */
-    public function can_use_arrays_in_routes_uses()
-    {
-        $route = $this->createRoute('GET', '/api/array/test', 'withEndpointDescription');
-
-        $parsed = $this->process($route);
-
-        $this->assertSame('Example title.', $parsed->metadata->title);
-        $this->assertSame("This will be the long description.\nIt can also be multiple lines long.", $parsed->metadata->description);
-    }
-
-    /** @test */
-    public function can_use_closure_in_routes_uses()
-    {
-        /**
-         * A short title.
-         * A longer description.
-         * Can be multiple lines.
-         *
-         * @queryParam location_id required The id of the location.
-         * @bodyParam name required Name of the location
-         */
-        $handler = fn() => 'hi';
-        $route = $this->createClosureRoute('POST', '/api/closure/test', $handler);
-
-        $parsed = $this->process($route);
-
-        $this->assertSame('A short title.', $parsed->metadata->title);
-        $this->assertSame("A longer description.\nCan be multiple lines.", $parsed->metadata->description);
-        $this->assertCount(1, $parsed->queryParameters);
-        $this->assertCount(1, $parsed->bodyParameters);
-        $this->assertSame('The id of the location.', $parsed->queryParameters['location_id']->description);
-        $this->assertSame('Name of the location', $parsed->bodyParameters['name']->description);
-    }
-
-    /** @test */
-    public function endpoint_metadata_supports_custom_declarations()
-    {
-        $route = $this->createRouteOldSyntax('POST', '/api/test', 'dummy');
-        $parsed = $this->process($route);
-        $this->assertSame('some custom metadata', $parsed->metadata->custom['myProperty']);
-    }
-
-    /** @test */
-    public function can_override_data_for_inherited_methods()
-    {
-        $route = $this->createRoute('POST', '/api/test', 'endpoint', TestParentController::class);
-        $parent = $this->process($route);
-        $this->assertSame('Parent title', $parent->metadata->title);
-        $this->assertSame('Parent group name', $parent->metadata->groupName);
-        $this->assertSame('Parent description', $parent->metadata->description);
-        $this->assertCount(1, $parent->responses);
-        $this->assertCount(1, $parent->bodyParameters);
-        $this->assertArraySubset(["type" => "integer"], $parent->bodyParameters['thing']->toArray());
-        $this->assertEmpty($parent->queryParameters);
-
-        $inheritedRoute = $this->createRoute('POST', '/api/test', 'endpoint', TestInheritedController::class);
-        $inherited = $this->process($inheritedRoute);
-        $this->assertSame('Overridden title', $inherited->metadata->title);
-        $this->assertSame('Overridden group name', $inherited->metadata->groupName);
-        $this->assertSame('Parent description', $inherited->metadata->description);
-        $this->assertCount(0, $inherited->responses);
-        $this->assertCount(2, $inherited->bodyParameters);
-        $this->assertArraySubset(["type" => "integer"], $inherited->bodyParameters['thing']->toArray());
-        $this->assertArraySubset(["type" => "string"], $inherited->bodyParameters["other_thing"]->toArray());
-        $this->assertCount(1, $inherited->queryParameters);
-        $this->assertArraySubset(["type" => "string"], $inherited->queryParameters["queryThing"]->toArray());
-    }
-
-    public function createRoute(string $httpMethod, string $path, string $controllerMethod, $class = TestController::class): Route
-    {
-        return new Route([$httpMethod], $path, ['uses' => [$class, $controllerMethod]]);
-    }
-
-    /** Uses the old Laravel syntax. I doubt anyone still uses it today, but no harm done. */
-    public function createRouteOldSyntax(string $httpMethod, string $path, string $controllerMethod, $class = TestController::class): Route
-    {
-        return new Route([$httpMethod], $path, ['uses' => "$class@$controllerMethod"]);
-    }
-
-    public function createClosureRoute(string $httpMethod, string $path, callable $handler): Route
-    {
-        return new Route([$httpMethod], $path, ['uses' => $handler]);
     }
 
     public static function authRules()
@@ -463,9 +362,121 @@ class ExtractorTest extends BaseLaravelTest
         ];
     }
 
+    /** @test */
+    public function generatesConsistentExamplesWhenFakerSeedIsSet()
+    {
+        $route = $this->createRouteOldSyntax('POST', '/withBodyParameters', 'withBodyParameters');
+
+        $paramName = 'room_id';
+        $results = [];
+        $results[$this->process($route)->cleanBodyParameters[$paramName]] = true;
+        $results[$this->process($route)->cleanBodyParameters[$paramName]] = true;
+        $results[$this->process($route)->cleanBodyParameters[$paramName]] = true;
+        $results[$this->process($route)->cleanBodyParameters[$paramName]] = true;
+        $results[$this->process($route)->cleanBodyParameters[$paramName]] = true;
+        // Examples should have different values
+        $this->assertNotCount(1, $results);
+
+        $generator = $this->makeExtractor($this->config + ['examples' => ['faker_seed' => 12345]]);
+        $results = [];
+        $results[$generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
+        $results[$generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
+        $results[$generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
+        $results[$generator->processRoute($route)->cleanBodyParameters[$paramName]] = true;
+        // Examples should have same values
+        $this->assertCount(1, $results);
+    }
+
+    /** @test */
+    public function canUseArraysInRoutesUses()
+    {
+        $route = $this->createRoute('GET', '/api/array/test', 'withEndpointDescription');
+
+        $parsed = $this->process($route);
+
+        $this->assertSame('Example title.', $parsed->metadata->title);
+        $this->assertSame("This will be the long description.\nIt can also be multiple lines long.", $parsed->metadata->description);
+    }
+
+    /** @test */
+    public function canUseClosureInRoutesUses()
+    {
+        /**
+         * A short title.
+         * A longer description.
+         * Can be multiple lines.
+         *
+         * @queryParam location_id required The id of the location.
+         *
+         * @bodyParam name required Name of the location
+         */
+        $handler = fn () => 'hi';
+        $route = $this->createClosureRoute('POST', '/api/closure/test', $handler);
+
+        $parsed = $this->process($route);
+
+        $this->assertSame('A short title.', $parsed->metadata->title);
+        $this->assertSame("A longer description.\nCan be multiple lines.", $parsed->metadata->description);
+        $this->assertCount(1, $parsed->queryParameters);
+        $this->assertCount(1, $parsed->bodyParameters);
+        $this->assertSame('The id of the location.', $parsed->queryParameters['location_id']->description);
+        $this->assertSame('Name of the location', $parsed->bodyParameters['name']->description);
+    }
+
+    /** @test */
+    public function endpointMetadataSupportsCustomDeclarations()
+    {
+        $route = $this->createRouteOldSyntax('POST', '/api/test', 'dummy');
+        $parsed = $this->process($route);
+        $this->assertSame('some custom metadata', $parsed->metadata->custom['myProperty']);
+    }
+
+    /** @test */
+    public function canOverrideDataForInheritedMethods()
+    {
+        $route = $this->createRoute('POST', '/api/test', 'endpoint', TestParentController::class);
+        $parent = $this->process($route);
+        $this->assertSame('Parent title', $parent->metadata->title);
+        $this->assertSame('Parent group name', $parent->metadata->groupName);
+        $this->assertSame('Parent description', $parent->metadata->description);
+        $this->assertCount(1, $parent->responses);
+        $this->assertCount(1, $parent->bodyParameters);
+        $this->assertArraySubset(['type' => 'integer'], $parent->bodyParameters['thing']->toArray());
+        $this->assertEmpty($parent->queryParameters);
+
+        $inheritedRoute = $this->createRoute('POST', '/api/test', 'endpoint', TestInheritedController::class);
+        $inherited = $this->process($inheritedRoute);
+        $this->assertSame('Overridden title', $inherited->metadata->title);
+        $this->assertSame('Overridden group name', $inherited->metadata->groupName);
+        $this->assertSame('Parent description', $inherited->metadata->description);
+        $this->assertCount(0, $inherited->responses);
+        $this->assertCount(2, $inherited->bodyParameters);
+        $this->assertArraySubset(['type' => 'integer'], $inherited->bodyParameters['thing']->toArray());
+        $this->assertArraySubset(['type' => 'string'], $inherited->bodyParameters['other_thing']->toArray());
+        $this->assertCount(1, $inherited->queryParameters);
+        $this->assertArraySubset(['type' => 'string'], $inherited->queryParameters['queryThing']->toArray());
+    }
+
+    public function createRoute(string $httpMethod, string $path, string $controllerMethod, $class = TestController::class): Route
+    {
+        return new Route([$httpMethod], $path, ['uses' => [$class, $controllerMethod]]);
+    }
+
+    /** Uses the old Laravel syntax. I doubt anyone still uses it today, but no harm done. */
+    public function createRouteOldSyntax(string $httpMethod, string $path, string $controllerMethod, $class = TestController::class): Route
+    {
+        return new Route([$httpMethod], $path, ['uses' => "{$class}@{$controllerMethod}"]);
+    }
+
+    public function createClosureRoute(string $httpMethod, string $path, callable $handler): Route
+    {
+        return new Route([$httpMethod], $path, ['uses' => $handler]);
+    }
+
     protected function process(Route $route, mixed $config = null): ExtractedEndpointData
     {
         $extractor = $this->makeExtractor($config);
+
         return $extractor->processRoute($route);
     }
 
@@ -475,23 +486,20 @@ class ExtractorTest extends BaseLaravelTest
     }
 }
 
-
 class TestParentController
 {
     /**
-     * Parent title
+     * Parent title.
      *
      * Parent description
      *
      * @group Parent group name
      *
      * @bodyParam thing integer
+     *
      * @response {"hello":"there"}
      */
-    public function endpoint()
-    {
-
-    }
+    public function endpoint() {}
 }
 
 class TestInheritedController extends TestParentController
@@ -499,12 +507,12 @@ class TestInheritedController extends TestParentController
     public static function inheritedDocsOverrides()
     {
         return [
-            "endpoint" => [
-                "metadata" => [
-                    "title" => "Overridden title",
-                    "groupName" => "Overridden group name",
+            'endpoint' => [
+                'metadata' => [
+                    'title' => 'Overridden title',
+                    'groupName' => 'Overridden group name',
                 ],
-                "queryParameters" => function (ExtractedEndpointData $endpointData) {
+                'queryParameters' => function (ExtractedEndpointData $endpointData) {
                     // Overrides
                     return [
                         'queryThing' => [
@@ -512,13 +520,13 @@ class TestInheritedController extends TestParentController
                         ],
                     ];
                 },
-                "bodyParameters" => [
+                'bodyParameters' => [
                     // Merges
-                    "other_thing" => [
-                        "type" => "string",
+                    'other_thing' => [
+                        'type' => 'string',
                     ],
                 ],
-                "responses" => function (ExtractedEndpointData $endpointData) {
+                'responses' => function (ExtractedEndpointData $endpointData) {
                     // Completely overrides responses
                     return [];
                 },

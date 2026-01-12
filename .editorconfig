@@ -4,17 +4,16 @@ root = true
 charset = utf-8
 end_of_line = lf
 insert_final_newline = true
+trim_trailing_whitespace = true
 indent_style = space
 indent_size = 4
-trim_trailing_whitespace = true
 
-[*.md]
-trim_trailing_whitespace = false
-
-[*.yml]
-indent_style = space
+# Force 2-space indentation for YAML and JSON files
+[*.{yml,yaml,json}]
 indent_size = 2
 
-[*.json]
+# Keep Markdown trailing whitespace and prefer 2-space indents for docs
+[*.md]
+trim_trailing_whitespace = false
 indent_style = space
 indent_size = 2

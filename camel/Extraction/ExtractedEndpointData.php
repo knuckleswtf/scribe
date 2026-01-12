@@ -2,13 +2,12 @@
 
 namespace Knuckles\Camel\Extraction;
 
+use Illuminate\Http\UploadedFile;
 use Illuminate\Routing\Route;
 use Knuckles\Camel\BaseDTO;
 use Knuckles\Scribe\Extracting\Shared\UrlParamsNormalizer;
 use Knuckles\Scribe\Tools\Globals;
 use Knuckles\Scribe\Tools\Utils as u;
-use ReflectionClass;
-
 
 class ExtractedEndpointData extends BaseDTO
 {
@@ -27,7 +26,7 @@ class ExtractedEndpointData extends BaseDTO
     public array $headers = [];
 
     /**
-     * @var array<string,\Knuckles\Camel\Extraction\Parameter>
+     * @var array<string,Parameter>
      */
     public array $urlParameters = [];
 
@@ -37,7 +36,7 @@ class ExtractedEndpointData extends BaseDTO
     public array $cleanUrlParameters = [];
 
     /**
-     * @var array<string,\Knuckles\Camel\Extraction\Parameter>
+     * @var array<string,Parameter>
      */
     public array $queryParameters = [];
 
@@ -47,7 +46,7 @@ class ExtractedEndpointData extends BaseDTO
     public array $cleanQueryParameters = [];
 
     /**
-     * @var array<string,\Knuckles\Camel\Extraction\Parameter>
+     * @var array<string,Parameter>
      */
     public array $bodyParameters = [];
 
@@ -57,24 +56,24 @@ class ExtractedEndpointData extends BaseDTO
     public array $cleanBodyParameters = [];
 
     /**
-     * @var array<string,\Illuminate\Http\UploadedFile|array>
+     * @var array<string,array|UploadedFile>
      */
     public array $fileParameters = [];
 
     public ResponseCollection $responses;
 
     /**
-     * @var array<string,\Knuckles\Camel\Extraction\ResponseField>
+     * @var array<string,ResponseField>
      */
     public array $responseFields = [];
 
     /**
      * Authentication info for this endpoint. In the form [{where}, {name}, {sample}]
-     * Example: ["queryParameters", "api_key", "njiuyiw97865rfyvgfvb1"]
+     * Example: ["queryParameters", "api_key", "njiuyiw97865rfyvgfvb1"].
      */
     public array $auth = [];
 
-    public ?ReflectionClass $controller;
+    public ?\ReflectionClass $controller;
 
     public ?\ReflectionFunctionAbstract $method;
 
@@ -82,23 +81,24 @@ class ExtractedEndpointData extends BaseDTO
 
     public function __construct(array $parameters = [])
     {
-        $parameters['metadata'] = $parameters['metadata'] ?? new Metadata([]);
-        $parameters['responses'] = $parameters['responses'] ?? new ResponseCollection([]);
+        $parameters['metadata'] ??= new Metadata([]);
+        $parameters['responses'] ??= new ResponseCollection([]);
 
         parent::__construct($parameters);
 
-        $defaultNormalizer = fn() => UrlParamsNormalizer::normalizeParameterNamesInRouteUri($this->route, $this->method);
+        $defaultNormalizer = fn () => UrlParamsNormalizer::normalizeParameterNamesInRouteUri($this->route, $this->method);
         $this->uri = match (is_callable(Globals::$__normalizeEndpointUrlUsing)) {
-            true => call_user_func_array(Globals::$__normalizeEndpointUrlUsing,
-                [$this->route->uri, $this->route, $this->method, $this->controller, $defaultNormalizer]),
+            true => call_user_func_array(
+                Globals::$__normalizeEndpointUrlUsing,
+                [$this->route->uri, $this->route, $this->method, $this->controller, $defaultNormalizer]
+            ),
             default => $defaultNormalizer(),
         };
     }
 
     /**
-     * @param Route $route
      * @param array $extras Only used for quick overrides in tests
-     * @return self
+     *
      * @throws \ReflectionException
      */
     public static function fromRoute(Route $route, array $extras = []): self
@@ -107,7 +107,7 @@ class ExtractedEndpointData extends BaseDTO
         $uri = $route->uri();
 
         [$controllerName, $methodName] = u::getRouteClassAndMethodNames($route);
-        $controller = new ReflectionClass($controllerName);
+        $controller = new \ReflectionClass($controllerName);
         $method = u::getReflectedRouteMethod([$controllerName, $methodName]);
 
         $data = compact('httpMethods', 'uri', 'controller', 'method', 'route');
@@ -117,8 +117,6 @@ class ExtractedEndpointData extends BaseDTO
     }
 
     /**
-     * @param Route $route
-     *
      * @return array<string>
      */
     public static function getMethods(Route $route): array
@@ -127,7 +125,7 @@ class ExtractedEndpointData extends BaseDTO
 
         // Laravel adds an automatic "HEAD" endpoint for each GET request, so we'll strip that out,
         // but not if there's only one method (means it was intentional)
-        if (count($methods) === 1) {
+        if (1 === count($methods)) {
             return $methods;
         }
 
@@ -141,7 +139,7 @@ class ExtractedEndpointData extends BaseDTO
 
     public function endpointId()
     {
-        return $this->httpMethods[0] . str_replace(['/', '?', '{', '}', ':', '\\', '+', '|'], '-', $this->uri);
+        return $this->httpMethods[0].str_replace(['/', '?', '{', '}', ':', '\\', '+', '|'], '-', $this->uri);
     }
 
     /**
@@ -151,9 +149,15 @@ class ExtractedEndpointData extends BaseDTO
     {
         $copyArray = $this->except(
             // Get rid of all duplicate data
-            'cleanQueryParameters', 'cleanUrlParameters', 'fileParameters', 'cleanBodyParameters',
+            'cleanQueryParameters',
+            'cleanUrlParameters',
+            'fileParameters',
+            'cleanBodyParameters',
             // and objects used only in extraction
-            'route', 'controller', 'method', 'auth',
+            'route',
+            'controller',
+            'method',
+            'auth',
         );
         // Remove these, since they're on the parent group object
         if (isset($copyArray['metadata']) && $copyArray['metadata'] instanceof Metadata) {

@@ -6,7 +6,7 @@ use Knuckles\Scribe\Extracting\Strategies\GetFieldsFromTagStrategy;
 
 class GetFromBodyParamTag extends GetFieldsFromTagStrategy
 {
-    protected string $tagName = "bodyParam";
+    protected string $tagName = 'bodyParam';
 
     public function parseTag(string $tagContent): array
     {
@@ -27,20 +27,20 @@ class GetFromBodyParamTag extends GetFieldsFromTagStrategy
         } else {
             [$_, $name, $type, $required, $deprecated, $description] = $parsedContent;
             $description = trim(str_replace(['No-example.', 'No-example'], '', $description));
-            if ($description == 'required') {
+            if ('required' == $description) {
                 $required = $description;
                 $description = '';
-            } elseif ($description == 'deprecated') {
+            } elseif ('deprecated' == $description) {
                 $deprecated = $description;
                 $description = '';
             }
-            $required = trim($required) === 'required';
-            $deprecated = trim($deprecated) === 'deprecated';
+            $required = 'required' === trim($required);
+            $deprecated = 'deprecated' === trim($deprecated);
         }
 
         $type = static::normalizeTypeName($type);
-        [$description, $example, $enumValues, $exampleWasSpecified] =
-            $this->getDescriptionAndExample($description, $type, $tagContent, $name);
+        [$description, $example, $enumValues, $exampleWasSpecified]
+            = $this->getDescriptionAndExample($description, $type, $tagContent, $name);
 
         return compact('name', 'type', 'description', 'required', 'deprecated', 'example', 'enumValues', 'exampleWasSpecified');
     }

@@ -12,7 +12,7 @@ class ExternalHtmlWriter extends HtmlWriter
     public function generate(array $groupedEndpoints, string $sourceFolder, string $destinationFolder)
     {
         $template = $this->config->get('theme');
-        $output = View::make("scribe::external.$template", [
+        $output = View::make("scribe::external.{$template}", [
             'metadata' => $this->getMetadata(),
             'baseUrl' => $this->baseUrl,
             'tryItOut' => $this->config->get('try_it_out'),
@@ -20,10 +20,10 @@ class ExternalHtmlWriter extends HtmlWriter
         ])->render();
 
         if (!is_dir($destinationFolder)) {
-            mkdir($destinationFolder, 0777, true);
+            mkdir($destinationFolder, 0o777, true);
         }
 
-        file_put_contents($destinationFolder . '/index.html', $output);
+        file_put_contents($destinationFolder.'/index.html', $output);
     }
 
     public function getMetadata(): array
@@ -35,15 +35,15 @@ class ExternalHtmlWriter extends HtmlWriter
         if ($this->config->get('openapi.enabled', false)) {
             $openApiSpecUrl = "{$this->assetPathPrefix}openapi.yaml";
         }
+
         return [
-            'title' => $this->config->get('title') ?: config('app.name', '') . ' Documentation',
+            'title' => $this->config->get('title') ?: config('app.name', '').' Documentation',
             'example_languages' => $this->config->get('example_languages'), // may be useful
             'logo' => $this->config->get('logo') ?? false,
             'last_updated' => $this->getLastUpdated(), // may be useful
             'try_it_out' => $this->config->get('try_it_out'), // may be useful
-            "postman_collection_url" => $postmanCollectionUrl ?? null,
-            "openapi_spec_url" => $openApiSpecUrl ?? null,
+            'postman_collection_url' => $postmanCollectionUrl ?? null,
+            'openapi_spec_url' => $openApiSpecUrl ?? null,
         ];
     }
-
 }

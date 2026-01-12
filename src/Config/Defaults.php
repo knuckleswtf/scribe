@@ -49,5 +49,4 @@ class Defaults
         Strategies\ResponseFields\GetFromResponseFieldAttribute::class,
         Strategies\ResponseFields\GetFromResponseFieldTag::class,
     ];
-
 }

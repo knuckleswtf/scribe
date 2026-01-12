@@ -54,6 +54,7 @@ class SecurityGenerator extends OpenApiGenerator
             // Make sure to exclude non-auth endpoints from auth
             $pathItem['security'] = [];
         }
+
         return $pathItem;
     }
 }

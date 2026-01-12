@@ -2,7 +2,7 @@
 
 namespace Knuckles\Scribe\Tests\Strategies;
 
-use Closure;
+use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Extracting\Strategies\BodyParameters;
 use Knuckles\Scribe\Extracting\Strategies\QueryParameters;
@@ -10,8 +10,12 @@ use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class GetFromInlineValidatorTest extends BaseLaravelTest
 {
     use ArraySubsetAsserts;
@@ -92,7 +96,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
     ];
 
     /** @test */
-    public function can_fetch_from_request_validate_assignment()
+    public function canFetchFromRequestValidateAssignment()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidate');
@@ -105,7 +109,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_fetch_from_request_validate_expression()
+    public function canFetchFromRequestValidateExpression()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidateNoAssignment');
@@ -118,7 +122,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_fetch_from_request_validatewithbag()
+    public function canFetchFromRequestValidatewithbag()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidateWithBag');
@@ -131,7 +135,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_fetch_from_request_validate_facade_assignment()
+    public function canFetchFromRequestValidateFacadeAssignment()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidateFacade');
@@ -144,7 +148,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_fetch_from_request_validate_facade_expression()
+    public function canFetchFromRequestValidateFacadeExpression()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidateFacadeNoAssignment');
@@ -157,7 +161,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_fetch_from_request_validate_facade_with_full_import()
+    public function canFetchFromRequestValidateFacadeWithFullImport()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidateFacadeWithFullImport');
@@ -170,7 +174,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_fetch_from_request_validatewithbag_facade()
+    public function canFetchFromRequestValidatewithbagFacade()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidateWithBagFacade');
@@ -183,7 +187,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_fetch_from_this_validate()
+    public function canFetchFromThisValidate()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->method = new \ReflectionMethod(TestController::class, 'withInlineThisValidate');
@@ -196,7 +200,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_fetch_from_validator_make()
+    public function canFetchFromValidatorMake()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->method = new \ReflectionMethod(TestController::class, 'withInlineValidatorMake');
@@ -209,7 +213,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_fetch_from_validator_make_validate()
+    public function canFetchFromValidatorMakeValidate()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->method = new \ReflectionMethod(TestController::class, 'withInlineValidatorMakeValidate');
@@ -222,7 +226,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function respects_query_params_comment()
+    public function respectsQueryParamsComment()
     {
         $queryParamsEndpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidateQueryParams');
@@ -243,7 +247,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_fetch_inline_enum_rules()
+    public function canFetchInlineEnumRules()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->method = new \ReflectionMethod(TestController::class, 'withEnumRule');
@@ -282,26 +286,27 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
         ));
     }
 
-    protected function endpoint(Closure $configure): ExtractedEndpointData
+    protected function endpoint(\Closure $configure): ExtractedEndpointData
     {
         $endpoint = new class extends ExtractedEndpointData {
-            public function __construct(array $parameters = [])
-            {
-            }
+            public function __construct(array $parameters = []) {}
         };
         $configure($endpoint);
+
         return $endpoint;
     }
 
     protected function fetchViaBodyParams(ExtractedEndpointData $endpoint): ?array
     {
         $strategy = new BodyParameters\GetFromInlineValidator(new DocumentationConfig([]));
+
         return $strategy($endpoint, []);
     }
 
     protected function fetchViaQueryParams(ExtractedEndpointData $endpoint): ?array
     {
         $strategy = new QueryParameters\GetFromInlineValidator(new DocumentationConfig([]));
+
         return $strategy($endpoint, []);
     }
 }

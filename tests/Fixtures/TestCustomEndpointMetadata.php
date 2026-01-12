@@ -10,6 +10,7 @@ class TestCustomEndpointMetadata extends Strategy
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules = []): ?array
     {
         $endpointData->metadata->custom['myProperty'] = 'some custom metadata';
+
         return null;
     }
 }

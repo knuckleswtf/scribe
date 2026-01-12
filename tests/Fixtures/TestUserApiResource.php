@@ -2,7 +2,7 @@
 
 namespace Knuckles\Scribe\Tests\Fixtures;
 
-use Illuminate\Foundation\Application;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
@@ -13,19 +13,19 @@ class TestUserApiResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      *
      * @return array
      */
     public function toArray($request)
     {
-        if($request->route()->named('someone')) {
+        if ($request->route()->named('someone')) {
             return ['someone' => true];
         }
 
         $result = [
             'id' => $this->id,
-            'name' => $this->first_name . ' ' . $this->last_name,
+            'name' => $this->first_name.' '.$this->last_name,
             'email' => $this->email,
             'children' => $this->whenLoaded('children', function () {
                 return TestUserApiResource::collection($this->children);

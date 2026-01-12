@@ -33,75 +33,7 @@ class ScribeServiceProvider extends ServiceProvider
 
         if (!class_exists('Str')) {
             // We don't want to have to use the FQN in our blade files.
-            class_alias(\Illuminate\Support\Str::class, 'Str');
-        }
-    }
-
-    /**
-     * Add docs routes for users that want their docs to pass through their Laravel app.
-     */
-    protected function bootRoutes()
-    {
-        $docsType = config('scribe.type', 'laravel');
-        if (Str::endsWith($docsType, 'laravel') && config('scribe.laravel.add_routes', true)) {
-            $routesPath = __DIR__ . '/../routes/laravel.php';
-            $this->loadRoutesFrom($routesPath);
-        }
-    }
-
-    protected function configureTranslations(): void
-    {
-        $this->publishes([
-            __DIR__ . '/../lang/' => $this->app->langPath(),
-        ], 'scribe-translations');
-
-        $this->loadTranslationsFrom($this->app->langPath('scribe.php'), 'scribe');
-        $this->loadTranslationsFrom(realpath(__DIR__ . '/../lang'), 'scribe');
-    }
-
-    protected function registerViews(): void
-    {
-        // Register custom Markdown Blade compiler so we can automatically have MD views converted to HTML
-        $this->app->view->getEngineResolver()
-            ->register('blademd', fn() => new BladeMarkdownEngine($this->app['blade.compiler']));
-        $this->app->view->addExtension('md.blade.php', 'blademd');
-
-        $this->loadViewsFrom(__DIR__ . '/../resources/views/', 'scribe');
-
-        // Publish views in separate, smaller groups for ease of end-user modifications
-        $viewGroups = [
-            'views' => '',
-            'examples' => 'partials/example-requests',
-            'themes' => 'themes',
-            'markdown' => 'markdown',
-            'external' => 'external',
-        ];
-        foreach ($viewGroups as $group => $path) {
-            $this->publishes([
-                __DIR__ . "/../resources/views/$path" => $this->app->basePath("resources/views/vendor/scribe/$path"),
-            ], "scribe-$group");
-        }
-    }
-
-    protected function registerConfig(): void
-    {
-        $this->publishes([
-            __DIR__ . '/../config/scribe.php' => $this->app->configPath('scribe.php'),
-        ], 'scribe-config');
-
-        $this->mergeConfigFrom(__DIR__ . '/../config/scribe.php', 'scribe');
-    }
-
-    protected function registerCommands(): void
-    {
-        if ($this->app->runningInConsole()) {
-            $this->commands([
-                GenerateDocumentation::class,
-                MakeStrategy::class,
-                // Retired for the same reasons as the upgrade check
-                // Upgrade::class,
-                DiffConfig::class,
-            ]);
+            class_alias(Str::class, 'Str');
         }
     }
 
@@ -115,5 +47,74 @@ class ScribeServiceProvider extends ServiceProvider
         });
         $this->app->forgetInstance('translator');
         self::$customTranslationLayerLoaded = true;
+    }
+
+    /**
+     * Add docs routes for users that want their docs to pass through their Laravel app.
+     */
+    protected function bootRoutes()
+    {
+        $docsType = config('scribe.type', 'laravel');
+        if (Str::endsWith($docsType, 'laravel') && config('scribe.laravel.add_routes', true)) {
+            $routesPath = __DIR__.'/../routes/laravel.php';
+            $this->loadRoutesFrom($routesPath);
+        }
+    }
+
+    protected function configureTranslations(): void
+    {
+        $this->publishes([
+            __DIR__.'/../lang/' => $this->app->langPath(),
+        ], 'scribe-translations');
+
+        $this->loadTranslationsFrom($this->app->langPath('scribe.php'), 'scribe');
+        $this->loadTranslationsFrom(realpath(__DIR__.'/../lang'), 'scribe');
+    }
+
+    protected function registerViews(): void
+    {
+        // Register custom Markdown Blade compiler so we can automatically have MD views converted to HTML
+        $this->app->view->getEngineResolver()
+            ->register('blademd', fn () => new BladeMarkdownEngine($this->app['blade.compiler']))
+        ;
+        $this->app->view->addExtension('md.blade.php', 'blademd');
+
+        $this->loadViewsFrom(__DIR__.'/../resources/views/', 'scribe');
+
+        // Publish views in separate, smaller groups for ease of end-user modifications
+        $viewGroups = [
+            'views' => '',
+            'examples' => 'partials/example-requests',
+            'themes' => 'themes',
+            'markdown' => 'markdown',
+            'external' => 'external',
+        ];
+        foreach ($viewGroups as $group => $path) {
+            $this->publishes([
+                __DIR__."/../resources/views/{$path}" => $this->app->basePath("resources/views/vendor/scribe/{$path}"),
+            ], "scribe-{$group}");
+        }
+    }
+
+    protected function registerConfig(): void
+    {
+        $this->publishes([
+            __DIR__.'/../config/scribe.php' => $this->app->configPath('scribe.php'),
+        ], 'scribe-config');
+
+        $this->mergeConfigFrom(__DIR__.'/../config/scribe.php', 'scribe');
+    }
+
+    protected function registerCommands(): void
+    {
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                GenerateDocumentation::class,
+                MakeStrategy::class,
+                // Retired for the same reasons as the upgrade check
+                // Upgrade::class,
+                DiffConfig::class,
+            ]);
+        }
     }
 }

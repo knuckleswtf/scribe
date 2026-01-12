@@ -2,28 +2,32 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\ResponseFields;
 
-use Closure;
+use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Camel\Extraction\ResponseCollection;
 use Knuckles\Scribe\Attributes\ResponseField;
 use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 use Knuckles\Scribe\Extracting\Strategies\ResponseFields\GetFromResponseFieldAttribute;
+use Knuckles\Scribe\Tests\Fixtures\TestNestedOuterResource;
 use Knuckles\Scribe\Tests\Fixtures\TestPet;
 use Knuckles\Scribe\Tests\Fixtures\TestPetApiResource;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use PHPUnit\Framework\TestCase;
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
-use ReflectionClass;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class GetFromResponseFieldAttributesTest extends TestCase
 {
     use ArraySubsetAsserts;
 
     /** @test */
-    public function can_fetch_from_responsefield_attribute()
+    public function canFetchFromResponsefieldAttribute()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
-            $e->controller = new ReflectionClass(ResponseFieldAttributeTestController::class);
+            $e->controller = new \ReflectionClass(ResponseFieldAttributeTestController::class);
             $e->method = $e->controller->getMethod('methodWithAttributes');
             $e->responses = new ResponseCollection([
                 [
@@ -58,46 +62,67 @@ class GetFromResponseFieldAttributesTest extends TestCase
             ],
             'not_required_attribute' => [
                 'required' => false,
-            ]
+            ],
         ], $results);
     }
 
     /** @test */
-    public function can_read_from_toArray_on_API_resources()
+    public function canReadFromToArrayOnAPIResources()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
-            $e->controller = new ReflectionClass(ResponseFieldAttributeTestController::class);
+            $e->controller = new \ReflectionClass(ResponseFieldAttributeTestController::class);
             $e->method = $e->controller->getMethod('methodWithApiResourceResponse');
             $e->responses = new ResponseCollection([]);
         });
         $results = $this->fetch($endpoint);
 
         $this->assertArraySubset([
-            'id' => [
+            'data.id' => [
                 'type' => '',
                 'description' => 'The id of the pet.',
             ],
-            'species' => [
+            'data.species' => [
                 'type' => 'string',
                 'description' => 'The breed',
             ],
         ], $results);
     }
 
+    /** @test */
+    public function attributesFromNestedApiResourcesAreCorrectlyMerged()
+    {
+        $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
+            $e->controller = new \ReflectionClass(ResponseFieldAttributeTestController::class);
+            $e->method = $e->controller->getMethod('methodWithNestedApiResourceResponse');
+            $e->responses = new ResponseCollection([]);
+        });
+        $results = $this->fetch($endpoint);
+
+        $this->assertArrayHasKey('data.outer1', $results);
+        $this->assertArrayHasKey('data.outer1.inner1', $results);
+        $this->assertArrayHasKey('data.outer2', $results);
+        $this->assertArrayHasKey('data.outer2.inner2', $results);
+
+        $this->assertTrue($results['data.outer1']['required']);
+        $this->assertTrue($results['data.outer1.inner1']['required']);
+        $this->assertTrue($results['data.outer2']['required']);
+        $this->assertTrue($results['data.outer2.inner2']['required']);
+    }
+
     protected function fetch($endpoint): array
     {
         $strategy = new GetFromResponseFieldAttribute(new DocumentationConfig([]));
+
         return $strategy($endpoint);
     }
 
-    protected function endpoint(Closure $configure): ExtractedEndpointData
+    protected function endpoint(\Closure $configure): ExtractedEndpointData
     {
         $endpoint = new class extends ExtractedEndpointData {
-            public function __construct(array $parameters = [])
-            {
-            }
+            public function __construct(array $parameters = []) {}
         };
         $configure($endpoint);
+
         return $endpoint;
     }
 }
@@ -108,12 +133,11 @@ class ResponseFieldAttributeTestController
     #[ResponseField('other', 'string')]
     #[ResponseField('required_attribute', required: true)]
     #[ResponseField('not_required_attribute', required: false)]
-    public function methodWithAttributes()
-    {
-    }
+    public function methodWithAttributes() {}
 
     #[ResponseFromApiResource(TestPetApiResource::class, TestPet::class)]
-    public function methodWithApiResourceResponse()
-    {
-    }
+    public function methodWithApiResourceResponse() {}
+
+    #[ResponseFromApiResource(TestNestedOuterResource::class)]
+    public function methodWithNestedApiResourceResponse() {}
 }

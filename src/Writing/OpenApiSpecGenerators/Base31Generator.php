@@ -3,7 +3,7 @@
 namespace Knuckles\Scribe\Writing\OpenApiSpecGenerators;
 
 /**
- * The main generator for Open API Spec, for v3.1
+ * The main generator for Open API Spec, for v3.1.
  */
 class Base31Generator extends BaseGenerator
 {

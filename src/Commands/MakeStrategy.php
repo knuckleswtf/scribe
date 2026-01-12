@@ -17,7 +17,7 @@ class MakeStrategy extends GeneratorCommand
 
     protected function getStub()
     {
-        return __DIR__ . '/stubs/strategy.stub';
+        return __DIR__.'/stubs/strategy.stub';
     }
 
     protected function getDefaultNamespace($rootNamespace)
@@ -27,9 +27,6 @@ class MakeStrategy extends GeneratorCommand
 
     protected function replaceClass($stub, $name)
     {
-        $stub = parent::replaceClass($stub, $name);
-
-        return $stub;
+        return parent::replaceClass($stub, $name);
     }
-
 }

@@ -2,14 +2,12 @@
 
 namespace Knuckles\Scribe\Extracting;
 
-use Exception;
 use PhpParser\Node;
+use PhpParser\Node\Stmt;
 use PhpParser\NodeFinder;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\ParserFactory;
-use ReflectionFunctionAbstract;
-use Throwable;
 
 /**
  * MethodAstParser
@@ -20,7 +18,7 @@ class MethodAstParser
     protected static array $methodAsts = [];
     protected static array $classAsts = [];
 
-    public static function getMethodAst(ReflectionFunctionAbstract $method)
+    public static function getMethodAst(\ReflectionFunctionAbstract $method)
     {
         $methodName = $method->name;
         $fileName = $method->getFileName();
@@ -39,42 +37,41 @@ class MethodAstParser
     }
 
     /**
-     * @param string $sourceCode
-     *
-     * @return \PhpParser\Node\Stmt[]|null
+     * @return null|Stmt[]
      */
     protected static function parseClassSourceCode(string $sourceCode): ?array
     {
-        $parser = (new ParserFactory)->createForHostVersion();
+        $parser = (new ParserFactory())->createForHostVersion();
+
         try {
             $ast = $parser->parse($sourceCode);
-        } catch (Throwable $error) {
-            throw new Exception("Parse error: {$error->getMessage()}");
+        } catch (\Throwable $error) {
+            throw new \Exception("Parse error: {$error->getMessage()}");
         }
 
         $traverser = new NodeTraverser(new NameResolver(options: ['replaceNodes' => false]));
+
         try {
             $traverser->traverse($ast);
-        } catch (Throwable $error) {
-            throw new Exception("Traverse error: {$error->getMessage()}");
+        } catch (\Throwable $error) {
+            throw new \Exception("Traverse error: {$error->getMessage()}");
         }
 
         return $ast;
     }
 
     /**
-     * @param \PhpParser\Node\Stmt[] $ast
-     * @param string $methodName
+     * @param Stmt[] $ast
      *
-     * @return Node|null
+     * @return null|Node
      */
     protected static function findMethodInClassAst(array $ast, string $methodName)
     {
-        $nodeFinder = new NodeFinder;
+        $nodeFinder = new NodeFinder();
 
-        return $nodeFinder->findFirst($ast, function(Node $node) use ($methodName) {
+        return $nodeFinder->findFirst($ast, function (Node $node) use ($methodName) {
             // Todo handle closures
-            return $node instanceof Node\Stmt\ClassMethod
+            return $node instanceof Stmt\ClassMethod
                 && $node->name->toString() === $methodName;
         });
     }
@@ -82,6 +79,7 @@ class MethodAstParser
     protected static function getCachedMethodAst(string $fileName, string $methodName)
     {
         $key = self::getAstCacheId($fileName, $methodName);
+
         return self::$methodAsts[$key] ?? null;
     }
 
@@ -93,13 +91,14 @@ class MethodAstParser
 
     private static function getAstCacheId(string $fileName, string $methodName): string
     {
-        return $fileName . "///". $methodName;
+        return $fileName.'///'.$methodName;
     }
 
     private static function getClassAst(string $fileName)
     {
         $classAst = self::$classAsts[$fileName]
             ?? self::parseClassSourceCode(file_get_contents($fileName));
+
         return self::$classAsts[$fileName] = $classAst;
     }
 }
