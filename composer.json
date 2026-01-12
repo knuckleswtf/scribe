@@ -61,6 +61,8 @@
   },
   "scripts": {
     "lint": "phpstan analyse -c ./phpstan.neon src camel --memory-limit 1G",
+    "check-cs": "php-cs-fixer check",
+    "fix-cs": "php-cs-fixer fix",
     "test": "pest --stop-on-failure --colors",
     "test-ci": "pest --coverage --min=80",
     "post-install-cmd": [
