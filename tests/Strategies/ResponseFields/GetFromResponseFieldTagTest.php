@@ -110,6 +110,25 @@ class GetFromResponseFieldTagTest extends TestCase
         ], $results);
     }
 
+    /** @test */
+    public function applies_wrap_key_prefix_to_api_resource_fields()
+    {
+        $tags = [
+            new Tag('apiResource', '\\Knuckles\\Scribe\\Tests\\Fixtures\\TestNestedOuterResourceWithTags'),
+        ];
+        $results = $this->fetch($tags);
+
+        $this->assertArrayHasKey('data.outer1', $results);
+        $this->assertArrayHasKey('data.outer1.inner1', $results);
+        $this->assertArrayHasKey('data.outer2', $results);
+        $this->assertArrayHasKey('data.outer2.inner2', $results);
+
+        $this->assertTrue($results['data.outer1']['required']);
+        $this->assertTrue($results['data.outer1.inner1']['required']);
+        $this->assertTrue($results['data.outer2']['required']);
+        $this->assertTrue($results['data.outer2.inner2']['required']);
+    }
+
     protected function fetch($tags, $endpoint = null): array
     {
         $strategy = new GetFromResponseFieldTag(new DocumentationConfig([]));

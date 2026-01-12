@@ -648,6 +648,52 @@ class OutputTest extends BaseLaravelTest
         $this->assertStringContainsString('"password": "pass\\u0026word\\u003C123\\u003E"', $bladeContent);
     }
 
+    /** @test */
+    public function generated_openapi_spec_correctly_handles_nested_api_resource_required_fields()
+    {
+        RouteFacade::get('/api/nested-resource', [TestController::class, 'withNestedApiResourceResponse']);
+
+        $this->setConfig([
+            'openapi.enabled' => true,
+        ]);
+
+        $this->generate();
+
+        $generatedSpec = Yaml::parseFile($this->openapiOutputPath());
+
+        $responseSchema = $generatedSpec['paths']['/api/nested-resource']['get']['responses']['200']['content']['application/json']['schema'];
+
+        $this->assertArrayHasKey('properties', $responseSchema);
+        $this->assertArrayHasKey('data', $responseSchema['properties']);
+        $dataSchema = $responseSchema['properties']['data'];
+
+        // Verify 'outer1' and 'outer2' are in data properties
+        $this->assertArrayHasKey('properties', $dataSchema);
+        $this->assertArrayHasKey('outer1', $dataSchema['properties']);
+        $this->assertArrayHasKey('outer2', $dataSchema['properties']);
+
+        // Verify both are marked as required at the data level
+        $this->assertArrayHasKey('required', $dataSchema);
+        $this->assertContains('outer1', $dataSchema['required']);
+        $this->assertContains('outer2', $dataSchema['required']);
+
+        // Verify 'outer1.inner1' is nested correctly and marked as required
+        $outer1Schema = $dataSchema['properties']['outer1'];
+        $this->assertEquals('object', $outer1Schema['type']);
+        $this->assertArrayHasKey('properties', $outer1Schema);
+        $this->assertArrayHasKey('inner1', $outer1Schema['properties']);
+        $this->assertArrayHasKey('required', $outer1Schema);
+        $this->assertContains('inner1', $outer1Schema['required']);
+
+        // Verify 'outer2.inner2' is nested correctly and marked as required
+        $outer2Schema = $dataSchema['properties']['outer2'];
+        $this->assertEquals('object', $outer2Schema['type']);
+        $this->assertArrayHasKey('properties', $outer2Schema);
+        $this->assertArrayHasKey('inner2', $outer2Schema['properties']);
+        $this->assertArrayHasKey('required', $outer2Schema);
+        $this->assertContains('inner2', $outer2Schema['required']);
+    }
+
     protected function postmanOutputPath(bool $staticType = false): string
     {
         return $staticType

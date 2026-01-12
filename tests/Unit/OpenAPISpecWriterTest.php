@@ -663,6 +663,179 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
+    public function applies_required_flag_for_nested_response_fields_with_dot_notation()
+    {
+        $endpointData = $this->createMockEndpointData([
+            'httpMethods' => ['GET'],
+            'uri' => '/api/resource',
+            'responses' => [
+                [
+                    'status' => 200,
+                    'description' => '',
+                    'content' => json_encode([
+                        'status' => [
+                            'technicalValue' => 'active',
+                            'displayValue' => 'Active',
+                        ],
+                    ]),
+                ],
+            ],
+            'responseFields' => [
+                'status.technicalValue' => [
+                    'name' => 'status.technicalValue',
+                    'type' => 'string',
+                    'description' => 'The technical status value',
+                    'required' => true,
+                ],
+                'status.displayValue' => [
+                    'name' => 'status.displayValue',
+                    'type' => 'string',
+                    'description' => 'The display status value',
+                    'required' => false,
+                ],
+            ],
+        ]);
+
+        $groups = [$this->createGroup([$endpointData])];
+        $results = $this->generate($groups);
+
+        $statusSchema = $results['paths']['/api/resource']['get']['responses']['200']['content']['application/json']['schema']['properties']['status'];
+
+        $this->assertEquals('object', $statusSchema['type']);
+        $this->assertArrayHasKey('properties', $statusSchema);
+        $this->assertArrayHasKey('technicalValue', $statusSchema['properties']);
+        $this->assertArrayHasKey('displayValue', $statusSchema['properties']);
+        $this->assertArrayHasKey('required', $statusSchema);
+        $this->assertContains('technicalValue', $statusSchema['required']);
+        $this->assertNotContains('displayValue', $statusSchema['required']);
+    }
+
+    /** @test */
+    public function applies_required_flag_for_nested_response_fields_from_api_resources_with_data_prefix()
+    {
+        $endpointData = $this->createMockEndpointData([
+            'httpMethods' => ['GET'],
+            'uri' => '/api/resource',
+            'responses' => [
+                [
+                    'status' => 200,
+                    'description' => '',
+                    'content' => json_encode([
+                        'data' => [
+                            'status' => [
+                                'technicalValue' => 'active',
+                                'displayValue' => 'Active',
+                            ],
+                        ],
+                    ]),
+                ],
+            ],
+            'responseFields' => [
+                'data.status.technicalValue' => [
+                    'name' => 'data.status.technicalValue',
+                    'type' => 'string',
+                    'description' => 'The technical status value',
+                    'required' => true,
+                ],
+                'data.status.displayValue' => [
+                    'name' => 'data.status.displayValue',
+                    'type' => 'string',
+                    'description' => 'The display status value',
+                    'required' => false,
+                ],
+            ],
+        ]);
+
+        $groups = [$this->createGroup([$endpointData])];
+        $results = $this->generate($groups);
+
+        // For API Resources, the response is wrapped in 'data', so we need to check data.status
+        $dataSchema = $results['paths']['/api/resource']['get']['responses']['200']['content']['application/json']['schema']['properties']['data'];
+        $statusSchema = $dataSchema['properties']['status'];
+
+        $this->assertEquals('object', $statusSchema['type']);
+        $this->assertArrayHasKey('properties', $statusSchema);
+        $this->assertArrayHasKey('technicalValue', $statusSchema['properties']);
+        $this->assertArrayHasKey('displayValue', $statusSchema['properties']);
+        $this->assertArrayHasKey('required', $statusSchema);
+        $this->assertContains('technicalValue', $statusSchema['required']);
+        $this->assertNotContains('displayValue', $statusSchema['required']);
+    }
+
+    /** @test */
+    public function handles_required_params_correctly_for_nested_arrays()
+    {
+        $endpointData = $this->createMockEndpointData([
+            'httpMethods' => ['GET'],
+            'uri' => '/api/scribe-test',
+            'metadata' => [
+                'title' => 'Scribe TEST',
+            ],
+            'responses' => [
+                [
+                    'status' => 200,
+                    'description' => '',
+                    'content' => json_encode([
+                        'data' => [
+                            'outer1' => [
+                                'inner1' => 'string'
+                            ],
+                            'outer2' => [
+                                'inner2' => 'string'
+                            ],
+                        ],
+                    ]),
+                ],
+            ],
+            'responseFields' => [
+                'data.outer1' => [
+                    'name' => 'data.outer1',
+                    'description' => '',
+                    'required' => true,
+                    'type' => 'object',
+                ],
+                'data.outer1.inner1' => [
+                    'name' => 'data.outer1.inner1',
+                    'description' => '',
+                    'required' => true,
+                    'type' => 'string',
+                ],
+                'data.outer2' => [
+                    'name' => 'data.outer2',
+                    'description' => '',
+                    'required' => true,
+                    'type' => 'object',
+                ],
+                'data.outer2.inner2' => [
+                    'name' => 'data.outer2.inner2',
+                    'description' => '',
+                    'required' => true,
+                    'type' => 'string',
+                ],
+            ],
+        ]);
+
+        $groups = [$this->createGroup([$endpointData])];
+        $results = $this->generate($groups);
+
+        $dataSchema = $results['paths']['/api/scribe-test']['get']['responses']['200']['content']['application/json']['schema']['properties']['data'];
+
+        // outer1
+        $this->assertEquals('object', $dataSchema['properties']['outer1']['type']);
+        $this->assertContains('outer1', $dataSchema['required']);
+        // outer1.inner1
+        $this->assertEquals('string', $dataSchema['properties']['outer1']['properties']['inner1']['type']);
+        $this->assertContains('inner1', $dataSchema['properties']['outer1']['required']);
+
+        // outer2
+        $this->assertEquals('object', $dataSchema['properties']['outer2']['type']);
+        $this->assertContains('outer2', $dataSchema['required']);
+        // outer2.inner2
+        $this->assertEquals('string', $dataSchema['properties']['outer2']['properties']['inner2']['type']);
+        $this->assertContains('inner2', $dataSchema['properties']['outer2']['required']);
+    }
+
+    /** @test */
     public function adds_responses_correctly_as_array_of_objects()
     {
         $endpointData1 = $this->createMockEndpointData([
@@ -1321,6 +1494,88 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                 ],
             ],
         ], $results['paths']['/path1']['get']['responses']);
+    }
+
+    /** @test */
+    public function does_not_add_empty_enum_arrays_when_response_field_has_no_enum_values()
+    {
+        $endpointData = $this->createMockEndpointData([
+            'httpMethods' => ['GET'],
+            'uri' => '/test',
+            'responses' => [
+                [
+                    'status' => 200,
+                    'description' => 'Success response',
+                    'content' => '{"status":"active","message":"Hello world"}',
+                ],
+            ],
+            'responseFields' => [
+                'status' => [
+                    'name' => 'status',
+                    'type' => 'string',
+                    'required' => true,
+                    // enumValues is not set, which means it defaults to an empty array
+                ],
+                'message' => [
+                    'name' => 'message',
+                    'type' => 'string',
+                    'required' => true,
+                    'enumValues' => [], // explicitly empty enum array
+                ],
+            ],
+        ]);
+
+        $groups = [$this->createGroup([$endpointData])];
+        $results = $this->generate($groups);
+
+        $responseSchema = $results['paths']['/test']['get']['responses']['200']['content']['application/json']['schema'];
+        $statusProperty = $responseSchema['properties']['status'];
+        $messageProperty = $responseSchema['properties']['message'];
+
+        // Empty enum array should not be added to the schema
+        $this->assertArrayNotHasKey('enum', $statusProperty, 'ResponseField with only required parameter should not have empty enum array');
+        $this->assertArrayNotHasKey('enum', $messageProperty, 'ResponseField with empty enumValues should not have empty enum array in schema');
+
+        // Assert that the required fields are correctly set
+        $this->assertContains('status', $responseSchema['required']);
+        $this->assertContains('message', $responseSchema['required']);
+    }
+
+    /** @test */
+    public function adds_enum_values_to_response_properties_when_specified()
+    {
+        $endpointData = $this->createMockEndpointData([
+            'httpMethods' => ['GET'],
+            'uri' => '/test',
+            'responses' => [
+                [
+                    'status' => 200,
+                    'description' => 'Success response',
+                    'content' => '{"status":"active"}',
+                ],
+            ],
+            'responseFields' => [
+                'status' => [
+                    'name' => 'status',
+                    'type' => 'string',
+                    'required' => true,
+                    'enumValues' => ['active', 'inactive', 'pending'],
+                ],
+            ],
+        ]);
+
+        $groups = [$this->createGroup([$endpointData])];
+        $results = $this->generate($groups);
+
+        $responseSchema = $results['paths']['/test']['get']['responses']['200']['content']['application/json']['schema'];
+        $statusProperty = $responseSchema['properties']['status'];
+
+        // Correct enum values should be added to the schema
+        $this->assertArrayHasKey('enum', $statusProperty, 'ResponseField with enumValues should have enum array in schema');
+        $this->assertEquals(['active', 'inactive', 'pending'], $statusProperty['enum']);
+
+        // Assert that the required field is correctly set
+        $this->assertContains('status', $responseSchema['required']);
     }
 
     /** @test */

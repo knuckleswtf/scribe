@@ -205,6 +205,20 @@ class TestController extends Controller
         return new TestEmptyApiResource();
     }
 
+    #[\Knuckles\Scribe\Attributes\ResponseFromApiResource(\Knuckles\Scribe\Tests\Fixtures\TestNestedOuterResource::class)]
+    public function withNestedApiResourceResponse()
+    {
+        return new TestNestedOuterResource();
+    }
+
+    /**
+     * @apiResource \Knuckles\Scribe\Tests\Fixtures\TestNestedOuterResourceWithTags
+     */
+    public function withNestedApiResourceResponseWithTags()
+    {
+        return new TestNestedOuterResourceWithTags();
+    }
+
     /**
      * @group Other😎
      *
