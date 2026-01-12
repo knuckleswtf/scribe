@@ -12,6 +12,7 @@ jobs:
       matrix:
         php:
         - 8.3
+        - 8.4
 
     name: Lint code (PHP ${{ matrix.php }})
 
