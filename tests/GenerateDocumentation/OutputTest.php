@@ -636,7 +636,7 @@ class OutputTest extends BaseLaravelTest
         
         $bladeContent = file_get_contents($this->bladeOutputPath());
         
-        // Check that the JSON body doesn't contain raw HTML special characters
+        // Check that the JSON body doesn't contain raw HTML special characters, which can break the rest of the containing HTML file when rendered
         // The < and > should be escaped as \u003C and \u003E
         // The & should be escaped as \u0026
         $this->assertStringContainsString('\\u003C', $bladeContent);
