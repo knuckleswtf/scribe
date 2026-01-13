@@ -683,9 +683,31 @@ trait ParsesValidationRules
 
                     // Other rules.
                 case 'in':
-                    $parameterData['enumValues'] = $ruleArguments;
-                    $parameterData['setter'] = function () use ($ruleArguments) {
-                        return Arr::random($ruleArguments);
+                    // Cast numeric values in enumValues, but don't change the parameter type
+                    // The type should remain as set by other rules (eg 'string' rule) or default 'string'
+                    $castedValues = $ruleArguments;
+                    $allNumeric = count($ruleArguments) > 0 && array_reduce(
+                        $ruleArguments,
+                        fn ($carry, $val) => $carry && is_numeric($val),
+                        true
+                    );
+
+                    if ($allNumeric) {
+                        // Check if all are integers (no decimal points)
+                        $allIntegers = array_reduce(
+                            $ruleArguments,
+                            fn ($carry, $val) => $carry && !Str::contains($val, '.'),
+                            true
+                        );
+
+                        $castedValues = $allIntegers
+                            ? array_map(fn ($v) => (int) $v, $ruleArguments)
+                            : array_map(fn ($v) => (float) $v, $ruleArguments);
+                    }
+
+                    $parameterData['enumValues'] = $castedValues;
+                    $parameterData['setter'] = function () use ($castedValues) {
+                        return Arr::random($castedValues);
                     };
 
                     break;
@@ -816,7 +838,8 @@ trait ParsesValidationRules
             return $parameterData['required']
                 ? $this->generateDummyValue($parameterData['type'])
                 : null;
-        } elseif (!is_null($parameterData['example']) && $parameterData['example'] !== self::$MISSING_VALUE) {
+        }
+        if (!is_null($parameterData['example']) && $parameterData['example'] !== self::$MISSING_VALUE) {
             if ('No-example' === $parameterData['example'] && !$parameterData['required']) {
                 return null;
             }
@@ -915,7 +938,7 @@ trait ParsesValidationRules
         // Laravel 10 added `field` to its messages: https://github.com/laravel/framework/pull/45974
         $description = str_replace('The :attribute field ', 'The value ', $description);
 
-        $description = preg_replace('/(?!<\\W):attribute\\b/', 'value', $description);
+        $description = preg_replace('/(?!<\W):attribute\b/', 'value', $description);
 
         return str_replace(
             ['The value must ', ' 1 characters', ' 1 digits', ' 1 kilobytes'],

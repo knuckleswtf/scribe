@@ -3,6 +3,7 @@
 namespace Knuckles\Scribe\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Console\View\Components\Factory;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
@@ -92,7 +93,7 @@ class GenerateDocumentation extends Command
     /**
      * Get access to output components for task-based output.
      *
-     * @return \Illuminate\Console\View\Components\Factory
+     * @return Factory
      */
     public function outputComponents()
     {
@@ -234,7 +235,7 @@ class GenerateDocumentation extends Command
             if ($this->docConfig->get('laravel.add_routes')) {
                 $url = url($this->docConfig->get('laravel.docs_url'));
             }
-        } else if (Str::endsWith(base_path('public'), 'public') && Str::startsWith($this->docConfig->get('static.output_path'), 'public/')) {
+        } elseif (Str::endsWith(base_path('public'), 'public') && Str::startsWith($this->docConfig->get('static.output_path'), 'public/')) {
             $url = url(str_replace('public/', '', $this->docConfig->get('static.output_path')));
         }
 
@@ -248,7 +249,7 @@ class GenerateDocumentation extends Command
         if ($errored) {
             $this->components->warn('Generated docs, but encountered some errors while processing routes.');
             $this->components->warn('Check the output above for details.');
-            if (empty($_SERVER["SCRIBE_TESTS"])) {
+            if (empty($_SERVER['SCRIBE_TESTS'])) {
                 exit(2);
             }
         }

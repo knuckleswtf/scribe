@@ -361,7 +361,7 @@ class PostmanCollectionWriter
 
         $description = strval($response->description);
         // Don't include the status code in description; see https://github.com/knuckleswtf/scribe/issues/271
-        if (preg_match('/\\d{3},\\s+(.+)/', $description, $matches)) {
+        if (preg_match('/\d{3},\s+(.+)/', $description, $matches)) {
             $description = $matches[1];
         } elseif ($description === strval($response->status)) {
             $description = '';

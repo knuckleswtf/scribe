@@ -68,53 +68,6 @@ class Writer
         $this->runAfterGeneratingHook();
     }
 
-    protected function writePostmanCollection(array $groups): void
-    {
-        if ($this->config->get('postman.enabled', true)) {
-            c::task(
-                'Generating Postman collection',
-                function () use ($groups) {
-                    $collection = $this->generatePostmanCollection($groups);
-                    if ($this->isStatic) {
-                        $collectionPath = "{$this->staticTypeOutputPath}/collection.json";
-                        file_put_contents($collectionPath, $collection);
-                    } else {
-                        $outputPath = $this->paths->outputPath('collection.json');
-                        Storage::disk('local')->put($outputPath, $collection);
-                        $collectionPath = Storage::disk('local')->path($outputPath);
-                    }
-
-                    $this->generatedFiles['postman'] = realpath($collectionPath);
-                    return true;
-                }
-            );
-        }
-    }
-
-    protected function writeOpenAPISpec(array $parsedRoutes): void
-    {
-        if ($this->config->get('openapi.enabled', false) || $this->isExternal) {
-            c::task(
-                'Generating OpenAPI specification',
-                function () use ($parsedRoutes) {
-                    $spec = $this->generateOpenAPISpec($parsedRoutes);
-                    if ($this->isStatic) {
-                        Utils::makeDirectoryRecursive($this->staticTypeOutputPath);
-                        $specPath = "{$this->staticTypeOutputPath}/openapi.yaml";
-                        file_put_contents($specPath, $spec);
-                    } else {
-                        $outputPath = $this->paths->outputPath('openapi.yaml');
-                        Storage::disk('local')->put($outputPath, $spec);
-                        $specPath = Storage::disk('local')->path($outputPath);
-                    }
-
-                    $this->generatedFiles['openapi'] = realpath($specPath);
-                    return true;
-                }
-            );
-        }
-    }
-
     /**
      * Generate Postman collection JSON file.
      *
@@ -154,7 +107,7 @@ class Writer
     public function writeHtmlDocs(array $groupedEndpoints): void
     {
         c::task(
-            'Writing ' . ($this->isStatic ? 'HTML' : 'Blade') . ' docs',
+            'Writing '.($this->isStatic ? 'HTML' : 'Blade').' docs',
             function () use ($groupedEndpoints) {
                 // Then we convert them to HTML, and throw in the endpoints as well.
                 /** @var HtmlWriter $writer */
@@ -166,13 +119,13 @@ class Writer
                 }
 
                 if ($this->isStatic) {
-                    $outputPath = rtrim($this->staticTypeOutputPath, '/') . '/';
+                    $outputPath = rtrim($this->staticTypeOutputPath, '/').'/';
                     $this->generatedFiles['html'] = realpath("{$outputPath}index.html");
                     $assetsOutputPath = $outputPath;
                 } else {
-                    $outputPath = rtrim($this->laravelTypeOutputPath, '/') . '/';
+                    $outputPath = rtrim($this->laravelTypeOutputPath, '/').'/';
                     $this->generatedFiles['blade'] = realpath("{$outputPath}index.blade.php");
-                    $assetsOutputPath = public_path() . $this->laravelAssetsPath . '/';
+                    $assetsOutputPath = public_path().$this->laravelAssetsPath.'/';
                 }
                 $this->generatedFiles['assets']['js'] = realpath("{$assetsOutputPath}js");
                 $this->generatedFiles['assets']['css'] = realpath("{$assetsOutputPath}css");
@@ -197,10 +150,10 @@ class Writer
                 }
 
                 if ($this->isStatic) {
-                    $outputPath = rtrim($this->staticTypeOutputPath, '/') . '/';
+                    $outputPath = rtrim($this->staticTypeOutputPath, '/').'/';
                     $this->generatedFiles['html'] = realpath("{$outputPath}index.html");
                 } else {
-                    $outputPath = rtrim($this->laravelTypeOutputPath, '/') . '/';
+                    $outputPath = rtrim($this->laravelTypeOutputPath, '/').'/';
                     $this->generatedFiles['blade'] = realpath("{$outputPath}index.blade.php");
                 }
 
@@ -212,41 +165,49 @@ class Writer
     protected function writePostmanCollection(array $groups): void
     {
         if ($this->config->get('postman.enabled', true)) {
-            c::info('Generating Postman collection');
+            c::task(
+                'Generating Postman collection',
+                function () use ($groups) {
+                    $collection = $this->generatePostmanCollection($groups);
+                    if ($this->isStatic) {
+                        $collectionPath = "{$this->staticTypeOutputPath}/collection.json";
+                        file_put_contents($collectionPath, $collection);
+                    } else {
+                        $outputPath = $this->paths->outputPath('collection.json');
+                        Storage::disk('local')->put($outputPath, $collection);
+                        $collectionPath = Storage::disk('local')->path($outputPath);
+                    }
 
-            $collection = $this->generatePostmanCollection($groups);
-            if ($this->isStatic) {
-                $collectionPath = "{$this->staticTypeOutputPath}/collection.json";
-                file_put_contents($collectionPath, $collection);
-            } else {
-                $outputPath = $this->paths->outputPath('collection.json');
-                Storage::disk('local')->put($outputPath, $collection);
-                $collectionPath = Storage::disk('local')->path($outputPath);
-            }
+                    $this->generatedFiles['postman'] = realpath($collectionPath);
 
-            c::success("Wrote Postman collection to: {$this->makePathFriendly($collectionPath)}");
-            $this->generatedFiles['postman'] = realpath($collectionPath);
+                    return true;
+                }
+            );
         }
     }
 
     protected function writeOpenAPISpec(array $parsedRoutes): void
     {
         if ($this->config->get('openapi.enabled', false) || $this->isExternal) {
-            c::info('Generating OpenAPI specification');
+            c::task(
+                'Generating OpenAPI specification',
+                function () use ($parsedRoutes) {
+                    $spec = $this->generateOpenAPISpec($parsedRoutes);
+                    if ($this->isStatic) {
+                        Utils::makeDirectoryRecursive($this->staticTypeOutputPath);
+                        $specPath = "{$this->staticTypeOutputPath}/openapi.yaml";
+                        file_put_contents($specPath, $spec);
+                    } else {
+                        $outputPath = $this->paths->outputPath('openapi.yaml');
+                        Storage::disk('local')->put($outputPath, $spec);
+                        $specPath = Storage::disk('local')->path($outputPath);
+                    }
 
-            $spec = $this->generateOpenAPISpec($parsedRoutes);
-            if ($this->isStatic) {
-                Utils::makeDirectoryRecursive($this->staticTypeOutputPath);
-                $specPath = "{$this->staticTypeOutputPath}/openapi.yaml";
-                file_put_contents($specPath, $spec);
-            } else {
-                $outputPath = $this->paths->outputPath('openapi.yaml');
-                Storage::disk('local')->put($outputPath, $spec);
-                $specPath = Storage::disk('local')->path($outputPath);
-            }
+                    $this->generatedFiles['openapi'] = realpath($specPath);
 
-            c::success("Wrote OpenAPI specification to: {$this->makePathFriendly($specPath)}");
-            $this->generatedFiles['openapi'] = realpath($specPath);
+                    return true;
+                }
+            );
         }
     }
 

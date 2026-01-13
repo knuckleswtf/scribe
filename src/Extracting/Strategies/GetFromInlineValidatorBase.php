@@ -154,7 +154,13 @@ class GetFromInlineValidatorBase extends Strategy
         if ($arg->value instanceof Node\Expr\ClassConstFetch
             && $arg->value->class instanceof Node\Name
         ) {
-            return '\\'.$arg->value->class->name;
+            $className = $arg->value->class->name;
+            // Only prepend '\\' if the class name is already fully qualified (contains '\')
+            // For relative names, return as-is and let enum_exists use autoloading to resolve.
+            if (strpos($className, '\\') !== false) {
+                return '\\'.$className;
+            }
+            return $className;
         }
         if ($arg->value instanceof Node\Scalar\String_) {
             return $arg->value->value;

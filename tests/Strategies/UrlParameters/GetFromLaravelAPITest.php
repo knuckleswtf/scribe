@@ -132,7 +132,7 @@ class GetFromLaravelAPITest extends BaseLaravelTest
         $reflectedApp = new \ReflectionClass($this->app);
         $property = $reflectedApp->getProperty('namespace');
         $property->setAccessible(true);
-        $property->setValue($this->app, 'Knuckles\\Scribe\\Tests\\Fixtures\\');
+        $property->setValue($this->app, 'Knuckles\Scribe\Tests\Fixtures\\');
 
         $endpoint = $this->endpointForRoute('test-users/{id}', TestController::class, 'dummy');
         $results = $this->fetch($endpoint);

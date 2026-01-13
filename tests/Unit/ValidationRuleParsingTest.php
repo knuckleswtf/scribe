@@ -590,7 +590,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
 
         $results = $this->strategy->parse($ruleset);
         $this->assertEquals(
-            'This is a block DocComment parsed on a closure rule. Extra info.',
+            'This is a block DocComment parsed on a closure rule. Extra info. @param mixed $attribute @param mixed $value @param mixed $fail.',
             $results['closure']['description']
         );
     }

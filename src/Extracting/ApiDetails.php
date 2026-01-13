@@ -42,10 +42,10 @@ class ApiDetails
     public function writeMarkdownFiles(): void
     {
         c::task(
-            'Extracting intro and auth Markdown files to: ' . $this->markdownOutputPath,
+            'Extracting intro and auth Markdown files to: '.$this->markdownOutputPath,
             function () {
                 if (!is_dir($this->markdownOutputPath)) {
-                    mkdir($this->markdownOutputPath, 0777, true);
+                    mkdir($this->markdownOutputPath, 0o777, true);
                 }
 
                 $this->fetchFileHashesFromTrackingFile();

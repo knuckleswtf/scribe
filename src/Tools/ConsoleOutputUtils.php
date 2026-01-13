@@ -10,14 +10,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ConsoleOutputUtils
 {
     /**
-     * @var OutputInterface|null
+     * @var null|OutputInterface
      */
-    private static $output = null;
+    private static $output;
 
     /**
-     * @var GenerateDocumentation|null
+     * @var null|GenerateDocumentation
      */
-    private static $command = null;
+    private static $command;
 
     /**
      * @var array
@@ -65,6 +65,7 @@ class ConsoleOutputUtils
             self::$command->outputComponents()->task($description, function () use (&$result, $task) {
                 $result = $task();
             });
+
             return $result;
         }
 
@@ -72,12 +73,13 @@ class ConsoleOutputUtils
         self::info($description);
         $result = $task();
         self::success($description);
+
         return $result;
     }
 
     public static function deprecated(string $feature, string $inVersion, ?string $should = null): void
     {
-        $message = "You're using $feature. This is deprecated and will be removed in the next major version.";
+        $message = "You're using {$feature}. This is deprecated and will be removed in the next major version.";
         if ($should) {
             $message .= "\nYou should {$should} instead.";
         }
@@ -90,31 +92,34 @@ class ConsoleOutputUtils
     {
         if (self::$isBufferingWarnings) {
             self::$warningBuffer[] = $message;
+
             return;
         }
 
         if (self::$command) {
             self::$command->outputComponents()->warn($message);
+
             return;
         }
 
         if (!self::$output) {
             self::bootstrapOutput(new ConsoleOutput());
         }
-        self::$output->writeln("<fg=yellow>  ⚠ $message</>");
+        self::$output->writeln("<fg=yellow>  ⚠ {$message}</>");
     }
 
     public static function info(string $message): void
     {
         if (self::$command) {
             self::$command->outputComponents()->info($message);
+
             return;
         }
 
         if (!self::$output) {
             self::bootstrapOutput(new ConsoleOutput());
         }
-        self::$output->writeln("<fg=gray>  ℹ $message</>");
+        self::$output->writeln("<fg=gray>  ℹ {$message}</>");
     }
 
     public static function debug(string $message): void
@@ -126,7 +131,7 @@ class ConsoleOutputUtils
         if (!self::$output) {
             self::bootstrapOutput(new ConsoleOutput());
         }
-        self::$output->writeln("<fg=gray>  🐛 $message</>");
+        self::$output->writeln("<fg=gray>  🐛 {$message}</>");
     }
 
     public static function success(string $message): void
@@ -134,20 +139,21 @@ class ConsoleOutputUtils
         if (!self::$output) {
             self::bootstrapOutput(new ConsoleOutput());
         }
-        self::$output->writeln("<fg=green>  ✔ $message</>");
+        self::$output->writeln("<fg=green>  ✔ {$message}</>");
     }
 
     public static function error(string $message): void
     {
         if (self::$command) {
             self::$command->outputComponents()->error($message);
+
             return;
         }
 
         if (!self::$output) {
             self::bootstrapOutput(new ConsoleOutput());
         }
-        self::$output->writeln("<fg=red>  ✖ $message</>");
+        self::$output->writeln("<fg=red>  ✖ {$message}</>");
     }
 
     /**
@@ -163,6 +169,6 @@ class ConsoleOutputUtils
         $routeMethods = implode('|', $methods);
         $routePath = $route->uri();
 
-        return "[<fg=cyan>$routeMethods</>] $routePath";
+        return "[<fg=cyan>{$routeMethods}</>] {$routePath}";
     }
 }

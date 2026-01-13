@@ -275,7 +275,7 @@ class Utils
             try {
                 $factory = factory($modelName);
             } catch (\Throwable $e) {
-                if (Str::contains($e->getMessage(), 'Call to undefined function Knuckles\\Scribe\\Tools\\factory()')) {
+                if (Str::contains($e->getMessage(), 'Call to undefined function Knuckles\Scribe\Tools\factory()')) {
                     throw CouldntFindFactory::forModel($modelName);
                 }
 

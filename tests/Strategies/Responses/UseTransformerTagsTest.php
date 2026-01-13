@@ -26,6 +26,9 @@ class UseTransformerTagsTest extends BaseLaravelTest
      * @test
      *
      * @dataProvider serializerAndExpected
+     *
+     * @param mixed $serializer
+     * @param mixed $expected
      */
     public function canParseTransformerTag($serializer, $expected)
     {
