@@ -20,7 +20,7 @@ use PHPUnit\Framework\TestCase;
  *
  * @coversNothing
  */
-class UseMetadataAttributesTest extends TestCase
+class GetFromMetadataAttributesTest extends TestCase
 {
     use ArraySubsetAsserts;
 

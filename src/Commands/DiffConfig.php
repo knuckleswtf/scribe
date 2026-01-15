@@ -14,7 +14,7 @@ class DiffConfig extends Command
     public function handle(): void
     {
         $usersConfig = config($this->option('config'));
-        $defaultConfig = require __DIR__.'/../../config/scribe.php';
+        $defaultConfig = require __DIR__ . '/../../config/scribe.php';
 
         $ignore = ['example_languages', 'routes', 'description', 'auth.extra_info', 'intro_text', 'groups'];
         $asList = ['strategies.*', 'examples.models_source'];

@@ -17,12 +17,12 @@ class MakeStrategy extends GeneratorCommand
 
     protected function getStub()
     {
-        return __DIR__.'/stubs/strategy.stub';
+        return __DIR__ . '/stubs/strategy.stub';
     }
 
     protected function getDefaultNamespace($rootNamespace)
     {
-        return $rootNamespace.'\Docs\Strategies';
+        return $rootNamespace . '\Docs\Strategies';
     }
 
     protected function replaceClass($stub, $name)

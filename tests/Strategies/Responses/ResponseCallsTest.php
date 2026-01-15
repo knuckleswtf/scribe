@@ -123,10 +123,10 @@ class ResponseCallsTest extends BaseLaravelTest
     public function callsBeforeResponseCallHook()
     {
         Scribe::beforeResponseCall(function (Request $request, ExtractedEndpointData $endpointData) {
-            $request->headers->set('header', 'overridden_'.$request->headers->get('header'));
-            $request->headers->set('Authorization', 'overridden_'.$request->headers->get('Authorization'));
-            $request->query->set('queryParam', 'overridden_'.$request->query->get('queryParam'));
-            $request->request->set('bodyParam', 'overridden_'.$endpointData->uri.$request->request->get('bodyParam'));
+            $request->headers->set('header', 'overridden_' . $request->headers->get('header'));
+            $request->headers->set('Authorization', 'overridden_' . $request->headers->get('Authorization'));
+            $request->query->set('queryParam', 'overridden_' . $request->query->get('queryParam'));
+            $request->request->set('bodyParam', 'overridden_' . $endpointData->uri . $request->request->get('bodyParam'));
         });
 
         $route = LaravelRouteFacade::post('/echo/{id}', [TestController::class, 'echoesRequestValues']);
@@ -156,7 +156,7 @@ class ResponseCallsTest extends BaseLaravelTest
         $this->assertEquals('overridden_Bearer bearerToken', $responseContent['auth']);
         $this->assertEquals('overridden_echo/{id}bodyValue', $responseContent['bodyParam']);
 
-        Scribe::beforeResponseCall(fn () => null);
+        Scribe::beforeResponseCall(fn() => null);
     }
 
     /** @test */

@@ -46,7 +46,7 @@ class PostmanCollectionWriter
                 'name' => $this->config->get('title') ?: config('app.name'),
                 '_postman_id' => Uuid::uuid4()->toString(),
                 'description' => $this->config->get('description', ''),
-                'schema' => 'https://schema.getpostman.com/json/collection/v'.self::SPEC_VERSION.'/collection.json',
+                'schema' => 'https://schema.getpostman.com/json/collection/v' . self::SPEC_VERSION . '/collection.json',
             ],
             'item' => array_values(array_map(function (array $group) {
                 return [
@@ -145,8 +145,8 @@ class PostmanCollectionWriter
         }
 
         $endpointItem = [
-            'name' => ('' !== $endpoint->metadata->title ? $endpoint->metadata->title : ($endpoint->httpMethods[0].' '.$endpoint->uri))
-                .($endpoint->metadata->deprecated ? ' [DEPRECATED]' : ''),
+            'name' => ('' !== $endpoint->metadata->title ? $endpoint->metadata->title : ($endpoint->httpMethods[0] . ' ' . $endpoint->uri))
+                . ($endpoint->metadata->deprecated ? ' [DEPRECATED]' : ''),
             'request' => [
                 'url' => $this->generateUrlObject($endpoint),
                 'method' => $method,
@@ -192,7 +192,7 @@ class PostmanCollectionWriter
                             $key .= '[]';
                             $value = $value[0];
                         } else {
-                            $key .= '['.$keys[0].']';
+                            $key .= '[' . $keys[0] . ']';
                             $value = $value[$keys[0]];
                         }
                     }
@@ -222,7 +222,7 @@ class PostmanCollectionWriter
         $body = [];
 
         foreach ($paramsKeyValue as $index => $value) {
-            $index = $key ? ($key.'['.$index.']') : $index;
+            $index = $key ? ($key . '[' . $index . ']') : $index;
 
             if (!is_array($value)) {
                 $body[] = [
@@ -277,7 +277,7 @@ class PostmanCollectionWriter
             'host' => '{{baseUrl}}',
             // Change laravel/symfony URL params ({example}) to Postman style, prefixed with a colon
             'path' => preg_replace_callback('/\{(\w+)\??}/', function ($matches) {
-                return ':'.$matches[1];
+                return ':' . $matches[1];
             }, $endpointData->uri),
         ];
 
@@ -332,7 +332,7 @@ class PostmanCollectionWriter
 
         // Create raw url-parameter (Insomnia uses this on import)
         $queryString = collect($base['query'])->map(function ($queryParamData) {
-            return $queryParamData['key'].'='.$queryParamData['value'];
+            return $queryParamData['key'] . '=' . $queryParamData['value'];
         })->implode('&');
         $base['raw'] = sprintf('%s/%s%s', $base['host'], $base['path'], $queryString ? "?{$queryString}" : null);
 
@@ -355,7 +355,7 @@ class PostmanCollectionWriter
 
     protected function getResponseDescription(Response $response): string
     {
-        if (Str::startsWith($response->content, '<<binary>>')) {
+        if ($response->isBinary()) {
             return trim(str_replace('<<binary>>', '', $response->content));
         }
 

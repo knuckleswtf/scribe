@@ -112,7 +112,7 @@ class ResponseCalls extends Strategy
                 ],
             ];
         } catch (\Exception $e) {
-            c::warn('Exception thrown during response call for'.$endpointData->name());
+            c::warn('Exception thrown during response call for' . $endpointData->name());
             e::dumpExceptionIfVerbose($e);
 
             $response = null;
@@ -249,7 +249,7 @@ class ResponseCalls extends Strategy
         foreach ($headers as $name => $value) {
             $name = strtr(strtoupper($name), '-', '_');
             if (!Str::startsWith($name, $prefix) && 'CONTENT_TYPE' !== $name) {
-                $name = $prefix.$name;
+                $name = $prefix . $name;
             }
             $server[$name] = $value;
         }

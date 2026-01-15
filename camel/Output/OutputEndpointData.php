@@ -96,10 +96,10 @@ class OutputEndpointData extends BaseDTO
     {
         // spatie/dto currently doesn't auto-cast nested DTOs like that
         $parameters['responses'] = new ResponseCollection($parameters['responses'] ?? []);
-        $parameters['bodyParameters'] = array_map(fn ($param) => new Parameter($param), $parameters['bodyParameters'] ?? []);
-        $parameters['queryParameters'] = array_map(fn ($param) => new Parameter($param), $parameters['queryParameters'] ?? []);
-        $parameters['urlParameters'] = array_map(fn ($param) => new Parameter($param), $parameters['urlParameters'] ?? []);
-        $parameters['responseFields'] = array_map(fn ($param) => new ResponseField($param), $parameters['responseFields'] ?? []);
+        $parameters['bodyParameters'] = array_map(fn($param) => new Parameter($param), $parameters['bodyParameters'] ?? []);
+        $parameters['queryParameters'] = array_map(fn($param) => new Parameter($param), $parameters['queryParameters'] ?? []);
+        $parameters['urlParameters'] = array_map(fn($param) => new Parameter($param), $parameters['urlParameters'] ?? []);
+        $parameters['responseFields'] = array_map(fn($param) => new ResponseField($param), $parameters['responseFields'] ?? []);
 
         parent::__construct($parameters);
 
@@ -236,10 +236,10 @@ class OutputEndpointData extends BaseDTO
                 // When the body is an array, param names will be  "[].paramname",
                 // so $parts is ['[]']
                 if ('[]' == $parts[0]) {
-                    $dotPathToParent = '[]'.$dotPathToParent;
+                    $dotPathToParent = '[]' . $dotPathToParent;
                 }
 
-                $dotPath = $dotPathToParent.'.__fields.'.$fieldName;
+                $dotPath = $dotPathToParent . '.__fields.' . $fieldName;
                 Arr::set($finalParameters, $dotPath, $parameter);
             } else { // A regular field, not a subfield of anything
                 // Note: we're assuming any subfields of this field are listed *after* it,
@@ -265,12 +265,12 @@ class OutputEndpointData extends BaseDTO
 
     public function endpointId(): string
     {
-        return $this->httpMethods[0].str_replace(['/', '?', '{', '}', ':', '\\', '+', '|', '.'], '-', $this->uri);
+        return $this->httpMethods[0] . str_replace(['/', '?', '{', '}', ':', '\\', '+', '|', '.'], '-', $this->uri);
     }
 
     public function name(): string
     {
-        return $this->metadata->title ?: ($this->httpMethods[0].' '.$this->uri);
+        return $this->metadata->title ?: ($this->httpMethods[0] . ' ' . $this->uri);
     }
 
     public function fullSlug(): string

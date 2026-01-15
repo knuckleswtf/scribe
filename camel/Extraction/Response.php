@@ -2,6 +2,7 @@
 
 namespace Knuckles\Camel\Extraction;
 
+use Illuminate\Support\Str;
 use Knuckles\Camel\BaseDTO;
 
 class Response extends BaseDTO
@@ -57,5 +58,10 @@ class Response extends BaseDTO
         }
 
         return $description;
+    }
+
+    public function isBinary(): bool
+    {
+        return is_string($this->content) && Str::startsWith($this->content, '<<binary>>');
     }
 }

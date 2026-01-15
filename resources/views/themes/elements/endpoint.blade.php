@@ -260,7 +260,7 @@
                                                 <pre><code class="language-http">{{ implode("\n", $headerLines) }}</code></pre>
                                             </details>
                                         @endif
-                                        @if(is_string($response->content) && Str::startsWith($response->content, "<<binary>>"))
+                                        @if($response->isBinary())
                                             <pre><code>[{{ u::trans("scribe::endpoint.responses.binary") }}] - {{ htmlentities(str_replace("<<binary>>", "", $response->content)) }}</code></pre>
                                         @elseif($response->status == 204)
                                             <pre><code>[{{ u::trans("scribe::endpoint.responses.empty") }}]</code></pre>

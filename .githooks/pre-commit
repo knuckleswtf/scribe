@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# shared pre-push hook to run php-cs-fixer
+# shared pre-commit hook to run php-cs-fixer
 # Try several fallbacks so it works on Unix and common Windows setups.
 
 # Prefer directly executable vendor binary

@@ -410,7 +410,7 @@ class ExtractorTest extends BaseLaravelTest
          *
          * @bodyParam name required Name of the location
          */
-        $handler = fn () => 'hi';
+        $handler = fn() => 'hi';
         $route = $this->createClosureRoute('POST', '/api/closure/test', $handler);
 
         $parsed = $this->process($route);

@@ -23,7 +23,7 @@ class ExternalHtmlWriter extends HtmlWriter
             mkdir($destinationFolder, 0o777, true);
         }
 
-        file_put_contents($destinationFolder.'/index.html', $output);
+        file_put_contents($destinationFolder . '/index.html', $output);
     }
 
     public function getMetadata(): array
@@ -37,7 +37,7 @@ class ExternalHtmlWriter extends HtmlWriter
         }
 
         return [
-            'title' => $this->config->get('title') ?: config('app.name', '').' Documentation',
+            'title' => $this->config->get('title') ?: config('app.name', '') . ' Documentation',
             'example_languages' => $this->config->get('example_languages'), // may be useful
             'logo' => $this->config->get('logo') ?? false,
             'last_updated' => $this->getLastUpdated(), // may be useful

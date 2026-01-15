@@ -50,7 +50,7 @@ class UseApiResourceTags extends Strategy
         [$modelClass, $factoryStates, $relations, $pagination] = $this->getClassToBeTransformedAndAttributes($allTags, $apiResourceClass, $extra);
         $additionalData = $this->getAdditionalData($allTags);
 
-        $modelInstantiator = fn () => $this->instantiateExampleModel($modelClass, $factoryStates, $relations);
+        $modelInstantiator = fn() => $this->instantiateExampleModel($modelClass, $factoryStates, $relations);
 
         $this->startDbTransaction();
         $content = ApiResourceResponseTools::fetch(

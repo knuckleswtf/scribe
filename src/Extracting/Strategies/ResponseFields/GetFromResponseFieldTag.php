@@ -47,7 +47,7 @@ class GetFromResponseFieldTag extends GetFieldsFromTagStrategy
         } else {
             [$_, $name, $type, $required, $description] = $content;
             if ('required' !== $required) {
-                $description = $required.' '.$description;
+                $description = $required . ' ' . $description;
             }
 
             $required = 'required' === $required;
@@ -116,7 +116,7 @@ class GetFromResponseFieldTag extends GetFieldsFromTagStrategy
 
         $wrappedFields = [];
         foreach ($fields as $fieldName => $fieldData) {
-            $fieldData['name'] = $wrapKey.'.'.$fieldData['name'];
+            $fieldData['name'] = $wrapKey . '.' . $fieldData['name'];
             $wrappedFields[$fieldData['name']] = $fieldData;
         }
 

@@ -38,12 +38,12 @@ class HtmlWriter
 
     public function generate(array $groupedEndpoints, string $sourceFolder, string $destinationFolder)
     {
-        $intro = $this->transformMarkdownFileToHTML($sourceFolder.'/intro.md');
-        $auth = $this->transformMarkdownFileToHTML($sourceFolder.'/auth.md');
+        $intro = $this->transformMarkdownFileToHTML($sourceFolder . '/intro.md');
+        $auth = $this->transformMarkdownFileToHTML($sourceFolder . '/auth.md');
         $headingsBeforeEndpoints = $this->markdownParser->headings;
 
         $this->markdownParser->headings = [];
-        $appendFile = rtrim($sourceFolder, '/').'/append.md';
+        $appendFile = rtrim($sourceFolder, '/') . '/append.md';
         $append = file_exists($appendFile) ? $this->transformMarkdownFileToHTML($appendFile) : '';
         $headingsAfterEndpoints = $this->markdownParser->headings;
 
@@ -67,16 +67,16 @@ class HtmlWriter
             mkdir($destinationFolder, 0o777, true);
         }
 
-        file_put_contents($destinationFolder.'/index.html', $output);
+        file_put_contents($destinationFolder . '/index.html', $output);
 
         // Copy assets
-        $assetsFolder = __DIR__.'/../../resources';
+        $assetsFolder = __DIR__ . '/../../resources';
         // Prune older versioned assets
-        if (is_dir($destinationFolder.'/css')) {
-            Utils::deleteDirectoryAndContents($destinationFolder.'/css');
+        if (is_dir($destinationFolder . '/css')) {
+            Utils::deleteDirectoryAndContents($destinationFolder . '/css');
         }
-        if (is_dir($destinationFolder.'/js')) {
-            Utils::deleteDirectoryAndContents($destinationFolder.'/js');
+        if (is_dir($destinationFolder . '/js')) {
+            Utils::deleteDirectoryAndContents($destinationFolder . '/js');
         }
         Utils::copyDirectory("{$assetsFolder}/images/", "{$destinationFolder}/images");
 
@@ -95,7 +95,7 @@ class HtmlWriter
                 if (!is_dir($destination)) {
                     mkdir($destination, 0o777, true);
                 }
-                copy($path, $destination.$fileName);
+                copy($path, $destination . $fileName);
             }
         }
     }
@@ -115,7 +115,7 @@ class HtmlWriter
             if ('bearer' === $auth['in'] || 'basic' === $auth['in']) {
                 $auth['name'] = 'Authorization';
                 $auth['location'] = 'header';
-                $auth['prefix'] = ucfirst($auth['in']).' ';
+                $auth['prefix'] = ucfirst($auth['in']) . ' ';
             } else {
                 $auth['location'] = $auth['in'];
                 $auth['prefix'] = '';
@@ -123,7 +123,7 @@ class HtmlWriter
         }
 
         return [
-            'title' => $this->config->get('title') ?: config('app.name', '').' Documentation',
+            'title' => $this->config->get('title') ?: config('app.name', '') . ' Documentation',
             'example_languages' => $this->config->get('example_languages'),
             'logo' => $this->config->get('logo') ?? false,
             'last_updated' => $this->getLastUpdated(),
@@ -144,8 +144,8 @@ class HtmlWriter
         $lastUpdated = $this->config->get('last_updated', 'Last updated: {date:F j, Y}');
 
         $tokens = [
-            'date' => fn ($format) => date($format),
-            'git' => fn ($format) => match ($format) {
+            'date' => fn($format) => date($format),
+            'git' => fn($format) => match ($format) {
                 'short' => trim(shell_exec('git rev-parse --short HEAD')),
                 'long' => trim(shell_exec('git rev-parse HEAD')),
                 default => throw new InvalidArgumentException("The `git` token only supports formats 'short' and 'long', but you specified {$format}"),
@@ -154,7 +154,7 @@ class HtmlWriter
 
         foreach ($tokens as $token => $resolver) {
             $matches = [];
-            if (preg_match('#(\{'.$token.':(.+?)})#', $lastUpdated, $matches)) {
+            if (preg_match('#(\{' . $token . ':(.+?)})#', $lastUpdated, $matches)) {
                 $lastUpdated = str_replace($matches[1], $resolver($matches[2]), $lastUpdated);
             }
         }
@@ -189,7 +189,7 @@ class HtmlWriter
                 'name' => $group['name'],
                 'subheadings' => collect($group['subgroups'])->flatMap(function ($endpoints, $subgroupName) use ($groupSlug) {
                     if ('' === $subgroupName) {
-                        return $endpoints->map(fn (OutputEndpointData $endpoint) => [
+                        return $endpoints->map(fn(OutputEndpointData $endpoint) => [
                             'slug' => $endpoint->fullSlug(),
                             'name' => $endpoint->name(),
                             'subheadings' => [],
@@ -198,9 +198,9 @@ class HtmlWriter
 
                     return [
                         [
-                            'slug' => "{$groupSlug}-".Str::slug($subgroupName),
+                            'slug' => "{$groupSlug}-" . Str::slug($subgroupName),
                             'name' => $subgroupName,
-                            'subheadings' => $endpoints->map(fn ($endpoint) => [
+                            'subheadings' => $endpoints->map(fn($endpoint) => [
                                 'slug' => $endpoint->fullSlug(),
                                 'name' => $endpoint->name(),
                                 'subheadings' => [],

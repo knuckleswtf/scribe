@@ -11,7 +11,7 @@ class GetFromInlineValidator extends GetFromInlineValidatorBase
     {
         // Only use this validator for query params if there's a "// Query parameters" comment above
         $comments = $validationStatement->getComments();
-        $comments = join("\n", array_map(fn ($comment) => $comment->getReformattedText(), $comments));
+        $comments = join("\n", array_map(fn($comment) => $comment->getReformattedText(), $comments));
         if (false !== strpos(strtolower($comments), 'query parameters')) {
             return true;
         }

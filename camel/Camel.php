@@ -121,15 +121,15 @@ class Camel
             $promotedGroups = array_splice($groupsOrder, 0, $wildcardPosition);
             $demotedGroups = array_splice($groupsOrder, 1);
 
-            $promotedOrderedGroups = $groupsCollection->filter(fn ($group, $groupName) => in_array($groupName, $promotedGroups))
+            $promotedOrderedGroups = $groupsCollection->filter(fn($group, $groupName) => in_array($groupName, $promotedGroups))
                 ->sortKeysUsing(self::getOrderListComparator($promotedGroups))
             ;
-            $demotedOrderedGroups = $groupsCollection->filter(fn ($group, $groupName) => in_array($groupName, $demotedGroups))
+            $demotedOrderedGroups = $groupsCollection->filter(fn($group, $groupName) => in_array($groupName, $demotedGroups))
                 ->sortKeysUsing(self::getOrderListComparator($demotedGroups))
             ;
 
             $nonWildcardGroups = array_merge($promotedGroups, $demotedGroups);
-            $wildCardOrderedGroups = $groupsCollection->filter(fn ($group, $groupName) => !in_array($groupName, $nonWildcardGroups))
+            $wildCardOrderedGroups = $groupsCollection->filter(fn($group, $groupName) => !in_array($groupName, $nonWildcardGroups))
                 ->sortKeysUsing(self::getOrderListComparator($demotedGroups))
             ;
 
@@ -148,7 +148,7 @@ class Camel
                 $level2Order = Utils::getTopLevelItemsFromMixedConfigList($configFileOrder[$groupName]);
                 $sortedEndpoints = $sortedEndpoints->sortBy(
                     function (OutputEndpointData $e) use ($configFileOrder, $level2Order) {
-                        $endpointIdentifier = $e->httpMethods[0].' /'.$e->uri;
+                        $endpointIdentifier = $e->httpMethods[0] . ' /' . $e->uri;
 
                         // First, check if there's an ordering specified for the endpoint itself
                         $indexOfEndpointInL2Order = array_search($endpointIdentifier, $level2Order);
@@ -194,7 +194,7 @@ class Camel
                 'name' => $group['name'],
                 'description' => $group['description'],
                 'endpoints' => array_map(
-                    fn (array $endpoint) => OutputEndpointData::fromExtractedEndpointArray($endpoint),
+                    fn(array $endpoint) => OutputEndpointData::fromExtractedEndpointArray($endpoint),
                     $group['endpoints']
                 ),
             ];

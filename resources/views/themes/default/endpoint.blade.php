@@ -41,7 +41,7 @@
 {{ $header }}: {{ is_array($value) ? implode('; ', $value) : $value }}
 @endforeach </code></pre></details> @endif
         <pre>
-@if(is_string($response->content) && Str::startsWith($response->content, "<<binary>>"))
+@if($response->isBinary())
 <code>{!! u::trans("scribe::endpoint.responses.binary") !!} - {{ htmlentities(str_replace("<<binary>>", "", $response->content)) }}</code>
 @elseif($response->status == 204)
 <code>{!! u::trans("scribe::endpoint.responses.empty") !!}</code>
