@@ -63,7 +63,7 @@ class RouteMatcher implements RouteMatcherInterface
         $excludes[] = 'scribe.*';
 
         // Exclude Laravel Telescope routes
-        if (class_exists('Laravel\\Telescope\\Telescope')) {
+        if (class_exists('Laravel\Telescope\Telescope')) {
             $excludes[] = 'telescope/*';
         }
 

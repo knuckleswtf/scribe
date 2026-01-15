@@ -11,7 +11,6 @@ return (new Config())
     ->setRiskyAllowed(false)
     ->setRules([
         '@auto' => true,
-        '@PhpCsFixer' => true
     ])
     // 💡 by default, Fixer looks for `*.php` files excluding `./vendor/` - here, you can groom this config
     ->setFinder(

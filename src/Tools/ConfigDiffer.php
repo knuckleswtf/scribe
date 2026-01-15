@@ -24,7 +24,7 @@ class ConfigDiffer
         $diff = [];
 
         foreach ($new as $key => $value) {
-            $fullKey = $prefix.$key;
+            $fullKey = $prefix . $key;
             if (Str::is($this->ignorePaths, $fullKey)) {
                 continue;
             }
@@ -46,7 +46,7 @@ class ConfigDiffer
             } else {
                 if ($oldValue !== $value) {
                     $printedValue = json_encode($value, JSON_UNESCAPED_SLASHES);
-                    $diff[$prefix.$key] = $printedValue;
+                    $diff[$prefix . $key] = $printedValue;
                 }
             }
         }
@@ -60,15 +60,15 @@ class ConfigDiffer
             return 'changed to a list';
         }
 
-        $added = array_map(fn ($v) => "{$v}", $this->subtractArraysFlat($value, $oldValue));
-        $removed = array_map(fn ($v) => "{$v}", $this->subtractArraysFlat($oldValue, $value));
+        $added = array_map(fn($v) => "{$v}", $this->subtractArraysFlat($value, $oldValue));
+        $removed = array_map(fn($v) => "{$v}", $this->subtractArraysFlat($oldValue, $value));
 
         $diff = [];
         if (!empty($added)) {
-            $diff[] = 'added '.implode(', ', $added);
+            $diff[] = 'added ' . implode(', ', $added);
         }
         if (!empty($removed)) {
-            $diff[] = 'removed '.implode(', ', $removed);
+            $diff[] = 'removed ' . implode(', ', $removed);
         }
 
         return empty($diff) ? '' : implode(': ', $diff);

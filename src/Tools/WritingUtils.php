@@ -33,7 +33,7 @@ class WritingUtils
         $result = '';
         $padWith = str_repeat(' ', $indentationLevel);
         foreach ($split as $index => $line) {
-            $result .= (0 == $index ? '' : "\n{$padWith}").$line;
+            $result .= (0 == $index ? '' : "\n{$padWith}") . $line;
         }
 
         return $result;
@@ -106,9 +106,9 @@ class WritingUtils
             );
         }
 
-        $closing = isset($braces[1]) ? str_repeat(' ', $closingBraceIndentation)."{$braces[1]}" : '';
+        $closing = isset($braces[1]) ? str_repeat(' ', $closingBraceIndentation) . "{$braces[1]}" : '';
 
-        return $output.$closing;
+        return $output . $closing;
     }
 
     /**
@@ -134,14 +134,14 @@ class WritingUtils
                 $params = [];
                 $expanded = self::getParameterNamesAndValuesForFormData('', $value[0]);
                 foreach ($expanded as $fieldName => $itemValue) {
-                    $paramName = $parameter.'[]'.$fieldName;
+                    $paramName = $parameter . '[]' . $fieldName;
                     $params[$paramName] = $itemValue;
                 }
 
                 return $params;
             }
 
-            return [$parameter.'[]' => $value[0]];
+            return [$parameter . '[]' => $value[0]];
         }
 
         // Transform hashes
@@ -150,11 +150,11 @@ class WritingUtils
             if (is_array($itemValue)) {
                 $expanded = self::getParameterNamesAndValuesForFormData('', $itemValue);
                 foreach ($expanded as $fieldName => $subItemValue) {
-                    $paramName = $parameter."[{$item}]".$fieldName;
+                    $paramName = $parameter . "[{$item}]" . $fieldName;
                     $params[$paramName] = $subItemValue;
                 }
             } else {
-                $params[$parameter."[{$item}]"] = $itemValue;
+                $params[$parameter . "[{$item}]"] = $itemValue;
             }
         }
 
@@ -194,8 +194,8 @@ class WritingUtils
             1 => "<code>{$list[0]}</code>",
             2 => "<code>{$list[0]}</code> {$conjunction} <code>{$list[1]}</code>",
             default => '<code>'
-                .implode('</code>, <code>', array_slice($list, 0, -1))
-                ."</code>, {$conjunction} <code>".end($list).'</code>',
+                . implode('</code>, <code>', array_slice($list, 0, -1))
+                . "</code>, {$conjunction} <code>" . end($list) . '</code>',
         };
     }
 
@@ -206,7 +206,7 @@ class WritingUtils
     {
         $index = strrpos($assetPath, '.');
 
-        return substr_replace($assetPath, '-'.Scribe::VERSION, $index, 0);
+        return substr_replace($assetPath, '-' . Scribe::VERSION, $index, 0);
     }
 
     protected static function printSingleQueryParamAsKeyValue(

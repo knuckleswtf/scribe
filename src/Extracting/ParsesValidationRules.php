@@ -31,8 +31,8 @@ trait ParsesValidationRules
         $rulesWhichDependOnType = ['between', 'max', 'min', 'size', 'gt', 'gte', 'lt', 'lte', 'before', 'after', 'before_or_equal', 'after_or_equal'];
         foreach ($validationRulesByParameters as $parameter => $ruleset) {
             $userSpecifiedParameterInfo = $customParameterData[$parameter] ?? [];
-            $stringRules = array_filter($ruleset, fn ($rule) => is_string($rule));
-            $rulesAndArguments = array_map(fn ($rule) => $this->parseStringRuleIntoRuleAndArguments($rule), $stringRules);
+            $stringRules = array_filter($ruleset, fn($rule) => is_string($rule));
+            $rulesAndArguments = array_map(fn($rule) => $this->parseStringRuleIntoRuleAndArguments($rule), $stringRules);
 
             try {
                 $this->warnAboutMissingCustomParameterData($parameter, $customParameterData);
@@ -52,17 +52,17 @@ trait ParsesValidationRules
                     'nullable' => false,
                 ];
 
-                $closureRules = array_filter($ruleset, fn ($rule) => ($rule instanceof ClosureValidationRule || $rule instanceof \Closure));
+                $closureRules = array_filter($ruleset, fn($rule) => ($rule instanceof ClosureValidationRule || $rule instanceof \Closure));
                 foreach ($closureRules as $rule) {
                     $this->processClosureRule($rule, $parameterData);
                 }
 
-                $enumValidationRules = array_filter($ruleset, fn ($rule) => $rule instanceof Enum);
+                $enumValidationRules = array_filter($ruleset, fn($rule) => $rule instanceof Enum);
                 foreach ($enumValidationRules as $rule) {
                     $this->processEnumValidationRule($rule, $parameterData);
                 }
 
-                $ruleObjects = array_filter($ruleset, fn ($rule) => ($rule instanceof Rule || $rule instanceof ValidationRule));
+                $ruleObjects = array_filter($ruleset, fn($rule) => ($rule instanceof Rule || $rule instanceof ValidationRule));
                 foreach ($ruleObjects as $rule) {
                     $this->processRuleObject($rule, $parameterData);
                 }
@@ -86,12 +86,12 @@ trait ParsesValidationRules
                     'nullable',
                 ];
 
-                $firstPassRules = array_filter($rulesAndArguments, fn ($ruleAndArgs) => Str::is($firstPassRuleNames, $ruleAndArgs[0]));
+                $firstPassRules = array_filter($rulesAndArguments, fn($ruleAndArgs) => Str::is($firstPassRuleNames, $ruleAndArgs[0]));
                 foreach ($firstPassRules as $ruleAndArgs) {
                     $this->processRule($ruleAndArgs[0], $ruleAndArgs[1], $parameterData, $validationRulesByParameters);
                 }
 
-                $secondPassRules = array_filter($rulesAndArguments, fn ($ruleAndArgs) => !Str::is($firstPassRuleNames, $ruleAndArgs[0]) && !in_array($ruleAndArgs[0], $rulesWhichDependOnType));
+                $secondPassRules = array_filter($rulesAndArguments, fn($ruleAndArgs) => !Str::is($firstPassRuleNames, $ruleAndArgs[0]) && !in_array($ruleAndArgs[0], $rulesWhichDependOnType));
                 foreach ($secondPassRules as $ruleAndArgs) {
                     $this->processRule($ruleAndArgs[0], $ruleAndArgs[1], $parameterData, $validationRulesByParameters);
                 }
@@ -106,7 +106,7 @@ trait ParsesValidationRules
                 }
 
                 // Now parse any "dependent" rules and set examples. At this point, we should know all field's types.
-                $thirdPassRules = array_filter($rulesAndArguments, fn ($ruleAndArgs) => in_array($ruleAndArgs[0], $rulesWhichDependOnType));
+                $thirdPassRules = array_filter($rulesAndArguments, fn($ruleAndArgs) => in_array($ruleAndArgs[0], $rulesWhichDependOnType));
                 foreach ($thirdPassRules as $ruleAndArgs) {
                     $this->processRule($ruleAndArgs[0], $ruleAndArgs[1], $parameterData, $validationRulesByParameters);
                 }
@@ -183,10 +183,10 @@ trait ParsesValidationRules
                 // 3. Otherwise, default to `object`
                 // Important: We're iterating in reverse, to ensure we set child items before parent items
                 // (assuming the user specified parents first, which is the more common thing)y
-                if (Arr::first($allKeys, fn ($key) => Str::startsWith($key, "{$name}.*."))) {
+                if (Arr::first($allKeys, fn($key) => Str::startsWith($key, "{$name}.*."))) {
                     $details['type'] = 'object[]';
                     unset($details['setter']);
-                } elseif ($childKey = Arr::first($allKeys, fn ($key) => Str::startsWith($key, "{$name}.*"))) {
+                } elseif ($childKey = Arr::first($allKeys, fn($key) => Str::startsWith($key, "{$name}.*"))) {
                     $childType = ($converted[$childKey] ?? $parameters[$childKey])['type'];
                     $details['type'] = "{$childType}[]";
                 } else { // `array` types default to `object` if no subtype is specified
@@ -223,7 +223,7 @@ trait ParsesValidationRules
                         $details['example'] = [$details['example']];
                     } elseif (isset($details['setter'])) {
                         $previousSetter = $details['setter'];
-                        $details['setter'] = fn () => [$previousSetter()];
+                        $details['setter'] = fn() => [$previousSetter()];
                     }
                 }
             }
@@ -338,7 +338,7 @@ trait ParsesValidationRules
             foreach (explode("\n", $docComment) as $line) {
                 $cleaned = preg_replace(['/\*+\/$/', '/^\/\*+\s*/', '/^\*+\s*/'], '', trim($line));
                 if ('' != $cleaned) {
-                    $description .= ' '.$cleaned;
+                    $description .= ' ' . $cleaned;
                 }
             }
 
@@ -356,10 +356,10 @@ trait ParsesValidationRules
             // $case->value only exists on BackedEnums, not UnitEnums
             // method_exists($enum, 'tryFrom') implies the enum is a BackedEnum
             // @phpstan-ignore-next-line
-            $cases = array_map(fn ($case) => $case->value, $enumClass::cases());
+            $cases = array_map(fn($case) => $case->value, $enumClass::cases());
             $parameterData['type'] = gettype($cases[0]);
             $parameterData['enumValues'] = $cases;
-            $parameterData['setter'] = fn () => Arr::random($cases);
+            $parameterData['setter'] = fn() => Arr::random($cases);
         }
     }
 
@@ -376,10 +376,10 @@ trait ParsesValidationRules
             $customData = call_user_func_array([$rule, 'docs'], []) ?: [];
 
             if (isset($customData['description'])) {
-                $parameterData['description'] .= ' '.$customData['description'];
+                $parameterData['description'] .= ' ' . $customData['description'];
             }
             if (isset($customData['example'])) {
-                $parameterData['setter'] = fn () => $customData['example'];
+                $parameterData['setter'] = fn() => $customData['example'];
             } elseif (isset($customData['setter'])) {
                 $parameterData['setter'] = $customData['setter'];
             }
@@ -421,14 +421,14 @@ trait ParsesValidationRules
                     }
                     $parameterData['type'] = 'boolean';
                     $parameterData['description'] .= ' Must be accepted.';
-                    $parameterData['setter'] = fn () => true;
+                    $parameterData['setter'] = fn() => true;
 
                     break;
 
                 case 'accepted_if':
                     $parameterData['type'] = 'boolean';
-                    $parameterData['description'] .= " Must be accepted when <code>{$ruleArguments[0]}</code> is ".w::getListOfValuesAsFriendlyHtmlString(array_slice($ruleArguments, 1));
-                    $parameterData['setter'] = fn () => true;
+                    $parameterData['description'] .= " Must be accepted when <code>{$ruleArguments[0]}</code> is " . w::getListOfValuesAsFriendlyHtmlString(array_slice($ruleArguments, 1));
+                    $parameterData['setter'] = fn() => true;
 
                     break;
 
@@ -517,7 +517,7 @@ trait ParsesValidationRules
                     break;
 
                 case 'email':
-                    $parameterData['description'] .= ' '.$this->getDescription($rule);
+                    $parameterData['description'] .= ' ' . $this->getDescription($rule);
                     $parameterData['setter'] = $this->getFakeFactoryByName('email');
                     $parameterData['type'] = 'string';
 
@@ -532,7 +532,7 @@ trait ParsesValidationRules
                     break;
 
                 case 'ip':
-                    $parameterData['description'] .= ' '.$this->getDescription($rule);
+                    $parameterData['description'] .= ' ' . $this->getDescription($rule);
                     $parameterData['type'] = 'string';
                     $parameterData['setter'] = function () {
                         return $this->getFaker()->ipv4();
@@ -542,7 +542,7 @@ trait ParsesValidationRules
 
                 case 'json':
                     $parameterData['type'] = 'string';
-                    $parameterData['description'] .= ' '.$this->getDescription($rule);
+                    $parameterData['description'] .= ' ' . $this->getDescription($rule);
                     $parameterData['setter'] = function () {
                         return json_encode([$this->getFaker()->word(), $this->getFaker()->word()]);
                     };
@@ -551,8 +551,8 @@ trait ParsesValidationRules
 
                 case 'date':
                     $parameterData['type'] = 'string';
-                    $parameterData['description'] .= ' '.$this->getDescription($rule);
-                    $parameterData['setter'] = fn () => date('Y-m-d\TH:i:s', time());
+                    $parameterData['description'] .= ' ' . $this->getDescription($rule);
+                    $parameterData['setter'] = fn() => date('Y-m-d\TH:i:s', time());
 
                     break;
 
@@ -569,11 +569,11 @@ trait ParsesValidationRules
                 case 'after':
                 case 'after_or_equal':
                     $parameterData['type'] = 'string';
-                    $parameterData['description'] .= ' '.$this->getDescription($rule, [':date' => "<code>{$ruleArguments[0]}</code>"]);
+                    $parameterData['description'] .= ' ' . $this->getDescription($rule, [':date' => "<code>{$ruleArguments[0]}</code>"]);
                     // TODO introduce the concept of "modifiers", like date_format
                     // The startDate may refer to another field, in which case, we just ignore it for now.
                     $startDate = array_key_exists($ruleArguments[0], $allParameters) ? 'today' : $ruleArguments[0];
-                    $parameterData['setter'] = fn () => $this->getFaker()->dateTimeBetween($startDate, '+100 years')->format('Y-m-d');
+                    $parameterData['setter'] = fn() => $this->getFaker()->dateTimeBetween($startDate, '+100 years')->format('Y-m-d');
 
                     break;
 
@@ -583,53 +583,53 @@ trait ParsesValidationRules
                     // The argument can be either another field or a date
                     // The endDate may refer to another field, in which case, we just ignore it for now.
                     $endDate = array_key_exists($ruleArguments[0], $allParameters) ? 'today' : $ruleArguments[0];
-                    $parameterData['description'] .= ' '.$this->getDescription($rule, [':date' => "<code>{$ruleArguments[0]}</code>"]);
-                    $parameterData['setter'] = fn () => $this->getFaker()->dateTimeBetween('-30 years', $endDate)->format('Y-m-d');
+                    $parameterData['description'] .= ' ' . $this->getDescription($rule, [':date' => "<code>{$ruleArguments[0]}</code>"]);
+                    $parameterData['setter'] = fn() => $this->getFaker()->dateTimeBetween('-30 years', $endDate)->format('Y-m-d');
 
                     break;
 
                 case 'starts_with':
-                    $parameterData['description'] .= ' Must start with one of '.w::getListOfValuesAsFriendlyHtmlString($ruleArguments);
-                    $parameterData['setter'] = fn () => $this->getFaker()->lexify("{$ruleArguments[0]}????");
+                    $parameterData['description'] .= ' Must start with one of ' . w::getListOfValuesAsFriendlyHtmlString($ruleArguments);
+                    $parameterData['setter'] = fn() => $this->getFaker()->lexify("{$ruleArguments[0]}????");
 
                     break;
 
                 case 'ends_with':
-                    $parameterData['description'] .= ' Must end with one of '.w::getListOfValuesAsFriendlyHtmlString($ruleArguments);
-                    $parameterData['setter'] = fn () => $this->getFaker()->lexify("????{$ruleArguments[0]}");
+                    $parameterData['description'] .= ' Must end with one of ' . w::getListOfValuesAsFriendlyHtmlString($ruleArguments);
+                    $parameterData['setter'] = fn() => $this->getFaker()->lexify("????{$ruleArguments[0]}");
 
                     break;
 
                 case 'uuid':
-                    $parameterData['description'] .= ' '.$this->getDescription($rule).' ';
+                    $parameterData['description'] .= ' ' . $this->getDescription($rule) . ' ';
                     $parameterData['setter'] = $this->getFakeFactoryByName('uuid');
 
                     break;
 
                 case 'regex':
-                    $parameterData['description'] .= ' '.$this->getDescription($rule, [':regex' => $ruleArguments[0]]);
-                    $parameterData['setter'] = fn () => $this->getFaker()->regexify($ruleArguments[0]);
+                    $parameterData['description'] .= ' ' . $this->getDescription($rule, [':regex' => $ruleArguments[0]]);
+                    $parameterData['setter'] = fn() => $this->getFaker()->regexify($ruleArguments[0]);
 
                     break;
 
                     // Special number types.
                 case 'digits':
-                    $parameterData['description'] .= ' '.$this->getDescription($rule, [':digits' => $ruleArguments[0]]);
-                    $parameterData['setter'] = fn () => $this->getFaker()->numerify(str_repeat('#', $ruleArguments[0]));
+                    $parameterData['description'] .= ' ' . $this->getDescription($rule, [':digits' => $ruleArguments[0]]);
+                    $parameterData['setter'] = fn() => $this->getFaker()->numerify(str_repeat('#', $ruleArguments[0]));
                     $parameterData['type'] = 'string';
 
                     break;
 
                 case 'digits_between':
-                    $parameterData['description'] .= ' '.$this->getDescription($rule, [':min' => $ruleArguments[0], ':max' => $ruleArguments[1]]);
-                    $parameterData['setter'] = fn () => $this->getFaker()->numerify(str_repeat('#', rand($ruleArguments[0], $ruleArguments[1])));
+                    $parameterData['description'] .= ' ' . $this->getDescription($rule, [':min' => $ruleArguments[0], ':max' => $ruleArguments[1]]);
+                    $parameterData['setter'] = fn() => $this->getFaker()->numerify(str_repeat('#', rand($ruleArguments[0], $ruleArguments[1])));
                     $parameterData['type'] = 'string';
 
                     break;
 
                     // These rules can apply to numbers, strings, arrays or files
                 case 'size':
-                    $parameterData['description'] .= ' '.$this->getDescription(
+                    $parameterData['description'] .= ' ' . $this->getDescription(
                         $rule,
                         [':size' => $ruleArguments[0]],
                         $this->getLaravelValidationBaseTypeMapping($parameterData['type'])
@@ -639,7 +639,7 @@ trait ParsesValidationRules
                     break;
 
                 case 'min':
-                    $parameterData['description'] .= ' '.$this->getDescription(
+                    $parameterData['description'] .= ' ' . $this->getDescription(
                         $rule,
                         [':min' => $ruleArguments[0]],
                         $this->getLaravelValidationBaseTypeMapping($parameterData['type'])
@@ -649,7 +649,7 @@ trait ParsesValidationRules
                     break;
 
                 case 'max':
-                    $parameterData['description'] .= ' '.$this->getDescription(
+                    $parameterData['description'] .= ' ' . $this->getDescription(
                         $rule,
                         [':max' => $ruleArguments[0]],
                         $this->getLaravelValidationBaseTypeMapping($parameterData['type'])
@@ -660,7 +660,7 @@ trait ParsesValidationRules
                     break;
 
                 case 'between':
-                    $parameterData['description'] .= ' '.$this->getDescription(
+                    $parameterData['description'] .= ' ' . $this->getDescription(
                         $rule,
                         [':min' => $ruleArguments[0], ':max' => $ruleArguments[1]],
                         $this->getLaravelValidationBaseTypeMapping($parameterData['type'])
@@ -673,7 +673,7 @@ trait ParsesValidationRules
                     // Special file types.
                 case 'image':
                     $parameterData['type'] = 'file';
-                    $parameterData['description'] .= ' '.$this->getDescription($rule).' ';
+                    $parameterData['description'] .= ' ' . $this->getDescription($rule) . ' ';
                     $parameterData['setter'] = function () {
                         // This is fine because the file example generator generates an image
                         return $this->generateDummyValue('file');
@@ -692,7 +692,7 @@ trait ParsesValidationRules
 
                     // These rules only add a description. Generating valid examples is too complex.
                 case 'not_in':
-                    $parameterData['description'] .= ' Must not be one of '.w::getListOfValuesAsFriendlyHtmlString($ruleArguments).' ';
+                    $parameterData['description'] .= ' Must not be one of ' . w::getListOfValuesAsFriendlyHtmlString($ruleArguments) . ' ';
 
                     break;
 
@@ -816,7 +816,8 @@ trait ParsesValidationRules
             return $parameterData['required']
                 ? $this->generateDummyValue($parameterData['type'])
                 : null;
-        } elseif (!is_null($parameterData['example']) && $parameterData['example'] !== self::$MISSING_VALUE) {
+        }
+        if (!is_null($parameterData['example']) && $parameterData['example'] !== self::$MISSING_VALUE) {
             if ('No-example' === $parameterData['example'] && !$parameterData['required']) {
                 return null;
             }
@@ -915,7 +916,7 @@ trait ParsesValidationRules
         // Laravel 10 added `field` to its messages: https://github.com/laravel/framework/pull/45974
         $description = str_replace('The :attribute field ', 'The value ', $description);
 
-        $description = preg_replace('/(?!<\\W):attribute\\b/', 'value', $description);
+        $description = preg_replace('/(?!<\W):attribute\b/', 'value', $description);
 
         return str_replace(
             ['The value must ', ' 1 characters', ' 1 digits', ' 1 kilobytes'],
@@ -936,9 +937,9 @@ trait ParsesValidationRules
 
     protected function warnAboutMissingCustomParameterData(string $parameter, array $customParameterData): array
     {
-        $parameterPlusDot = $parameter.'.';
+        $parameterPlusDot = $parameter . '.';
         if (count($customParameterData) && !isset($customParameterData[$parameter])
-            && !Arr::first(array_keys($customParameterData), fn ($key) => str_starts_with($key, $parameterPlusDot))
+            && !Arr::first(array_keys($customParameterData), fn($key) => str_starts_with($key, $parameterPlusDot))
         ) {
             c::debug($this->getMissingCustomDataMessage($parameter));
         }

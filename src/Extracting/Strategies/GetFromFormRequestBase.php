@@ -41,7 +41,7 @@ class GetFromFormRequestBase extends Strategy
             $formRequest = new $className();
         }
         // Set the route properly so it works for users who have code that checks for the route.
-        // @var FormRequest $formRequest
+        /** @var FormRequest $formRequest */
         $formRequest->setRouteResolver(function () use ($formRequest, $route) {
             // Also need to bind the request to the route in case their code tries to inspect current request
             return $route->bind($formRequest);
@@ -82,7 +82,7 @@ class GetFromFormRequestBase extends Strategy
             return call_user_func_array([$formRequest, $this->customParameterDataMethodName], []);
         }
 
-        c::warn("No {$this->customParameterDataMethodName}() method found in ".get_class($formRequest).'. Scribe will only be able to extract basic information from the rules() method.');
+        c::warn("No {$this->customParameterDataMethodName}() method found in " . get_class($formRequest) . '. Scribe will only be able to extract basic information from the rules() method.');
 
         return [];
     }

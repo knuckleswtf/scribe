@@ -24,8 +24,8 @@ class UseResponseFileTagTest extends TestCase
      */
     public function allowsMultipleResponsefileTagsForMultipleStatusesAndScenarios(array $tags, array $expected)
     {
-        $filePath = __DIR__.'/../../Fixtures/response_test.json';
-        $filePath2 = __DIR__.'/../../Fixtures/response_error_test.json';
+        $filePath = __DIR__ . '/../../Fixtures/response_test.json';
+        $filePath2 = __DIR__ . '/../../Fixtures/response_error_test.json';
 
         $strategy = new UseResponseFileTag(new DocumentationConfig([]));
         $results = $strategy->getFileResponses($tags);
@@ -103,7 +103,7 @@ class UseResponseFileTagTest extends TestCase
     /** @test */
     public function supportsRelativeOrAbsolutePaths()
     {
-        $filePath = __DIR__.'/../../Fixtures/response_test.json';
+        $filePath = __DIR__ . '/../../Fixtures/response_test.json';
         $strategy = new UseResponseFileTag(new DocumentationConfig([]));
 
         $tags = [new Tag('responseFile', 'tests/Fixtures/response_test.json')];

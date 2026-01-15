@@ -33,7 +33,7 @@ class GetFromResponseFieldAttribute extends PhpAttributeStrategy
         $apiResourceAttributes = $endpointData->method->getAttributes(ResponseFromApiResource::class);
 
         return collect($apiResourceAttributes)
-            ->flatMap(fn (\ReflectionAttribute $attribute) => $this->extractFieldsFromApiResource($attribute, $endpointData))
+            ->flatMap(fn(\ReflectionAttribute $attribute) => $this->extractFieldsFromApiResource($attribute, $endpointData))
             ->toArray()
         ;
     }
@@ -50,7 +50,7 @@ class GetFromResponseFieldAttribute extends PhpAttributeStrategy
                 $data['type'] = ResponseFieldTools::inferTypeOfResponseField($data, $endpointData);
 
                 if (null !== $wrapKey) {
-                    $data['name'] = $wrapKey.'.'.$data['name'];
+                    $data['name'] = $wrapKey . '.' . $data['name'];
                 }
 
                 return [$data['name'] => $data];

@@ -282,8 +282,8 @@ class PostmanCollectionWriterTest extends BaseUnitTest
         $collection = $this->generate($config, [$endpoints]);
 
         $this->assertEquals('Group A', $collection['item'][0]['name']);
-        $this->assertEquals(['Subgroup A', 'POST endpoint2'], array_map(fn ($i) => $i['name'], $collection['item'][0]['item']));
-        $this->assertEquals(['POST endpoint1', 'POST endpoint3'], array_map(fn ($i) => $i['name'], $collection['item'][0]['item'][0]['item']));
+        $this->assertEquals(['Subgroup A', 'POST endpoint2'], array_map(fn($i) => $i['name'], $collection['item'][0]['item']));
+        $this->assertEquals(['POST endpoint1', 'POST endpoint3'], array_map(fn($i) => $i['name'], $collection['item'][0]['item'][0]['item']));
         $this->assertEquals('Subgroup A description', $collection['item'][0]['item'][0]['description']);
     }
 

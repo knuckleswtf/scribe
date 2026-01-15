@@ -5,6 +5,7 @@ namespace Knuckles\Scribe\Tests\Fixtures;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules;
 use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 use Knuckles\Scribe\Tools\Utils;
 use Symfony\Component\HttpFoundation\StreamedJsonResponse;
@@ -270,7 +271,7 @@ class TestController extends Controller
             'id' => (int) $fruit->id,
             'name' => trim($fruit->name),
             'color' => strtolower($fruit->color),
-            'weight' => $fruit->weight.' kg',
+            'weight' => $fruit->weight . ' kg',
             'delicious' => $fruit->delicious,
             'responseCall' => true,
         ];

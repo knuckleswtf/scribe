@@ -78,7 +78,7 @@ class RouteMatcherTest extends BaseLaravelTest
         $routeRules[0]['match']['domains'] = ['domain1.*'];
         $routeRules[0]['match']['prefixes'] = ['prefix1/*'];
         $routes = $this->matchRoutes($routeRules);
-        $oddRuleOut = collect($routes)->filter(fn ($route) => $route['route']->getName() === $mustInclude);
+        $oddRuleOut = collect($routes)->filter(fn($route) => $route['route']->getName() === $mustInclude);
         $this->assertCount(1, $oddRuleOut);
     }
 
@@ -93,7 +93,7 @@ class RouteMatcherTest extends BaseLaravelTest
         $routeRules[0]['match']['domains'] = ['domain1.*'];
         $routeRules[0]['match']['prefixes'] = ['prefix1/*'];
         $routes = $this->matchRoutes($routeRules);
-        $oddRuleOut = collect($routes)->filter(fn ($route) => in_array($route['route']->getName(), $mustInclude));
+        $oddRuleOut = collect($routes)->filter(fn($route) => in_array($route['route']->getName(), $mustInclude));
         $this->assertCount(count($mustInclude), $oddRuleOut);
     }
 
@@ -107,7 +107,7 @@ class RouteMatcherTest extends BaseLaravelTest
         $routeRules[0]['match']['domains'] = ['domain1.*'];
         $routeRules[0]['match']['prefixes'] = ['prefix1/*'];
         $routes = $this->matchRoutes($routeRules);
-        $oddRuleOut = collect($routes)->filter(fn ($route) => $route['route']->getName() === $mustNotInclude);
+        $oddRuleOut = collect($routes)->filter(fn($route) => $route['route']->getName() === $mustNotInclude);
         $this->assertCount(0, $oddRuleOut);
     }
 
@@ -122,7 +122,7 @@ class RouteMatcherTest extends BaseLaravelTest
         $routeRules[0]['match']['domains'] = ['domain1.*'];
         $routeRules[0]['match']['prefixes'] = ['prefix1/*'];
         $routes = $this->matchRoutes($routeRules);
-        $oddRuleOut = collect($routes)->filter(fn ($route) => in_array($route['route']->getName(), $mustNotInclude));
+        $oddRuleOut = collect($routes)->filter(fn($route) => in_array($route['route']->getName(), $mustNotInclude));
         $this->assertCount(0, $oddRuleOut);
     }
 

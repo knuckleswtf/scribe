@@ -63,7 +63,7 @@ class UseResponseAttributes extends PhpAttributeStrategy
             );
             $modelInstantiator = null;
         } else {
-            $modelInstantiator = fn () => $this->instantiateExampleModel($modelToBeTransformed, $attributeInstance->factoryStates, $attributeInstance->with, null, $attributeInstance->withCount);
+            $modelInstantiator = fn() => $this->instantiateExampleModel($modelToBeTransformed, $attributeInstance->factoryStates, $attributeInstance->with, null, $attributeInstance->withCount);
         }
 
         $pagination = [];
@@ -95,7 +95,7 @@ class UseResponseAttributes extends PhpAttributeStrategy
 
     protected function getTransformerResponse(ResponseFromTransformer $attributeInstance)
     {
-        $modelInstantiator = fn () => $this->instantiateExampleModel(
+        $modelInstantiator = fn() => $this->instantiateExampleModel(
             $attributeInstance->model,
             $attributeInstance->factoryStates,
             $attributeInstance->with,

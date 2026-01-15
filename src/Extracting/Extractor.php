@@ -282,14 +282,14 @@ class Extractor
                 return;
 
             case 'bearer':
-                $endpointData->auth = ['headers', 'Authorization', 'Bearer '.($valueToUse ?: $token)];
-                $endpointData->headers['Authorization'] = 'Bearer '.($valueToDisplay ?: $token);
+                $endpointData->auth = ['headers', 'Authorization', 'Bearer ' . ($valueToUse ?: $token)];
+                $endpointData->headers['Authorization'] = 'Bearer ' . ($valueToDisplay ?: $token);
 
                 return;
 
             case 'basic':
-                $endpointData->auth = ['headers', 'Authorization', 'Basic '.($valueToUse ?: base64_encode($token))];
-                $endpointData->headers['Authorization'] = 'Basic '.($valueToDisplay ?: base64_encode($token));
+                $endpointData->auth = ['headers', 'Authorization', 'Basic ' . ($valueToUse ?: base64_encode($token))];
+                $endpointData->headers['Authorization'] = 'Basic ' . ($valueToDisplay ?: base64_encode($token));
 
                 return;
 
@@ -313,7 +313,7 @@ class Extractor
                     $strategySettings['except'] = ['*'];
                 } else {
                     $strategySettings['only'] = array_map(
-                        fn ($method) => "{$method} *",
+                        fn($method) => "{$method} *",
                         $rulesToApply['response_calls']['methods']
                     );
                 }
@@ -479,7 +479,7 @@ class Extractor
     protected function mergeInheritedMethodsData(string $stage, ExtractedEndpointData $endpointData, array $inheritedDocsOverrides = []): void
     {
         $overrides = $inheritedDocsOverrides[$stage] ?? [];
-        $normalizeParamData = fn ($data, $key) => array_merge($data, ['name' => $key]);
+        $normalizeParamData = fn($data, $key) => array_merge($data, ['name' => $key]);
         if (is_array($overrides)) {
             foreach ($overrides as $key => $item) {
                 switch ($stage) {
@@ -510,8 +510,8 @@ class Extractor
 
             $endpointData->{$stage} = match ($stage) {
                 'responses' => ResponseCollection::make($results),
-                'urlParameters', 'bodyParameters', 'queryParameters' => collect($results)->map(fn ($param, $name) => Parameter::make($normalizeParamData($param, $name)))->all(),
-                'responseFields' => collect($results)->map(fn ($field, $name) => ResponseField::make($normalizeParamData($field, $name)))->all(),
+                'urlParameters', 'bodyParameters', 'queryParameters' => collect($results)->map(fn($param, $name) => Parameter::make($normalizeParamData($param, $name)))->all(),
+                'responseFields' => collect($results)->map(fn($field, $name) => ResponseField::make($normalizeParamData($field, $name)))->all(),
                 default => $results,
             };
         }

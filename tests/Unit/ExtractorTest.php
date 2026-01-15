@@ -410,7 +410,7 @@ class ExtractorTest extends BaseLaravelTest
          *
          * @bodyParam name required Name of the location
          */
-        $handler = fn () => 'hi';
+        $handler = fn() => 'hi';
         $route = $this->createClosureRoute('POST', '/api/closure/test', $handler);
 
         $parsed = $this->process($route);
@@ -436,7 +436,7 @@ class ExtractorTest extends BaseLaravelTest
     {
         $route = $this->createRoute('POST', '/api/test', 'endpoint', TestParentController::class);
         $parent = $this->process($route);
-        $this->assertSame('Parent title', $parent->metadata->title);
+        $this->assertSame('Parent title.', $parent->metadata->title);
         $this->assertSame('Parent group name', $parent->metadata->groupName);
         $this->assertSame('Parent description', $parent->metadata->description);
         $this->assertCount(1, $parent->responses);

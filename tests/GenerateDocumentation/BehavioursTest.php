@@ -75,7 +75,7 @@ class BehavioursTest extends BaseLaravelTest
      */
     public function canProcessClosureRoutes()
     {
-        RouteFacade::get('/api/closure', fn () => 'hi');
+        RouteFacade::get('/api/closure', fn() => 'hi');
         $this->generateAndExpectConsoleOutput(expected: ['Processed route: [GET] api/closure']);
     }
 
@@ -129,7 +129,7 @@ class BehavioursTest extends BaseLaravelTest
             ],
         ], $paths);
 
-        Scribe::afterGenerating(fn () => null);
+        Scribe::afterGenerating(fn() => null);
     }
 
     /** @test */
@@ -147,14 +147,14 @@ class BehavioursTest extends BaseLaravelTest
 
         $this->assertTrue($commandInstance instanceof GenerateDocumentation);
 
-        Scribe::bootstrap(fn () => null);
+        Scribe::bootstrap(fn() => null);
     }
 
     /** @test */
     public function skipsMethodsAndClassesWithHidefromapidocumentationTag()
     {
         RouteFacade::get('/api/skip', [TestController::class, 'skip']);
-        RouteFacade::get('/api/skipClass', TestIgnoreThisController::class.'@dummy');
+        RouteFacade::get('/api/skipClass', TestIgnoreThisController::class . '@dummy');
         RouteFacade::get('/api/test', [TestController::class, 'withEndpointDescription']);
 
         $this->generateAndExpectConsoleOutput(expected: [
@@ -201,7 +201,7 @@ class BehavioursTest extends BaseLaravelTest
     /** @test */
     public function canCustomiseStaticOutputPath()
     {
-        RouteFacade::get('/api/action1', TestGroupController::class.'@action1');
+        RouteFacade::get('/api/action1', TestGroupController::class . '@action1');
 
         $this->setConfig(['type' => 'static', 'static.output_path' => 'static/docs']);
         $this->assertFileDoesNotExist('static/docs/index.html');

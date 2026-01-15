@@ -91,7 +91,7 @@ class MethodAstParser
 
     private static function getAstCacheId(string $fileName, string $methodName): string
     {
-        return $fileName.'///'.$methodName;
+        return $fileName . '///' . $methodName;
     }
 
     private static function getClassAst(string $fileName)

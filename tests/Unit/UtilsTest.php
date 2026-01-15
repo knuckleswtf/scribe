@@ -15,7 +15,7 @@ class UtilsTest extends BaseLaravelTest
     /** @test */
     public function makeDirectoryRecursive()
     {
-        $dir = __DIR__.'/test_dir';
+        $dir = __DIR__ . '/test_dir';
         Utils::makeDirectoryRecursive($dir);
         $this->assertDirectoryExists($dir); // Directory exists
 

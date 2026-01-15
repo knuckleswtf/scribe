@@ -48,7 +48,7 @@ class RouteDocBlocker
         $class = new \ReflectionClass($className);
 
         if (!$class->hasMethod($methodName)) {
-            throw new \Exception('Error while fetching docblock for route '.c::getRouteRepresentation($route).": Class {$className} does not contain method {$methodName}");
+            throw new \Exception('Error while fetching docblock for route ' . c::getRouteRepresentation($route) . ": Class {$className} does not contain method {$methodName}");
         }
 
         $method = u::getReflectedRouteMethod([$className, $methodName]);
@@ -69,7 +69,7 @@ class RouteDocBlocker
     {
         if (is_object($classNameOrInstance)) {
             // Route handlers are not destroyed until the script ends so this should be perfectly safe.
-            $classNameOrInstance = get_class($classNameOrInstance).'::'.spl_object_id($classNameOrInstance);
+            $classNameOrInstance = get_class($classNameOrInstance) . '::' . spl_object_id($classNameOrInstance);
         }
 
         return $classNameOrInstance;
@@ -91,9 +91,9 @@ class RouteDocBlocker
     private static function getRouteCacheId(Route $route, string $className, string $methodName): string
     {
         return $route->uri()
-            .':'
-            .implode(array_diff($route->methods(), ['HEAD']))
-            .$className
-            .$methodName;
+            . ':'
+            . implode(array_diff($route->methods(), ['HEAD']))
+            . $className
+            . $methodName;
     }
 }

@@ -62,7 +62,7 @@ class Utils
         }
 
         foreach ($urlParameters as $parameterName => $example) {
-            $uri = preg_replace('#\{'.$parameterName.'\??}#', $example, $uri);
+            $uri = preg_replace('#\{' . $parameterName . '\??}#', $example, $uri);
         }
 
         // Remove unbound optional parameters with nothing
@@ -107,7 +107,7 @@ class Utils
             ];
         }
 
-        throw new \Exception("Couldn't get class and method names for route ".c::getRouteRepresentation($route).'.');
+        throw new \Exception("Couldn't get class and method names for route " . c::getRouteRepresentation($route) . '.');
     }
 
     public static function deleteDirectoryAndContents(string $dir, ?string $workingDir = null): void
@@ -150,7 +150,7 @@ class Utils
         $i = new \DirectoryIterator($src);
         foreach ($i as $f) {
             if ($f->isFile()) {
-                copy($f->getRealPath(), "{$dest}/".$f->getFilename());
+                copy($f->getRealPath(), "{$dest}/" . $f->getFilename());
             } elseif (!$f->isDot() && $f->isDir()) {
                 self::copyDirectory($f->getRealPath(), "{$dest}/{$f}");
             }
@@ -260,8 +260,8 @@ class Utils
                     : Utils::getModelFactory($relationModel, $states, [implode('.', $relationChain)]);
 
                 if ($relation instanceof BelongsToMany) {
-                    $pivot = method_exists($factory, 'pivot'.$relationVector)
-                        ? $factory->{'pivot'.$relationVector}()
+                    $pivot = method_exists($factory, 'pivot' . $relationVector)
+                        ? $factory->{'pivot' . $relationVector}()
                         : [];
 
                     $factory = $factory->hasAttached($factoryChain, $pivot, $relationVector);
@@ -275,7 +275,7 @@ class Utils
             try {
                 $factory = factory($modelName);
             } catch (\Throwable $e) {
-                if (Str::contains($e->getMessage(), 'Call to undefined function Knuckles\\Scribe\\Tools\\factory()')) {
+                if (Str::contains($e->getMessage(), 'Call to undefined function Knuckles\Scribe\Tools\factory()')) {
                     throw CouldntFindFactory::forModel($modelName);
                 }
 
@@ -300,7 +300,7 @@ class Utils
     {
         // Avoid "holes" in the keys of the filtered array by using array_values
         return array_values(
-            array_filter($tags, fn ($tag) => in_array(strtolower($tag->getName()), $names))
+            array_filter($tags, fn($tag) => in_array(strtolower($tag->getName()), $names))
         );
     }
 

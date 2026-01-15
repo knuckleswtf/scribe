@@ -166,7 +166,7 @@ class GenerateDocumentation extends Command
     protected function writeExampleCustomEndpoint(): void
     {
         // We add an example to guide users in case they need to add a custom endpoint.
-        copy(__DIR__.'/../../resources/example_custom_endpoint.yaml', Camel::camelDir($this->paths).'/custom.0.yaml');
+        copy(__DIR__ . '/../../resources/example_custom_endpoint.yaml', Camel::camelDir($this->paths) . '/custom.0.yaml');
     }
 
     protected function upgradeConfigFileIfNeeded(): void
@@ -178,7 +178,7 @@ class GenerateDocumentation extends Command
         $this->info('Checking for any pending upgrades to your config file...');
 
         try {
-            $defaultConfig = require __DIR__.'/../../config/scribe.php';
+            $defaultConfig = require __DIR__ . '/../../config/scribe.php';
             $ignore = ['example_languages', 'routes', 'description', 'auth.extra_info', 'intro_text', 'groups', 'database_connections_to_transact'];
             $asList = ['strategies.*', 'examples.models_source'];
             $differ = new ConfigDiffer(original: $this->docConfig->data, changed: $defaultConfig, ignorePaths: $ignore, asList: $asList);
@@ -219,10 +219,10 @@ class GenerateDocumentation extends Command
         $message = 'All done. ';
         if ($this->docConfig->outputRoutedThroughLaravel()) {
             if ($this->docConfig->get('laravel.add_routes')) {
-                $message .= 'Visit your docs at '.url($this->docConfig->get('laravel.docs_url'));
+                $message .= 'Visit your docs at ' . url($this->docConfig->get('laravel.docs_url'));
             }
         } elseif (Str::endsWith(base_path('public'), 'public') && Str::startsWith($this->docConfig->get('static.output_path'), 'public/')) {
-            $message = 'Visit your docs at '.url(str_replace('public/', '', $this->docConfig->get('static.output_path')));
+            $message = 'Visit your docs at ' . url(str_replace('public/', '', $this->docConfig->get('static.output_path')));
         }
 
         $this->newLine();

@@ -45,14 +45,14 @@ class ApiResourceResponseTools
         $request = Request::create($uri, $method);
         $request->headers->add(['Accept' => 'application/json']);
         // Set the route properly, so it works for users who have code that checks for the route.
-        $request->setRouteResolver(fn () => $endpointData->route);
+        $request->setRouteResolver(fn() => $endpointData->route);
 
         $previousBoundRequest = app('request');
-        app()->bind('request', fn () => $request);
+        app()->bind('request', fn() => $request);
 
         $response = $resource->toResponse($request);
 
-        app()->bind('request', fn () => $previousBoundRequest);
+        app()->bind('request', fn() => $previousBoundRequest);
 
         return $response;
     }

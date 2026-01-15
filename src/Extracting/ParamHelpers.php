@@ -30,7 +30,7 @@ trait ParamHelpers
             'int' => str_replace($base, 'integer', $typeName),
             'float', 'double' => str_replace($base, 'number', $typeName),
             'array' => (empty($value) || 0 === array_keys($value)[0])
-                ? static::normalizeTypeName(gettype($value[0] ?? '')).'[]'
+                ? static::normalizeTypeName(gettype($value[0] ?? '')) . '[]'
                 : 'object',
             default => $typeName
         };
@@ -51,13 +51,13 @@ trait ParamHelpers
         };
 
         return match ($normalizedName) {
-            'email' => fn () => $faker->safeEmail(),
-            'password', 'pwd' => fn () => $faker->password(),
-            'url' => fn () => $faker->url(),
-            'description' => fn () => $faker->sentence(),
-            'uuid' => fn () => $faker->uuid(),
-            'locale' => fn () => $faker->locale(),
-            'timezone' => fn () => $faker->timezone(),
+            'email' => fn() => $faker->safeEmail(),
+            'password', 'pwd' => fn() => $faker->password(),
+            'url' => fn() => $faker->url(),
+            'description' => fn() => $faker->sentence(),
+            'uuid' => fn() => $faker->uuid(),
+            'locale' => fn() => $faker->locale(),
+            'timezone' => fn() => $faker->timezone(),
             default => null,
         };
     }
@@ -97,8 +97,8 @@ trait ParamHelpers
         if ($isListType) {
             // Return a one-array item for a list by default.
             return $size
-                ? fn () => [$this->generateDummyValue($baseType, range(0, min($size - 1, 5)))]
-                : fn () => [$this->generateDummyValue($baseType, $hints)];
+                ? fn() => [$this->generateDummyValue($baseType, range(0, min($size - 1, 5)))]
+                : fn() => [$this->generateDummyValue($baseType, $hints)];
         }
 
         if (($hints['name'] ?? false) && 'file' != $baseType) {
@@ -129,10 +129,10 @@ trait ParamHelpers
 
                 return $max ? $faker->numberBetween((int) $min, (int) $max) : $faker->randomFloat();
             },
-            'boolean' => fn () => $faker->boolean(),
-            'string' => fn () => $size ? $faker->lexify(str_repeat('?', $size)) : $faker->word(),
-            'object' => fn () => [],
-            'file' => fn () => UploadedFile::fake()->create('test.jpg')->size($size ?: 10),
+            'boolean' => fn() => $faker->boolean(),
+            'string' => fn() => $size ? $faker->lexify(str_repeat('?', $size)) : $faker->word(),
+            'object' => fn() => [],
+            'file' => fn() => UploadedFile::fake()->create('test.jpg')->size($size ?: 10),
         ];
 
         return $fakeFactoriesByType[$baseType] ?? $fakeFactoriesByType['string'];
@@ -250,7 +250,7 @@ trait ParamHelpers
             $description = trim($content[1]);
 
             $enumValues = array_map(
-                fn ($value) => $this->castToType(trim($value), $type),
+                fn($value) => $this->castToType(trim($value), $type),
                 explode(',', rtrim(trim($content[2]), '.'))
             );
         }

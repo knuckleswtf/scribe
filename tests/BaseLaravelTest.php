@@ -27,7 +27,7 @@ class BaseLaravelTest extends TestCase
         parent::setUp();
 
         $this->setConfig([
-            'title' => config('app.name').' API Documentation',
+            'title' => config('app.name') . ' API Documentation',
             'type' => 'laravel',
             'theme' => 'default',
             'laravel.docs_url' => '/apidocs',

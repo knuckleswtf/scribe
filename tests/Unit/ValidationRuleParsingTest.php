@@ -95,7 +95,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['string_param' => ['description' => $description]],
             [
                 'type' => 'string',
-                'description' => $description.'.',
+                'description' => $description . '.',
             ],
         ];
 
@@ -122,7 +122,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['numeric_param' => ['description' => $description]],
             [
                 'type' => 'number',
-                'description' => $description.'.',
+                'description' => $description . '.',
             ],
         ];
 
@@ -211,7 +211,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['in_param' => 'in:3,5,6'],
             ['in_param' => ['description' => $description]],
             [
-                'description' => $description.'.',
+                'description' => $description . '.',
                 'type' => 'string',
                 'enumValues' => [3, 5, 6],
             ],
@@ -576,10 +576,6 @@ class ValidationRuleParsingTest extends BaseLaravelTest
                  * This is a block DocComment
                  * parsed on a closure rule.
                  * Extra info.
-                 *
-                 * @param mixed $attribute
-                 * @param mixed $value
-                 * @param mixed $fail
                  */
                 function ($attribute, $value, $fail) {
                     $fail('Always fail.');
@@ -632,7 +628,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         );
         $this->assertTrue(in_array(
             $results['enum']['example'],
-            array_map(fn ($case) => $case->value, Fixtures\TestStringBackedEnum::cases())
+            array_map(fn($case) => $case->value, Fixtures\TestStringBackedEnum::cases())
         ));
 
         $results = $this->strategy->parse([
@@ -650,7 +646,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         );
         $this->assertTrue(in_array(
             $results['enum']['example'],
-            array_map(fn ($case) => $case->value, Fixtures\TestIntegerBackedEnum::cases())
+            array_map(fn($case) => $case->value, Fixtures\TestIntegerBackedEnum::cases())
         ));
 
         $results = $this->strategy->parse([
@@ -670,7 +666,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         );
         $this->assertTrue(in_array(
             $results['enum']['example'],
-            array_map(fn ($case) => $case->value, Fixtures\TestStringBackedEnum::cases())
+            array_map(fn($case) => $case->value, Fixtures\TestStringBackedEnum::cases())
         ));
     }
 

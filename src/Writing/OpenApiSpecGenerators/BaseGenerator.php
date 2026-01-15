@@ -80,7 +80,7 @@ class BaseGenerator extends OpenApiGenerator
             ];
             // Workaround for optional parameters
             if (empty($details->required)) {
-                $parameterData['description'] = rtrim('Optional parameter. '.$parameterData['description']);
+                $parameterData['description'] = rtrim('Optional parameter. ' . $parameterData['description']);
                 $parameterData['examples'] = [
                     'omitted' => [
                         'summary' => 'When the value is omitted',
@@ -177,7 +177,7 @@ class BaseGenerator extends OpenApiGenerator
                 'properties' => $this->objectIfEmpty(collect($field->__fields)->mapWithKeys(function ($subfield, $subfieldName) {
                     return [$subfieldName => $this->generateFieldData($subfield)];
                 })->all()),
-                'required' => collect($field->__fields)->filter(fn ($f) => $f['required'])->keys()->toArray(),
+                'required' => collect($field->__fields)->filter(fn($f) => $f['required'])->keys()->toArray(),
             ];
             $this->applyNullable($data, $field->nullable);
             // The spec doesn't allow for an empty `required` array. Must have something there.
@@ -292,7 +292,7 @@ class BaseGenerator extends OpenApiGenerator
 
         $parts = preg_split('/[^\w+]/', $endpoint->uri, -1, PREG_SPLIT_NO_EMPTY);
 
-        return Str::lower($endpoint->httpMethods[0]).join('', array_map(fn ($part) => ucfirst($part), $parts));
+        return Str::lower($endpoint->httpMethods[0]) . join('', array_map(fn($part) => ucfirst($part), $parts));
     }
 
     /**
@@ -470,7 +470,7 @@ class BaseGenerator extends OpenApiGenerator
 
         $description = strval($response->description);
         // Don't include the status code in description; see https://github.com/knuckleswtf/scribe/issues/271
-        if (preg_match('/\\d{3},\\s+(.+)/', $description, $matches)) {
+        if (preg_match('/\d{3},\s+(.+)/', $description, $matches)) {
             $description = $matches[1];
         } elseif ($description === strval($response->status)) {
             $description = '';

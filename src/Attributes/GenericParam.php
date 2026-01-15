@@ -45,7 +45,7 @@ class GenericParam
                 // $case->value only exists on BackedEnums, not UnitEnums
                 // method_exists($enum, 'tryFrom') implies the enum is a BackedEnum
                 // @phpstan-ignore-next-line
-                fn ($case) => $case->value,
+                fn($case) => $case->value,
                 $this->enum::cases()
             );
         }

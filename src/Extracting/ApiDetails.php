@@ -35,13 +35,13 @@ class ApiDetails
         $this->baseUrl = $this->config->get('base_url') ?? config('app.url');
         $this->preserveUserChanges = $preserveUserChanges;
 
-        $this->fileHashesTrackingFile = $this->markdownOutputPath.'/.filehashes';
+        $this->fileHashesTrackingFile = $this->markdownOutputPath . '/.filehashes';
         $this->lastKnownFileContentHashes = [];
     }
 
     public function writeMarkdownFiles(): void
     {
-        c::info('Extracting intro and auth Markdown files to: '.$this->markdownOutputPath);
+        c::info('Extracting intro and auth Markdown files to: ' . $this->markdownOutputPath);
 
         if (!is_dir($this->markdownOutputPath)) {
             mkdir($this->markdownOutputPath, 0o777, true);
@@ -54,12 +54,12 @@ class ApiDetails
 
         $this->writeContentsTrackingFile();
 
-        c::success('Extracted intro and auth Markdown files to: '.$this->markdownOutputPath);
+        c::success('Extracted intro and auth Markdown files to: ' . $this->markdownOutputPath);
     }
 
     public function writeIntroMarkdownFile(): void
     {
-        $introMarkdownFile = $this->markdownOutputPath.'/intro.md';
+        $introMarkdownFile = $this->markdownOutputPath . '/intro.md';
         if ($this->hasFileBeenModified($introMarkdownFile)) {
             if ($this->preserveUserChanges) {
                 c::warn("Skipping modified file {$introMarkdownFile}");
@@ -80,7 +80,7 @@ class ApiDetails
 
     public function writeAuthMarkdownFile(): void
     {
-        $authMarkdownFile = $this->markdownOutputPath.'/auth.md';
+        $authMarkdownFile = $this->markdownOutputPath . '/auth.md';
         if ($this->hasFileBeenModified($authMarkdownFile)) {
             if ($this->preserveUserChanges) {
                 c::warn("Skipping modified file {$authMarkdownFile}");
@@ -104,7 +104,7 @@ class ApiDetails
                     'parameterName' => $parameterName,
                     'placeholder' => $this->config->get('auth.placeholder') ?: 'your-token']
             );
-            $authDescription .= "\n\n".u::trans('scribe::auth.details');
+            $authDescription .= "\n\n" . u::trans('scribe::auth.details');
             $extraInfo = $this->config->get('auth.extra_info', '');
         }
 
@@ -127,7 +127,7 @@ class ApiDetails
         $content = "# GENERATED. YOU SHOULDN'T MODIFY OR DELETE THIS FILE.\n";
         $content .= "# Scribe uses this file to know when you change something manually in your docs.\n";
         $content .= collect($this->lastKnownFileContentHashes)
-            ->map(fn ($hash, $filePath) => "{$filePath}={$hash}")->implode("\n")
+            ->map(fn($hash, $filePath) => "{$filePath}={$hash}")->implode("\n")
         ;
         file_put_contents($this->fileHashesTrackingFile, $content);
     }

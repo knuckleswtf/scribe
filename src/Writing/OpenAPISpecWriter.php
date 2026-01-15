@@ -35,7 +35,7 @@ class OpenAPISpecWriter
         ];
         $this->generators = collect($generators)
             ->merge($this->config->get('openapi.generators', []))
-            ->map(fn ($generatorClass) => app()->makeWith($generatorClass, ['config' => $this->config]))
+            ->map(fn($generatorClass) => app()->makeWith($generatorClass, ['config' => $this->config]))
         ;
     }
 
@@ -77,7 +77,7 @@ class OpenAPISpecWriter
         $groupedByPath = $allEndpoints->groupBy(function ($endpoint) {
             $path = str_replace('?}', '}', $endpoint->uri); // Remove optional parameters indicator in path
 
-            return '/'.ltrim($path, '/');
+            return '/' . ltrim($path, '/');
         });
 
         return $groupedByPath->mapWithKeys(function (Collection $endpoints, $path) use ($groupedEndpoints) {

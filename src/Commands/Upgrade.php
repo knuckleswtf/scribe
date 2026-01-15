@@ -45,7 +45,7 @@ class Upgrade extends Command
         }
         $this->line('Checking for config file changes...');
 
-        $upgrader = Upgrader::ofConfigFile("config/{$this->configName}.php", __DIR__.'/../../config/scribe.php')
+        $upgrader = Upgrader::ofConfigFile("config/{$this->configName}.php", __DIR__ . '/../../config/scribe.php')
             ->dontTouch(
                 'routes',
                 'laravel.middleware',
@@ -118,13 +118,13 @@ class Upgrade extends Command
         $this->info('In v3, you sorted endpoints/groups by editing/renaming the generated YAML files (or `beforeGroup`/`afterGroup` for custom endpoints).');
         $this->info("We'll automatically import your current sorting into the config item `groups.order`.");
 
-        $defaultGroup = config($this->configName.'.default_group');
+        $defaultGroup = config($this->configName . '.default_group');
         $pathConfig = new PathConfig($this->configName);
         $extractedEndpoints = GroupedEndpointsFactory::fromCamelDir($pathConfig)->get();
 
         $order = array_map(function (array $group) {
             return array_map(function (array $endpoint) {
-                return $endpoint['metadata']['title'] ?: ($endpoint['httpMethods'][0].' /'.$endpoint['uri']);
+                return $endpoint['metadata']['title'] ?: ($endpoint['httpMethods'][0] . ' /' . $endpoint['uri']);
             }, $group['endpoints']);
         }, $extractedEndpoints);
         $groupsOrder = array_keys($order);
@@ -135,7 +135,7 @@ class Upgrade extends Command
         if ($userDefinedEndpoints) {
             foreach ($userDefinedEndpoints as $endpoint) {
                 $groupName = $endpoint['metadata']['groupName'] ?? $defaultGroup;
-                $endpointTitle = $endpoint['metadata']['title'] ?? ($endpoint['httpMethods'][0].' /'.$endpoint['uri']);
+                $endpointTitle = $endpoint['metadata']['title'] ?? ($endpoint['httpMethods'][0] . ' /' . $endpoint['uri']);
 
                 if (!isset($order[$groupName])) {
                     // This is a new group; place it at the right spot.

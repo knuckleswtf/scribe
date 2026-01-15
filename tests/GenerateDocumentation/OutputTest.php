@@ -149,15 +149,15 @@ class OutputTest extends BaseLaravelTest
         $generatedCollection = json_decode(file_get_contents($this->postmanOutputPath()), true);
         // The Postman ID varies from call to call; erase it to make the test data reproducible.
         $generatedCollection['info']['_postman_id'] = '';
-        $fixtureCollection = json_decode(file_get_contents(__DIR__.'/../Fixtures/collection.json'), true);
+        $fixtureCollection = json_decode(file_get_contents(__DIR__ . '/../Fixtures/collection.json'), true);
 
         // Laravel 11 began adding CORS headers by default
         foreach ($generatedCollection['item'] as &$group) {
             foreach ($group['item'] as &$endpoint) {
                 foreach ($endpoint['response'] as &$response) {
-                    $response['header'] = array_filter($response['header'], fn ($header) => 'access-control-allow-origin' !== $header['key']);
+                    $response['header'] = array_filter($response['header'], fn($header) => 'access-control-allow-origin' !== $header['key']);
                     $response['header'] = array_map(
-                        fn (array $header) => 'content-type' === strtolower($header['key'])
+                        fn(array $header) => 'content-type' === strtolower($header['key'])
                             ? [...$header, 'value' => strtolower($header['value'])]
                             : $header,
                         $response['header']
@@ -202,7 +202,7 @@ class OutputTest extends BaseLaravelTest
         ]);
 
         $generatedSpec = Yaml::parseFile($this->openapiOutputPath());
-        $fixtureSpec = Yaml::parseFile(__DIR__.'/../Fixtures/openapi.yaml');
+        $fixtureSpec = Yaml::parseFile(__DIR__ . '/../Fixtures/openapi.yaml');
         $this->assertEquals($fixtureSpec, $generatedSpec);
     }
 
@@ -241,7 +241,7 @@ class OutputTest extends BaseLaravelTest
         ]);
 
         $generatedSpec = Yaml::parseFile($this->openapiOutputPath());
-        $fixtureSpec = Yaml::parseFile(__DIR__.'/../Fixtures/openapi-3_1.yaml');
+        $fixtureSpec = Yaml::parseFile(__DIR__ . '/../Fixtures/openapi-3_1.yaml');
         $this->assertEquals($fixtureSpec, $generatedSpec);
     }
 
@@ -316,16 +316,16 @@ class OutputTest extends BaseLaravelTest
         $this->assertEquals('13. Group 13', $thirdGroup->textContent);
         $this->assertEquals('2. Group 2', $fourthGroup->textContent);
 
-        $firstGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($firstGroup->textContent).'"]');
+        $firstGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="' . Str::slug($firstGroup->textContent) . '"]');
         $this->assertEquals(1, $firstGroupEndpointsAndSubgroups->count());
         $this->assertEquals('GET api/action10', $firstGroupEndpointsAndSubgroups->getNode(0)->textContent);
 
-        $secondGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($secondGroup->textContent).'"]');
+        $secondGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="' . Str::slug($secondGroup->textContent) . '"]');
         $this->assertEquals(2, $secondGroupEndpointsAndSubgroups->count());
         $this->assertEquals('GET api/action1b', $secondGroupEndpointsAndSubgroups->getNode(0)->textContent);
         $this->assertEquals('GET api/action1', $secondGroupEndpointsAndSubgroups->getNode(1)->textContent);
 
-        $thirdGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($thirdGroup->textContent).'"]');
+        $thirdGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="' . Str::slug($thirdGroup->textContent) . '"]');
         $this->assertEquals(8, $thirdGroupEndpointsAndSubgroups->count());
         $this->assertEquals('SG B', $thirdGroupEndpointsAndSubgroups->getNode(0)->textContent);
         $this->assertEquals('POST api/action13d', $thirdGroupEndpointsAndSubgroups->getNode(1)->textContent);
@@ -375,16 +375,16 @@ class OutputTest extends BaseLaravelTest
         $this->assertEquals('2. Group 2', $thirdGroup->textContent);
         $this->assertEquals('13. Group 13', $fourthGroup->textContent);
 
-        $firstGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($firstGroup->textContent).'"]');
+        $firstGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="' . Str::slug($firstGroup->textContent) . '"]');
         $this->assertEquals(1, $firstGroupEndpointsAndSubgroups->count());
         $this->assertEquals('GET api/action10', $firstGroupEndpointsAndSubgroups->getNode(0)->textContent);
 
-        $secondGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($secondGroup->textContent).'"]');
+        $secondGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="' . Str::slug($secondGroup->textContent) . '"]');
         $this->assertEquals(2, $secondGroupEndpointsAndSubgroups->count());
         $this->assertEquals('GET api/action1', $secondGroupEndpointsAndSubgroups->getNode(0)->textContent);
         $this->assertEquals('GET api/action1b', $secondGroupEndpointsAndSubgroups->getNode(1)->textContent);
 
-        $fourthGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($fourthGroup->textContent).'"]');
+        $fourthGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="' . Str::slug($fourthGroup->textContent) . '"]');
         $this->assertEquals(8, $fourthGroupEndpointsAndSubgroups->count());
         $this->assertEquals('SG B', $fourthGroupEndpointsAndSubgroups->getNode(0)->textContent);
         $this->assertEquals('POST api/action13d', $fourthGroupEndpointsAndSubgroups->getNode(1)->textContent);
@@ -413,7 +413,7 @@ class OutputTest extends BaseLaravelTest
         if (!is_dir('.scribe/endpoints')) {
             mkdir('.scribe/endpoints', 0o777, true);
         }
-        copy(__DIR__.'/../Fixtures/custom.0.yaml', '.scribe/endpoints/custom.0.yaml');
+        copy(__DIR__ . '/../Fixtures/custom.0.yaml', '.scribe/endpoints/custom.0.yaml');
 
         $this->generate();
 
@@ -427,21 +427,21 @@ class OutputTest extends BaseLaravelTest
         $this->assertEquals('4. Group 4', $thirdGroup->textContent);
         $this->assertEquals('2. Group 2', $fourthGroup->textContent);
 
-        $firstGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($firstGroup->textContent).'"]');
+        $firstGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="' . Str::slug($firstGroup->textContent) . '"]');
         $this->assertEquals(2, $firstGroupEndpointsAndSubgroups->count());
         $this->assertEquals('GET api/action1', $firstGroupEndpointsAndSubgroups->getNode(0)->textContent);
         $this->assertEquals('User defined', $firstGroupEndpointsAndSubgroups->getNode(1)->textContent);
 
-        $secondGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($secondGroup->textContent).'"]');
+        $secondGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="' . Str::slug($secondGroup->textContent) . '"]');
         $this->assertEquals(2, $secondGroupEndpointsAndSubgroups->count());
         $this->assertEquals('GET group5', $secondGroupEndpointsAndSubgroups->getNode(0)->textContent);
         $this->assertEquals('GET alsoGroup5', $secondGroupEndpointsAndSubgroups->getNode(1)->textContent);
 
-        $thirdGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($thirdGroup->textContent).'"]');
+        $thirdGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="' . Str::slug($thirdGroup->textContent) . '"]');
         $this->assertEquals(1, $thirdGroupEndpointsAndSubgroups->count());
         $this->assertEquals('GET group4', $thirdGroupEndpointsAndSubgroups->getNode(0)->textContent);
 
-        $fourthGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="'.Str::slug($fourthGroup->textContent).'"]');
+        $fourthGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="' . Str::slug($fourthGroup->textContent) . '"]');
         $this->assertEquals(1, $fourthGroupEndpointsAndSubgroups->count());
         $this->assertEquals('GET api/action2', $fourthGroupEndpointsAndSubgroups->getNode(0)->textContent);
     }
@@ -529,7 +529,7 @@ class OutputTest extends BaseLaravelTest
     /** @test */
     public function generatesCorrectUrlParamsFromResourceRoutesAndModelBindingWithBoundInterfaces()
     {
-        $this->app->bind(TestPostBoundInterface::class, fn () => new TestPost());
+        $this->app->bind(TestPostBoundInterface::class, fn() => new TestPost());
 
         RouteFacade::resource('posts', TestPostBoundInterfaceController::class)->only('update');
 
@@ -542,7 +542,7 @@ class OutputTest extends BaseLaravelTest
     /** @test */
     public function generatesCorrectUrlParamsFromNonResourceRoutesAndModelBinding()
     {
-        RouteFacade::get('posts/{post}/users', fn (TestPost $post) => null);
+        RouteFacade::get('posts/{post}/users', fn(TestPost $post) => null);
 
         $this->generate();
 
@@ -554,7 +554,7 @@ class OutputTest extends BaseLaravelTest
     public function generatesFromCamelDirIfNoExtractionFlagIsSet()
     {
         $this->setConfig(['routes.0.exclude' => ['*']]);
-        Utils::copyDirectory(__DIR__.'/../Fixtures/.scribe', '.scribe');
+        Utils::copyDirectory(__DIR__ . '/../Fixtures/.scribe', '.scribe');
 
         $this->generateAndExpectConsoleOutput(['--no-extraction' => true], notExpected: ['Processing route']);
 
@@ -572,16 +572,20 @@ class OutputTest extends BaseLaravelTest
     /** @test */
     public function willAutoSetContentTypeToMultipartIfFileParamsArePresent()
     {
-        // @bodyParam param string required
-        RouteFacade::post('no-file', fn () => null);
-        // @bodyParam a_file file required
-        RouteFacade::post('top-level-file', fn () => null);
-        /*
+        /**
+         * @bodyParam param string required
+         */
+        RouteFacade::post('no-file', fn() => null);
+        /**
+         * @bodyParam a_file file required
+         */
+        RouteFacade::post('top-level-file', fn() => null);
+        /**
          * @bodyParam data object
          * @bodyParam data.thing string
          * @bodyParam data.a_file file
          */
-        RouteFacade::post('nested-file', fn () => null);
+        RouteFacade::post('nested-file', fn() => null);
 
         $this->generate();
 
@@ -724,8 +728,8 @@ class OutputTest extends BaseLaravelTest
             Storage::disk('local')->path("{$configName}/openapi.yaml"),
             View::getFinder()->find("{$configName}/index"),
         ]);
-        $paths->each(fn ($path) => $this->assertFileContainsString($path, $title));
-        $paths->each(fn ($path) => unlink($path));
+        $paths->each(fn($path) => $this->assertFileContainsString($path, $title));
+        $paths->each(fn($path) => unlink($path));
 
         $this->assertDirectoryExists($intermediateOutputDirectory ?: ".{$configName}");
         Utils::deleteDirectoryAndContents($intermediateOutputDirectory ?: ".{$configName}");

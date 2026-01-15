@@ -64,7 +64,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $this->assertArrayHasKey(strtolower($endpointData3->httpMethods[0]), $results['paths']['/path1/path2']);
 
         collect([$endpointData1, $endpointData2, $endpointData3])->each(function (OutputEndpointData $endpoint) use ($groups, $results) {
-            $endpointSpec = $results['paths']['/'.$endpoint->uri][strtolower($endpoint->httpMethods[0])];
+            $endpointSpec = $results['paths']['/' . $endpoint->uri][strtolower($endpoint->httpMethods[0])];
 
             $tags = $endpointSpec['tags'];
             $containingGroup = Arr::first($groups, function ($group) use ($endpoint) {
@@ -1825,7 +1825,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     protected function createMockEndpointData(array $custom = []): OutputEndpointData
     {
         $faker = Factory::create();
-        $path = '/'.$faker->word();
+        $path = '/' . $faker->word();
         $data = [
             'uri' => $path,
             'httpMethods' => $faker->randomElements(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], 1),

@@ -86,7 +86,7 @@ class ExtractedEndpointData extends BaseDTO
 
         parent::__construct($parameters);
 
-        $defaultNormalizer = fn () => UrlParamsNormalizer::normalizeParameterNamesInRouteUri($this->route, $this->method);
+        $defaultNormalizer = fn() => UrlParamsNormalizer::normalizeParameterNamesInRouteUri($this->route, $this->method);
         $this->uri = match (is_callable(Globals::$__normalizeEndpointUrlUsing)) {
             true => call_user_func_array(
                 Globals::$__normalizeEndpointUrlUsing,
@@ -139,7 +139,7 @@ class ExtractedEndpointData extends BaseDTO
 
     public function endpointId()
     {
-        return $this->httpMethods[0].str_replace(['/', '?', '{', '}', ':', '\\', '+', '|'], '-', $this->uri);
+        return $this->httpMethods[0] . str_replace(['/', '?', '{', '}', ':', '\\', '+', '|'], '-', $this->uri);
     }
 
     /**

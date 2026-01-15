@@ -56,7 +56,7 @@ class ScribeServiceProvider extends ServiceProvider
     {
         $docsType = config('scribe.type', 'laravel');
         if (Str::endsWith($docsType, 'laravel') && config('scribe.laravel.add_routes', true)) {
-            $routesPath = __DIR__.'/../routes/laravel.php';
+            $routesPath = __DIR__ . '/../routes/laravel.php';
             $this->loadRoutesFrom($routesPath);
         }
     }
@@ -64,22 +64,22 @@ class ScribeServiceProvider extends ServiceProvider
     protected function configureTranslations(): void
     {
         $this->publishes([
-            __DIR__.'/../lang/' => $this->app->langPath(),
+            __DIR__ . '/../lang/' => $this->app->langPath(),
         ], 'scribe-translations');
 
         $this->loadTranslationsFrom($this->app->langPath('scribe.php'), 'scribe');
-        $this->loadTranslationsFrom(realpath(__DIR__.'/../lang'), 'scribe');
+        $this->loadTranslationsFrom(realpath(__DIR__ . '/../lang'), 'scribe');
     }
 
     protected function registerViews(): void
     {
         // Register custom Markdown Blade compiler so we can automatically have MD views converted to HTML
         $this->app->view->getEngineResolver()
-            ->register('blademd', fn () => new BladeMarkdownEngine($this->app['blade.compiler']))
+            ->register('blademd', fn() => new BladeMarkdownEngine($this->app['blade.compiler']))
         ;
         $this->app->view->addExtension('md.blade.php', 'blademd');
 
-        $this->loadViewsFrom(__DIR__.'/../resources/views/', 'scribe');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views/', 'scribe');
 
         // Publish views in separate, smaller groups for ease of end-user modifications
         $viewGroups = [
@@ -91,7 +91,7 @@ class ScribeServiceProvider extends ServiceProvider
         ];
         foreach ($viewGroups as $group => $path) {
             $this->publishes([
-                __DIR__."/../resources/views/{$path}" => $this->app->basePath("resources/views/vendor/scribe/{$path}"),
+                __DIR__ . "/../resources/views/{$path}" => $this->app->basePath("resources/views/vendor/scribe/{$path}"),
             ], "scribe-{$group}");
         }
     }
@@ -99,10 +99,10 @@ class ScribeServiceProvider extends ServiceProvider
     protected function registerConfig(): void
     {
         $this->publishes([
-            __DIR__.'/../config/scribe.php' => $this->app->configPath('scribe.php'),
+            __DIR__ . '/../config/scribe.php' => $this->app->configPath('scribe.php'),
         ], 'scribe-config');
 
-        $this->mergeConfigFrom(__DIR__.'/../config/scribe.php', 'scribe');
+        $this->mergeConfigFrom(__DIR__ . '/../config/scribe.php', 'scribe');
     }
 
     protected function registerCommands(): void
