@@ -41,8 +41,8 @@ class Writer
         $this->staticTypeOutputPath = rtrim($this->config->get('static.output_path', 'public/docs'), '/');
 
         $this->laravelAssetsPath = $this->config->get('laravel.assets_directory')
-            ? '/'.$this->config->get('laravel.assets_directory')
-            : '/vendor/'.$this->paths->outputPath();
+            ? '/' . $this->config->get('laravel.assets_directory')
+            : '/vendor/' . $this->paths->outputPath();
     }
 
     /**
@@ -107,7 +107,7 @@ class Writer
     public function writeHtmlDocs(array $groupedEndpoints): void
     {
         c::task(
-            'Writing '.($this->isStatic ? 'HTML' : 'Blade').' docs',
+            'Writing ' . ($this->isStatic ? 'HTML' : 'Blade') . ' docs',
             function () use ($groupedEndpoints) {
                 // Then we convert them to HTML, and throw in the endpoints as well.
                 /** @var HtmlWriter $writer */
@@ -119,13 +119,13 @@ class Writer
                 }
 
                 if ($this->isStatic) {
-                    $outputPath = rtrim($this->staticTypeOutputPath, '/').'/';
+                    $outputPath = rtrim($this->staticTypeOutputPath, '/') . '/';
                     $this->generatedFiles['html'] = realpath("{$outputPath}index.html");
                     $assetsOutputPath = $outputPath;
                 } else {
-                    $outputPath = rtrim($this->laravelTypeOutputPath, '/').'/';
+                    $outputPath = rtrim($this->laravelTypeOutputPath, '/') . '/';
                     $this->generatedFiles['blade'] = realpath("{$outputPath}index.blade.php");
-                    $assetsOutputPath = public_path().$this->laravelAssetsPath.'/';
+                    $assetsOutputPath = public_path() . $this->laravelAssetsPath . '/';
                 }
                 $this->generatedFiles['assets']['js'] = realpath("{$assetsOutputPath}js");
                 $this->generatedFiles['assets']['css'] = realpath("{$assetsOutputPath}css");
@@ -150,10 +150,10 @@ class Writer
                 }
 
                 if ($this->isStatic) {
-                    $outputPath = rtrim($this->staticTypeOutputPath, '/').'/';
+                    $outputPath = rtrim($this->staticTypeOutputPath, '/') . '/';
                     $this->generatedFiles['html'] = realpath("{$outputPath}index.html");
                 } else {
-                    $outputPath = rtrim($this->laravelTypeOutputPath, '/').'/';
+                    $outputPath = rtrim($this->laravelTypeOutputPath, '/') . '/';
                     $this->generatedFiles['blade'] = realpath("{$outputPath}index.blade.php");
                 }
 
@@ -217,8 +217,8 @@ class Writer
             mkdir($this->laravelTypeOutputPath, 0o777, true);
         }
         $publicDirectory = public_path();
-        if (!is_dir($publicDirectory.$this->laravelAssetsPath)) {
-            mkdir($publicDirectory.$this->laravelAssetsPath, 0o777, true);
+        if (!is_dir($publicDirectory . $this->laravelAssetsPath)) {
+            mkdir($publicDirectory . $this->laravelAssetsPath, 0o777, true);
         }
 
         // Transform output HTML to a Blade view
@@ -226,19 +226,19 @@ class Writer
 
         // Move assets from public/docs to public/vendor/scribe or config('laravel.assets_directory')
         // We need to do this delete first, otherwise move won't work if folder exists
-        Utils::deleteDirectoryAndContents($publicDirectory.$this->laravelAssetsPath);
-        rename("{$this->staticTypeOutputPath}/", $publicDirectory.$this->laravelAssetsPath);
+        Utils::deleteDirectoryAndContents($publicDirectory . $this->laravelAssetsPath);
+        rename("{$this->staticTypeOutputPath}/", $publicDirectory . $this->laravelAssetsPath);
 
         $contents = file_get_contents("{$this->laravelTypeOutputPath}/index.blade.php");
 
         // Rewrite asset links to go through Laravel
-        $contents = preg_replace('#href="\.\./docs/css/(.+?)"#', 'href="{{ asset("'.$this->laravelAssetsPath.'/css/$1") }}"', $contents);
-        $contents = preg_replace('#src="\.\./docs/(js|images)/(.+?)"#', 'src="{{ asset("'.$this->laravelAssetsPath.'/$1/$2") }}"', $contents);
-        $contents = str_replace('href="../docs/collection.json"', 'href="{{ route("'.$this->paths->outputPath('postman', '.').'") }}"', $contents);
-        $contents = str_replace('href="../docs/openapi.yaml"', 'href="{{ route("'.$this->paths->outputPath('openapi', '.').'") }}"', $contents);
-        $contents = str_replace('url="../docs/openapi.yaml"', 'url="{{ route("'.$this->paths->outputPath('openapi', '.').'") }}"', $contents);
+        $contents = preg_replace('#href="\.\./docs/css/(.+?)"#', 'href="{{ asset("' . $this->laravelAssetsPath . '/css/$1") }}"', $contents);
+        $contents = preg_replace('#src="\.\./docs/(js|images)/(.+?)"#', 'src="{{ asset("' . $this->laravelAssetsPath . '/$1/$2") }}"', $contents);
+        $contents = str_replace('href="../docs/collection.json"', 'href="{{ route("' . $this->paths->outputPath('postman', '.') . '") }}"', $contents);
+        $contents = str_replace('href="../docs/openapi.yaml"', 'href="{{ route("' . $this->paths->outputPath('openapi', '.') . '") }}"', $contents);
+        $contents = str_replace('url="../docs/openapi.yaml"', 'url="{{ route("' . $this->paths->outputPath('openapi', '.') . '") }}"', $contents);
         // With Elements theme, we'd have <elements-api apiDescriptionUrl="../docs/openapi.yaml"
-        $contents = str_replace('Url="../docs/openapi.yaml"', 'Url="{{ route("'.$this->paths->outputPath('openapi', '.').'") }}"', $contents);
+        $contents = str_replace('Url="../docs/openapi.yaml"', 'Url="{{ route("' . $this->paths->outputPath('openapi', '.') . '") }}"', $contents);
 
         file_put_contents("{$this->laravelTypeOutputPath}/index.blade.php", $contents);
     }
@@ -260,7 +260,7 @@ class Writer
         return config(
             'view.paths.0',
             function_exists('base_path') ? base_path('resources/views') : 'resources/views'
-        ).'/'.$this->paths->outputPath();
+        ) . '/' . $this->paths->outputPath();
     }
 
     /**
@@ -271,6 +271,6 @@ class Writer
      */
     protected function makePathFriendly(string $path): string
     {
-        return str_replace('\\', '/', str_replace(getcwd().DIRECTORY_SEPARATOR, '', $path));
+        return str_replace('\\', '/', str_replace(getcwd() . DIRECTORY_SEPARATOR, '', $path));
     }
 }

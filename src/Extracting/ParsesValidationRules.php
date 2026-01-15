@@ -688,7 +688,7 @@ trait ParsesValidationRules
                     $castedValues = $ruleArguments;
                     $allNumeric = count($ruleArguments) > 0 && array_reduce(
                         $ruleArguments,
-                        fn ($carry, $val) => $carry && is_numeric($val),
+                        fn($carry, $val) => $carry && is_numeric($val),
                         true
                     );
 
@@ -696,13 +696,13 @@ trait ParsesValidationRules
                         // Check if all are integers (no decimal points)
                         $allIntegers = array_reduce(
                             $ruleArguments,
-                            fn ($carry, $val) => $carry && !Str::contains($val, '.'),
+                            fn($carry, $val) => $carry && !Str::contains($val, '.'),
                             true
                         );
 
                         $castedValues = $allIntegers
-                            ? array_map(fn ($v) => (int) $v, $ruleArguments)
-                            : array_map(fn ($v) => (float) $v, $ruleArguments);
+                            ? array_map(fn($v) => (int) $v, $ruleArguments)
+                            : array_map(fn($v) => (float) $v, $ruleArguments);
                     }
 
                     $parameterData['enumValues'] = $castedValues;

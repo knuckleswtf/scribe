@@ -92,7 +92,7 @@ class GetFromInlineValidatorBase extends Strategy
                         // $case->value only exists on BackedEnums, not UnitEnums
                         // method_exists($enum, 'tryFrom') implies the enum is a BackedEnum
                         // @phpstan-ignore-next-line
-                        $rulesList[] = 'in:'.implode(',', array_map(fn ($case) => $case->value, $enum::cases()));
+                        $rulesList[] = 'in:' . implode(',', array_map(fn($case) => $case->value, $enum::cases()));
                     }
                 }
                 $rules[$paramName] = join('|', $rulesList);
@@ -102,7 +102,7 @@ class GetFromInlineValidatorBase extends Strategy
 
             $dataFromComment = [];
             $comments = join("\n", array_map(
-                fn ($comment) => ltrim(ltrim($comment->getReformattedText(), '/')),
+                fn($comment) => ltrim(ltrim($comment->getReformattedText(), '/')),
                 $item->getComments()
             ));
 
@@ -154,11 +154,11 @@ class GetFromInlineValidatorBase extends Strategy
         if ($arg->value instanceof Node\Expr\ClassConstFetch
             && $arg->value->class instanceof Node\Name
         ) {
-            $className = $arg->value->class->name;
+            $className = $arg->value->class->getAttribute("resolvedName");
             // Only prepend '\\' if the class name is already fully qualified (contains '\')
             // For relative names, return as-is and let enum_exists use autoloading to resolve.
             if (strpos($className, '\\') !== false) {
-                return '\\'.$className;
+                return '\\' . $className;
             }
             return $className;
         }
