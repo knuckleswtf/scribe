@@ -276,11 +276,10 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
         $getCase = fn($case) => $case->value;
 
         $this->assertArraySubset($expected, $results);
-        // todo: fix it.
-        // $this->assertTrue(in_array(
-        //     $results['enum_class']['example'],
-        //     array_map($getCase, Fixtures\TestStringBackedEnum::cases())
-        // ));
+        $this->assertTrue(in_array(
+            $results['enum_class']['example'],
+            array_map($getCase, Fixtures\TestStringBackedEnum::cases())
+        ));
         $this->assertTrue(in_array(
             $results['enum_string']['example'],
             array_map($getCase, Fixtures\TestIntegerBackedEnum::cases())
