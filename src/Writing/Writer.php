@@ -106,9 +106,16 @@ class Writer
      */
     public function writeHtmlDocs(array $groupedEndpoints): void
     {
+        if ($this->isStatic) {
+            $outputPath = rtrim($this->staticTypeOutputPath, '/') . '/';
+            $assetsOutputPath = $outputPath;
+        } else {
+            $outputPath = rtrim($this->laravelTypeOutputPath, '/') . '/';
+            $assetsOutputPath = public_path() . $this->laravelAssetsPath . '/';
+        }
         c::task(
-            'Writing ' . ($this->isStatic ? 'HTML' : 'Blade') . ' docs',
-            function () use ($groupedEndpoints) {
+            'Writing ' . ($this->isStatic ? 'HTML' : 'Blade') . ' docs to ' . $this->makePathFriendly($outputPath) . ' and assets to ' . $this->makePathFriendly($assetsOutputPath),
+            function () use ($assetsOutputPath, $outputPath, $groupedEndpoints) {
                 // Then we convert them to HTML, and throw in the endpoints as well.
                 /** @var HtmlWriter $writer */
                 $writer = app()->makeWith(HtmlWriter::class, ['config' => $this->config]);
@@ -119,13 +126,9 @@ class Writer
                 }
 
                 if ($this->isStatic) {
-                    $outputPath = rtrim($this->staticTypeOutputPath, '/') . '/';
                     $this->generatedFiles['html'] = realpath("{$outputPath}index.html");
-                    $assetsOutputPath = $outputPath;
                 } else {
-                    $outputPath = rtrim($this->laravelTypeOutputPath, '/') . '/';
                     $this->generatedFiles['blade'] = realpath("{$outputPath}index.blade.php");
-                    $assetsOutputPath = public_path() . $this->laravelAssetsPath . '/';
                 }
                 $this->generatedFiles['assets']['js'] = realpath("{$assetsOutputPath}js");
                 $this->generatedFiles['assets']['css'] = realpath("{$assetsOutputPath}css");
@@ -138,9 +141,16 @@ class Writer
 
     public function writeExternalHtmlDocs(): void
     {
+        if ($this->isStatic) {
+            $outputPath = rtrim($this->staticTypeOutputPath, '/') . '/';
+            $assetsOutputPath = $outputPath;
+        } else {
+            $outputPath = rtrim($this->laravelTypeOutputPath, '/') . '/';
+            $assetsOutputPath = public_path() . $this->laravelAssetsPath . '/';
+        }
         c::task(
-            'Writing client-side HTML docs',
-            function () {
+            'Writing client-side HTML docs to ' . $this->makePathFriendly($outputPath) . ' and assets to ' . $this->makePathFriendly($assetsOutputPath),
+            function () use ($outputPath) {
                 /** @var ExternalHtmlWriter $writer */
                 $writer = app()->makeWith(ExternalHtmlWriter::class, ['config' => $this->config]);
                 $writer->generate([], $this->paths->intermediateOutputPath(), $this->staticTypeOutputPath);
@@ -150,10 +160,8 @@ class Writer
                 }
 
                 if ($this->isStatic) {
-                    $outputPath = rtrim($this->staticTypeOutputPath, '/') . '/';
                     $this->generatedFiles['html'] = realpath("{$outputPath}index.html");
                 } else {
-                    $outputPath = rtrim($this->laravelTypeOutputPath, '/') . '/';
                     $this->generatedFiles['blade'] = realpath("{$outputPath}index.blade.php");
                 }
 
@@ -165,8 +173,9 @@ class Writer
     protected function writePostmanCollection(array $groups): void
     {
         if ($this->config->get('postman.enabled', true)) {
+            $outputPath = $this->isStatic ? $this->staticTypeOutputPath : Storage::disk('local')->path($this->paths->outputPath());
             c::task(
-                'Generating Postman collection',
+                'Generating Postman collection in ' . rtrim($this->makePathFriendly($outputPath), '/') . '/',
                 function () use ($groups) {
                     $collection = $this->generatePostmanCollection($groups);
                     if ($this->isStatic) {
@@ -189,8 +198,9 @@ class Writer
     protected function writeOpenAPISpec(array $parsedRoutes): void
     {
         if ($this->config->get('openapi.enabled', false) || $this->isExternal) {
+            $outputPath = $this->isStatic ? $this->staticTypeOutputPath : Storage::disk('local')->path($this->paths->outputPath());
             c::task(
-                'Generating OpenAPI specification',
+                'Generating OpenAPI specification in ' . rtrim($this->makePathFriendly($outputPath), '/') . '/',
                 function () use ($parsedRoutes) {
                     $spec = $this->generateOpenAPISpec($parsedRoutes);
                     if ($this->isStatic) {
