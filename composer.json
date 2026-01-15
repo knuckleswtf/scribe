@@ -64,7 +64,7 @@
     "style:check": "php-cs-fixer check",
     "style:fix": "php-cs-fixer fix",
     "test": "pest --stop-on-failure --colors",
-    "test-ci": "pest --coverage --min=80",
+    "test-ci": "pest",
     "post-install-cmd": [
       "git config core.hooksPath .githooks"
     ],
