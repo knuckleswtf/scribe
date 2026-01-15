@@ -355,7 +355,7 @@ class PostmanCollectionWriter
 
     protected function getResponseDescription(Response $response): string
     {
-        if (Str::startsWith($response->content, '<<binary>>')) {
+        if ($response->isBinary()) {
             return trim(str_replace('<<binary>>', '', $response->content));
         }
 
