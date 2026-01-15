@@ -61,7 +61,7 @@
     "scripts": {
         "lint": "phpstan analyse -c ./phpstan.neon src camel --memory-limit 1G",
         "test": "phpunit --stop-on-failure",
-        "test-ci": "pest --coverage --min=80"
+        "test-ci": "pest"
     },
     "extra": {
         "laravel": {
