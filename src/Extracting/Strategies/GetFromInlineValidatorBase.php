@@ -146,7 +146,7 @@ class GetFromInlineValidatorBase extends Strategy
             $args = $arrayItem->value->args;
         }
 
-        if (1 !== count($args) || !$args[0] instanceof Node\Arg) {
+        if (count($args) !== 1 || !$args[0] instanceof Node\Arg) {
             return null;
         }
 
