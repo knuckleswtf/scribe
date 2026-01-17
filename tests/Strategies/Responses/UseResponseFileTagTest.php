@@ -22,10 +22,10 @@ class UseResponseFileTagTest extends TestCase
      *
      * @dataProvider responseFileTags
      */
-    public function allowsMultipleResponsefileTagsForMultipleStatusesAndScenarios(array $tags, array $expected)
+    public function allows_multiple_responsefile_tags_for_multiple_statuses_and_scenarios(array $tags, array $expected)
     {
-        $filePath = __DIR__ . '/../../Fixtures/response_test.json';
-        $filePath2 = __DIR__ . '/../../Fixtures/response_error_test.json';
+        $filePath = __DIR__.'/../../Fixtures/response_test.json';
+        $filePath2 = __DIR__.'/../../Fixtures/response_error_test.json';
 
         $strategy = new UseResponseFileTag(new DocumentationConfig([]));
         $results = $strategy->getFileResponses($tags);
@@ -84,7 +84,7 @@ class UseResponseFileTagTest extends TestCase
     }
 
     /** @test */
-    public function canAddOrReplaceKeyValuePairInResponseFile()
+    public function can_add_or_replace_key_value_pair_in_response_file()
     {
         $strategy = new UseResponseFileTag(new DocumentationConfig([]));
         $tags = [
@@ -101,9 +101,9 @@ class UseResponseFileTagTest extends TestCase
     }
 
     /** @test */
-    public function supportsRelativeOrAbsolutePaths()
+    public function supports_relative_or_absolute_paths()
     {
-        $filePath = __DIR__ . '/../../Fixtures/response_test.json';
+        $filePath = __DIR__.'/../../Fixtures/response_test.json';
         $strategy = new UseResponseFileTag(new DocumentationConfig([]));
 
         $tags = [new Tag('responseFile', 'tests/Fixtures/response_test.json')];

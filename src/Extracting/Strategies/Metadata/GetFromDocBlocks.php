@@ -31,7 +31,7 @@ class GetFromDocBlocks extends Strategy
             'description' => $methodDocBlock->getLongDescription()->getContents(),
             'deprecated' => $this->getDeprecatedStatusFromDocBlock($methodDocBlock, $classDocBlock),
         ];
-        if (!is_null($authStatus = $this->getAuthStatusFromDocBlock($methodDocBlock, $classDocBlock))) {
+        if (! is_null($authStatus = $this->getAuthStatusFromDocBlock($methodDocBlock, $classDocBlock))) {
             $metadata['authenticated'] = $authStatus;
         }
 
@@ -41,11 +41,11 @@ class GetFromDocBlocks extends Strategy
     protected function getAuthStatusFromDocBlock(DocBlock $methodDocBlock, ?DocBlock $classDocBlock = null): ?bool
     {
         foreach ($methodDocBlock->getTags() as $tag) {
-            if ('authenticated' === strtolower($tag->getName())) {
+            if (mb_strtolower($tag->getName()) === 'authenticated') {
                 return true;
             }
 
-            if ('unauthenticated' === strtolower($tag->getName())) {
+            if (mb_strtolower($tag->getName()) === 'unauthenticated') {
                 return false;
             }
         }
@@ -58,8 +58,8 @@ class GetFromDocBlocks extends Strategy
     protected function getDeprecatedStatusFromDocBlock(DocBlock $methodDocBlock, ?DocBlock $classDocBlock = null): bool|string
     {
         foreach ($methodDocBlock->getTags() as $tag) {
-            if ('deprecated' === strtolower($tag->getName())) {
-                return '' === $tag->getContent() ? true : $tag->getContent();
+            if (mb_strtolower($tag->getName()) === 'deprecated') {
+                return $tag->getContent() === '' ? true : $tag->getContent();
             }
         }
 
@@ -76,10 +76,10 @@ class GetFromDocBlocks extends Strategy
     protected function getEndpointGroupAndTitleDetails(DocBlock $methodDocBlock, DocBlock $controllerDocBlock)
     {
         foreach ($methodDocBlock->getTags() as $tag) {
-            if ('group' === $tag->getName()) {
-                $endpointGroupParts = explode("\n", trim($tag->getContent()));
+            if ($tag->getName() === 'group') {
+                $endpointGroupParts = explode("\n", mb_trim($tag->getContent()));
                 $endpointGroupName = array_shift($endpointGroupParts);
-                $endpointGroupDescription = trim(implode("\n", $endpointGroupParts));
+                $endpointGroupDescription = mb_trim(implode("\n", $endpointGroupParts));
 
                 // If the endpoint has no title (the methodDocBlock's "short description"),
                 // we'll assume the endpointGroupDescription is actually the title
@@ -108,8 +108,8 @@ class GetFromDocBlocks extends Strategy
 
         // Fall back to the controller
         foreach ($controllerDocBlock->getTags() as $tag) {
-            if ('group' === $tag->getName()) {
-                $endpointGroupParts = explode("\n", trim($tag->getContent()));
+            if ($tag->getName() === 'group') {
+                $endpointGroupParts = explode("\n", mb_trim($tag->getContent()));
                 $endpointGroupName = array_shift($endpointGroupParts);
                 $endpointGroupDescription = implode("\n", $endpointGroupParts);
 
@@ -123,14 +123,14 @@ class GetFromDocBlocks extends Strategy
     protected function getEndpointSubGroup(DocBlock $methodDocBlock, DocBlock $controllerDocBlock): ?string
     {
         foreach ($methodDocBlock->getTags() as $tag) {
-            if ('subgroup' === strtolower($tag->getName())) {
-                return trim($tag->getContent());
+            if (mb_strtolower($tag->getName()) === 'subgroup') {
+                return mb_trim($tag->getContent());
             }
         }
 
         foreach ($controllerDocBlock->getTags() as $tag) {
-            if ('subgroup' === strtolower($tag->getName())) {
-                return trim($tag->getContent());
+            if (mb_strtolower($tag->getName()) === 'subgroup') {
+                return mb_trim($tag->getContent());
             }
         }
 
@@ -140,14 +140,14 @@ class GetFromDocBlocks extends Strategy
     protected function getEndpointSubGroupDescription(DocBlock $methodDocBlock, DocBlock $controllerDocBlock): ?string
     {
         foreach ($methodDocBlock->getTags() as $tag) {
-            if ('subgroupdescription' === strtolower($tag->getName())) {
-                return trim($tag->getContent());
+            if (mb_strtolower($tag->getName()) === 'subgroupdescription') {
+                return mb_trim($tag->getContent());
             }
         }
 
         foreach ($controllerDocBlock->getTags() as $tag) {
-            if ('subgroupdescription' === strtolower($tag->getName())) {
-                return trim($tag->getContent());
+            if (mb_strtolower($tag->getName()) === 'subgroupdescription') {
+                return mb_trim($tag->getContent());
             }
         }
 

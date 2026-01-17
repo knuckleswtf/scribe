@@ -12,8 +12,8 @@ class GetFromHeaderTag extends TagStrategyWithFormRequestFallback
     use ParamHelpers;
 
     /**
-     * @param Tag[] $tagsOnMethod
-     * @param Tag[] $tagsOnClass
+     * @param  Tag[]  $tagsOnMethod
+     * @param  Tag[]  $tagsOnClass
      */
     public function getFromTags(array $tagsOnMethod, array $tagsOnClass = []): array
     {
@@ -26,7 +26,7 @@ class GetFromHeaderTag extends TagStrategyWithFormRequestFallback
             preg_match('/([\S]+)(.*)?/', $tag->getContent(), $content);
 
             [$_, $name, $example] = $content;
-            $example = trim($example);
+            $example = mb_trim($example);
             if (empty($example)) {
                 $example = $this->generateDummyValue('string');
             }

@@ -23,7 +23,7 @@ class UseResponseFileTag extends Strategy
     }
 
     /**
-     * @param Tag[] $tags
+     * @param  Tag[]  $tags
      */
     public function getFileResponses(array $tags): ?array
     {

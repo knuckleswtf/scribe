@@ -38,8 +38,7 @@ class UseApiResourceTags extends Strategy
     /**
      * Get a response from the @apiResource/@apiResourceCollection, @apiResourceModel and @apiResourceAdditional tags.
      *
-     * @param Tag[] $allTags
-     *
+     * @param  Tag[]  $allTags
      * @return null|array[]
      *
      * @throws \Exception
@@ -50,7 +49,7 @@ class UseApiResourceTags extends Strategy
         [$modelClass, $factoryStates, $relations, $pagination] = $this->getClassToBeTransformedAndAttributes($allTags, $apiResourceClass, $extra);
         $additionalData = $this->getAdditionalData($allTags);
 
-        $modelInstantiator = fn() => $this->instantiateExampleModel($modelClass, $factoryStates, $relations);
+        $modelInstantiator = fn () => $this->instantiateExampleModel($modelClass, $factoryStates, $relations);
 
         $this->startDbTransaction();
         $content = ApiResourceResponseTools::fetch(
@@ -140,7 +139,7 @@ class UseApiResourceTags extends Strategy
         $apiResourceClass = $content;
         $description = $fields['scenario'] ?: '';
 
-        $isCollection = 'apiresourcecollection' == strtolower($tag->getName());
+        $isCollection = mb_strtolower($tag->getName()) === 'apiresourcecollection';
 
         return [
             (int) $status,
@@ -154,7 +153,7 @@ class UseApiResourceTags extends Strategy
     /**
      * Returns data for simulating JsonResource ->additional() function.
      *
-     * @param Tag[] $tags
+     * @param  Tag[]  $tags
      */
     private function getAdditionalData(array $tags): array
     {

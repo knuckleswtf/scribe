@@ -20,7 +20,7 @@ class GetFromQueryParamTagTest extends TestCase
     use ArraySubsetAsserts;
 
     /** @test */
-    public function canFetchFromQueryparamTag()
+    public function can_fetch_from_queryparam_tag()
     {
         $strategy = new GetFromQueryParamTag(new DocumentationConfig([]));
         $tags = [
@@ -149,7 +149,7 @@ class GetFromQueryParamTagTest extends TestCase
     }
 
     /** @test */
-    public function canFetchFromFormRequestMethodArgument()
+    public function can_fetch_from_form_request_method_argument()
     {
         $methodName = 'withFormRequestParameter';
         $method = new \ReflectionMethod(TestController::class, $methodName);

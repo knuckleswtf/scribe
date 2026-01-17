@@ -27,7 +27,7 @@ class ResponseFromApiResource
 
     public function modelToBeTransformed(): ?string
     {
-        if (!empty($this->model)) {
+        if (! empty($this->model)) {
             return $this->model;
         }
 
@@ -36,7 +36,7 @@ class ResponseFromApiResource
 
     public function isCollection(): bool
     {
-        if (!is_null($this->collection)) {
+        if (! is_null($this->collection)) {
             return $this->collection;
         }
 

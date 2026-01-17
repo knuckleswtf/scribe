@@ -17,7 +17,7 @@ class AnnotationParserTest extends BaseUnitTest
      *
      * @dataProvider annotationsWithContentAndFields
      */
-    public function canParseAnnotationIntoContentAndFields(string $annotation, array $expected)
+    public function can_parse_annotation_into_content_and_fields(string $annotation, array $expected)
     {
         $result = AnnotationParser::parseIntoContentAndFields($annotation, ['status', 'scenario']);
 
@@ -63,7 +63,7 @@ class AnnotationParserTest extends BaseUnitTest
      *
      * @dataProvider annotationsWithFields
      */
-    public function canParseAnnotationIntoFields(string $annotation, array $expected)
+    public function can_parse_annotation_into_fields(string $annotation, array $expected)
     {
         $result = AnnotationParser::parseIntoFields($annotation);
 

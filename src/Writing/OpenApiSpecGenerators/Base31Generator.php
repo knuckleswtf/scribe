@@ -14,7 +14,7 @@ class Base31Generator extends BaseGenerator
      */
     protected function applyNullable(array &$schema, bool $nullable): void
     {
-        if (!$nullable) {
+        if (! $nullable) {
             return;
         }
 
@@ -22,7 +22,7 @@ class Base31Generator extends BaseGenerator
         if (isset($schema['type'])) {
             $currentType = $schema['type'];
             // Don't modify if already an array
-            if (!is_array($currentType)) {
+            if (! is_array($currentType)) {
                 $schema['type'] = [$currentType, 'null'];
             }
         }

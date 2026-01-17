@@ -17,7 +17,7 @@ class RequestValidate
 {
     public static function find(Node $node)
     {
-        if (!$node instanceof Node\Stmt\Expression) {
+        if (! $node instanceof Node\Stmt\Expression) {
             return;
         }
 
@@ -31,11 +31,11 @@ class RequestValidate
             && $expr->var instanceof Node\Expr\Variable
             && in_array($expr->var->name, ['request', 'req'])
         ) {
-            if ('validate' == $expr->name->name) {
+            if ($expr->name->name === 'validate') {
                 return $expr->args[0]->value;
             }
 
-            if ('validateWithBag' == $expr->name->name) {
+            if ($expr->name->name === 'validateWithBag') {
                 return $expr->args[1]->value;
             }
         }

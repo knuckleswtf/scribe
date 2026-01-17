@@ -30,12 +30,12 @@ class MatchedRoute implements \ArrayAccess
 
     public function offsetExists($offset): bool
     {
-        return is_callable([$this, 'get' . ucfirst($offset)]);
+        return is_callable([$this, 'get'.ucfirst($offset)]);
     }
 
     public function offsetGet($offset): mixed
     {
-        return call_user_func([$this, 'get' . ucfirst($offset)]);
+        return call_user_func([$this, 'get'.ucfirst($offset)]);
     }
 
     public function offsetSet($offset, $value): void

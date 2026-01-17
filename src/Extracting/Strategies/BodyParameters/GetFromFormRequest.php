@@ -13,7 +13,7 @@ class GetFromFormRequest extends GetFromFormRequestBase
         // Only use this FormRequest for body params if there's no "Query parameters" in the docblock
         // Or there's a bodyParameters() method
         $formRequestDocBlock = $formRequestReflectionClass->getDocComment();
-        if (false !== strpos(strtolower($formRequestDocBlock), 'query parameters')
+        if (mb_strpos(mb_strtolower($formRequestDocBlock), 'query parameters') !== false
             || $formRequestReflectionClass->hasMethod('queryParameters')) {
             return false;
         }

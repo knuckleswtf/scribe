@@ -38,8 +38,7 @@ class TestResourceController extends Controller
      *   "show_resource": true
      * }
      *
-     * @param int $id
-     *
+     * @param  int  $id
      * @return Response
      */
     public function show($id)
@@ -52,8 +51,7 @@ class TestResourceController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param int $id
-     *
+     * @param  int  $id
      * @return Response
      */
     public function update(Request $request, $id) {}
@@ -61,8 +59,7 @@ class TestResourceController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
-     *
+     * @param  int  $id
      * @return Response
      */
     public function destroy($id) {}

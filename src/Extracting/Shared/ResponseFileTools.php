@@ -22,9 +22,9 @@ class ResponseFileTools
 
     protected static function getFileContents($filePath): string
     {
-        if (!file_exists($filePath)) {
+        if (! file_exists($filePath)) {
             // Try Laravel storage folder
-            if (!file_exists(storage_path($filePath))) {
+            if (! file_exists(storage_path($filePath))) {
                 throw new \InvalidArgumentException("@responseFile {$filePath} does not exist");
             }
 

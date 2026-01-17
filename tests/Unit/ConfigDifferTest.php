@@ -13,7 +13,7 @@ use Knuckles\Scribe\Tools\ConfigDiffer;
 class ConfigDifferTest extends BaseUnitTest
 {
     /** @test */
-    public function returnsEmptyWhenThereAreNoChanges()
+    public function returns_empty_when_there_are_no_changes()
     {
         $default = [
             'title' => null,
@@ -48,7 +48,7 @@ class ConfigDifferTest extends BaseUnitTest
     }
 
     /** @test */
-    public function ignoresSpecifiedPaths()
+    public function ignores_specified_paths()
     {
         $default = [
             'theme' => 'default',

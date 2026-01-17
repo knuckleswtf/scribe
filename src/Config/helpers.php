@@ -31,16 +31,16 @@ function removeStrategies(array $strategiesList, array $strategyNamesToRemove): 
  * This method generates a tuple containing [strategyName, settingsArray],
  * and adds or replaces the strategy entry in the list.
  *
- * @param array $configurationTuple Tuple of [strategyName, settingsArray].
- *                                  By default, all strategies support the "only" and "except" setting to apply them to specific endpoints.
- *                                  You can easily create the tuple by calling Strategy::wrapWithSettings(only: [], except: []).
+ * @param  array  $configurationTuple  Tuple of [strategyName, settingsArray].
+ *                                     By default, all strategies support the "only" and "except" setting to apply them to specific endpoints.
+ *                                     You can easily create the tuple by calling Strategy::wrapWithSettings(only: [], except: []).
  */
 function configureStrategy(array $strategiesList, array $configurationTuple): array
 {
     $strategyFound = false;
     $strategiesList = array_map(function ($strategy) use ($configurationTuple, &$strategyFound) {
         $strategyName = is_string($strategy) ? $strategy : $strategy[0];
-        if ($strategyName == $configurationTuple[0]) {
+        if ($strategyName === $configurationTuple[0]) {
             $strategyFound = true;
 
             return $configurationTuple;
@@ -50,7 +50,7 @@ function configureStrategy(array $strategiesList, array $configurationTuple): ar
     }, $strategiesList);
 
     // If strategy wasn't in there, add it.
-    if (!$strategyFound) {
+    if (! $strategyFound) {
         $strategiesList = array_merge($strategiesList, [$configurationTuple]);
     }
 

@@ -32,14 +32,14 @@ class UseTransformerTags extends Strategy
     /**
      * Get a response from the @transformer/@transformerCollection and @transformerModel tags.
      *
-     * @param Tag[] $allTags
+     * @param  Tag[]  $allTags
      */
     public function getTransformerResponseFromTag(Tag $transformerTag, array $allTags): ?array
     {
         [$statusCode, $transformerClass, $isCollection] = $this->getStatusCodeAndTransformerClass($transformerTag);
         [$model, $factoryStates, $relations, $resourceKey] = $this->getClassToBeTransformed($allTags);
 
-        $modelInstantiator = fn() => $this->instantiateExampleModel($model, $factoryStates, $relations, (new \ReflectionClass($transformerClass))->getMethod('transform'));
+        $modelInstantiator = fn () => $this->instantiateExampleModel($model, $factoryStates, $relations, (new \ReflectionClass($transformerClass))->getMethod('transform'));
         $pagination = $this->getTransformerPaginatorData($allTags);
         $serializer = $this->config->get('fractal.serializer');
 
@@ -76,7 +76,7 @@ class UseTransformerTags extends Strategy
         preg_match('/^(\d{3})?\s?([\s\S]*)$/', $tag->getContent(), $result);
         $status = (int) ($result[1] ?: 200);
         $transformerClass = $result[2];
-        $isCollection = 'transformercollection' == strtolower($tag->getName());
+        $isCollection = mb_strtolower($tag->getName()) === 'transformercollection';
 
         return [$status, $transformerClass, $isCollection];
     }
@@ -111,7 +111,7 @@ class UseTransformerTags extends Strategy
      * Gets pagination data from the `@transformerPaginator` tag, like this:
      * `@transformerPaginator League\Fractal\Pagination\IlluminatePaginatorAdapter 15`
      *
-     * @param Tag[] $tags
+     * @param  Tag[]  $tags
      */
     private function getTransformerPaginatorData(array $tags): array
     {
@@ -124,7 +124,7 @@ class UseTransformerTags extends Strategy
         $paginatorAdapter = $result[1];
         $perPage = $result[2] ?? null;
         if ($perPage) {
-            $perPage = trim($perPage);
+            $perPage = mb_trim($perPage);
         }
 
         return ['adapter' => $paginatorAdapter, 'perPage' => $perPage ?: null];

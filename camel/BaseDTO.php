@@ -4,7 +4,7 @@ namespace Knuckles\Camel;
 
 use Illuminate\Contracts\Support\Arrayable;
 
-class BaseDTO implements Arrayable, \ArrayAccess
+class BaseDTO implements \ArrayAccess, Arrayable
 {
     /**
      * @var array
@@ -24,7 +24,7 @@ class BaseDTO implements Arrayable, \ArrayAccess
         }
     }
 
-    public static function create(array|BaseDTO $data, array|BaseDTO $inheritFrom = []): static
+    public static function create(array|self $data, array|self $inheritFrom = []): static
     {
         if ($data instanceof static) {
             return $data;
@@ -78,7 +78,7 @@ class BaseDTO implements Arrayable, \ArrayAccess
     {
         $array = [];
         foreach (get_object_vars($this) as $property => $value) {
-            if (!in_array($property, $keys)) {
+            if (! in_array($property, $keys)) {
                 $array[$property] = $value;
             }
         }
@@ -115,20 +115,20 @@ class BaseDTO implements Arrayable, \ArrayAccess
     protected function castProperty(string $key, mixed $value): mixed
     {
         // If the value is already the correct type, return it as-is
-        if (!is_array($value)) {
+        if (! is_array($value)) {
             return $value;
         }
 
         // Get property type through reflection
         $reflection = new \ReflectionClass($this);
-        if (!$reflection->hasProperty($key)) {
+        if (! $reflection->hasProperty($key)) {
             return $value;
         }
 
         $property = $reflection->getProperty($key);
         $type = $property->getType();
 
-        if ($type && $type instanceof \ReflectionNamedType && !$type->isBuiltin()) {
+        if ($type && $type instanceof \ReflectionNamedType && ! $type->isBuiltin()) {
             $className = $type->getName();
 
             // If it's a DTO class in our namespace, instantiate it
@@ -160,7 +160,7 @@ class BaseDTO implements Arrayable, \ArrayAccess
                 continue;
             }
 
-            if (!is_array($value)) {
+            if (! is_array($value)) {
                 continue;
             }
 

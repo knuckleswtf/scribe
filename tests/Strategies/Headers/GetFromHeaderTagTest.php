@@ -18,7 +18,7 @@ class GetFromHeaderTagTest extends TestCase
     use ArraySubsetAsserts;
 
     /** @test */
-    public function canFetchFromHeaderTag()
+    public function can_fetch_from_header_tag()
     {
         $strategy = new GetFromHeaderTag(new DocumentationConfig([]));
         $tags = [

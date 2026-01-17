@@ -24,8 +24,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  */
 class ResponseCalls extends Strategy
 {
-    use ParamHelpers;
     use DatabaseTransactionHelpers;
+    use ParamHelpers;
 
     protected array $previousConfigs = [];
 
@@ -112,7 +112,7 @@ class ResponseCalls extends Strategy
                 ],
             ];
         } catch (\Exception $e) {
-            c::warn('Exception thrown during response call for' . $endpointData->name());
+            c::warn('Exception thrown during response call for'.$endpointData->name());
             e::dumpExceptionIfVerbose($e);
 
             $response = null;
@@ -129,15 +129,15 @@ class ResponseCalls extends Strategy
     }
 
     /**
-     * @param array $only        The routes which this strategy should be applied to. Can not be specified with $except.
-     *                           Specify route names ("users.index", "users.*"), or method and path ("GET *", "POST /safe/*").
-     * @param array $except      The routes which this strategy should be applied to. Can not be specified with $only.
-     *                           Specify route names ("users.index", "users.*"), or method and path ("GET *", "POST /safe/*").
-     * @param array $config      any extra Laravel config() values to before starting the response call
-     * @param array $queryParams Query params to always send with the response call. Key-value array.
-     * @param array $bodyParams  Body params to always send with the response call. Key-value array.
-     * @param array $fileParams  File params to always send with the response call. Key-value array. Key is param name, value is file path.
-     * @param array $cookies     Cookies to always send with the response call. Key-value array.
+     * @param  array  $only  The routes which this strategy should be applied to. Can not be specified with $except.
+     *                       Specify route names ("users.index", "users.*"), or method and path ("GET *", "POST /safe/*").
+     * @param  array  $except  The routes which this strategy should be applied to. Can not be specified with $only.
+     *                         Specify route names ("users.index", "users.*"), or method and path ("GET *", "POST /safe/*").
+     * @param  array  $config  any extra Laravel config() values to before starting the response call
+     * @param  array  $queryParams  Query params to always send with the response call. Key-value array.
+     * @param  array  $bodyParams  Body params to always send with the response call. Key-value array.
+     * @param  array  $fileParams  File params to always send with the response call. Key-value array. Key is param name, value is file path.
+     * @param  array  $cookies  Cookies to always send with the response call. Key-value array.
      */
     public static function withSettings(
         array $only = [],
@@ -171,7 +171,7 @@ class ResponseCalls extends Strategy
         array $bodyParams,
         array $queryParams,
         array $fileParameters,
-        array $headers
+        array $headers,
     ): Request {
         $uri = Utils::getUrlWithBoundParameters($url, $urlParams);
         $routeMethods = $this->getMethods($route);
@@ -247,9 +247,9 @@ class ResponseCalls extends Strategy
         $server = [];
         $prefix = 'HTTP_';
         foreach ($headers as $name => $value) {
-            $name = strtr(strtoupper($name), '-', '_');
-            if (!Str::startsWith($name, $prefix) && 'CONTENT_TYPE' !== $name) {
-                $name = $prefix . $name;
+            $name = strtr(mb_strtoupper($name), '-', '_');
+            if (! Str::startsWith($name, $prefix) && $name !== 'CONTENT_TYPE') {
+                $name = $prefix.$name;
             }
             $server[$name] = $value;
         }
@@ -271,7 +271,7 @@ class ResponseCalls extends Strategy
 
     protected function getContentFromResponse(Response $response): false|string
     {
-        if (!$response instanceof StreamedResponse) {
+        if (! $response instanceof StreamedResponse) {
             return $response->getContent();
         }
 

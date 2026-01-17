@@ -4,7 +4,7 @@ namespace Knuckles\Scribe\Attributes;
 
 use Attribute;
 
-#[\Attribute(\Attribute::TARGET_FUNCTION | \Attribute::TARGET_METHOD | \Attribute::TARGET_CLASS)]
+#[Attribute(Attribute::TARGET_FUNCTION | Attribute::TARGET_METHOD | Attribute::TARGET_CLASS)]
 class Endpoint
 {
     public function __construct(
@@ -20,7 +20,7 @@ class Endpoint
             'title' => $this->title,
             'description' => $this->description,
         ];
-        if (!is_null($this->authenticated)) {
+        if (! is_null($this->authenticated)) {
             $data['authenticated'] = $this->authenticated;
         }
 

@@ -43,7 +43,7 @@ class GenerateDocumentation extends Command
     {
         $this->bootstrap();
 
-        if (!empty($this->docConfig->get('default_group'))) {
+        if (! empty($this->docConfig->get('default_group'))) {
             $this->warn('It looks like you just upgraded to Scribe v4.');
             $this->warn('Please run the upgrade command first: `php artisan scribe:upgrade`.');
 
@@ -60,7 +60,7 @@ class GenerateDocumentation extends Command
         $configFileOrder = $this->docConfig->get('groups.order', []);
         $groupedEndpoints = Camel::prepareGroupedEndpointsForOutput($groupedEndpoints, $configFileOrder);
 
-        if (!count($userDefinedEndpoints)) {
+        if (! count($userDefinedEndpoints)) {
             // Update the example custom file if there were no custom endpoints
             $this->writeExampleCustomEndpoint();
         }
@@ -109,12 +109,12 @@ class GenerateDocumentation extends Command
         c::setCommand($this);
 
         $configName = $this->option('config');
-        if (!config($configName)) {
+        if (! config($configName)) {
             throw new \InvalidArgumentException("The specified config (config/{$configName}.php) doesn't exist.");
         }
 
         $this->paths = new PathConfig($configName);
-        if ($this->hasOption('scribe-dir') && !empty($this->option('scribe-dir'))) {
+        if ($this->hasOption('scribe-dir') && ! empty($this->option('scribe-dir'))) {
             $this->paths = new PathConfig(
                 $configName,
                 scribeDir: $this->option('scribe-dir')
@@ -134,9 +134,9 @@ class GenerateDocumentation extends Command
         }
 
         $this->forcing = $this->option('force');
-        $this->shouldExtract = !$this->option('no-extraction');
+        $this->shouldExtract = ! $this->option('no-extraction');
 
-        if ($this->forcing && !$this->shouldExtract) {
+        if ($this->forcing && ! $this->shouldExtract) {
             throw new \InvalidArgumentException("Can't use --force and --no-extraction together.");
         }
 
@@ -159,7 +159,7 @@ class GenerateDocumentation extends Command
                 return $group['name'] === ($endpoint['metadata']['groupName'] ?? $this->docConfig->get('groups.default', ''));
             });
 
-            if (null !== $indexOfGroupWhereThisEndpointShouldBeAdded) {
+            if ($indexOfGroupWhereThisEndpointShouldBeAdded !== null) {
                 $groupedEndpoints[$indexOfGroupWhereThisEndpointShouldBeAdded]['endpoints'][] = $endpoint;
             } else {
                 $newGroup = [
@@ -178,7 +178,7 @@ class GenerateDocumentation extends Command
     protected function writeExampleCustomEndpoint(): void
     {
         // We add an example to guide users in case they need to add a custom endpoint.
-        copy(__DIR__ . '/../../resources/example_custom_endpoint.yaml', Camel::camelDir($this->paths) . '/custom.0.yaml');
+        copy(__DIR__.'/../../resources/example_custom_endpoint.yaml', Camel::camelDir($this->paths).'/custom.0.yaml');
     }
 
     protected function upgradeConfigFileIfNeeded(): void
@@ -190,7 +190,7 @@ class GenerateDocumentation extends Command
         $this->info('Checking for any pending upgrades to your config file...');
 
         try {
-            $defaultConfig = require __DIR__ . '/../../config/scribe.php';
+            $defaultConfig = require __DIR__.'/../../config/scribe.php';
             $ignore = ['example_languages', 'routes', 'description', 'auth.extra_info', 'intro_text', 'groups', 'database_connections_to_transact'];
             $asList = ['strategies.*', 'examples.models_source'];
             $differ = new ConfigDiffer(original: $this->docConfig->data, changed: $defaultConfig, ignorePaths: $ignore, asList: $asList);
@@ -203,7 +203,7 @@ class GenerateDocumentation extends Command
                     $realDiff[$key] = $value;
                 }
             }
-            if (!empty($realDiff)) {
+            if (! empty($realDiff)) {
                 $this->newLine();
 
                 $this->warn("You're using an updated version of Scribe, which may have added new items to the config file.");
@@ -212,7 +212,7 @@ class GenerateDocumentation extends Command
                     $this->line("{$key} --now defaults to-> {$item}");
                 }
 
-                if (!$this->input->isInteractive()) {
+                if (! $this->input->isInteractive()) {
                     $this->info(sprintf('To upgrade, see the full changelog at: https://github.com/knuckleswtf/scribe/blob/%s/CHANGELOG.md,', Scribe::VERSION));
                     $this->info('And config reference at https://scribe.knuckles.wtf/laravel/reference/config');
 

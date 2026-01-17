@@ -208,13 +208,13 @@ class TestController extends Controller
      */
     public function withEmptyApiResource()
     {
-        return new TestEmptyApiResource();
+        return new TestEmptyApiResource;
     }
 
     #[ResponseFromApiResource(TestNestedOuterResource::class)]
     public function withNestedApiResourceResponse()
     {
-        return new TestNestedOuterResource();
+        return new TestNestedOuterResource;
     }
 
     /**
@@ -222,7 +222,7 @@ class TestController extends Controller
      */
     public function withNestedApiResourceResponseWithTags()
     {
-        return new TestNestedOuterResourceWithTags();
+        return new TestNestedOuterResourceWithTags;
     }
 
     /**
@@ -260,7 +260,7 @@ class TestController extends Controller
 
     public function shouldFetchRouteResponse()
     {
-        $fruit = new \stdClass();
+        $fruit = new \stdClass;
         $fruit->id = 4;
         $fruit->name = ' banana  ';
         $fruit->color = 'RED';
@@ -269,9 +269,9 @@ class TestController extends Controller
 
         return [
             'id' => (int) $fruit->id,
-            'name' => trim($fruit->name),
-            'color' => strtolower($fruit->color),
-            'weight' => $fruit->weight . ' kg',
+            'name' => mb_trim($fruit->name),
+            'color' => mb_strtolower($fruit->color),
+            'weight' => $fruit->weight.' kg',
             'delicious' => $fruit->delicious,
             'responseCall' => true,
         ];
@@ -308,10 +308,10 @@ class TestController extends Controller
      *
      * @queryParam something
      *
-     * @param mixed      $param
-     * @param mixed      $param2
-     * @param null|mixed $param3
-     * @param null|mixed $param4
+     * @param  mixed  $param
+     * @param  mixed  $param2
+     * @param  null|mixed  $param3
+     * @param  null|mixed  $param4
      */
     public function echoesUrlParameters($param, $param2, $param3 = null, $param4 = null)
     {
@@ -323,7 +323,7 @@ class TestController extends Controller
      *
      * @urlparam id Example: 3
      *
-     * @param mixed $id
+     * @param  mixed  $id
      */
     public function echoesRequestValues($id)
     {

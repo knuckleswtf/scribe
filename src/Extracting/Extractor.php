@@ -22,6 +22,7 @@ use Knuckles\Scribe\Tools\RoutePatternMatcher;
 class Extractor
 {
     use ParamHelpers;
+
     private DocumentationConfig $config;
 
     private static ?Route $routeBeingProcessed = null;
@@ -41,7 +42,7 @@ class Extractor
     }
 
     /**
-     * @param array $routeRules Rules to apply when generating documentation for this route. Deprecated. Use strategy config instead.
+     * @param  array  $routeRules  Rules to apply when generating documentation for this route. Deprecated. Use strategy config instead.
      */
     public function processRoute(Route $route, array $routeRules = []): ExtractedEndpointData
     {
@@ -75,7 +76,7 @@ class Extractor
         $endpointData->cleanBodyParameters = self::cleanParams($endpointData->bodyParameters);
         $this->mergeInheritedMethodsData('bodyParameters', $endpointData, $inheritedDocsOverrides);
 
-        if (count($endpointData->cleanBodyParameters) && !isset($endpointData->headers['Content-Type'])) {
+        if (count($endpointData->cleanBodyParameters) && ! isset($endpointData->headers['Content-Type'])) {
             // Set content type if the user forgot to set it
             $endpointData->headers['Content-Type'] = 'application/json';
         }
@@ -102,10 +103,10 @@ class Extractor
 
     public function shouldSkipRoute($route, array $routesToExclude, array $routesToInclude): bool
     {
-        if (!empty($routesToExclude) && RoutePatternMatcher::matches($route, $routesToExclude)) {
+        if (! empty($routesToExclude) && RoutePatternMatcher::matches($route, $routesToExclude)) {
             return true;
         }
-        if (!empty($routesToInclude) && !RoutePatternMatcher::matches($route, $routesToInclude)) {
+        if (! empty($routesToInclude) && ! RoutePatternMatcher::matches($route, $routesToInclude)) {
             return true;
         }
 
@@ -124,29 +125,29 @@ class Extractor
      * It also filters out parameters which have null values and have 'required' as false.
      * It converts all file params that have string examples to actual files (instances of UploadedFile).
      *
-     * @param array<string,Parameter> $parameters
+     * @param  array<string,Parameter>  $parameters
      */
     public static function cleanParams(array $parameters): array
     {
         $cleanParameters = [];
 
         /**
-         * @var string    $paramName
+         * @var string $paramName
          * @var Parameter $details
          */
         foreach ($parameters as $paramName => $details) {
             // Remove params which have no intentional examples and are optional.
-            if (!$details->exampleWasSpecified) {
-                if (is_null($details->example) && false === $details->required) {
+            if (! $details->exampleWasSpecified) {
+                if (is_null($details->example) && $details->required === false) {
                     continue;
                 }
             }
 
-            if ('file' === $details->type) {
+            if ($details->type === 'file') {
                 if (is_string($details->example)) {
                     $details->example = self::convertStringValueToUploadedFileInstance($details->example);
                 } elseif (is_null($details->example)) {
-                    $details->example = (new self())->generateDummyValue($details->type);
+                    $details->example = (new self)->generateDummyValue($details->type);
                 }
             }
 
@@ -184,14 +185,14 @@ class Extractor
 
         array_pop($parts); // Get rid of the field name
 
-        $baseName = join('.', $parts);
+        $baseName = implode('.', $parts);
         // For array fields, the type should be indicated in the source object by now;
         // eg test.items[] would actually be described as name: test.items, type: object[]
         // So we get rid of that ending []
         // For other fields (eg test.items[].name), it remains as-is
         $baseNameInOriginalParams = $baseName;
         while (Str::endsWith($baseNameInOriginalParams, '[]')) {
-            $baseNameInOriginalParams = substr($baseNameInOriginalParams, 0, -2);
+            $baseNameInOriginalParams = mb_substr($baseNameInOriginalParams, 0, -2);
         }
         // When the body is an array, param names will be  "[].paramname",
         // so $baseNameInOriginalParams here will be empty
@@ -207,7 +208,7 @@ class Extractor
 
             // Don't overwrite parent if there's already data there
 
-            if ('object' === $parentData->type) {
+            if ($parentData->type === 'object') {
                 $parentPath = explode('.', $dotPath);
                 $property = array_pop($parentPath);
                 $parentPath = implode('.', $parentPath);
@@ -216,11 +217,11 @@ class Extractor
                 if (empty($exampleFromParent)) {
                     Arr::set($results, $dotPath, $value);
                 }
-            } elseif ('object[]' === $parentData->type) {
+            } elseif ($parentData->type === 'object[]') {
                 // When the body is an array, param names will be  "[].paramname", so dot paths won't work correctly with "[]"
                 if (Str::startsWith($path, '[].')) {
-                    $valueDotPath = substr($dotPath, 3); // Remove initial '.0.'
-                    if (isset($results['[]'][0]) && !Arr::has($results['[]'][0], $valueDotPath)) {
+                    $valueDotPath = mb_substr($dotPath, 3); // Remove initial '.0.'
+                    if (isset($results['[]'][0]) && ! Arr::has($results['[]'][0], $valueDotPath)) {
                         Arr::set($results['[]'][0], $valueDotPath, $value);
                     }
                 } else {
@@ -240,7 +241,7 @@ class Extractor
     public function addAuthField(ExtractedEndpointData $endpointData): void
     {
         $isApiAuthed = $this->config->get('auth.enabled', false);
-        if (!$isApiAuthed || !$endpointData->metadata->authenticated) {
+        if (! $isApiAuthed || ! $endpointData->metadata->authenticated) {
             return;
         }
 
@@ -282,14 +283,14 @@ class Extractor
                 return;
 
             case 'bearer':
-                $endpointData->auth = ['headers', 'Authorization', 'Bearer ' . ($valueToUse ?: $token)];
-                $endpointData->headers['Authorization'] = 'Bearer ' . ($valueToDisplay ?: $token);
+                $endpointData->auth = ['headers', 'Authorization', 'Bearer '.($valueToUse ?: $token)];
+                $endpointData->headers['Authorization'] = 'Bearer '.($valueToDisplay ?: $token);
 
                 return;
 
             case 'basic':
-                $endpointData->auth = ['headers', 'Authorization', 'Basic ' . ($valueToUse ?: base64_encode($token))];
-                $endpointData->headers['Authorization'] = 'Basic ' . ($valueToDisplay ?: base64_encode($token));
+                $endpointData->auth = ['headers', 'Authorization', 'Basic '.($valueToUse ?: base64_encode($token))];
+                $endpointData->headers['Authorization'] = 'Basic '.($valueToDisplay ?: base64_encode($token));
 
                 return;
 
@@ -303,7 +304,7 @@ class Extractor
 
     public static function transformOldRouteRulesIntoNewSettings($stage, $rulesToApply, $strategyName, $strategySettings = [])
     {
-        if ('responses' == $stage && Str::is('*ResponseCalls*', $strategyName) && !empty($rulesToApply['response_calls'])) {
+        if ($stage === 'responses' && Str::is('*ResponseCalls*', $strategyName) && ! empty($rulesToApply['response_calls'])) {
             // Transform `methods` to `only`
             $strategySettings = [];
 
@@ -313,7 +314,7 @@ class Extractor
                     $strategySettings['except'] = ['*'];
                 } else {
                     $strategySettings['only'] = array_map(
-                        fn($method) => "{$method} *",
+                        fn ($method) => "{$method} *",
                         $rulesToApply['response_calls']['methods']
                     );
                 }
@@ -321,7 +322,7 @@ class Extractor
 
             // Copy all other keys over as is
             foreach (array_keys($rulesToApply['response_calls']) as $key) {
-                if ('methods' == $key) {
+                if ($key === 'methods') {
                     continue;
                 }
                 $strategySettings[$key] = $rulesToApply['response_calls'][$key];
@@ -340,8 +341,8 @@ class Extractor
 
         $this->iterateThroughStrategies('metadata', $endpointData, $rulesToApply, function ($results) use ($endpointData) {
             foreach ($results as $key => $item) {
-                $hadPreviousValue = !is_null($endpointData->metadata->{$key});
-                $noNewValueSet = is_null($item) || '' === $item;
+                $hadPreviousValue = ! is_null($endpointData->metadata->{$key});
+                $noNewValueSet = is_null($item) || $item === '';
                 if ($hadPreviousValue && $noNewValueSet) {
                     continue;
                 }
@@ -421,25 +422,25 @@ class Extractor
      * A strategy may return an array of attributes
      * to be added to that stage data, or it may modify the stage data directly.
      *
-     * @param array    $rulesToApply Deprecated. Use strategy config instead.
-     * @param callable $handler      function to run after each strategy returns its results (an array)
+     * @param  array  $rulesToApply  Deprecated. Use strategy config instead.
+     * @param  callable  $handler  function to run after each strategy returns its results (an array)
      */
     protected function iterateThroughStrategies(
         string $stage,
         ExtractedEndpointData $endpointData,
         array $rulesToApply,
-        callable $handler
+        callable $handler,
     ): void {
         $strategies = $this->config->get("strategies.{$stage}", []);
 
         foreach ($strategies as $strategyClassOrTuple) {
             if (is_array($strategyClassOrTuple)) {
                 [$strategyClass, &$settings] = $strategyClassOrTuple;
-                if ('override' == $strategyClass) {
+                if ($strategyClass === 'override') {
                     c::warn("The 'override' strategy was renamed to 'static_data', and will stop working in the future. Please replace 'override' in your config file with 'static_data'.");
                     $strategyClass = 'static_data';
                 }
-                if ('static_data' == $strategyClass) {
+                if ($strategyClass === 'static_data') {
                     $strategyClass = StaticData::class;
                     // Static data can be short: ['static_data', ['key' => 'value']],
                     // or extended ['static_data', ['data' => ['key' => 'value'], 'only' => ['GET *'], 'except' => []]],
@@ -479,7 +480,7 @@ class Extractor
     protected function mergeInheritedMethodsData(string $stage, ExtractedEndpointData $endpointData, array $inheritedDocsOverrides = []): void
     {
         $overrides = $inheritedDocsOverrides[$stage] ?? [];
-        $normalizeParamData = fn($data, $key) => array_merge($data, ['name' => $key]);
+        $normalizeParamData = fn ($data, $key) => array_merge($data, ['name' => $key]);
         if (is_array($overrides)) {
             foreach ($overrides as $key => $item) {
                 switch ($stage) {
@@ -510,8 +511,8 @@ class Extractor
 
             $endpointData->{$stage} = match ($stage) {
                 'responses' => ResponseCollection::make($results),
-                'urlParameters', 'bodyParameters', 'queryParameters' => collect($results)->map(fn($param, $name) => Parameter::make($normalizeParamData($param, $name)))->all(),
-                'responseFields' => collect($results)->map(fn($field, $name) => ResponseField::make($normalizeParamData($field, $name)))->all(),
+                'urlParameters', 'bodyParameters', 'queryParameters' => collect($results)->map(fn ($param, $name) => Parameter::make($normalizeParamData($param, $name)))->all(),
+                'responseFields' => collect($results)->map(fn ($field, $name) => ResponseField::make($normalizeParamData($field, $name)))->all(),
                 default => $results,
             };
         }

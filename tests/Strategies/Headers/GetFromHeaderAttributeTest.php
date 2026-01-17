@@ -19,7 +19,7 @@ class GetFromHeaderAttributeTest extends TestCase
     use ArraySubsetAsserts;
 
     /** @test */
-    public function canFetchFromHeaderAttribute()
+    public function can_fetch_from_header_attribute()
     {
         $results = $this->getHeaderFromAttribute('methodWithAttributes');
 
@@ -31,7 +31,7 @@ class GetFromHeaderAttributeTest extends TestCase
     }
 
     /** @test */
-    public function canFetchChildOfHeaderAttribute()
+    public function can_fetch_child_of_header_attribute()
     {
         $results = $this->getHeaderFromAttribute('methodWithCustomHeaderAttribute');
 
@@ -44,7 +44,8 @@ class GetFromHeaderAttributeTest extends TestCase
 
     private function getHeaderFromAttribute(string $methodName): array
     {
-        $endpoint = new class extends ExtractedEndpointData {
+        $endpoint = new class extends ExtractedEndpointData
+        {
             public function __construct(array $parameters = []) {}
         };
         $endpoint->controller = new \ReflectionClass(HeaderAttributeTestController::class);

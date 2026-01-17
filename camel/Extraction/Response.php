@@ -41,7 +41,7 @@ class Response extends BaseDTO
             'x-powered-by',
             'X-Powered-By',
         ];
-        if (!empty($parameters['headers'])) {
+        if (! empty($parameters['headers'])) {
             foreach ($hiddenHeaders as $headerName) {
                 unset($parameters['headers'][$headerName]);
             }

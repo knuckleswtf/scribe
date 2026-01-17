@@ -35,8 +35,7 @@ class OpenAPISpecWriter
         ];
         $this->generators = collect($generators)
             ->merge($this->config->get('openapi.generators', []))
-            ->map(fn($generatorClass) => app()->makeWith($generatorClass, ['config' => $this->config]))
-        ;
+            ->map(fn ($generatorClass) => app()->makeWith($generatorClass, ['config' => $this->config]));
     }
 
     /**
@@ -53,7 +52,7 @@ class OpenAPISpecWriter
     /**
      * See https://swagger.io/specification/.
      *
-     * @param array<int, array{description: string, name: string, endpoints: OutputEndpointData[]}> $groupedEndpoints
+     * @param  array<int, array{description: string, name: string, endpoints: OutputEndpointData[]}>  $groupedEndpoints
      */
     public function generateSpecContent(array $groupedEndpoints): array
     {
@@ -68,7 +67,7 @@ class OpenAPISpecWriter
     }
 
     /**
-     * @param array<int, array{description: string, name: string, endpoints: OutputEndpointData[]}> $groupedEndpoints
+     * @param  array<int, array{description: string, name: string, endpoints: OutputEndpointData[]}>  $groupedEndpoints
      */
     protected function generatePathsSpec(array $groupedEndpoints): array
     {
@@ -77,7 +76,7 @@ class OpenAPISpecWriter
         $groupedByPath = $allEndpoints->groupBy(function ($endpoint) {
             $path = str_replace('?}', '}', $endpoint->uri); // Remove optional parameters indicator in path
 
-            return '/' . ltrim($path, '/');
+            return '/'.mb_ltrim($path, '/');
         });
 
         return $groupedByPath->mapWithKeys(function (Collection $endpoints, $path) use ($groupedEndpoints) {
@@ -88,7 +87,7 @@ class OpenAPISpecWriter
                     $spec = $generator->pathItem($spec, $groupedEndpoints, $endpoint);
                 }
 
-                return [strtolower($endpoint->httpMethods[0]) => $spec];
+                return [mb_strtolower($endpoint->httpMethods[0]) => $spec];
             });
 
             $pathItem = $operations;
@@ -102,7 +101,7 @@ class OpenAPISpecWriter
             foreach ($this->generators as $generator) {
                 $parameters = $generator->pathParameters($parameters, $endpoints->all(), $urlParameterEndpoint->urlParameters);
             }
-            if (!empty($parameters)) {
+            if (! empty($parameters)) {
                 $pathItem['parameters'] = array_values($parameters);
             }
 
@@ -112,7 +111,7 @@ class OpenAPISpecWriter
 
     protected function isOpenApi31OrLater(): bool
     {
-        $version = $this->config->get('openapi.version', OpenAPISpecWriter::SPEC_VERSION);
+        $version = $this->config->get('openapi.version', self::SPEC_VERSION);
 
         return version_compare($version, '3.1.0', '>=');
     }

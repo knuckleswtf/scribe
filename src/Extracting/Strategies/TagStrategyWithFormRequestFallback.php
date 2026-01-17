@@ -39,8 +39,8 @@ abstract class TagStrategyWithFormRequestFallback extends Strategy
     }
 
     /**
-     * @param Tag[] $tagsOnMethod
-     * @param Tag[] $tagsOnClass
+     * @param  Tag[]  $tagsOnMethod
+     * @param  Tag[]  $tagsOnClass
      */
     abstract public function getFromTags(array $tagsOnMethod, array $tagsOnClass = []): array;
 }

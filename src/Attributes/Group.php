@@ -4,7 +4,7 @@ namespace Knuckles\Scribe\Attributes;
 
 use Attribute;
 
-#[\Attribute(\Attribute::TARGET_FUNCTION | \Attribute::TARGET_METHOD | \Attribute::TARGET_CLASS)]
+#[Attribute(Attribute::TARGET_FUNCTION | Attribute::TARGET_METHOD | Attribute::TARGET_CLASS)]
 class Group
 {
     public function __construct(
@@ -21,7 +21,7 @@ class Group
             'groupDescription' => $this->description,
         ];
 
-        if (!is_null($this->authenticated)) {
+        if (! is_null($this->authenticated)) {
             $data['authenticated'] = $this->authenticated;
         }
 

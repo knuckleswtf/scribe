@@ -18,7 +18,7 @@ class GetFromDocBlocksTest extends TestCase
     use ArraySubsetAsserts;
 
     /** @test */
-    public function canFetchMetadataFromMethodDocblock()
+    public function can_fetch_metadata_from_method_docblock()
     {
         $strategy = new GetFromDocBlocks(new DocumentationConfig([]));
         $methodDocblock = <<<'DOCBLOCK'
@@ -38,7 +38,7 @@ class GetFromDocBlocksTest extends TestCase
     }
 
     /** @test */
-    public function canFetchMetadataFromMethodAndClass()
+    public function can_fetch_metadata_from_method_and_class()
     {
         $strategy = new GetFromDocBlocks(new DocumentationConfig([]));
         $methodDocblock = <<<'DOCBLOCK'
@@ -110,7 +110,7 @@ class GetFromDocBlocksTest extends TestCase
     }
 
     /** @test */
-    public function canOverrideGroupNameGroupDescriptionAndAuthStatusFromMethod()
+    public function can_override_group_name_group_description_and_auth_status_from_method()
     {
         $strategy = new GetFromDocBlocks(new DocumentationConfig([]));
         $methodDocblock = <<<'DOCBLOCK'

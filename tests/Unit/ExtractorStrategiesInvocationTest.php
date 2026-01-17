@@ -29,7 +29,7 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
     }
 
     /** @test */
-    public function onlySpecifiedStrategiesAreLoaded()
+    public function only_specified_strategies_are_loaded()
     {
         $config = [
             'strategies' => [
@@ -47,7 +47,7 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
     }
 
     /** @test */
-    public function supportsOverrideTuples()
+    public function supports_override_tuples()
     {
         $config = [
             'strategies' => [
@@ -71,7 +71,7 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
     }
 
     /** @test */
-    public function supportsStrategySettingsTuples()
+    public function supports_strategy_settings_tuples()
     {
         $config = [
             'strategies' => [
@@ -94,7 +94,7 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
     }
 
     /** @test */
-    public function respectsStrategySOnlySetting()
+    public function respects_strategy_s_only_setting()
     {
         $config = [
             'strategies' => [
@@ -113,7 +113,7 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
     }
 
     /** @test */
-    public function respectsStrategySExceptSetting()
+    public function respects_strategy_s_except_setting()
     {
         $config = [
             'strategies' => [
@@ -137,7 +137,7 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
     }
 
     /** @test */
-    public function responsesFromDifferentStrategiesGetAdded()
+    public function responses_from_different_strategies_get_added()
     {
         $config = [
             'strategies' => [
@@ -164,7 +164,7 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
      * @test
      * This is a generalized test, as opposed to the one above for responses only
      */
-    public function combinesResultsFromDifferentStrategiesInSameStage()
+    public function combines_results_from_different_strategies_in_same_stage()
     {
         $config = [
             'strategies' => [
@@ -184,7 +184,7 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
     }
 
     /** @test */
-    public function missingMetadataIsFilledIn()
+    public function missing_metadata_is_filled_in()
     {
         $config = [
             'strategies' => [
@@ -208,7 +208,7 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
      *
      * @dataProvider responsesToSort
      */
-    public function sortResponsesByStatusCode(array $responses)
+    public function sort_responses_by_status_code(array $responses)
     {
         $config = [
             'strategies' => [
@@ -235,7 +235,7 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
     }
 
     /** @test */
-    public function overwritesMetadataFromPreviousStrategiesInSameStage()
+    public function overwrites_metadata_from_previous_strategies_in_same_stage()
     {
         $config = [
             'strategies' => [
@@ -265,7 +265,7 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
         array $config,
         $routeMethod = 'GET',
         $routePath = '/api/test',
-        $routeName = 'dummy'
+        $routeName = 'dummy',
     ): ExtractedEndpointData {
         $route = $this->createRoute($routeMethod, $routePath, $routeName);
         $extractor = new Extractor(new DocumentationConfig($config));

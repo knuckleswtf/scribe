@@ -20,9 +20,9 @@ use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
  */
 class UseResponseAttributes extends PhpAttributeStrategy
 {
-    use ParamHelpers;
     use DatabaseTransactionHelpers;
     use InstantiatesExampleModels;
+    use ParamHelpers;
 
     protected static array $attributeNames = [
         Response::class,
@@ -35,7 +35,7 @@ class UseResponseAttributes extends PhpAttributeStrategy
         ExtractedEndpointData $endpointData,
         array $attributesOnMethod,
         array $attributesOnFormRequest = [],
-        array $attributesOnController = []
+        array $attributesOnController = [],
     ): ?array {
         $responses = [];
         foreach ([...$attributesOnController, ...$attributesOnFormRequest, ...$attributesOnMethod] as $attributeInstance) {
@@ -63,7 +63,7 @@ class UseResponseAttributes extends PhpAttributeStrategy
             );
             $modelInstantiator = null;
         } else {
-            $modelInstantiator = fn() => $this->instantiateExampleModel($modelToBeTransformed, $attributeInstance->factoryStates, $attributeInstance->with, null, $attributeInstance->withCount);
+            $modelInstantiator = fn () => $this->instantiateExampleModel($modelToBeTransformed, $attributeInstance->factoryStates, $attributeInstance->with, null, $attributeInstance->withCount);
         }
 
         $pagination = [];
@@ -95,7 +95,7 @@ class UseResponseAttributes extends PhpAttributeStrategy
 
     protected function getTransformerResponse(ResponseFromTransformer $attributeInstance)
     {
-        $modelInstantiator = fn() => $this->instantiateExampleModel(
+        $modelInstantiator = fn () => $this->instantiateExampleModel(
             $attributeInstance->model,
             $attributeInstance->factoryStates,
             $attributeInstance->with,

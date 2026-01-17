@@ -10,7 +10,7 @@ class TestNestedOuterResource extends JsonResource
     /**
      * Create a new resource instance.
      *
-     * @param mixed $resource
+     * @param  mixed  $resource
      */
     public function __construct($resource = [])
     {

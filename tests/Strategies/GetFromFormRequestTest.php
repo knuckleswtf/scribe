@@ -25,7 +25,7 @@ class GetFromFormRequestTest extends BaseLaravelTest
     use ArraySubsetAsserts;
 
     /** @test */
-    public function canFetchBodyparamsFromFormRequest()
+    public function can_fetch_bodyparams_from_form_request()
     {
         $method = new \ReflectionMethod(TestController::class, 'withFormRequestParameter');
         $results = $this->fetchViaBodyParams($method);
@@ -116,7 +116,7 @@ class GetFromFormRequestTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canFetchQueryparamsFromFormRequest()
+    public function can_fetch_queryparams_from_form_request()
     {
         $method = new \ReflectionMethod(TestController::class, 'withFormRequestParameterQueryParams');
         $results = $this->fetchViaQueryParams($method);
@@ -141,7 +141,7 @@ class GetFromFormRequestTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function willIgnoreNotRelevantFormRequest()
+    public function will_ignore_not_relevant_form_request()
     {
         $method = new \ReflectionMethod(TestController::class, 'withFormRequestParameter');
         $this->assertEquals([], $this->fetchViaQueryParams($method));
@@ -154,7 +154,7 @@ class GetFromFormRequestTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function setsExamplesFromParentIfSet()
+    public function sets_examples_from_parent_if_set()
     {
         $strategy = new BodyParameters\GetFromFormRequest(new DocumentationConfig([]));
         $dataExample = [
@@ -184,7 +184,7 @@ class GetFromFormRequestTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function generatesProperExamplesIfNotSet()
+    public function generates_proper_examples_if_not_set()
     {
         $strategy = new BodyParameters\GetFromFormRequest(new DocumentationConfig([]));
         $parametersFromFormRequest = $strategy->getParametersFromValidationRules(
@@ -207,7 +207,7 @@ class GetFromFormRequestTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function createsMissingParentFields()
+    public function creates_missing_parent_fields()
     {
         $strategy = new BodyParameters\GetFromFormRequest(new DocumentationConfig([]));
         $parametersFromFormRequest = $strategy->getParametersFromValidationRules(
@@ -231,7 +231,7 @@ class GetFromFormRequestTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function allowsCustomisationOfFormRequestInstantiation()
+    public function allows_customisation_of_form_request_instantiation()
     {
         $controllerMethod = new \ReflectionMethod(TestController::class, 'withFormRequestParameter');
 
@@ -239,7 +239,7 @@ class GetFromFormRequestTest extends BaseLaravelTest
             Assert::assertEquals(TestRequest::class, $className);
             Assert::assertEquals($controllerMethod, $method);
 
-            return new TestRequestQueryParams();
+            return new TestRequestQueryParams;
         };
 
         $this->fetchViaBodyParams($controllerMethod);
@@ -248,12 +248,12 @@ class GetFromFormRequestTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function customRuleExampleDoesntOverrideFormRequestExample()
+    public function custom_rule_example_doesnt_override_form_request_example()
     {
         $strategy = new BodyParameters\GetFromFormRequest(new DocumentationConfig([]));
         $parametersFromFormRequest = $strategy->getParametersFromValidationRules(
             [
-                'dummy' => ['required', new DummyValidationRule()],
+                'dummy' => ['required', new DummyValidationRule],
             ],
             [
                 'dummy' => [

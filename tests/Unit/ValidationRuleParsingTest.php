@@ -31,7 +31,8 @@ class ValidationRuleParsingTest extends BaseLaravelTest
     {
         parent::setUp();
 
-        $this->strategy = new class {
+        $this->strategy = new class
+        {
             use ParsesValidationRules;
 
             public function parse($validationRules, $customParameterData = []): array
@@ -49,7 +50,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
      *
      * @dataProvider supportedRules
      */
-    public function canParseSupportedRules(array $ruleset, array $customInfo, array $expected)
+    public function can_parse_supported_rules(array $ruleset, array $customInfo, array $expected)
     {
         // Needed for `exists` rule
         Schema::create('users', function ($table) {
@@ -96,7 +97,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['string_param' => ['description' => $description]],
             [
                 'type' => 'string',
-                'description' => $description . '.',
+                'description' => $description.'.',
             ],
         ];
 
@@ -123,7 +124,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['numeric_param' => ['description' => $description]],
             [
                 'type' => 'number',
-                'description' => $description . '.',
+                'description' => $description.'.',
             ],
         ];
 
@@ -212,7 +213,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['in_param' => 'in:3,5,6'],
             ['in_param' => ['description' => $description]],
             [
-                'description' => $description . '.',
+                'description' => $description.'.',
                 'type' => 'string',
                 'enumValues' => [3, 5, 6],
             ],
@@ -460,7 +461,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         ];
 
         yield 'unsupported' => [
-            ['unsupported_param' => [new DummyValidationRule(), 'bail']],
+            ['unsupported_param' => [new DummyValidationRule, 'bail']],
             ['unsupported_param' => ['description' => $description]],
             ['description' => "{$description}."],
         ];
@@ -476,7 +477,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParseRuleObjects()
+    public function can_parse_rule_objects()
     {
         $results = $this->strategy->parse([
             'in_param' => ['numeric', Rule::in([3, 5, 6])],
@@ -488,7 +489,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canTransformArraysAndObjects()
+    public function can_transform_arrays_and_objects()
     {
         $ruleset = [
             'array_param' => 'array|required',
@@ -537,7 +538,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function childDoesNotOverwriteParentStatus()
+    public function child_does_not_overwrite_parent_status()
     {
         $ruleset = [
             'array_param' => 'array|required',
@@ -550,7 +551,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParseCustomClosureRules()
+    public function can_parse_custom_closure_rules()
     {
         // Single line DocComment
         $ruleset = [
@@ -592,16 +593,16 @@ class ValidationRuleParsingTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParseCustomRuleClasses()
+    public function can_parse_custom_rule_classes()
     {
         $ruleset = [
-            'param1' => ['bail', 'required', new DummyWithDocsValidationRule()],
+            'param1' => ['bail', 'required', new DummyWithDocsValidationRule],
         ];
 
-        $ruleset['param2'] = [new DummyInvokableValidationRule()];
+        $ruleset['param2'] = [new DummyInvokableValidationRule];
         global $laravel10Rules;
         if ($laravel10Rules) {
-            $ruleset['param3'] = [new DummyL10ValidationRule()];
+            $ruleset['param3'] = [new DummyL10ValidationRule];
         }
 
         $results = $this->strategy->parse($ruleset);
@@ -614,7 +615,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParseEnumRules()
+    public function can_parse_enum_rules()
     {
         $results = $this->strategy->parse([
             'enum' => [
@@ -629,7 +630,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         );
         $this->assertTrue(in_array(
             $results['enum']['example'],
-            array_map(fn($case) => $case->value, Fixtures\TestStringBackedEnum::cases())
+            array_map(fn ($case) => $case->value, Fixtures\TestStringBackedEnum::cases())
         ));
 
         $results = $this->strategy->parse([
@@ -647,7 +648,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         );
         $this->assertTrue(in_array(
             $results['enum']['example'],
-            array_map(fn($case) => $case->value, Fixtures\TestIntegerBackedEnum::cases())
+            array_map(fn ($case) => $case->value, Fixtures\TestIntegerBackedEnum::cases())
         ));
 
         $results = $this->strategy->parse([
@@ -667,12 +668,12 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         );
         $this->assertTrue(in_array(
             $results['enum']['example'],
-            array_map(fn($case) => $case->value, Fixtures\TestStringBackedEnum::cases())
+            array_map(fn ($case) => $case->value, Fixtures\TestStringBackedEnum::cases())
         ));
     }
 
     /** @test */
-    public function canTranslateValidationRulesWithTypesWithTranslatorWithoutArraySupport()
+    public function can_translate_validation_rules_with_types_with_translator_without_array_support()
     {
         // Single line DocComment
         $ruleset = [
@@ -698,7 +699,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParseNullableRules()
+    public function can_parse_nullable_rules()
     {
         $ruleset = [
             'nullable_param' => 'nullable|string',
@@ -748,7 +749,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParseRulesWhichReferenceOtherFields()
+    public function can_parse_rules_which_reference_other_fields()
     {
         $ruleset = [
             'to_time' => 'date|max:6',
@@ -764,7 +765,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function sometimesRulePreventsRequiredFromRequiredRule()
+    public function sometimes_rule_prevents_required_from_required_rule()
     {
         $ruleset = [
             'optional_field' => 'sometimes|required',
@@ -777,7 +778,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function sometimesRulePreventsRequiredFromAcceptedRule()
+    public function sometimes_rule_prevents_required_from_accepted_rule()
     {
         $ruleset = [
             'consent_cgu' => 'sometimes|accepted',
@@ -790,7 +791,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function requiredBeforeSometimesRemainsRequired()
+    public function required_before_sometimes_remains_required()
     {
         $ruleset = [
             'should_be_required' => 'required|sometimes',
@@ -803,7 +804,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function acceptedBeforeSometimesRemainsRequired()
+    public function accepted_before_sometimes_remains_required()
     {
         $ruleset = [
             'should_be_required' => 'accepted|sometimes',
@@ -816,7 +817,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function sometimesWithOtherValidationRules()
+    public function sometimes_with_other_validation_rules()
     {
         $ruleset = [
             'sometimes_email' => 'sometimes|email',
@@ -882,7 +883,7 @@ class DummyInvokableValidationRule implements InvokableRule
 {
     public function __invoke($attribute, $value, $fail)
     {
-        if (strtoupper($value) !== $value) {
+        if (mb_strtoupper($value) !== $value) {
             $fail(':attribute must be uppercase.');
         }
     }
@@ -902,7 +903,7 @@ if ($laravel10Rules) {
     {
         public function validate(string $attribute, mixed $value, \Closure $fail): void
         {
-            if (strtoupper($value) !== $value) {
+            if (mb_strtoupper($value) !== $value) {
                 $fail('The :attribute must be an attribute.');
             }
         }
@@ -920,7 +921,7 @@ class DummyTranslator extends Translator
 {
     public function get($key, array $replace = [], $locale = null, $fallback = true)
     {
-        if ('validation.max.string' === $key) {
+        if ($key === 'validation.max.string') {
             return 'successfully translated by concatenated string';
         }
 

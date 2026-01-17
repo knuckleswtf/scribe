@@ -46,12 +46,12 @@ class GetFromResponseFieldTag extends GetFieldsFromTagStrategy
             $required = false;
         } else {
             [$_, $name, $type, $required, $description] = $content;
-            if ('required' !== $required) {
-                $description = $required . ' ' . $description;
+            if ($required !== 'required') {
+                $description = $required.' '.$description;
             }
 
-            $required = 'required' === $required;
-            $description = trim($description);
+            $required = $required === 'required';
+            $description = mb_trim($description);
         }
 
         $type = static::normalizeTypeName($type);
@@ -59,9 +59,9 @@ class GetFromResponseFieldTag extends GetFieldsFromTagStrategy
 
         // Support optional type in annotation
         // The type can also be a union or nullable type (eg ?string or string|null)
-        if (!$this->isSupportedTypeInDocBlocks(explode('|', trim($type, '?'))[0])) {
+        if (! $this->isSupportedTypeInDocBlocks(explode('|', mb_trim($type, '?'))[0])) {
             // Then that wasn't a type, but part of the description
-            $data['description'] = trim("{$type} {$description}");
+            $data['description'] = mb_trim("{$type} {$description}");
             $data['type'] = '';
 
             $data['type'] = ResponseFieldTools::inferTypeOfResponseField($data, $this->endpointData);
@@ -85,7 +85,7 @@ class GetFromResponseFieldTag extends GetFieldsFromTagStrategy
     {
         $apiResourceTags = array_values(
             array_filter($tagsOnMethod, function ($tag) {
-                return in_array(strtolower($tag->getName()), ['apiresource', 'apiresourcecollection']);
+                return in_array(mb_strtolower($tag->getName()), ['apiresource', 'apiresourcecollection']);
             })
         );
 
@@ -110,13 +110,13 @@ class GetFromResponseFieldTag extends GetFieldsFromTagStrategy
 
     protected function applyWrapKeyPrefix(array $fields, ?string $wrapKey): array
     {
-        if (null === $wrapKey) {
+        if ($wrapKey === null) {
             return $fields;
         }
 
         $wrappedFields = [];
         foreach ($fields as $fieldName => $fieldData) {
-            $fieldData['name'] = $wrapKey . '.' . $fieldData['name'];
+            $fieldData['name'] = $wrapKey.'.'.$fieldData['name'];
             $wrappedFields[$fieldData['name']] = $fieldData;
         }
 

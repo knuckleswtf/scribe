@@ -18,7 +18,7 @@ class GetFromUrlParamTagTest extends TestCase
     use ArraySubsetAsserts;
 
     /** @test */
-    public function canFetchFromUrlparamTag()
+    public function can_fetch_from_urlparam_tag()
     {
         $strategy = new GetFromUrlParamTag(new DocumentationConfig([]));
         $tags = [

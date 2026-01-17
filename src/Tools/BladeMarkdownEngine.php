@@ -12,14 +12,14 @@ class BladeMarkdownEngine extends CompilerEngine
 
     public function __construct(CompilerInterface $compiler, ?Filesystem $files = null)
     {
-        parent::__construct($compiler, $files ?: new Filesystem());
+        parent::__construct($compiler, $files ?: new Filesystem);
         $this->markdown = \Parsedown::instance();
     }
 
     /**
      * Get the evaluated contents of the view.
      *
-     * @param mixed $path
+     * @param  mixed  $path
      */
     public function get($path, array $data = [])
     {

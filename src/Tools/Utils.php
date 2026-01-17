@@ -53,7 +53,7 @@ class Utils
      * Transform parameters in URLs into real values (/users/{user} -> /users/2).
      * Uses @urlParam values specified by caller, otherwise just uses '1'.
      *
-     * @param array $urlParameters Dictionary of url params and example values
+     * @param  array  $urlParameters  Dictionary of url params and example values
      */
     public static function replaceUrlParameterPlaceholdersWithValues(string $uri, array $urlParameters): string
     {
@@ -62,7 +62,7 @@ class Utils
         }
 
         foreach ($urlParameters as $parameterName => $example) {
-            $uri = preg_replace('#\{' . $parameterName . '\??}#', $example, $uri);
+            $uri = preg_replace('#\{'.$parameterName.'\??}#', $example, $uri);
         }
 
         // Remove unbound optional parameters with nothing
@@ -78,7 +78,7 @@ class Utils
 
         $uses = $action['uses'];
 
-        if (null !== $uses) {
+        if ($uses !== null) {
             if (is_array($uses)) {
                 return $uses;
             }
@@ -90,7 +90,7 @@ class Utils
                 [$class, $method] = $usesArray;
 
                 // Support for the Laravel Actions package, docblock should be put on the asController method
-                if ('__invoke' === $method && method_exists($class, 'asController')) {
+                if ($method === '__invoke' && method_exists($class, 'asController')) {
                     return [$class, 'asController'];
                 }
 
@@ -107,7 +107,7 @@ class Utils
             ];
         }
 
-        throw new \Exception("Couldn't get class and method names for route " . c::getRouteRepresentation($route) . '.');
+        throw new \Exception("Couldn't get class and method names for route ".c::getRouteRepresentation($route).'.');
     }
 
     public static function deleteDirectoryAndContents(string $dir, ?string $workingDir = null): void
@@ -134,13 +134,13 @@ class Utils
 
     public static function copyDirectory(string $src, string $dest): void
     {
-        if (!is_dir($src)) {
+        if (! is_dir($src)) {
             return;
         }
 
         // If the destination directory does not exist create it
-        if (!is_dir($dest)) {
-            if (!mkdir($dest, 0o777, true)) {
+        if (! is_dir($dest)) {
+            if (! mkdir($dest, 0o777, true)) {
                 // If the destination directory could not be created stop processing
                 throw new \Exception("Failed to create target directory: {$dest}");
             }
@@ -150,8 +150,8 @@ class Utils
         $i = new \DirectoryIterator($src);
         foreach ($i as $f) {
             if ($f->isFile()) {
-                copy($f->getRealPath(), "{$dest}/" . $f->getFilename());
-            } elseif (!$f->isDot() && $f->isDir()) {
+                copy($f->getRealPath(), "{$dest}/".$f->getFilename());
+            } elseif (! $f->isDot() && $f->isDir()) {
                 self::copyDirectory($f->getRealPath(), "{$dest}/{$f}");
             }
         }
@@ -168,25 +168,25 @@ class Utils
             // Flysystem 2+
             $adapter = new LocalFilesystemAdapter(getcwd());
             $fs = new Filesystem($adapter);
-            $contents = $fs->listContents(ltrim($dir, '/'));
+            $contents = $fs->listContents(mb_ltrim($dir, '/'));
         } else {
             // v1
             $adapter = new Local(getcwd()); // @phpstan-ignore-line
             $fs = new Filesystem($adapter); // @phpstan-ignore-line
             $dir = str_replace($adapter->getPathPrefix(), '', $dir); // @phpstan-ignore-line
-            $contents = $fs->listContents(ltrim($dir, '/'));
+            $contents = $fs->listContents(mb_ltrim($dir, '/'));
         }
         foreach ($contents as $file) {
             // Flysystem v1 had items as arrays; v2 has objects.
             // v2 allows ArrayAccess, but when we drop v1 support (Laravel <9), we should switch to methods
-            if ('file' == $file['type'] && true === $condition($file)) {
+            if ($file['type'] === 'file' && $condition($file) === true) {
                 $fs->delete($file['path']);
             }
         }
     }
 
     /**
-     * @param mixed $value
+     * @param  mixed  $value
      */
     public static function isInvokableObject($value): bool
     {
@@ -205,8 +205,8 @@ class Utils
         }
         [$class, $method] = $routeControllerAndMethod;
 
-        if ($class instanceof \Closure) {
-            return new \ReflectionFunction($class);
+        if ($class instanceof Closure) {
+            return new ReflectionFunction($class);
         }
 
         return (new \ReflectionClass($class))->getMethod($method);
@@ -219,13 +219,12 @@ class Utils
 
     public static function getBaseTypeFromArrayType(string $typeName)
     {
-        return substr($typeName, 0, -2);
+        return mb_substr($typeName, 0, -2);
     }
 
     /**
-     * @param string[] $states
-     * @param string[] $relations
-     *
+     * @param  string[]  $states
+     * @param  string[]  $relations
      * @return Factory
      *
      * @throws \Throwable
@@ -234,7 +233,7 @@ class Utils
     {
         // Factories are usually defined without the leading \ in the class name,
         // but the user might write it that way in a comment. Let's be safe.
-        $modelName = ltrim($modelName, '\\');
+        $modelName = mb_ltrim($modelName, '\\');
 
         if (method_exists($modelName, 'factory')) { // Laravel 8 type factory
             /** @var Factory $factory */
@@ -251,21 +250,21 @@ class Utils
                 $relationChain = explode('.', $relation);
                 $relationVector = array_shift($relationChain);
 
-                $relation = (new $modelName())->{$relationVector}();
+                $relation = (new $modelName)->{$relationVector}();
                 $relationType = get_class($relation);
                 $relationModel = get_class($relation->getModel());
 
                 $factoryChain = empty($relationChain)
                     ? call_user_func_array([$relationModel, 'factory'], [])
-                    : Utils::getModelFactory($relationModel, $states, [implode('.', $relationChain)]);
+                    : self::getModelFactory($relationModel, $states, [implode('.', $relationChain)]);
 
                 if ($relation instanceof BelongsToMany) {
-                    $pivot = method_exists($factory, 'pivot' . $relationVector)
-                        ? $factory->{'pivot' . $relationVector}()
+                    $pivot = method_exists($factory, 'pivot'.$relationVector)
+                        ? $factory->{'pivot'.$relationVector}()
                         : [];
 
                     $factory = $factory->hasAttached($factoryChain, $pivot, $relationVector);
-                } elseif (BelongsTo::class === $relationType) {
+                } elseif ($relationType === BelongsTo::class) {
                     $factory = $factory->for($factoryChain, $relationVector);
                 } else {
                     $factory = $factory->has($factoryChain, $relationVector);
@@ -292,15 +291,14 @@ class Utils
     /**
      * Filter a list of docblock tags to those matching the specified ones (case-insensitive).
      *
-     * @param Tag[] $tags
-     *
+     * @param  Tag[]  $tags
      * @return Tag[]
      */
     public static function filterDocBlockTags(array $tags, string ...$names): array
     {
         // Avoid "holes" in the keys of the filtered array by using array_values
         return array_values(
-            array_filter($tags, fn($tag) => in_array(strtolower($tag->getName()), $names))
+            array_filter($tags, fn ($tag) => in_array(mb_strtolower($tag->getName()), $names))
         );
     }
 
@@ -313,14 +311,14 @@ class Utils
     public static function trans(string $key, array $replace = [])
     {
         // We only load our custom translation layer if we really need it
-        if (!ScribeServiceProvider::$customTranslationLayerLoaded) {
+        if (! ScribeServiceProvider::$customTranslationLayerLoaded) {
             app(ScribeServiceProvider::class, ['app' => app()])->loadCustomTranslationLayer();
         }
 
         $translation = trans($key, $replace);
 
         // @phpstan-ignore-next-line
-        if ($translation === $key || null === $translation) {
+        if ($translation === $key || $translation === null) {
             $translation = trans($key, $replace, 'en');
         }
 

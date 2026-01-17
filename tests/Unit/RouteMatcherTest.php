@@ -15,7 +15,7 @@ use Knuckles\Scribe\Tests\BaseLaravelTest;
 class RouteMatcherTest extends BaseLaravelTest
 {
     /** @test */
-    public function respectsDomainsRuleForLaravelRouter()
+    public function respects_domains_rule_for_laravel_router()
     {
         $this->registerLaravelRoutes();
 
@@ -42,7 +42,7 @@ class RouteMatcherTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function respectsPrefixesRuleForLaravelRouter()
+    public function respects_prefixes_rule_for_laravel_router()
     {
         $this->registerLaravelRoutes();
         $routeRules[0]['match']['domains'] = ['*'];
@@ -69,7 +69,7 @@ class RouteMatcherTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function includesRouteIfListedExplicitlyForLaravelRouter()
+    public function includes_route_if_listed_explicitly_for_laravel_router()
     {
         $this->registerLaravelRoutes();
         $mustInclude = 'domain1-1';
@@ -78,12 +78,12 @@ class RouteMatcherTest extends BaseLaravelTest
         $routeRules[0]['match']['domains'] = ['domain1.*'];
         $routeRules[0]['match']['prefixes'] = ['prefix1/*'];
         $routes = $this->matchRoutes($routeRules);
-        $oddRuleOut = collect($routes)->filter(fn($route) => $route['route']->getName() === $mustInclude);
+        $oddRuleOut = collect($routes)->filter(fn ($route) => $route['route']->getName() === $mustInclude);
         $this->assertCount(1, $oddRuleOut);
     }
 
     /** @test */
-    public function includesRouteIfMatchForAnIncludePatternForLaravelRouter()
+    public function includes_route_if_match_for_an_include_pattern_for_laravel_router()
     {
         $this->registerLaravelRoutes();
         $mustInclude = ['domain1-1', 'domain1-2'];
@@ -93,12 +93,12 @@ class RouteMatcherTest extends BaseLaravelTest
         $routeRules[0]['match']['domains'] = ['domain1.*'];
         $routeRules[0]['match']['prefixes'] = ['prefix1/*'];
         $routes = $this->matchRoutes($routeRules);
-        $oddRuleOut = collect($routes)->filter(fn($route) => in_array($route['route']->getName(), $mustInclude));
+        $oddRuleOut = collect($routes)->filter(fn ($route) => in_array($route['route']->getName(), $mustInclude));
         $this->assertCount(count($mustInclude), $oddRuleOut);
     }
 
     /** @test */
-    public function excludeRouteIfListedExplicitlyForLaravelRouter()
+    public function exclude_route_if_listed_explicitly_for_laravel_router()
     {
         $this->registerLaravelRoutes();
         $mustNotInclude = 'prefix1.domain1-1';
@@ -107,12 +107,12 @@ class RouteMatcherTest extends BaseLaravelTest
         $routeRules[0]['match']['domains'] = ['domain1.*'];
         $routeRules[0]['match']['prefixes'] = ['prefix1/*'];
         $routes = $this->matchRoutes($routeRules);
-        $oddRuleOut = collect($routes)->filter(fn($route) => $route['route']->getName() === $mustNotInclude);
+        $oddRuleOut = collect($routes)->filter(fn ($route) => $route['route']->getName() === $mustNotInclude);
         $this->assertCount(0, $oddRuleOut);
     }
 
     /** @test */
-    public function excludeRouteIfMatchForAnExcludePatternForLaravelRouter()
+    public function exclude_route_if_match_for_an_exclude_pattern_for_laravel_router()
     {
         $this->registerLaravelRoutes();
         $mustNotInclude = ['prefix1.domain1-1', 'prefix1.domain1-2'];
@@ -122,12 +122,12 @@ class RouteMatcherTest extends BaseLaravelTest
         $routeRules[0]['match']['domains'] = ['domain1.*'];
         $routeRules[0]['match']['prefixes'] = ['prefix1/*'];
         $routes = $this->matchRoutes($routeRules);
-        $oddRuleOut = collect($routes)->filter(fn($route) => in_array($route['route']->getName(), $mustNotInclude));
+        $oddRuleOut = collect($routes)->filter(fn ($route) => in_array($route['route']->getName(), $mustNotInclude));
         $this->assertCount(0, $oddRuleOut);
     }
 
     /** @test */
-    public function mergesRoutesFromDifferentRuleGroupsForLaravelRouter()
+    public function merges_routes_from_different_rule_groups_for_laravel_router()
     {
         $this->registerLaravelRoutes();
 
@@ -164,7 +164,7 @@ class RouteMatcherTest extends BaseLaravelTest
 
     protected function matchRoutes(array $routeRules): array
     {
-        $matcher = new RouteMatcher();
+        $matcher = new RouteMatcher;
 
         return $matcher->getRoutes($routeRules);
     }

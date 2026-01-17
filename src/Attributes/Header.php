@@ -7,7 +7,7 @@ class Header
 {
     public function __construct(
         public string $name,
-        public mixed $example = null
+        public mixed $example = null,
     ) {}
 
     public function toArray()

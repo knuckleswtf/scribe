@@ -20,7 +20,7 @@ class GetFromResponseFieldTagTest extends TestCase
     use ArraySubsetAsserts;
 
     /** @test */
-    public function canFetchFromResponsefieldTag()
+    public function can_fetch_from_responsefield_tag()
     {
         $tags = [
             new Tag('responseField', 'id int The id of the newly created user.'),
@@ -41,7 +41,7 @@ class GetFromResponseFieldTagTest extends TestCase
     }
 
     /** @test */
-    public function canInferTypeFromFirst2xxResponse()
+    public function can_infer_type_from_first2xx_response()
     {
         $responses = [
             [
@@ -74,7 +74,7 @@ class GetFromResponseFieldTagTest extends TestCase
     }
 
     /** @test */
-    public function canInferTypeFromFirst2xxResponseForLists()
+    public function can_infer_type_from_first2xx_response_for_lists()
     {
         $responses = [
             [
@@ -99,7 +99,7 @@ class GetFromResponseFieldTagTest extends TestCase
     }
 
     /** @test */
-    public function defaultsToNothingWhenTypeInferenceFails()
+    public function defaults_to_nothing_when_type_inference_fails()
     {
         $tags = [
             new Tag('responseField', 'id The id of the newly created user.'),
@@ -115,7 +115,7 @@ class GetFromResponseFieldTagTest extends TestCase
     }
 
     /** @test */
-    public function appliesWrapKeyPrefixToApiResourceFields()
+    public function applies_wrap_key_prefix_to_api_resource_fields()
     {
         $tags = [
             new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestNestedOuterResourceWithTags'),
@@ -145,7 +145,8 @@ class GetFromResponseFieldTagTest extends TestCase
 
     protected function endpoint(\Closure $configure): ExtractedEndpointData
     {
-        $endpoint = new class extends ExtractedEndpointData {
+        $endpoint = new class extends ExtractedEndpointData
+        {
             public function __construct(array $parameters = []) {}
         };
         $configure($endpoint);

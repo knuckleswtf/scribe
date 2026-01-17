@@ -28,7 +28,7 @@ class BaseGenerator extends OpenApiGenerator
             ],
             'servers' => [
                 [
-                    'url' => rtrim($this->config->get('base_url') ?? config('app.url'), '/'),
+                    'url' => mb_rtrim($this->config->get('base_url') ?? config('app.url'), '/'),
                 ],
             ],
             'tags' => array_values(array_map(function (array $group) {
@@ -80,7 +80,7 @@ class BaseGenerator extends OpenApiGenerator
             ];
             // Workaround for optional parameters
             if (empty($details->required)) {
-                $parameterData['description'] = rtrim('Optional parameter. ' . $parameterData['description']);
+                $parameterData['description'] = mb_rtrim('Optional parameter. '.$parameterData['description']);
                 $parameterData['examples'] = [
                     'omitted' => [
                         'summary' => 'When the value is omitted',
@@ -88,7 +88,7 @@ class BaseGenerator extends OpenApiGenerator
                     ],
                 ];
 
-                if (null !== $parameterData['example']) {
+                if ($parameterData['example'] !== null) {
                     $parameterData['examples']['present'] = [
                         'summary' => 'When the value is present',
                         'value' => $parameterData['example'],
@@ -105,7 +105,7 @@ class BaseGenerator extends OpenApiGenerator
     }
 
     /**
-     * @param array|Parameter $field
+     * @param  array|Parameter  $field
      */
     public function generateFieldData($field): array
     {
@@ -113,7 +113,7 @@ class BaseGenerator extends OpenApiGenerator
             $field = new Parameter($field);
         }
 
-        if ('file' === $field->type) {
+        if ($field->type === 'file') {
             // See https://swagger.io/docs/specification/describing-request-body/file-upload/
             $fieldData = [
                 'type' => 'string',
@@ -126,12 +126,12 @@ class BaseGenerator extends OpenApiGenerator
         }
         if (Utils::isArrayType($field->type)) {
             $baseType = Utils::getBaseTypeFromArrayType($field->type);
-            $baseItem = ('file' === $baseType) ? [
+            $baseItem = ($baseType === 'file') ? [
                 'type' => 'string',
                 'format' => 'binary',
             ] : ['type' => $baseType];
 
-            if (!empty($field->enumValues)) {
+            if (! empty($field->enumValues)) {
                 $baseItem['enum'] = $field->enumValues;
             }
 
@@ -150,13 +150,13 @@ class BaseGenerator extends OpenApiGenerator
                     ])
                     : $baseItem,
             ];
-            if ('file' === str_replace('[]', '', $field->type)) {
+            if (str_replace('[]', '', $field->type) === 'file') {
                 // Don't include example for file params in OAS; it's hard to translate it correctly
                 unset($fieldData['example']);
             }
 
-            if ('object' === $baseType && !empty($field->__fields)) {
-                if ('object' === $fieldData['items']['type']) {
+            if ($baseType === 'object' && ! empty($field->__fields)) {
+                if ($fieldData['items']['type'] === 'object') {
                     $fieldData['items']['properties'] = [];
                 }
                 foreach ($field->__fields as $fieldSimpleName => $subfield) {
@@ -169,7 +169,7 @@ class BaseGenerator extends OpenApiGenerator
 
             return $fieldData;
         }
-        if ('object' === $field->type) {
+        if ($field->type === 'object') {
             $data = [
                 'type' => 'object',
                 'description' => $field->description ?: '',
@@ -177,7 +177,7 @@ class BaseGenerator extends OpenApiGenerator
                 'properties' => $this->objectIfEmpty(collect($field->__fields)->mapWithKeys(function ($subfield, $subfieldName) {
                     return [$subfieldName => $this->generateFieldData($subfield)];
                 })->all()),
-                'required' => collect($field->__fields)->filter(fn($f) => $f['required'])->keys()->toArray(),
+                'required' => collect($field->__fields)->filter(fn ($f) => $f['required'])->keys()->toArray(),
             ];
             $this->applyNullable($data, $field->nullable);
             // The spec doesn't allow for an empty `required` array. Must have something there.
@@ -192,7 +192,7 @@ class BaseGenerator extends OpenApiGenerator
             'description' => $field->description ?: '',
             'example' => $field->example,
         ];
-        if (!empty($field->enumValues)) {
+        if (! empty($field->enumValues)) {
             $schema['enum'] = $field->enumValues;
         }
         $this->applyNullable($schema, $field->nullable);
@@ -238,18 +238,18 @@ class BaseGenerator extends OpenApiGenerator
         $this->setNullable($schema, $endpoint, $path, $value);
 
         // Set enum values for the property if they exist
-        if (!empty($endpoint->responseFields[$path]->enumValues)) {
+        if (! empty($endpoint->responseFields[$path]->enumValues)) {
             $schema['enum'] = $endpoint->responseFields[$path]->enumValues;
         }
 
-        if ('array' === $schema['type'] && !empty($value)) {
+        if ($schema['type'] === 'array' && ! empty($value)) {
             $schema['example'] = json_decode(json_encode($schema['example']), true); // Convert stdClass to array
 
             $sample = $value[0];
             $typeOfEachItem = $this->convertScribeOrPHPTypeToOpenAPIType(gettype($sample));
             $schema['items']['type'] = $typeOfEachItem;
 
-            if ('object' === $typeOfEachItem) {
+            if ($typeOfEachItem === 'object') {
                 $schema['items']['properties'] = collect($sample)->mapWithKeys(function ($v, $k) use ($endpoint, $path) {
                     return [$k => $this->generateSchemaForResponseValue($v, $endpoint, "{$path}.{$k}")];
                 })->toArray();
@@ -292,7 +292,7 @@ class BaseGenerator extends OpenApiGenerator
 
         $parts = preg_split('/[^\w+]/', $endpoint->uri, -1, PREG_SPLIT_NO_EMPTY);
 
-        return Str::lower($endpoint->httpMethods[0]) . join('', array_map(fn($part) => ucfirst($part), $parts));
+        return Str::lower($endpoint->httpMethods[0]).implode('', array_map(fn ($part) => ucfirst($part), $parts));
     }
 
     /**
@@ -306,7 +306,7 @@ class BaseGenerator extends OpenApiGenerator
 
         if (count($endpoint->queryParameters)) {
             /**
-             * @var string    $name
+             * @var string $name
              * @var Parameter $details
              */
             foreach ($endpoint->queryParameters as $name => $details) {
@@ -327,7 +327,7 @@ class BaseGenerator extends OpenApiGenerator
 
         if (count($endpoint->headers)) {
             foreach ($endpoint->headers as $name => $value) {
-                if (in_array(strtolower($name), ['content-type', 'accept', 'authorization'])) {
+                if (in_array(mb_strtolower($name), ['content-type', 'accept', 'authorization'])) {
                     // These headers are not allowed in the spec.
                     // https://swagger.io/docs/specification/describing-parameters/#header-parameters
                     continue;
@@ -362,7 +362,7 @@ class BaseGenerator extends OpenApiGenerator
             $hasFileParameter = false;
 
             foreach ($endpoint->nestedBodyParameters as $name => $details) {
-                if ('[]' === $name) { // Request body is an array
+                if ($name === '[]') { // Request body is an array
                     $hasRequiredParameter = true;
                     $schema = $this->generateFieldData($details);
 
@@ -376,7 +376,7 @@ class BaseGenerator extends OpenApiGenerator
                     $schema['required'][] = $name;
                 }
 
-                if ('file' === $details['type']) {
+                if ($details['type'] === 'file') {
                     $hasFileParameter = true;
                 }
 
@@ -419,7 +419,7 @@ class BaseGenerator extends OpenApiGenerator
             $code = $response->status; // OpenAPI spec requires status codes to be integers
             // OpenAPI groups responses by status code
             // Only one response type per status code, so only the last one will be used
-            if ('204' === $code) {
+            if ($code === '204') {
                 // Must not add content for 204
                 $responses[$code] = [
                     'description' => $this->getResponseDescription($response),
@@ -465,14 +465,14 @@ class BaseGenerator extends OpenApiGenerator
     protected function getResponseDescription(Response $response): string
     {
         if ($response->isBinary()) {
-            return trim(str_replace('<<binary>>', '', $response->content));
+            return mb_trim(str_replace('<<binary>>', '', $response->content));
         }
 
-        $description = strval($response->description);
+        $description = (string) ($response->description);
         // Don't include the status code in description; see https://github.com/knuckleswtf/scribe/issues/271
         if (preg_match('/\d{3},\s+(.+)/', $description, $matches)) {
             $description = $matches[1];
-        } elseif ($description === strval($response->status)) {
+        } elseif ($description === (string) ($response->status)) {
             $description = '';
         }
 
@@ -492,7 +492,7 @@ class BaseGenerator extends OpenApiGenerator
             ];
         }
 
-        if (null === $responseContent) {
+        if ($responseContent === null) {
             $schema = [
                 'type' => 'object',
             ];
@@ -506,7 +506,7 @@ class BaseGenerator extends OpenApiGenerator
         }
 
         $decoded = json_decode($responseContent);
-        if (null === $decoded) { // Decoding failed, so we return the content string as is
+        if ($decoded === null) { // Decoding failed, so we return the content string as is
             return [
                 'text/plain' => [
                     'schema' => [
@@ -528,14 +528,14 @@ class BaseGenerator extends OpenApiGenerator
                 return [
                     $contentType => [
                         'schema' => [
-                            'type' => 'double' === $type ? 'number' : $type,
+                            'type' => $type === 'double' ? 'number' : $type,
                             'example' => $decoded,
                         ],
                     ],
                 ];
 
             case 'array':
-                if (!count($decoded)) {
+                if (! count($decoded)) {
                     // empty array
                     return [
                         $contentType => [
@@ -615,7 +615,7 @@ class BaseGenerator extends OpenApiGenerator
      */
     protected function objectIfEmpty(array $field): array|\stdClass
     {
-        return count($field) > 0 ? $field : new \stdClass();
+        return count($field) > 0 ? $field : new \stdClass;
     }
 
     protected function convertScribeOrPHPTypeToOpenAPIType($type)
@@ -634,7 +634,7 @@ class BaseGenerator extends OpenApiGenerator
      */
     protected function applyNullable(array &$schema, bool $nullable): void
     {
-        if (!$nullable) {
+        if (! $nullable) {
             return;
         }
 
@@ -644,7 +644,7 @@ class BaseGenerator extends OpenApiGenerator
     // Set the description for the schema. If the field has a description, it is set in the schema.
     private function setDescription(array &$schema, OutputEndpointData $endpoint, string $path): void
     {
-        if (!empty($endpoint->responseFields[$path]->description)) {
+        if (! empty($endpoint->responseFields[$path]->description)) {
             $schema['description'] = $endpoint->responseFields[$path]->description;
         }
     }
@@ -656,7 +656,7 @@ class BaseGenerator extends OpenApiGenerator
         $field = $endpoint->responseFields[$path] ?? null;
 
         // prefer explicit values
-        if (null !== $field && null !== $field->nullable) {
+        if ($field !== null && $field->nullable !== null) {
             if ($field->nullable) {
                 $this->applyNullable($schema, true);
             }
@@ -666,7 +666,7 @@ class BaseGenerator extends OpenApiGenerator
         }
 
         // example is null
-        if (null === $value) {
+        if ($value === null) {
             $this->applyNullable($schema, true);
         }
     }

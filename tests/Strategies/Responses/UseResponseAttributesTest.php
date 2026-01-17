@@ -30,7 +30,7 @@ use League\Fractal\Pagination\IlluminatePaginatorAdapter;
  */
 class UseResponseAttributesTest extends BaseLaravelTest
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -57,7 +57,7 @@ class UseResponseAttributesTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParsePlainResponseAttributes()
+    public function can_parse_plain_response_attributes()
     {
         $results = $this->fetch($this->endpoint('plainResponseAttributes'));
 
@@ -79,7 +79,7 @@ class UseResponseAttributesTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParseResponsefileAttributes()
+    public function can_parse_responsefile_attributes()
     {
         $results = $this->fetch($this->endpoint('responseFileAttributes'));
 
@@ -92,11 +92,11 @@ class UseResponseAttributesTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParseApiresourceAttributes()
+    public function can_parse_apiresource_attributes()
     {
         $factory = app(Factory::class);
         $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
-            if (4 === $user->id) {
+            if ($user->id === 4) {
                 $child = Utils::getModelFactory(TestUser::class)->make(['id' => 5, 'parent_id' => 4]);
                 $user->setRelation('children', collect([$child]));
             }
@@ -144,11 +144,11 @@ class UseResponseAttributesTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParseApiresourceAttributesWithNoModelSpecified()
+    public function can_parse_apiresource_attributes_with_no_model_specified()
     {
         $factory = app(Factory::class);
         $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
-            if (4 === $user->id) {
+            if ($user->id === 4) {
                 $child = Utils::getModelFactory(TestUser::class)->make(['id' => 5, 'parent_id' => 4]);
                 $user->setRelation('children', collect([$child]));
             }
@@ -196,7 +196,7 @@ class UseResponseAttributesTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParseTransformerAttributes()
+    public function can_parse_transformer_attributes()
     {
         $results = $this->fetch($this->endpoint('transformerAttributes'));
 
@@ -227,11 +227,11 @@ class UseResponseAttributesTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParseApiresourceAttributesWithCursorPagination()
+    public function can_parse_apiresource_attributes_with_cursor_pagination()
     {
         $factory = app(Factory::class);
         $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
-            if (4 === $user->id) {
+            if ($user->id === 4) {
                 $child = Utils::getModelFactory(TestUser::class)->make(['id' => 5, 'parent_id' => 4]);
                 $user->setRelation('children', collect([$child]));
             }
@@ -276,7 +276,7 @@ class UseResponseAttributesTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParseApiresourceAttributesAndLoadChildrenUsingFactoryCreate()
+    public function can_parse_apiresource_attributes_and_load_children_using_factory_create()
     {
         Schema::create('test_users', function (Blueprint $table) {
             $table->id();
@@ -288,7 +288,7 @@ class UseResponseAttributesTest extends BaseLaravelTest
 
         $factory = app(Factory::class);
         $factory->afterCreating(TestUser::class, function (TestUser $user, $faker) {
-            if (4 === $user->id) {
+            if ($user->id === 4) {
                 Utils::getModelFactory(TestUser::class)->create(['id' => 5, 'parent_id' => 4]);
             }
         });
@@ -317,7 +317,7 @@ class UseResponseAttributesTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParseApiresourceAttributesAndLoadChildrenAndChildrenCountUsingFactoryCreate()
+    public function can_parse_apiresource_attributes_and_load_children_and_children_count_using_factory_create()
     {
         Schema::create('test_users', function (Blueprint $table) {
             $table->id();
@@ -329,7 +329,7 @@ class UseResponseAttributesTest extends BaseLaravelTest
 
         $factory = app(Factory::class);
         $factory->afterCreating(TestUser::class, function (TestUser $user, $faker) {
-            if (4 === $user->id) {
+            if ($user->id === 4) {
                 Utils::getModelFactory(TestUser::class)->create(['id' => 5, 'parent_id' => 4]);
             }
         });
@@ -377,7 +377,8 @@ class UseResponseAttributesTest extends BaseLaravelTest
 
     protected function endpoint(string $method): ExtractedEndpointData
     {
-        $endpoint = new class extends ExtractedEndpointData {
+        $endpoint = new class extends ExtractedEndpointData
+        {
             public function __construct(array $parameters = []) {}
         };
         $endpoint->controller = new \ReflectionClass(ResponseAttributesTestController::class);

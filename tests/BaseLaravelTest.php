@@ -19,15 +19,15 @@ use function Knuckles\Scribe\Config\configureStrategy;
  */
 class BaseLaravelTest extends TestCase
 {
-    use TestHelpers;
     use ArraySubsetAsserts;
+    use TestHelpers;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->setConfig([
-            'title' => config('app.name') . ' API Documentation',
+            'title' => config('app.name').' API Documentation',
             'type' => 'laravel',
             'theme' => 'default',
             'laravel.docs_url' => '/apidocs',
@@ -93,8 +93,7 @@ class BaseLaravelTest extends TestCase
     }
 
     /**
-     * @param Application $app
-     *
+     * @param  Application  $app
      * @return array
      */
     protected function getPackageProviders($app)

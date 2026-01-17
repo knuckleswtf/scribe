@@ -20,7 +20,7 @@ class GetFromResponseFieldAttribute extends PhpAttributeStrategy
         ExtractedEndpointData $endpointData,
         array $attributesOnMethod,
         array $attributesOnFormRequest = [],
-        array $attributesOnController = []
+        array $attributesOnController = [],
     ): ?array {
         return [
             ...$this->getNonApiResourceFields($endpointData, $attributesOnMethod, $attributesOnFormRequest, $attributesOnController),
@@ -33,9 +33,8 @@ class GetFromResponseFieldAttribute extends PhpAttributeStrategy
         $apiResourceAttributes = $endpointData->method->getAttributes(ResponseFromApiResource::class);
 
         return collect($apiResourceAttributes)
-            ->flatMap(fn(\ReflectionAttribute $attribute) => $this->extractFieldsFromApiResource($attribute, $endpointData))
-            ->toArray()
-        ;
+            ->flatMap(fn (\ReflectionAttribute $attribute) => $this->extractFieldsFromApiResource($attribute, $endpointData))
+            ->toArray();
     }
 
     protected function extractFieldsFromApiResource(\ReflectionAttribute $attribute, ExtractedEndpointData $endpointData): array
@@ -49,20 +48,19 @@ class GetFromResponseFieldAttribute extends PhpAttributeStrategy
                 $data = $attr->newInstance()->toArray();
                 $data['type'] = ResponseFieldTools::inferTypeOfResponseField($data, $endpointData);
 
-                if (null !== $wrapKey) {
-                    $data['name'] = $wrapKey . '.' . $data['name'];
+                if ($wrapKey !== null) {
+                    $data['name'] = $wrapKey.'.'.$data['name'];
                 }
 
                 return [$data['name'] => $data];
-            })->toArray()
-        ;
+            })->toArray();
     }
 
     protected function getNonApiResourceFields(
         ExtractedEndpointData $endpointData,
         array $attributesOnMethod,
         array $attributesOnFormRequest,
-        array $attributesOnController
+        array $attributesOnController,
     ): array {
         return collect([...$attributesOnController, ...$attributesOnFormRequest, ...$attributesOnMethod])
             ->mapWithKeys(function ($attributeInstance) use ($endpointData) {
@@ -72,7 +70,6 @@ class GetFromResponseFieldAttribute extends PhpAttributeStrategy
                 $data['type'] = ResponseFieldTools::inferTypeOfResponseField($data, $endpointData);
 
                 return [$data['name'] => $data];
-            })->toArray()
-        ;
+            })->toArray();
     }
 }

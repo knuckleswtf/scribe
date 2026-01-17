@@ -9,7 +9,7 @@ class TestNestedInnerResource extends JsonResource
     /**
      * Create a new resource instance.
      *
-     * @param mixed $resource
+     * @param  mixed  $resource
      */
     public function __construct($resource = [])
     {
@@ -19,8 +19,7 @@ class TestNestedInnerResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param mixed $request
-     *
+     * @param  mixed  $request
      * @return array<string, mixed>
      */
     public function toArray($request)

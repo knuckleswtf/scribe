@@ -29,35 +29,35 @@ class GetFromQueryParamTag extends GetFieldsFromTagStrategy
         } else {
             [$_, $name, $type, $required, $deprecated, $description] = $content;
 
-            $description = trim(str_replace(['No-example.', 'No-example'], '', $description));
-            if ('required' === $description) {
+            $description = mb_trim(str_replace(['No-example.', 'No-example'], '', $description));
+            if ($description === 'required') {
                 // No description was supplied
                 $required = true;
                 $description = '';
-            } elseif ('deprecated' === $description) {
+            } elseif ($description === 'deprecated') {
                 $deprecated = true;
                 $description = '';
             } else {
-                $required = 'required' === trim($required);
-                $deprecated = 'deprecated' === trim($deprecated);
+                $required = mb_trim($required) === 'required';
+                $deprecated = mb_trim($deprecated) === 'deprecated';
             }
 
-            $type = trim($type);
+            $type = mb_trim($type);
             if ($type) {
-                if ('required' === $type) {
+                if ($type === 'required') {
                     // Type wasn't supplied
                     $type = 'string';
                     $required = true;
-                } elseif ('deprecated' === $type) {
+                } elseif ($type === 'deprecated') {
                     // Type wasn't supplied but deprecated was
                     $type = 'string';
                     $deprecated = true;
                 } else {
                     $type = static::normalizeTypeName($type);
                     // Type in annotation is optional
-                    if (!$this->isSupportedTypeInDocBlocks($type)) {
+                    if (! $this->isSupportedTypeInDocBlocks($type)) {
                         // Then that wasn't a type, but part of the description
-                        $description = trim("{$type} {$description}");
+                        $description = mb_trim("{$type} {$description}");
                         $type = '';
                     }
                 }
@@ -68,7 +68,7 @@ class GetFromQueryParamTag extends GetFieldsFromTagStrategy
             }
 
             $type = empty($type)
-                ? (Str::contains(strtolower($description), ['number', 'count', 'page']) ? 'integer' : 'string')
+                ? (Str::contains(mb_strtolower($description), ['number', 'count', 'page']) ? 'integer' : 'string')
                 : static::normalizeTypeName($type);
         }
 

@@ -25,7 +25,7 @@ class GetFromLaravelAPITest extends BaseLaravelTest
     use ArraySubsetAsserts;
 
     /** @test */
-    public function canInferTypeFromModelBinding()
+    public function can_infer_type_from_model_binding()
     {
         // $endpoint = $this->endpointForRoute("users/{id}", TestController::class, 'withInjectedModel');
         $endpoint = $this->endpointForRoute('categories/{category}/users/{id}/', TestController::class, 'withInjectedEnumAndModel');
@@ -48,7 +48,7 @@ class GetFromLaravelAPITest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canInferDescriptionFromUrl()
+    public function can_infer_description_from_url()
     {
         $endpoint = $this->endpointForRoute('everything/{cat_id}', TestController::class, 'dummy');
         $results = $this->fetch($endpoint);
@@ -73,14 +73,13 @@ class GetFromLaravelAPITest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canInferExampleFromWheres()
+    public function can_infer_example_from_wheres()
     {
         $regex = '/catz\d+-\d/';
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) use ($regex) {
             $e->method = new \ReflectionMethod(TestController::class, 'dummy');
             $e->route = app(Router::class)->addRoute(['GET'], 'everything/{cat_id}', ['uses' => [TestController::class, 'dummy']])
-                ->where('cat_id', $regex)
-            ;
+                ->where('cat_id', $regex);
             $e->uri = UrlParamsNormalizer::normalizeParameterNamesInRouteUri($e->route, $e->method);
         });
         $results = $this->fetch($endpoint);
@@ -95,7 +94,7 @@ class GetFromLaravelAPITest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canInferDataFromFieldBindings()
+    public function can_infer_data_from_field_bindings()
     {
         $endpoint = $this->endpointForRoute('audio/{audio:slug}', TestController::class, 'dummy');
         $results = $this->fetch($endpoint);
@@ -126,7 +125,7 @@ class GetFromLaravelAPITest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canInferFromModelEvenIfNotBound()
+    public function can_infer_from_model_even_if_not_bound()
     {
         $oldNamespace = $this->app->getNamespace();
         $reflectedApp = new \ReflectionClass($this->app);
@@ -148,14 +147,13 @@ class GetFromLaravelAPITest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canInferCorrectUriFromRouteWithOptionalParameterAndNamedResourceRoutename()
+    public function can_infer_correct_uri_from_route_with_optional_parameter_and_named_resource_routename()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->method = new \ReflectionMethod(TestController::class, 'dummy');
             $e->route = app(Router::class)
                 ->addRoute(['GET'], '/users/{user?}/show', ['uses' => [TestController::class, 'dummy']])
-                ->name('users.show')
-            ;
+                ->name('users.show');
             $e->uri = UrlParamsNormalizer::normalizeParameterNamesInRouteUri($e->route, $e->method);
         });
 
@@ -173,7 +171,8 @@ class GetFromLaravelAPITest extends BaseLaravelTest
 
     protected function endpoint(\Closure $configure): ExtractedEndpointData
     {
-        $endpoint = new class extends ExtractedEndpointData {
+        $endpoint = new class extends ExtractedEndpointData
+        {
             public function __construct(array $parameters = []) {}
         };
         $configure($endpoint);

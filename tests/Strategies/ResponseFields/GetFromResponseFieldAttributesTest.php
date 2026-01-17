@@ -24,7 +24,7 @@ class GetFromResponseFieldAttributesTest extends TestCase
     use ArraySubsetAsserts;
 
     /** @test */
-    public function canFetchFromResponsefieldAttribute()
+    public function can_fetch_from_responsefield_attribute()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->controller = new \ReflectionClass(ResponseFieldAttributeTestController::class);
@@ -67,7 +67,7 @@ class GetFromResponseFieldAttributesTest extends TestCase
     }
 
     /** @test */
-    public function canReadFromToArrayOnAPIResources()
+    public function can_read_from_to_array_on_api_resources()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->controller = new \ReflectionClass(ResponseFieldAttributeTestController::class);
@@ -89,7 +89,7 @@ class GetFromResponseFieldAttributesTest extends TestCase
     }
 
     /** @test */
-    public function attributesFromNestedApiResourcesAreCorrectlyMerged()
+    public function attributes_from_nested_api_resources_are_correctly_merged()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->controller = new \ReflectionClass(ResponseFieldAttributeTestController::class);
@@ -118,7 +118,8 @@ class GetFromResponseFieldAttributesTest extends TestCase
 
     protected function endpoint(\Closure $configure): ExtractedEndpointData
     {
-        $endpoint = new class extends ExtractedEndpointData {
+        $endpoint = new class extends ExtractedEndpointData
+        {
             public function __construct(array $parameters = []) {}
         };
         $configure($endpoint);

@@ -11,7 +11,7 @@ class GroupedEndpointsFactory
     public function make(
         GenerateDocumentation $command,
         RouteMatcherInterface $routeMatcher,
-        PathConfig $paths
+        PathConfig $paths,
     ): GroupedEndpointsContract {
         if ($command->isForcing()) {
             return static::fromApp(
@@ -38,7 +38,7 @@ class GroupedEndpointsFactory
         GenerateDocumentation $command,
         RouteMatcherInterface $routeMatcher,
         bool $preserveUserChanges,
-        PathConfig $paths
+        PathConfig $paths,
     ): GroupedEndpointsFromApp {
         return new GroupedEndpointsFromApp($command, $routeMatcher, $paths, $preserveUserChanges);
     }

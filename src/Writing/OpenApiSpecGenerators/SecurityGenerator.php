@@ -9,7 +9,7 @@ class SecurityGenerator extends OpenApiGenerator
     public function root(array $root, array $groupedEndpoints): array
     {
         $isApiAuthed = $this->config->get('auth.enabled', false);
-        if (!$isApiAuthed) {
+        if (! $isApiAuthed) {
             return $root;
         }
 
@@ -50,7 +50,7 @@ class SecurityGenerator extends OpenApiGenerator
 
     public function pathItem(array $pathItem, array $groupedEndpoints, OutputEndpointData $endpoint): array
     {
-        if (!$endpoint->metadata->authenticated) {
+        if (! $endpoint->metadata->authenticated) {
             // Make sure to exclude non-auth endpoints from auth
             $pathItem['security'] = [];
         }

@@ -22,12 +22,12 @@ class GetFromLaravelAPI extends Strategy
 
         foreach ($matches[1] as $match) {
             $isOptional = Str::endsWith($match, '?');
-            $name = rtrim($match, '?');
+            $name = mb_rtrim($match, '?');
 
             $parameters[$name] = [
                 'name' => $name,
                 'description' => $this->inferUrlParamDescription($endpointData->uri, $name),
-                'required' => !$isOptional,
+                'required' => ! $isOptional,
             ];
         }
 
@@ -43,10 +43,10 @@ class GetFromLaravelAPI extends Strategy
         // If $url is sth like /anything/{user_id}, return "The ID of the user."
 
         $strategies = collect(['id', 'slug'])->map(function ($name) {
-            $friendlyName = 'id' === $name ? 'ID' : $name;
+            $friendlyName = $name === 'id' ? 'ID' : $name;
 
             return function ($url, $paramName) use ($name, $friendlyName) {
-                if ($paramName == $name) {
+                if ($paramName === $name) {
                     $thing = $this->getNameOfUrlThing($url, $paramName);
 
                     return "The {$friendlyName} of the {$thing}.";
@@ -175,22 +175,22 @@ class GetFromLaravelAPI extends Strategy
      * - animals/cats/{id} -> "cat"
      * - users/{user_id}/contracts -> "user"
      *
-     * @param null|string $alternateParamName a second paramName to try, if the original paramName isn't in the URL
+     * @param  null|string  $alternateParamName  a second paramName to try, if the original paramName isn't in the URL
      */
     protected function getNameOfUrlThing(string $url, string $paramName, ?string $alternateParamName = null): ?string
     {
         $parts = explode('/', $url);
-        if (1 === count($parts)) {
+        if (count($parts) === 1) {
             return null;
         } // URL was "/{thing}"
 
         $paramIndex = array_search("{{$paramName}}", $parts);
 
-        if (false === $paramIndex) {
+        if ($paramIndex === false) {
             $paramIndex = array_search("{{$alternateParamName}}", $parts);
         }
 
-        if (false === $paramIndex || 0 === $paramIndex) {
+        if ($paramIndex === false || $paramIndex === 0) {
             return null;
         }
 
@@ -208,11 +208,11 @@ class GetFromLaravelAPI extends Strategy
         $className = str_replace(['-', '_', ' '], '', Str::title($urlThing));
         $rootNamespace = app()->getNamespace();
 
-        if (class_exists($class = "{$rootNamespace}Models\\" . $className, autoload: false)
+        if (class_exists($class = "{$rootNamespace}Models\\".$className, autoload: false)
             // For the heathens that don't use a Models\ directory
-            || class_exists($class = $rootNamespace . $className, autoload: false)) {
+            || class_exists($class = $rootNamespace.$className, autoload: false)) {
             try {
-                $instance = new $class();
+                $instance = new $class;
             } catch (\Error) { // It might be an enum or some other non-instantiable class
                 return null;
             }

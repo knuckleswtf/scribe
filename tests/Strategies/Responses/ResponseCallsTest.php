@@ -23,7 +23,7 @@ use Symfony\Component\HttpFoundation\Request;
 class ResponseCallsTest extends BaseLaravelTest
 {
     /** @test */
-    public function canCallRouteAndFetchResponse()
+    public function can_call_route_and_fetch_response()
     {
         $route = LaravelRouteFacade::post('/shouldFetchRouteResponse', [TestController::class, 'shouldFetchRouteResponse']);
 
@@ -40,7 +40,7 @@ class ResponseCallsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canUploadFileParametersInResponseCalls()
+    public function can_upload_file_parameters_in_response_calls()
     {
         $route = RouteFacade::post('/withFormDataParams', [TestController::class, 'withFormDataParams']);
 
@@ -58,7 +58,7 @@ class ResponseCallsTest extends BaseLaravelTest
                 ],
             ],
         ]);
-        $parsed = (new Extractor())->processRoute($route);
+        $parsed = (new Extractor)->processRoute($route);
         $responses = $parsed->responses->toArray();
 
         $this->assertCount(1, $responses);
@@ -70,7 +70,7 @@ class ResponseCallsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function usesConfiguredSettingsWhenCallingRoute()
+    public function uses_configured_settings_when_calling_route()
     {
         $route = LaravelRouteFacade::post('/echo/{id}', [TestController::class, 'echoesRequestValues']);
 
@@ -102,7 +102,7 @@ class ResponseCallsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canOverrideApplicationConfigDuringResponseCall()
+    public function can_override_application_config_during_response_call()
     {
         $route = LaravelRouteFacade::post('/echoesConfig', [TestController::class, 'echoesConfig']);
         $responses = $this->invokeStrategy($route);
@@ -120,13 +120,13 @@ class ResponseCallsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function callsBeforeResponseCallHook()
+    public function calls_before_response_call_hook()
     {
         Scribe::beforeResponseCall(function (Request $request, ExtractedEndpointData $endpointData) {
-            $request->headers->set('header', 'overridden_' . $request->headers->get('header'));
-            $request->headers->set('Authorization', 'overridden_' . $request->headers->get('Authorization'));
-            $request->query->set('queryParam', 'overridden_' . $request->query->get('queryParam'));
-            $request->request->set('bodyParam', 'overridden_' . $endpointData->uri . $request->request->get('bodyParam'));
+            $request->headers->set('header', 'overridden_'.$request->headers->get('header'));
+            $request->headers->set('Authorization', 'overridden_'.$request->headers->get('Authorization'));
+            $request->query->set('queryParam', 'overridden_'.$request->query->get('queryParam'));
+            $request->request->set('bodyParam', 'overridden_'.$endpointData->uri.$request->request->get('bodyParam'));
         });
 
         $route = LaravelRouteFacade::post('/echo/{id}', [TestController::class, 'echoesRequestValues']);
@@ -156,11 +156,11 @@ class ResponseCallsTest extends BaseLaravelTest
         $this->assertEquals('overridden_Bearer bearerToken', $responseContent['auth']);
         $this->assertEquals('overridden_echo/{id}bodyValue', $responseContent['bodyParam']);
 
-        Scribe::beforeResponseCall(fn() => null);
+        Scribe::beforeResponseCall(fn () => null);
     }
 
     /** @test */
-    public function doesNotMakeResponseCallIfSuccessResponseAlreadyGotten()
+    public function does_not_make_response_call_if_success_response_already_gotten()
     {
         $route = LaravelRouteFacade::post('/shouldFetchRouteResponse', [TestController::class, 'shouldFetchRouteResponse']);
 
@@ -178,7 +178,7 @@ class ResponseCallsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canGetContentFromStreamedResponse()
+    public function can_get_content_from_streamed_response()
     {
         $route = LaravelRouteFacade::post('/withStreamedResponse', [TestController::class, 'withStreamedResponse']);
 

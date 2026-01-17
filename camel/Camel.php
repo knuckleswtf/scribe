@@ -63,7 +63,7 @@ class Camel
             if (
                 $object->isFile()
                 && Str::endsWith(basename($object->path()), '.yaml')
-                && !Str::startsWith(basename($object->path()), 'custom.')
+                && ! Str::startsWith(basename($object->path()), 'custom.')
             ) {
                 $group = Yaml::parseFile($object['path']);
                 $callback($group);
@@ -94,15 +94,14 @@ class Camel
 
     public static function doesGroupContainEndpoint(array $group, OutputEndpointData $endpoint): bool
     {
-        return boolval(Arr::first($group['endpoints'], function ($e) use ($endpoint) {
+        return (bool) (Arr::first($group['endpoints'], function ($e) use ($endpoint) {
             return $e->endpointId() === $endpoint->endpointId();
         }));
     }
 
     /**
-     * @param array[] $groupedEndpoints
-     * @param array   $configFileOrder  the order for groups that users specified in their config file
-     *
+     * @param  array[]  $groupedEndpoints
+     * @param  array  $configFileOrder  the order for groups that users specified in their config file
      * @return array[]
      */
     public static function sortByConfigFileOrder(array $groupedEndpoints, array $configFileOrder): array
@@ -117,25 +116,21 @@ class Camel
         $groupsOrder = Utils::getTopLevelItemsFromMixedConfigList($configFileOrder);
         $groupsCollection = collect($groupedEndpoints);
         $wildcardPosition = array_search('*', $groupsOrder);
-        if (false !== $wildcardPosition) {
+        if ($wildcardPosition !== false) {
             $promotedGroups = array_splice($groupsOrder, 0, $wildcardPosition);
             $demotedGroups = array_splice($groupsOrder, 1);
 
-            $promotedOrderedGroups = $groupsCollection->filter(fn($group, $groupName) => in_array($groupName, $promotedGroups))
-                ->sortKeysUsing(self::getOrderListComparator($promotedGroups))
-            ;
-            $demotedOrderedGroups = $groupsCollection->filter(fn($group, $groupName) => in_array($groupName, $demotedGroups))
-                ->sortKeysUsing(self::getOrderListComparator($demotedGroups))
-            ;
+            $promotedOrderedGroups = $groupsCollection->filter(fn ($group, $groupName) => in_array($groupName, $promotedGroups))
+                ->sortKeysUsing(self::getOrderListComparator($promotedGroups));
+            $demotedOrderedGroups = $groupsCollection->filter(fn ($group, $groupName) => in_array($groupName, $demotedGroups))
+                ->sortKeysUsing(self::getOrderListComparator($demotedGroups));
 
             $nonWildcardGroups = array_merge($promotedGroups, $demotedGroups);
-            $wildCardOrderedGroups = $groupsCollection->filter(fn($group, $groupName) => !in_array($groupName, $nonWildcardGroups))
-                ->sortKeysUsing(self::getOrderListComparator($demotedGroups))
-            ;
+            $wildCardOrderedGroups = $groupsCollection->filter(fn ($group, $groupName) => ! in_array($groupName, $nonWildcardGroups))
+                ->sortKeysUsing(self::getOrderListComparator($demotedGroups));
 
             $groupedEndpoints = $promotedOrderedGroups->merge($wildCardOrderedGroups)
-                ->merge($demotedOrderedGroups)
-            ;
+                ->merge($demotedOrderedGroups);
         } else {
             $groupedEndpoints = $groupsCollection->sortKeysUsing(self::getOrderListComparator($groupsOrder));
         }
@@ -148,22 +143,22 @@ class Camel
                 $level2Order = Utils::getTopLevelItemsFromMixedConfigList($configFileOrder[$groupName]);
                 $sortedEndpoints = $sortedEndpoints->sortBy(
                     function (OutputEndpointData $e) use ($configFileOrder, $level2Order) {
-                        $endpointIdentifier = $e->httpMethods[0] . ' /' . $e->uri;
+                        $endpointIdentifier = $e->httpMethods[0].' /'.$e->uri;
 
                         // First, check if there's an ordering specified for the endpoint itself
                         $indexOfEndpointInL2Order = array_search($endpointIdentifier, $level2Order);
-                        if (false !== $indexOfEndpointInL2Order) {
+                        if ($indexOfEndpointInL2Order !== false) {
                             return $indexOfEndpointInL2Order;
                         }
 
                         // Check if there's an ordering for the endpoint's subgroup
                         $indexOfSubgroupInL2Order = array_search($e->metadata->subgroup, $level2Order);
-                        if (false !== $indexOfSubgroupInL2Order) {
+                        if ($indexOfSubgroupInL2Order !== false) {
                             // There's a subgroup order; check if there's an endpoints order within that
                             $orderOfEndpointsInSubgroup = $configFileOrder[$e->metadata->groupName][$e->metadata->subgroup] ?? [];
                             $indexOfEndpointInSubGroup = array_search($endpointIdentifier, $orderOfEndpointsInSubgroup);
 
-                            return (false === $indexOfEndpointInSubGroup)
+                            return ($indexOfEndpointInSubGroup === false)
                                 ? $indexOfSubgroupInL2Order
                                 : ($indexOfSubgroupInL2Order + ($indexOfEndpointInSubGroup * 0.1));
                         }
@@ -185,7 +180,7 @@ class Camel
      * Prepare endpoints to be turned into HTML.
      * Map them into OutputEndpointData DTOs, and sort them by the specified order in the config file.
      *
-     * @param array<string,array[]> $groupedEndpoints
+     * @param  array<string,array[]>  $groupedEndpoints
      */
     public static function prepareGroupedEndpointsForOutput(array $groupedEndpoints, array $configFileOrder = []): array
     {
@@ -194,13 +189,13 @@ class Camel
                 'name' => $group['name'],
                 'description' => $group['description'],
                 'endpoints' => array_map(
-                    fn(array $endpoint) => OutputEndpointData::fromExtractedEndpointArray($endpoint),
+                    fn (array $endpoint) => OutputEndpointData::fromExtractedEndpointArray($endpoint),
                     $group['endpoints']
                 ),
             ];
         }, $groupedEndpoints);
 
-        return Camel::sortByConfigFileOrder($groups, $configFileOrder);
+        return self::sortByConfigFileOrder($groups, $configFileOrder);
     }
 
     /**
@@ -215,17 +210,17 @@ class Camel
             $indexOfB = array_search($b, $order);
 
             // If both are in the $order list, compare them normally based on their position in the list
-            if (false !== $indexOfA && false !== $indexOfB) {
+            if ($indexOfA !== false && $indexOfB !== false) {
                 return $indexOfA <=> $indexOfB;
             }
 
             // If only A is in the $order list, then it must come before B.
-            if (false !== $indexOfA) {
+            if ($indexOfA !== false) {
                 return -1;
             }
 
             // If only B is in the $order list, then it must come before A.
-            if (false !== $indexOfB) {
+            if ($indexOfB !== false) {
                 return 1;
             }
 

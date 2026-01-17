@@ -8,8 +8,7 @@ class AnnotationParser
      * Parse an annotation like 'status=400 when="things go wrong" {"message": "failed"}'.
      * Fields are always optional and may appear at the start or the end of the string.
      *
-     * @param array $allowedFields list of fields to look for
-     *
+     * @param  array  $allowedFields  list of fields to look for
      * @return array{content: string, fields: string[]}
      */
     public static function parseIntoContentAndFields(string $annotationContent, array $allowedFields): array
@@ -23,12 +22,12 @@ class AnnotationParser
                 [$matchingText, $attributeValue] = $fieldAndValue;
                 $annotationContent = str_replace($matchingText, '', $annotationContent);
 
-                $parsedFields[$field] = trim($attributeValue, '"\' ');
+                $parsedFields[$field] = mb_trim($attributeValue, '"\' ');
             }
         }
 
         return [
-            'content' => trim($annotationContent),
+            'content' => mb_trim($annotationContent),
             'fields' => $parsedFields,
         ];
     }
@@ -50,7 +49,7 @@ class AnnotationParser
         );
 
         foreach ($matches as $match) {
-            $fields[trim($match[1], '"\' ')] = trim($match[2], '"\' ');
+            $fields[mb_trim($match[1], '"\' ')] = mb_trim($match[2], '"\' ');
         }
 
         return $fields;

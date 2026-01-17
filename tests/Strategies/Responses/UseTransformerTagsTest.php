@@ -27,10 +27,10 @@ class UseTransformerTagsTest extends BaseLaravelTest
      *
      * @dataProvider serializerAndExpected
      *
-     * @param mixed $serializer
-     * @param mixed $expected
+     * @param  mixed  $serializer
+     * @param  mixed  $expected
      */
-    public function canParseTransformerTag($serializer, $expected)
+    public function can_parse_transformer_tag($serializer, $expected)
     {
         $config = new DocumentationConfig(['fractal' => ['serializer' => $serializer]]);
 
@@ -78,7 +78,7 @@ class UseTransformerTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParseTransformerTagWithModel()
+    public function can_parse_transformer_tag_with_model()
     {
         $strategy = new UseTransformerTags(new DocumentationConfig([]));
         $tags = [
@@ -102,7 +102,7 @@ class UseTransformerTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParseTransformerTagWithModelAndFactoryStates()
+    public function can_parse_transformer_tag_with_model_and_factory_states()
     {
         $factory = app(Factory::class);
         $factory->define(TestUser::class, function () {
@@ -134,7 +134,7 @@ class UseTransformerTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParseTransformerTagWithStatusCode()
+    public function can_parse_transformer_tag_with_status_code()
     {
         $strategy = new UseTransformerTags(new DocumentationConfig([]));
         $tags = [
@@ -157,7 +157,7 @@ class UseTransformerTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParseTransformercollectionTag()
+    public function can_parse_transformercollection_tag()
     {
         $strategy = new UseTransformerTags(new DocumentationConfig([]));
         $tags = [
@@ -187,7 +187,7 @@ class UseTransformerTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParseTransformercollectionTagWithModel()
+    public function can_parse_transformercollection_tag_with_model()
     {
         $strategy = new UseTransformerTags(new DocumentationConfig([]));
         $tags = [
@@ -218,7 +218,7 @@ class UseTransformerTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParseTransformercollectionTagWithModelAndPaginatorData()
+    public function can_parse_transformercollection_tag_with_model_and_paginator_data()
     {
         $strategy = new UseTransformerTags(new DocumentationConfig([]));
         $tags = [

@@ -28,7 +28,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     ];
 
     /** @test */
-    public function followsCorrectSpecStructure()
+    public function follows_correct_spec_structure()
     {
         $endpointData1 = $this->createMockEndpointData();
         $endpointData2 = $this->createMockEndpointData();
@@ -46,7 +46,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function addsEndpointsCorrectlyAsOperationsUnderPaths()
+    public function adds_endpoints_correctly_as_operations_under_paths()
     {
         $endpointData1 = $this->createMockEndpointData(['uri' => 'path1', 'httpMethods' => ['GET']]);
         $endpointData2 = $this->createMockEndpointData(['uri' => 'path1', 'httpMethods' => ['POST']]);
@@ -61,10 +61,10 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $this->assertCount(1, $results['paths']['/path1/path2']);
         $this->assertArrayHasKey('get', $results['paths']['/path1']);
         $this->assertArrayHasKey('post', $results['paths']['/path1']);
-        $this->assertArrayHasKey(strtolower($endpointData3->httpMethods[0]), $results['paths']['/path1/path2']);
+        $this->assertArrayHasKey(mb_strtolower($endpointData3->httpMethods[0]), $results['paths']['/path1/path2']);
 
         collect([$endpointData1, $endpointData2, $endpointData3])->each(function (OutputEndpointData $endpoint) use ($groups, $results) {
-            $endpointSpec = $results['paths']['/' . $endpoint->uri][strtolower($endpoint->httpMethods[0])];
+            $endpointSpec = $results['paths']['/'.$endpoint->uri][mb_strtolower($endpoint->httpMethods[0])];
 
             $tags = $endpointSpec['tags'];
             $containingGroup = Arr::first($groups, function ($group) use ($endpoint) {
@@ -78,7 +78,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function addsAuthenticationDetailsCorrectlyAsSecurityInfo()
+    public function adds_authentication_details_correctly_as_security_info()
     {
         $endpointData1 = $this->createMockEndpointData(['uri' => 'path1', 'httpMethods' => ['GET'], 'metadata.authenticated' => true]);
         $endpointData2 = $this->createMockEndpointData(['uri' => 'path1', 'httpMethods' => ['POST'], 'metadata.authenticated' => false]);
@@ -133,7 +133,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function addsDeprecationInfoCorrectly()
+    public function adds_deprecation_info_correctly()
     {
         $endpointData1 = $this->createMockEndpointData(['uri' => 'path1', 'httpMethods' => ['GET'], 'metadata.deprecated' => true]);
         $endpointData2 = $this->createMockEndpointData(['uri' => 'path2', 'httpMethods' => ['GET'], 'metadata.deprecated' => false]);
@@ -149,7 +149,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function addsDeprecatedParamsInfoCorrectly()
+    public function adds_deprecated_params_info_correctly()
     {
         $endpointData1 = $this->createMockEndpointData([
             'uri' => 'path1',
@@ -209,7 +209,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function addsUrlParametersCorrectlyAsParametersOnPathItemObject()
+    public function adds_url_parameters_correctly_as_parameters_on_path_item_object()
     {
         $endpointData1 = $this->createMockEndpointData([
             'httpMethods' => ['POST'],
@@ -259,7 +259,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function addsHeadersCorrectlyAsParametersOnOperationObject()
+    public function adds_headers_correctly_as_parameters_on_operation_object()
     {
         $endpointData1 = $this->createMockEndpointData(['httpMethods' => ['POST'], 'uri' => 'path1', 'headers.Extra-Header' => 'Some-example']);
         $endpointData2 = $this->createMockEndpointData(['uri' => 'path1', 'httpMethods' => ['GET'], 'headers' => []]);
@@ -279,7 +279,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function addsQueryParametersCorrectlyAsParametersOnOperationObject()
+    public function adds_query_parameters_correctly_as_parameters_on_operation_object()
     {
         $endpointData1 = $this->createMockEndpointData([
             'httpMethods' => ['GET'],
@@ -318,7 +318,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function addsBodyParametersCorrectlyAsRequestBodyOnOperationObject()
+    public function adds_body_parameters_correctly_as_request_body_on_operation_object()
     {
         $endpointData1 = $this->createMockEndpointData([
             'httpMethods' => ['POST'],
@@ -504,7 +504,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function addsResponsesCorrectlyAsResponsesOnOperationObject()
+    public function adds_responses_correctly_as_responses_on_operation_object()
     {
         $endpointData1 = $this->createMockEndpointData([
             'httpMethods' => ['POST'],
@@ -666,7 +666,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function appliesRequiredFlagForNestedResponseFieldsWithDotNotation()
+    public function applies_required_flag_for_nested_response_fields_with_dot_notation()
     {
         $endpointData = $this->createMockEndpointData([
             'httpMethods' => ['GET'],
@@ -714,7 +714,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function appliesRequiredFlagForNestedResponseFieldsFromApiResourcesWithDataPrefix()
+    public function applies_required_flag_for_nested_response_fields_from_api_resources_with_data_prefix()
     {
         $endpointData = $this->createMockEndpointData([
             'httpMethods' => ['GET'],
@@ -766,7 +766,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function handlesRequiredParamsCorrectlyForNestedArrays()
+    public function handles_required_params_correctly_for_nested_arrays()
     {
         $endpointData = $this->createMockEndpointData([
             'httpMethods' => ['GET'],
@@ -839,7 +839,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function addsResponsesCorrectlyAsArrayOfObjects()
+    public function adds_responses_correctly_as_array_of_objects()
     {
         $endpointData1 = $this->createMockEndpointData([
             'httpMethods' => ['GET'],
@@ -885,7 +885,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function addsResponseContentTypeCorrectly()
+    public function adds_response_content_type_correctly()
     {
         $endpointData1 = $this->createMockEndpointData([
             'httpMethods' => ['GET'],
@@ -992,7 +992,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function handlesCustomContentTypeWithVariousResponseBodyTypes()
+    public function handles_custom_content_type_with_various_response_body_types()
     {
         $customJsonType = 'application/vnd.api+json';
 
@@ -1046,7 +1046,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function handlesNonJsonResponseContentAsTextPlain()
+    public function handles_non_json_response_content_as_text_plain()
     {
         $endpoint = $this->createMockEndpointData([
             'httpMethods' => ['GET'],
@@ -1067,7 +1067,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function handlesNullAndEmptyArrayResponseContent()
+    public function handles_null_and_empty_array_response_content()
     {
         $endpointWithNullContent = $this->createMockEndpointData([
             'uri' => '/null-response',
@@ -1105,7 +1105,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function addsRequiredFieldsOnArrayOfObjects()
+    public function adds_required_fields_on_array_of_objects()
     {
         $endpointData = $this->createMockEndpointData([
             'httpMethods' => ['GEt'],
@@ -1191,7 +1191,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function generatesCorrectlyForArrayOfStrings()
+    public function generates_correctly_for_array_of_strings()
     {
         $endpointData = $this->createMockEndpointData([
             'httpMethods' => ['GET'],
@@ -1240,7 +1240,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function addsMultipleResponsesCorrectlyUsingOneOf()
+    public function adds_multiple_responses_correctly_using_one_of()
     {
         $endpointData1 = $this->createMockEndpointData([
             'httpMethods' => ['POST'],
@@ -1319,7 +1319,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function addsMoreThanTwoAnswersCorrectlyUsingOneOf()
+    public function adds_more_than_two_answers_correctly_using_one_of()
     {
         $endpointData1 = $this->createMockEndpointData([
             'httpMethods' => ['POST'],
@@ -1413,7 +1413,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function addsEnumValuesToResponseProperties()
+    public function adds_enum_values_to_response_properties()
     {
         $endpointData = $this->createMockEndpointData([
             'httpMethods' => ['GEt'],
@@ -1499,7 +1499,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function doesNotAddEmptyEnumArraysWhenResponseFieldHasNoEnumValues()
+    public function does_not_add_empty_enum_arrays_when_response_field_has_no_enum_values()
     {
         $endpointData = $this->createMockEndpointData([
             'httpMethods' => ['GET'],
@@ -1544,7 +1544,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function addsEnumValuesToResponsePropertiesWhenSpecified()
+    public function adds_enum_values_to_response_properties_when_specified()
     {
         $endpointData = $this->createMockEndpointData([
             'httpMethods' => ['GET'],
@@ -1581,7 +1581,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function listsRequiredPropertiesInRequestBody()
+    public function lists_required_properties_in_request_body()
     {
         $endpointData = $this->createMockEndpointData([
             'uri' => '/path',
@@ -1635,7 +1635,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function canExtendOpenapiGenerator()
+    public function can_extend_openapi_generator()
     {
         $endpointData1 = $this->createMockEndpointData([
             'uri' => '/path',
@@ -1661,7 +1661,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function canExtendOpenapiGeneratorParameters()
+    public function can_extend_openapi_generator_parameters()
     {
         $endpointData1 = $this->createMockEndpointData([
             'uri' => '/{slug}/path',
@@ -1708,7 +1708,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function usesOpenapi31WhenConfigured()
+    public function uses_openapi31_when_configured()
     {
         $config = array_merge($this->config, [
             'openapi' => ['version' => '3.1.0'],
@@ -1723,7 +1723,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function usesJsonSchemaNullableSyntaxInOpenapi31()
+    public function uses_json_schema_nullable_syntax_in_openapi31()
     {
         $config = array_merge($this->config, [
             'openapi' => ['version' => '3.1.0'],
@@ -1759,7 +1759,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function usesNullablePropertyInOpenapi30()
+    public function uses_nullable_property_in_openapi30()
     {
         $config = array_merge($this->config, [
             'openapi' => ['version' => '3.0.3'],
@@ -1793,7 +1793,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function handlesNullResponseContentInOpenapi31()
+    public function handles_null_response_content_in_openapi31()
     {
         $config = array_merge($this->config, [
             'openapi' => ['version' => '3.1.0'],
@@ -1825,7 +1825,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     protected function createMockEndpointData(array $custom = []): OutputEndpointData
     {
         $faker = Factory::create();
-        $path = '/' . $faker->word();
+        $path = '/'.$faker->word();
         $data = [
             'uri' => $path,
             'httpMethods' => $faker->randomElements(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], 1),

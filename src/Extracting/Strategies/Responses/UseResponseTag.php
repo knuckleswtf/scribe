@@ -22,7 +22,7 @@ class UseResponseTag extends Strategy
     }
 
     /**
-     * @param Tag[] $tags
+     * @param  Tag[]  $tags
      */
     public function getDocBlockResponses(array $tags): ?array
     {

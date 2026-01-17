@@ -24,7 +24,7 @@ class ApiResourceResponseTools
         ?callable $modelInstantiator,
         ExtractedEndpointData $endpointData,
         array $pagination,
-        array $additionalData
+        array $additionalData,
     ) {
         $resource = static::getApiResourceOrCollectionInstance(
             $apiResourceClass,
@@ -45,14 +45,14 @@ class ApiResourceResponseTools
         $request = Request::create($uri, $method);
         $request->headers->add(['Accept' => 'application/json']);
         // Set the route properly, so it works for users who have code that checks for the route.
-        $request->setRouteResolver(fn() => $endpointData->route);
+        $request->setRouteResolver(fn () => $endpointData->route);
 
         $previousBoundRequest = app('request');
-        app()->bind('request', fn() => $request);
+        app()->bind('request', fn () => $request);
 
         $response = $resource->toResponse($request);
 
-        app()->bind('request', fn() => $previousBoundRequest);
+        app()->bind('request', fn () => $previousBoundRequest);
 
         return $response;
     }
@@ -62,7 +62,7 @@ class ApiResourceResponseTools
         bool $isCollection,
         ?callable $modelInstantiator,
         array $paginationStrategy = [],
-        array $additionalData = []
+        array $additionalData = [],
     ): JsonResource {
         // If the API Resource uses an empty $resource (e.g. an empty array), the $modelInstantiator will be null
         // See https://github.com/knuckleswtf/scribe/issues/652
@@ -84,7 +84,7 @@ class ApiResourceResponseTools
             // Pagination can be in two forms:
             // [15] : means ::paginate(15)
             // [15, 'simple'] : means ::simplePaginate(15)
-            if (1 == count($paginationStrategy)) {
+            if (count($paginationStrategy) === 1) {
                 $perPage = $paginationStrategy[0];
                 $paginator = new LengthAwarePaginator(
                     // For some reason, the LengthAware paginator needs only first page items to work correctly
@@ -93,11 +93,11 @@ class ApiResourceResponseTools
                     $perPage
                 );
                 $list = $paginator;
-            } elseif (2 == count($paginationStrategy) && 'simple' == $paginationStrategy[1]) {
+            } elseif (count($paginationStrategy) === 2 && $paginationStrategy[1] === 'simple') {
                 $perPage = $paginationStrategy[0];
                 $paginator = new Paginator($models, $perPage);
                 $list = $paginator;
-            } elseif (2 == count($paginationStrategy) && 'cursor' == $paginationStrategy[1]) {
+            } elseif (count($paginationStrategy) === 2 && $paginationStrategy[1] === 'cursor') {
                 $perPage = $paginationStrategy[0];
                 $paginator = new CursorPaginator($models, $perPage);
                 $list = $paginator;
@@ -123,7 +123,7 @@ class ApiResourceResponseTools
 
         /** @var null|Tag $mixinTag */
         $mixinTag = Arr::first(Utils::filterDocBlockTags($docBlock->getTags(), 'mixin'));
-        if (empty($mixinTag) || empty($modelClass = trim($mixinTag->getContent()))) {
+        if (empty($mixinTag) || empty($modelClass = mb_trim($mixinTag->getContent()))) {
             return null;
         }
 

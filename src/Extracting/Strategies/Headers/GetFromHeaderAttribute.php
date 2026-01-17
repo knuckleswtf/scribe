@@ -17,7 +17,7 @@ class GetFromHeaderAttribute extends PhpAttributeStrategy
         ExtractedEndpointData $endpointData,
         array $attributesOnMethod,
         array $attributesOnFormRequest = [],
-        array $attributesOnController = []
+        array $attributesOnController = [],
     ): ?array {
         $headers = [];
         foreach ([...$attributesOnController, ...$attributesOnFormRequest, ...$attributesOnMethod] as $attributeInstance) {

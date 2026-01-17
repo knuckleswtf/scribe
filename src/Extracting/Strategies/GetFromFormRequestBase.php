@@ -13,8 +13,8 @@ use Knuckles\Scribe\Tools\Globals;
 
 class GetFromFormRequestBase extends Strategy
 {
-    use ParsesValidationRules;
     use FindsFormRequestForMethod;
+    use ParsesValidationRules;
 
     protected string $customParameterDataMethodName = '';
 
@@ -25,11 +25,11 @@ class GetFromFormRequestBase extends Strategy
 
     public function getParametersFromFormRequest(\ReflectionFunctionAbstract $method, Route $route): array
     {
-        if (!$formRequestReflectionClass = $this->getFormRequestReflectionClass($method)) {
+        if (! $formRequestReflectionClass = $this->getFormRequestReflectionClass($method)) {
             return [];
         }
 
-        if (!$this->isFormRequestMeantForThisStrategy($formRequestReflectionClass)) {
+        if (! $this->isFormRequestMeantForThisStrategy($formRequestReflectionClass)) {
             return [];
         }
 
@@ -38,7 +38,7 @@ class GetFromFormRequestBase extends Strategy
         if (Globals::$__instantiateFormRequestUsing) {
             $formRequest = call_user_func_array(Globals::$__instantiateFormRequestUsing, [$className, $route, $method]);
         } else {
-            $formRequest = new $className();
+            $formRequest = new $className;
         }
         // Set the route properly so it works for users who have code that checks for the route.
         /** @var FormRequest $formRequest */
@@ -66,8 +66,7 @@ class GetFromFormRequestBase extends Strategy
 
             // @phpstan-ignore-next-line
             return app()->call([$formRequest, 'validator'], [$validationFactory])
-                ->getRules()
-            ;
+                ->getRules();
         }
         if (method_exists($formRequest, 'rules')) {
             return app()->call([$formRequest, 'rules']);
@@ -82,7 +81,7 @@ class GetFromFormRequestBase extends Strategy
             return call_user_func_array([$formRequest, $this->customParameterDataMethodName], []);
         }
 
-        c::warn("No {$this->customParameterDataMethodName}() method found in " . get_class($formRequest) . '. Scribe will only be able to extract basic information from the rules() method.');
+        c::warn("No {$this->customParameterDataMethodName}() method found in ".get_class($formRequest).'. Scribe will only be able to extract basic information from the rules() method.');
 
         return [];
     }

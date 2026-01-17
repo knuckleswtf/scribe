@@ -16,6 +16,7 @@ use PhpParser\ParserFactory;
 class MethodAstParser
 {
     protected static array $methodAsts = [];
+
     protected static array $classAsts = [];
 
     public static function getMethodAst(\ReflectionFunctionAbstract $method)
@@ -41,7 +42,7 @@ class MethodAstParser
      */
     protected static function parseClassSourceCode(string $sourceCode): ?array
     {
-        $parser = (new ParserFactory())->createForHostVersion();
+        $parser = (new ParserFactory)->createForHostVersion();
 
         try {
             $ast = $parser->parse($sourceCode);
@@ -61,13 +62,12 @@ class MethodAstParser
     }
 
     /**
-     * @param Stmt[] $ast
-     *
+     * @param  Stmt[]  $ast
      * @return null|Node
      */
     protected static function findMethodInClassAst(array $ast, string $methodName)
     {
-        $nodeFinder = new NodeFinder();
+        $nodeFinder = new NodeFinder;
 
         return $nodeFinder->findFirst($ast, function (Node $node) use ($methodName) {
             // Todo handle closures
@@ -91,7 +91,7 @@ class MethodAstParser
 
     private static function getAstCacheId(string $fileName, string $methodName): string
     {
-        return $fileName . '///' . $methodName;
+        return $fileName.'///'.$methodName;
     }
 
     private static function getClassAst(string $fileName)

@@ -19,7 +19,7 @@ class GetFromQueryParamAttributeTest extends TestCase
     use ArraySubsetAsserts;
 
     /** @test */
-    public function canFetchFromQueryparamAttribute()
+    public function can_fetch_from_queryparam_attribute()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->controller = new \ReflectionClass(QueryParamAttributeTestController::class);
@@ -133,7 +133,8 @@ class GetFromQueryParamAttributeTest extends TestCase
 
     protected function endpoint(\Closure $configure): ExtractedEndpointData
     {
-        $endpoint = new class extends ExtractedEndpointData {
+        $endpoint = new class extends ExtractedEndpointData
+        {
             public function __construct(array $parameters = []) {}
         };
         $configure($endpoint);

@@ -27,7 +27,7 @@ class GetFromBodyParamTagTest extends TestCase
     }
 
     /** @test */
-    public function canFetchFromBodyparamTag()
+    public function can_fetch_from_bodyparam_tag()
     {
         $tags = [
             new Tag('bodyParam', 'user_id int required The id of the user. Example: 9'),
@@ -169,7 +169,7 @@ class GetFromBodyParamTagTest extends TestCase
     }
 
     /** @test */
-    public function retainsNullAsExampleIfSpecified()
+    public function retains_null_as_example_if_specified()
     {
         $tags = [
             new Tag('bodyParam', 'id int required The id to use. Leave null to autogenerate. Example: null'),
@@ -194,7 +194,7 @@ class GetFromBodyParamTagTest extends TestCase
     }
 
     /** @test */
-    public function canFetchFromBodyparamTagForArrayBody()
+    public function can_fetch_from_bodyparam_tag_for_array_body()
     {
         $tags = [
             new Tag('bodyParam', '[].first_name string The first name of the user. Example: John'),
@@ -240,7 +240,7 @@ class GetFromBodyParamTagTest extends TestCase
     }
 
     /** @test */
-    public function canFetchFromFormRequestMethodArgument()
+    public function can_fetch_from_form_request_method_argument()
     {
         $method = new \ReflectionMethod(TestController::class, 'withFormRequestParameter');
         $route = new Route(['POST'], '/withFormRequestParameter', ['uses' => [TestController::class, 'withFormRequestParameter']]);
@@ -280,7 +280,7 @@ class GetFromBodyParamTagTest extends TestCase
     }
 
     /** @test */
-    public function fetchesFromMethodWhenFormRequestIsNotAnnotated()
+    public function fetches_from_method_when_form_request_is_not_annotated()
     {
         $methodName = 'withNonCommentedFormRequestParameter';
         $method = new \ReflectionMethod(TestController::class, $methodName);

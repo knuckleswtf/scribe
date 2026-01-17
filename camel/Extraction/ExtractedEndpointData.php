@@ -86,7 +86,7 @@ class ExtractedEndpointData extends BaseDTO
 
         parent::__construct($parameters);
 
-        $defaultNormalizer = fn() => UrlParamsNormalizer::normalizeParameterNamesInRouteUri($this->route, $this->method);
+        $defaultNormalizer = fn () => UrlParamsNormalizer::normalizeParameterNamesInRouteUri($this->route, $this->method);
         $this->uri = match (is_callable(Globals::$__normalizeEndpointUrlUsing)) {
             true => call_user_func_array(
                 Globals::$__normalizeEndpointUrlUsing,
@@ -97,7 +97,7 @@ class ExtractedEndpointData extends BaseDTO
     }
 
     /**
-     * @param array $extras Only used for quick overrides in tests
+     * @param  array  $extras  Only used for quick overrides in tests
      *
      * @throws \ReflectionException
      */
@@ -113,7 +113,7 @@ class ExtractedEndpointData extends BaseDTO
         $data = compact('httpMethods', 'uri', 'controller', 'method', 'route');
         $data = array_merge($data, $extras);
 
-        return new ExtractedEndpointData($data);
+        return new self($data);
     }
 
     /**
@@ -125,7 +125,7 @@ class ExtractedEndpointData extends BaseDTO
 
         // Laravel adds an automatic "HEAD" endpoint for each GET request, so we'll strip that out,
         // but not if there's only one method (means it was intentional)
-        if (1 === count($methods)) {
+        if (count($methods) === 1) {
             return $methods;
         }
 
@@ -139,7 +139,7 @@ class ExtractedEndpointData extends BaseDTO
 
     public function endpointId()
     {
-        return $this->httpMethods[0] . str_replace(['/', '?', '{', '}', ':', '\\', '+', '|'], '-', $this->uri);
+        return $this->httpMethods[0].str_replace(['/', '?', '{', '}', ':', '\\', '+', '|'], '-', $this->uri);
     }
 
     /**

@@ -15,22 +15,22 @@ trait ParamHelpers
      * to a number of standard JSON types (integer, boolean, number, object...).
      * Will return the input if no match.
      *
-     * @param mixed $value
+     * @param  mixed  $value
      */
     public static function normalizeTypeName(?string $typeName, $value = null): string
     {
-        if (!$typeName) {
+        if (! $typeName) {
             return 'string';
         }
 
-        $base = str_replace('[]', '', strtolower($typeName));
+        $base = str_replace('[]', '', mb_strtolower($typeName));
 
         return match ($base) {
             'bool' => str_replace($base, 'boolean', $typeName),
             'int' => str_replace($base, 'integer', $typeName),
             'float', 'double' => str_replace($base, 'number', $typeName),
-            'array' => (empty($value) || 0 === array_keys($value)[0])
-                ? static::normalizeTypeName(gettype($value[0] ?? '')) . '[]'
+            'array' => (empty($value) || array_keys($value)[0] === 0)
+                ? static::normalizeTypeName(gettype($value[0] ?? '')).'[]'
                 : 'object',
             default => $typeName
         };
@@ -40,7 +40,7 @@ trait ParamHelpers
     {
         $faker = $this->getFaker();
 
-        $name = strtolower(array_reverse(explode('.', $name))[0]);
+        $name = mb_strtolower(array_reverse(explode('.', $name))[0]);
         $normalizedName = match (true) {
             Str::endsWith($name, ['email', 'email_address']) => 'email',
             Str::endsWith($name, ['uuid']) => 'uuid',
@@ -51,13 +51,13 @@ trait ParamHelpers
         };
 
         return match ($normalizedName) {
-            'email' => fn() => $faker->safeEmail(),
-            'password', 'pwd' => fn() => $faker->password(),
-            'url' => fn() => $faker->url(),
-            'description' => fn() => $faker->sentence(),
-            'uuid' => fn() => $faker->uuid(),
-            'locale' => fn() => $faker->locale(),
-            'timezone' => fn() => $faker->timezone(),
+            'email' => fn () => $faker->safeEmail(),
+            'password', 'pwd' => fn () => $faker->password(),
+            'url' => fn () => $faker->url(),
+            'description' => fn () => $faker->sentence(),
+            'uuid' => fn () => $faker->uuid(),
+            'locale' => fn () => $faker->locale(),
+            'timezone' => fn () => $faker->timezone(),
             default => null,
         };
     }
@@ -74,7 +74,7 @@ trait ParamHelpers
 
     protected function generateDummyValue(string $type, array $hints = [])
     {
-        if (!empty($hints['enumValues'])) {
+        if (! empty($hints['enumValues'])) {
             return Arr::random($hints['enumValues']);
         }
 
@@ -89,7 +89,7 @@ trait ParamHelpers
         $isListType = false;
 
         if (Str::endsWith($type, '[]')) {
-            $baseType = strtolower(substr($type, 0, strlen($type) - 2));
+            $baseType = mb_strtolower(mb_substr($type, 0, mb_strlen($type) - 2));
             $isListType = true;
         }
 
@@ -97,11 +97,11 @@ trait ParamHelpers
         if ($isListType) {
             // Return a one-array item for a list by default.
             return $size
-                ? fn() => [$this->generateDummyValue($baseType, range(0, min($size - 1, 5)))]
-                : fn() => [$this->generateDummyValue($baseType, $hints)];
+                ? fn () => [$this->generateDummyValue($baseType, range(0, min($size - 1, 5)))]
+                : fn () => [$this->generateDummyValue($baseType, $hints)];
         }
 
-        if (($hints['name'] ?? false) && 'file' != $baseType) {
+        if (($hints['name'] ?? false) && $baseType !== 'file') {
             $fakeFactoryByName = $this->getFakeFactoryByName($hints['name']);
             if ($fakeFactoryByName) {
                 return $fakeFactoryByName;
@@ -112,7 +112,7 @@ trait ParamHelpers
         $min = $hints['min'] ?? null;
         $max = $hints['max'] ?? null;
         // If max and min were provided, the override size.
-        $isExactSize = is_null($min) && is_null($max) && !is_null($size);
+        $isExactSize = is_null($min) && is_null($max) && ! is_null($size);
 
         $fakeFactoriesByType = [
             'integer' => function () use ($size, $isExactSize, $max, $faker, $min) {
@@ -129,10 +129,10 @@ trait ParamHelpers
 
                 return $max ? $faker->numberBetween((int) $min, (int) $max) : $faker->randomFloat();
             },
-            'boolean' => fn() => $faker->boolean(),
-            'string' => fn() => $size ? $faker->lexify(str_repeat('?', $size)) : $faker->word(),
-            'object' => fn() => [],
-            'file' => fn() => UploadedFile::fake()->create('test.jpg')->size($size ?: 10),
+            'boolean' => fn () => $faker->boolean(),
+            'string' => fn () => $size ? $faker->lexify(str_repeat('?', $size)) : $faker->word(),
+            'object' => fn () => [],
+            'file' => fn () => UploadedFile::fake()->create('test.jpg')->size($size ?: 10),
         ];
 
         return $fakeFactoriesByType[$baseType] ?? $fakeFactoriesByType['string'];
@@ -158,29 +158,28 @@ trait ParamHelpers
     /**
      * Cast a value to a specified type.
      *
-     * @param mixed $value
-     *
+     * @param  mixed  $value
      * @return mixed
      */
     protected function castToType($value, string $type)
     {
-        if (null === $value) {
+        if ($value === null) {
             return null;
         }
 
-        if ('array' === $type) {
+        if ($type === 'array') {
             $type = 'string[]';
         }
 
         if (Str::endsWith($type, '[]')) {
-            $baseType = strtolower(substr($type, 0, strlen($type) - 2));
+            $baseType = mb_strtolower(mb_substr($type, 0, mb_strlen($type) - 2));
 
             return is_array($value) ? array_map(function ($v) use ($baseType) {
                 return $this->castToType($v, $baseType);
             }, $value) : json_decode($value);
         }
 
-        if ('object' === $type) {
+        if ($type === 'object') {
             return is_array($value) ? $value : json_decode($value, true);
         }
 
@@ -196,7 +195,7 @@ trait ParamHelpers
 
         // First, we handle booleans. We can't use a regular cast,
         // because PHP considers string 'false' as true.
-        if ('false' == $value && ('boolean' == $type || 'bool' == $type)) {
+        if ($value === 'false' && ($type === 'boolean' || $type === 'bool')) {
             return false;
         }
 
@@ -216,15 +215,14 @@ trait ParamHelpers
      */
     protected function shouldExcludeExample(string $description): bool
     {
-        return false !== strpos($description, ' No-example');
+        return mb_strpos($description, ' No-example') !== false;
     }
 
     /**
      * Allows users to specify an example for the parameter by writing 'Example: the-example',
      * to be used in example requests and response calls.
      *
-     * @param string $type The type of the parameter. Used to cast the example provided, if any.
-     *
+     * @param  string  $type  The type of the parameter. Used to cast the example provided, if any.
      * @return array the description and included example
      */
     protected function parseExampleFromParamDescription(string $description, string $type): array
@@ -235,9 +233,9 @@ trait ParamHelpers
 
         if (preg_match('/(.*)\bExample:\s*([\s\S]+)\s*/s', $description, $content)) {
             $exampleWasSpecified = true;
-            $description = trim($content[1]);
+            $description = mb_trim($content[1]);
 
-            if ('null' == $content[2]) {
+            if ($content[2] === 'null') {
                 // If we intentionally put null as example we return null as example
                 $example = null;
             } else {
@@ -247,11 +245,11 @@ trait ParamHelpers
         }
 
         if (preg_match('/(.*)\bEnum:\s*([\s\S]+)\s*/s', $description, $content)) {
-            $description = trim($content[1]);
+            $description = mb_trim($content[1]);
 
             $enumValues = array_map(
-                fn($value) => $this->castToType(trim($value), $type),
-                explode(',', rtrim(trim($content[2]), '.'))
+                fn ($value) => $this->castToType(mb_trim($value), $type),
+                explode(',', mb_rtrim(mb_trim($content[2]), '.'))
             );
         }
 

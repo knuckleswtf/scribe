@@ -43,14 +43,14 @@ class BehavioursTest extends BaseLaravelTest
         });
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         Utils::deleteDirectoryAndContents('public/docs');
         Utils::deleteDirectoryAndContents('.scribe');
     }
 
     /** @test */
-    public function canProcessTraditionalLaravelRouteSyntaxAndCallableTupleSyntax()
+    public function can_process_traditional_laravel_route_syntax_and_callable_tuple_syntax()
     {
         RouteFacade::get('/api/test', [TestController::class, 'withEndpointDescription']);
         RouteFacade::get('/api/array/test', [TestController::class, 'withEndpointDescription']);
@@ -62,7 +62,7 @@ class BehavioursTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function processesHeadRoutesAsHeadNotGet()
+    public function processes_head_routes_as_head_not_get()
     {
         RouteFacade::addRoute('HEAD', '/api/test', [TestController::class, 'withEndpointDescription']);
         $this->generateAndExpectConsoleOutput(expected: ['[HEAD] api/test']);
@@ -73,14 +73,14 @@ class BehavioursTest extends BaseLaravelTest
      *
      * @see https://github.com/knuckleswtf/scribe/issues/53
      */
-    public function canProcessClosureRoutes()
+    public function can_process_closure_routes()
     {
-        RouteFacade::get('/api/closure', fn() => 'hi');
+        RouteFacade::get('/api/closure', fn () => 'hi');
         $this->generateAndExpectConsoleOutput(expected: ['[GET] api/closure']);
     }
 
     /** @test */
-    public function callsAfterGeneratingHookWithCorrectPaths()
+    public function calls_after_generating_hook_with_correct_paths()
     {
         $paths = [];
         Scribe::afterGenerating(function (array $outputPaths) use (&$paths) {
@@ -129,11 +129,11 @@ class BehavioursTest extends BaseLaravelTest
             ],
         ], $paths);
 
-        Scribe::afterGenerating(fn() => null);
+        Scribe::afterGenerating(fn () => null);
     }
 
     /** @test */
-    public function callsBootstrapHook()
+    public function calls_bootstrap_hook()
     {
         $commandInstance = null;
 
@@ -147,14 +147,14 @@ class BehavioursTest extends BaseLaravelTest
 
         $this->assertTrue($commandInstance instanceof GenerateDocumentation);
 
-        Scribe::bootstrap(fn() => null);
+        Scribe::bootstrap(fn () => null);
     }
 
     /** @test */
-    public function skipsMethodsAndClassesWithHidefromapidocumentationTag()
+    public function skips_methods_and_classes_with_hidefromapidocumentation_tag()
     {
         RouteFacade::get('/api/skip', [TestController::class, 'skip']);
-        RouteFacade::get('/api/skipClass', TestIgnoreThisController::class . '@dummy');
+        RouteFacade::get('/api/skipClass', TestIgnoreThisController::class.'@dummy');
         RouteFacade::get('/api/test', [TestController::class, 'withEndpointDescription']);
 
         $this->generateAndExpectConsoleOutput(expected: [
@@ -165,14 +165,14 @@ class BehavioursTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function warnsOfNonexistentResponseFiles()
+    public function warns_of_nonexistent_response_files()
     {
         RouteFacade::get('/api/non-existent', [TestController::class, 'withNonExistentResponseFile']);
         $this->generateAndExpectConsoleOutput(expected: ['@responseFile i-do-not-exist.json does not exist']);
     }
 
     /** @test */
-    public function canParseResourceRoutes()
+    public function can_parse_resource_routes()
     {
         RouteFacade::resource('/api/users', TestResourceController::class)->only(['index', 'store']);
 
@@ -188,7 +188,7 @@ class BehavioursTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function supportsPartialResourceController()
+    public function supports_partial_resource_controller()
     {
         RouteFacade::resource('/api/users', TestPartialResourceController::class);
 
@@ -199,9 +199,9 @@ class BehavioursTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canCustomiseStaticOutputPath()
+    public function can_customise_static_output_path()
     {
-        RouteFacade::get('/api/action1', TestGroupController::class . '@action1');
+        RouteFacade::get('/api/action1', TestGroupController::class.'@action1');
 
         $this->setConfig(['type' => 'static', 'static.output_path' => 'static/docs']);
         $this->assertFileDoesNotExist('static/docs/index.html');
@@ -214,7 +214,7 @@ class BehavioursTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canGenerateWithApiresourceTagButWithoutApiresourcemodelTag()
+    public function can_generate_with_apiresource_tag_but_without_apiresourcemodel_tag()
     {
         RouteFacade::get('/api/test', [TestController::class, 'withEmptyApiResource']);
         $this->generateAndExpectConsoleOutput(expected: [

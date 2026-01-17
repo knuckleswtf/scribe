@@ -24,7 +24,7 @@ use Mpociot\Reflection\DocBlock\Tag;
  */
 class UseApiResourceTagsTest extends BaseLaravelTest
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -51,7 +51,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParseApiresourceTags()
+    public function can_parse_apiresource_tags()
     {
         $config = new DocumentationConfig([]);
 
@@ -79,7 +79,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParseApiresourceTagsWithoutApiresourcemodel()
+    public function can_parse_apiresource_tags_without_apiresourcemodel()
     {
         $config = new DocumentationConfig([]);
 
@@ -104,7 +104,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function respectsModelsSourceSettings()
+    public function respects_models_source_settings()
     {
         $config = new DocumentationConfig(['examples' => ['models_source' => ['databaseFirst', 'factoryMake']]]);
         $route = new Route(['POST'], '/somethingRandom', ['uses' => [TestController::class, 'dummy']]);
@@ -140,7 +140,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParseApiresourceTagsWithScenarioAndStatusAttributes()
+    public function can_parse_apiresource_tags_with_scenario_and_status_attributes()
     {
         $config = new DocumentationConfig([]);
 
@@ -174,7 +174,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function properlyBindsRouteAndRequestWhenFetchingApiresourceResponse()
+    public function properly_binds_route_and_request_when_fetching_apiresource_response()
     {
         $config = new DocumentationConfig([]);
 
@@ -201,7 +201,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParseApiresourcemodelTagsWithFactoryStates()
+    public function can_parse_apiresourcemodel_tags_with_factory_states()
     {
         $config = new DocumentationConfig([]);
 
@@ -231,7 +231,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canInferModelFromMixinTagAndParseApiresourceTagsWithFactoryStates()
+    public function can_infer_model_from_mixin_tag_and_parse_apiresource_tags_with_factory_states()
     {
         $config = new DocumentationConfig([]);
 
@@ -260,11 +260,11 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function loadsSpecifiedRelationsForModel()
+    public function loads_specified_relations_for_model()
     {
         $factory = app(Factory::class);
         $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
-            if (4 === $user->id) {
+            if ($user->id === 4) {
                 $child = Utils::getModelFactory(TestUser::class)->make(['id' => 5, 'parent_id' => 4]);
                 $user->setRelation('children', collect([$child]));
             }
@@ -303,11 +303,11 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function loadsSpecifiedRelationsForGeneratedModel()
+    public function loads_specified_relations_for_generated_model()
     {
         $factory = app(Factory::class);
         $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
-            if (4 === $user->id) {
+            if ($user->id === 4) {
                 $child = Utils::getModelFactory(TestUser::class)->make(['id' => 5, 'parent_id' => 4]);
                 $user->setRelation('children', collect([$child]));
             }
@@ -345,11 +345,11 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function loadsSpecifiedNestedRelationsForGeneratedModel()
+    public function loads_specified_nested_relations_for_generated_model()
     {
         $factory = app(Factory::class);
         $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
-            if (4 === $user->id) {
+            if ($user->id === 4) {
                 $child = Utils::getModelFactory(TestUser::class)->make(['id' => 5, 'parent_id' => 4]);
                 $user->setRelation('children', collect([$child]));
 
@@ -398,7 +398,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function loadsSpecifiedManyToManyRelationsForGeneratedModel()
+    public function loads_specified_many_to_many_relations_for_generated_model()
     {
         $factory = app(Factory::class);
         $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
@@ -439,11 +439,11 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function loadsSpecifiedManyToManyAndNestedRelationsForGeneratedModel()
+    public function loads_specified_many_to_many_and_nested_relations_for_generated_model()
     {
         $factory = app(Factory::class);
         $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
-            if (4 === $user->id) {
+            if ($user->id === 4) {
                 $child = Utils::getModelFactory(TestUser::class)->make(['id' => 5, 'parent_id' => 4]);
                 $user->setRelation('children', collect([$child]));
 
@@ -492,7 +492,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function loadsSpecifiedManyToManyRelationsForGeneratedModelWithPivot()
+    public function loads_specified_many_to_many_relations_for_generated_model_with_pivot()
     {
         $factory = app(Factory::class);
         $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
@@ -547,7 +547,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function loadsSpecifiedMorphToManyRelationsForGeneratedModelWithPivot()
+    public function loads_specified_morph_to_many_relations_for_generated_model_with_pivot()
     {
         Schema::create('test_posts', function (Blueprint $table) {
             $table->id();
@@ -603,7 +603,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParseApiresourcecollectionTags()
+    public function can_parse_apiresourcecollection_tags()
     {
         $config = new DocumentationConfig([]);
 
@@ -638,7 +638,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParseApiresourcecollectionTagsWithCollectionClass()
+    public function can_parse_apiresourcecollection_tags_with_collection_class()
     {
         $config = new DocumentationConfig([]);
 
@@ -676,7 +676,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParseApiresourcecollectionTagsWithCollectionClassAndPagination()
+    public function can_parse_apiresourcecollection_tags_with_collection_class_and_pagination()
     {
         $config = new DocumentationConfig([]);
 
@@ -720,7 +720,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParseApiresourceadditionalTags()
+    public function can_parse_apiresourceadditional_tags()
     {
         $config = new DocumentationConfig([]);
 
@@ -753,7 +753,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParseApiresourcecollectionTagsWithCollectionClassPaginationAndApiresourceadditionalTag()
+    public function can_parse_apiresourcecollection_tags_with_collection_class_pagination_and_apiresourceadditional_tag()
     {
         $config = new DocumentationConfig([]);
 
@@ -799,7 +799,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function canParseApiresourcecollectionTagsWithCollectionClassAndCursorPagination()
+    public function can_parse_apiresourcecollection_tags_with_collection_class_and_cursor_pagination()
     {
         $config = new DocumentationConfig([]);
 

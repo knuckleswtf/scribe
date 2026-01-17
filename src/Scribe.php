@@ -16,7 +16,7 @@ class Scribe
      * Specify a callback that will be executed just before a response call is made
      * (after configuring the environment and starting a transaction).
      *
-     * @param callable(Request, ExtractedEndpointData): mixed $callable
+     * @param  callable(Request, ExtractedEndpointData): mixed  $callable
      */
     public static function beforeResponseCall(callable $callable)
     {
@@ -27,7 +27,7 @@ class Scribe
      * Specify a callback that will be executed just after a response call is done
      * (allowing to modify the response).
      *
-     * @param callable(Request, ExtractedEndpointData, mixed): mixed $callable
+     * @param  callable(Request, ExtractedEndpointData, mixed): mixed  $callable
      */
     public static function afterResponseCall(callable $callable)
     {
@@ -37,7 +37,7 @@ class Scribe
     /**
      * Specify a callback that will be executed just before the generate command is executed.
      *
-     * @param callable(GenerateDocumentation): mixed $callable
+     * @param  callable(GenerateDocumentation): mixed  $callable
      */
     public static function bootstrap(callable $callable)
     {
@@ -63,7 +63,7 @@ class Scribe
      *
      * If you disabled `postman` or `openapi`, their values will be null.
      *
-     * @param callable(array): mixed $callable
+     * @param  callable(array): mixed  $callable
      */
     public static function afterGenerating(callable $callable)
     {
@@ -75,7 +75,7 @@ class Scribe
      * to instantiate Form Requests. his callback takes the name of the form request class,
      * the current Laravel route being processed, and the controller method.
      *
-     * @param ?callable(string,Route,\ReflectionFunctionAbstract): mixed $callable
+     * @param  ?callable(string,Route,\ReflectionFunctionAbstract): mixed  $callable
      */
     public static function instantiateFormRequestUsing(?callable $callable)
     {
@@ -89,7 +89,7 @@ class Scribe
      * to a general style (`users/{user_id}/projects/{id}`).
      * The callback will be passed the default Laravel URL, the route object, the controller method and class.
      *
-     * @param ?callable(string,Route,\ReflectionFunctionAbstract,?\ReflectionClass): string $callable
+     * @param  ?callable(string,Route,\ReflectionFunctionAbstract,?\ReflectionClass): string  $callable
      */
     public static function normalizeEndpointUrlUsing(?callable $callable)
     {

@@ -8,9 +8,11 @@ use Illuminate\Translation\FileLoader;
 class CustomTranslationsLoader extends FileLoader
 {
     protected LoaderContract $defaultLoader;
+
     protected mixed $langPath;
 
     protected ?array $scribeTranslationsCache = null;
+
     protected ?array $userTranslationsCache = null;
 
     public function __construct(LoaderContract $loader)
@@ -26,7 +28,7 @@ class CustomTranslationsLoader extends FileLoader
         // `lang/scribe/en/auth.php`, `lang/scribe/en/links.php`
         // We want to trick it into accepting a simple `lang/scribe.php`.
 
-        if ('scribe' == $namespace) {
+        if ($namespace === 'scribe') {
             if (isset($this->scribeTranslationsCache)) {
                 $lines = $this->scribeTranslationsCache[$group] ?? [];
             } elseif ($this->files->exists($full = "{$this->hints[$namespace]}/scribe.php")) {
@@ -48,7 +50,7 @@ class CustomTranslationsLoader extends FileLoader
         $userTranslationsFile = "{$this->langPath}/scribe.php";
 
         if ($this->files->exists($userTranslationsFile)) {
-            if (!isset($this->userTranslationsCache)) {
+            if (! isset($this->userTranslationsCache)) {
                 $this->userTranslationsCache = $this->files->getRequire($userTranslationsFile);
             }
             $userTranslations = $this->userTranslationsCache[$group] ?? [];

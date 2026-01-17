@@ -22,7 +22,7 @@ class UseResponseTagTest extends TestCase
      *
      * @dataProvider responseTags
      */
-    public function allowsMultipleResponseTagsForMultipleStatusesAndScenarios(array $tags, array $expected)
+    public function allows_multiple_response_tags_for_multiple_statuses_and_scenarios(array $tags, array $expected)
     {
         $strategy = new UseResponseTag(new DocumentationConfig([]));
         $results = $strategy->getDocBlockResponses($tags);

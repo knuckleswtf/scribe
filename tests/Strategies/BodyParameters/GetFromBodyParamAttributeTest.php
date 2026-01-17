@@ -20,7 +20,7 @@ class GetFromBodyParamAttributeTest extends TestCase
     use ArraySubsetAsserts;
 
     /** @test */
-    public function canFetchFromBodyparamAttribute()
+    public function can_fetch_from_bodyparam_attribute()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->controller = new \ReflectionClass(BodyParamAttributeTestController::class);
@@ -179,7 +179,7 @@ class GetFromBodyParamAttributeTest extends TestCase
     }
 
     /** @test */
-    public function canFetchFromBodyparamAttributeOnFormrequest()
+    public function can_fetch_from_bodyparam_attribute_on_formrequest()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->controller = new \ReflectionClass(BodyParamAttributeTestController::class);
@@ -209,7 +209,7 @@ class GetFromBodyParamAttributeTest extends TestCase
     }
 
     /** @test */
-    public function canFetchFromBodyparamAttributeForArrayBody()
+    public function can_fetch_from_bodyparam_attribute_for_array_body()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->controller = null;
@@ -260,7 +260,8 @@ class GetFromBodyParamAttributeTest extends TestCase
 
     protected function endpoint(\Closure $configure): ExtractedEndpointData
     {
-        $endpoint = new class extends ExtractedEndpointData {
+        $endpoint = new class extends ExtractedEndpointData
+        {
             public function __construct(array $parameters = []) {}
         };
         $configure($endpoint);

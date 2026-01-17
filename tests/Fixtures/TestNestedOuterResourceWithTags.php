@@ -9,7 +9,7 @@ class TestNestedOuterResourceWithTags extends JsonResource
     /**
      * Create a new resource instance.
      *
-     * @param mixed $resource
+     * @param  mixed  $resource
      */
     public function __construct($resource = [])
     {
@@ -24,8 +24,7 @@ class TestNestedOuterResourceWithTags extends JsonResource
      * @responseField outer2 string required Second outer string
      * @responseField outer2.inner2 string required Second inner string
      *
-     * @param mixed $request
-     *
+     * @param  mixed  $request
      * @return array<string, mixed>
      */
     public function toArray($request)

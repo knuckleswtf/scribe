@@ -17,7 +17,7 @@ use Knuckles\Scribe\Writing\PostmanCollectionWriter;
 class PostmanCollectionWriterTest extends BaseUnitTest
 {
     /** @test */
-    public function correctStructureIsFollowed()
+    public function correct_structure_is_followed()
     {
         $config = ['title' => 'Test API', 'description' => 'A fake description', 'base_url' => 'http://localhost'];
 
@@ -28,7 +28,7 @@ class PostmanCollectionWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function endpointIsParsed()
+    public function endpoint_is_parsed()
     {
         $endpointData = $this->createMockEndpointData('some/path');
 
@@ -54,7 +54,7 @@ class PostmanCollectionWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function headersArePulledFromRoute()
+    public function headers_are_pulled_from_route()
     {
         $endpointData = $this->createMockEndpointData('some/path');
         $endpointData->headers = ['X-Fake' => 'Test'];
@@ -69,7 +69,7 @@ class PostmanCollectionWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function urlParametersAreRepresentedProperly()
+    public function url_parameters_are_represented_properly()
     {
         $endpointData = $this->createMockEndpointData('fake/{param}');
         $endpointData->urlParameters['param'] = new Parameter([
@@ -97,7 +97,7 @@ class PostmanCollectionWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function queryParametersAreDocumented()
+    public function query_parameters_are_documented()
     {
         $endpointData = $this->createMockEndpointData('fake/path');
 
@@ -146,7 +146,7 @@ class PostmanCollectionWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function urlParametersAreNotIncludedIfMissingFromPath()
+    public function url_parameters_are_not_included_if_missing_from_path()
     {
         $endpointData = $this->createMockEndpointData('fake/path');
 
@@ -166,7 +166,7 @@ class PostmanCollectionWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function queryParametersAreDisabledWithNoValueWhenNotRequired()
+    public function query_parameters_are_disabled_with_no_value_when_not_required()
     {
         $endpointData = $this->createMockEndpointData('fake/path');
         $endpointData->queryParameters = [
@@ -208,7 +208,7 @@ class PostmanCollectionWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function authInfoIsAddedCorrectly()
+    public function auth_info_is_added_correctly()
     {
         $endpointData1 = $this->createMockEndpointData('some/path');
         $endpointData1->metadata->authenticated = true;
@@ -264,7 +264,7 @@ class PostmanCollectionWriterTest extends BaseUnitTest
     }
 
     /** @test */
-    public function organizesGroupsAndSubgroupsCorrectly()
+    public function organizes_groups_and_subgroups_correctly()
     {
         $endpointData1 = $this->createMockEndpointData('endpoint1');
         $endpointData1->metadata->subgroup = 'Subgroup A';
@@ -282,8 +282,8 @@ class PostmanCollectionWriterTest extends BaseUnitTest
         $collection = $this->generate($config, [$endpoints]);
 
         $this->assertEquals('Group A', $collection['item'][0]['name']);
-        $this->assertEquals(['Subgroup A', 'POST endpoint2'], array_map(fn($i) => $i['name'], $collection['item'][0]['item']));
-        $this->assertEquals(['POST endpoint1', 'POST endpoint3'], array_map(fn($i) => $i['name'], $collection['item'][0]['item'][0]['item']));
+        $this->assertEquals(['Subgroup A', 'POST endpoint2'], array_map(fn ($i) => $i['name'], $collection['item'][0]['item']));
+        $this->assertEquals(['POST endpoint1', 'POST endpoint3'], array_map(fn ($i) => $i['name'], $collection['item'][0]['item'][0]['item']));
         $this->assertEquals('Subgroup A description', $collection['item'][0]['item'][0]['description']);
     }
 
@@ -320,7 +320,7 @@ class PostmanCollectionWriterTest extends BaseUnitTest
 
     protected function generate(
         array $config = ['base_url' => 'fake.localhost', 'title' => 'Test API'],
-        array $endpoints = []
+        array $endpoints = [],
     ): array {
         $writer = new PostmanCollectionWriter(new DocumentationConfig($config));
 

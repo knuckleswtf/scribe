@@ -16,7 +16,7 @@ class ThisValidate
 {
     public static function find(Node $node)
     {
-        if (!$node instanceof Node\Stmt\Expression) {
+        if (! $node instanceof Node\Stmt\Expression) {
             return;
         }
 
@@ -28,9 +28,9 @@ class ThisValidate
         if (
             $expr instanceof Node\Expr\MethodCall
             && $expr->var instanceof Node\Expr\Variable
-            && 'this' === $expr->var->name
+            && $expr->var->name === 'this'
         ) {
-            if ('validate' == $expr->name->name) {
+            if ($expr->name->name === 'validate') {
                 return $expr->args[1]->value;
             }
         }

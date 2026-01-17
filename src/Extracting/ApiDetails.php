@@ -27,7 +27,7 @@ class ApiDetails
     public function __construct(
         PathConfig $paths,
         ?DocumentationConfig $config = null,
-        bool $preserveUserChanges = true
+        bool $preserveUserChanges = true,
     ) {
         $this->markdownOutputPath = $paths->intermediateOutputPath(); // .scribe by default
         // If no config is injected, pull from global. Makes testing easier.
@@ -35,16 +35,16 @@ class ApiDetails
         $this->baseUrl = $this->config->get('base_url') ?? config('app.url');
         $this->preserveUserChanges = $preserveUserChanges;
 
-        $this->fileHashesTrackingFile = $this->markdownOutputPath . '/.filehashes';
+        $this->fileHashesTrackingFile = $this->markdownOutputPath.'/.filehashes';
         $this->lastKnownFileContentHashes = [];
     }
 
     public function writeMarkdownFiles(): void
     {
         c::task(
-            'Extracting intro and auth Markdown files to: ' . $this->markdownOutputPath,
+            'Extracting intro and auth Markdown files to: '.$this->markdownOutputPath,
             function () {
-                if (!is_dir($this->markdownOutputPath)) {
+                if (! is_dir($this->markdownOutputPath)) {
                     mkdir($this->markdownOutputPath, 0o777, true);
                 }
 
@@ -62,7 +62,7 @@ class ApiDetails
 
     public function writeIntroMarkdownFile(): void
     {
-        $introMarkdownFile = $this->markdownOutputPath . '/intro.md';
+        $introMarkdownFile = $this->markdownOutputPath.'/intro.md';
         if ($this->hasFileBeenModified($introMarkdownFile)) {
             if ($this->preserveUserChanges) {
                 c::warn("Skipping modified file {$introMarkdownFile}");
@@ -76,14 +76,13 @@ class ApiDetails
         $introMarkdown = view('scribe::markdown.intro')
             ->with('description', $this->config->get('description', ''))
             ->with('introText', $this->config->get('intro_text', ''))
-            ->with('baseUrl', $this->baseUrl)->render()
-        ;
+            ->with('baseUrl', $this->baseUrl)->render();
         $this->writeMarkdownFileAndRecordHash($introMarkdownFile, $introMarkdown);
     }
 
     public function writeAuthMarkdownFile(): void
     {
-        $authMarkdownFile = $this->markdownOutputPath . '/auth.md';
+        $authMarkdownFile = $this->markdownOutputPath.'/auth.md';
         if ($this->hasFileBeenModified($authMarkdownFile)) {
             if ($this->preserveUserChanges) {
                 c::warn("Skipping modified file {$authMarkdownFile}");
@@ -107,7 +106,7 @@ class ApiDetails
                     'parameterName' => $parameterName,
                     'placeholder' => $this->config->get('auth.placeholder') ?: 'your-token']
             );
-            $authDescription .= "\n\n" . u::trans('scribe::auth.details');
+            $authDescription .= "\n\n".u::trans('scribe::auth.details');
             $extraInfo = $this->config->get('auth.extra_info', '');
         }
 
@@ -130,14 +129,13 @@ class ApiDetails
         $content = "# GENERATED. YOU SHOULDN'T MODIFY OR DELETE THIS FILE.\n";
         $content .= "# Scribe uses this file to know when you change something manually in your docs.\n";
         $content .= collect($this->lastKnownFileContentHashes)
-            ->map(fn($hash, $filePath) => "{$filePath}={$hash}")->implode("\n")
-        ;
+            ->map(fn ($hash, $filePath) => "{$filePath}={$hash}")->implode("\n");
         file_put_contents($this->fileHashesTrackingFile, $content);
     }
 
     protected function hasFileBeenModified(string $filePath): bool
     {
-        if (!file_exists($filePath)) {
+        if (! file_exists($filePath)) {
             return false;
         }
 
@@ -147,7 +145,7 @@ class ApiDetails
             $currentFileHash = hash_file('md5', $filePath);
 
             // No danger of a timing attack, so no need for hash_equals() comparison
-            return $currentFileHash != $oldFileHash;
+            return $currentFileHash !== $oldFileHash;
         }
 
         return false;
@@ -156,7 +154,7 @@ class ApiDetails
     protected function fetchFileHashesFromTrackingFile()
     {
         if (file_exists($this->fileHashesTrackingFile)) {
-            $lastKnownFileHashes = explode("\n", trim(file_get_contents($this->fileHashesTrackingFile)));
+            $lastKnownFileHashes = explode("\n", mb_trim(file_get_contents($this->fileHashesTrackingFile)));
             // First two lines are comments
             array_shift($lastKnownFileHashes);
             array_shift($lastKnownFileHashes);
@@ -165,8 +163,7 @@ class ApiDetails
                     [$filePath, $hash] = explode('=', $line);
 
                     return [$filePath => $hash];
-                })->toArray()
-            ;
+                })->toArray();
         }
     }
 }

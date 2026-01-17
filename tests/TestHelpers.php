@@ -7,9 +7,8 @@ use Illuminate\Contracts\Console\Kernel;
 trait TestHelpers
 {
     /**
-     * @param string $command
-     * @param array  $parameters
-     *
+     * @param  string  $command
+     * @param  array  $parameters
      * @return mixed
      */
     public function artisan($command, $parameters = [])
@@ -32,7 +31,7 @@ trait TestHelpers
     protected function generateAndExpectConsoleOutput(
         array $options = [],
         array $expected = [],
-        array $notExpected = []
+        array $notExpected = [],
     ): void {
         $output = $this->generate($options);
 

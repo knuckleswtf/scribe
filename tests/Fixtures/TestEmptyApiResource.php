@@ -10,7 +10,7 @@ class TestEmptyApiResource extends JsonResource
     /**
      * Create a new resource instance.
      *
-     * @param mixed $resource
+     * @param  mixed  $resource
      */
     public function __construct($resource = [])
     {
@@ -20,8 +20,7 @@ class TestEmptyApiResource extends JsonResource
     /**
      * Get any additional data that should be returned with the resource array.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return array
      */
     public function with($request)
@@ -36,8 +35,7 @@ class TestEmptyApiResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return array
      */
     public function toArray($request)

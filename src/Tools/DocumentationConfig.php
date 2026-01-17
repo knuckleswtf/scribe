@@ -17,8 +17,7 @@ class DocumentationConfig
      * Get a config item with dot notation.
      * If the key does not exist, $default (or null) will be returned.
      *
-     * @param mixed $default
-     *
+     * @param  mixed  $default
      * @return array|mixed
      */
     public function get(string $key, $default = null)
@@ -28,7 +27,7 @@ class DocumentationConfig
 
     public function outputIsStatic(): bool
     {
-        return !$this->outputRoutedThroughLaravel();
+        return ! $this->outputRoutedThroughLaravel();
     }
 
     public function outputRoutedThroughLaravel(): bool

@@ -10,13 +10,13 @@ trait FindsFormRequestForMethod
     {
         foreach ($method->getParameters() as $argument) {
             $argType = $argument->getType();
-            if (null === $argType || $argType instanceof \ReflectionUnionType) {
+            if ($argType === null || $argType instanceof \ReflectionUnionType) {
                 continue;
             }
 
             $argumentClassName = $argType->getName();
 
-            if (!class_exists($argumentClassName)) {
+            if (! class_exists($argumentClassName)) {
                 continue;
             }
 

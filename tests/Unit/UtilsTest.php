@@ -13,9 +13,9 @@ use Knuckles\Scribe\Tools\Utils;
 class UtilsTest extends BaseLaravelTest
 {
     /** @test */
-    public function makeDirectoryRecursive()
+    public function make_directory_recursive()
     {
-        $dir = __DIR__ . '/test_dir';
+        $dir = __DIR__.'/test_dir';
         Utils::makeDirectoryRecursive($dir);
         $this->assertDirectoryExists($dir); // Directory exists
 

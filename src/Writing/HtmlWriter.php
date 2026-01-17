@@ -17,20 +17,23 @@ use Knuckles\Scribe\Tools\WritingUtils;
 class HtmlWriter
 {
     protected DocumentationConfig $config;
+
     protected string $baseUrl;
+
     protected string $assetPathPrefix;
+
     protected MarkdownParser $markdownParser;
 
     public function __construct(?DocumentationConfig $config = null)
     {
         $this->config = $config ?: new DocumentationConfig(config('scribe', []));
-        $this->markdownParser = new MarkdownParser();
+        $this->markdownParser = new MarkdownParser;
         $this->baseUrl = $this->config->get('base_url') ?? config('app.url');
         // If they're using the default static path,
         // then use '../docs/{asset}', so assets can work via Laravel app or via index.html
         $this->assetPathPrefix = '../docs/';
         if (in_array($this->config->get('type'), ['static', 'external_static'])
-            && 'public/docs' != rtrim($this->config->get('static.output_path', ''), '/')
+            && mb_rtrim($this->config->get('static.output_path', ''), '/') !== 'public/docs'
         ) {
             $this->assetPathPrefix = './';
         }
@@ -38,12 +41,12 @@ class HtmlWriter
 
     public function generate(array $groupedEndpoints, string $sourceFolder, string $destinationFolder)
     {
-        $intro = $this->transformMarkdownFileToHTML($sourceFolder . '/intro.md');
-        $auth = $this->transformMarkdownFileToHTML($sourceFolder . '/auth.md');
+        $intro = $this->transformMarkdownFileToHTML($sourceFolder.'/intro.md');
+        $auth = $this->transformMarkdownFileToHTML($sourceFolder.'/auth.md');
         $headingsBeforeEndpoints = $this->markdownParser->headings;
 
         $this->markdownParser->headings = [];
-        $appendFile = rtrim($sourceFolder, '/') . '/append.md';
+        $appendFile = mb_rtrim($sourceFolder, '/').'/append.md';
         $append = file_exists($appendFile) ? $this->transformMarkdownFileToHTML($appendFile) : '';
         $headingsAfterEndpoints = $this->markdownParser->headings;
 
@@ -63,20 +66,20 @@ class HtmlWriter
             'assetPathPrefix' => $this->assetPathPrefix,
         ])->render();
 
-        if (!is_dir($destinationFolder)) {
+        if (! is_dir($destinationFolder)) {
             mkdir($destinationFolder, 0o777, true);
         }
 
-        file_put_contents($destinationFolder . '/index.html', $output);
+        file_put_contents($destinationFolder.'/index.html', $output);
 
         // Copy assets
-        $assetsFolder = __DIR__ . '/../../resources';
+        $assetsFolder = __DIR__.'/../../resources';
         // Prune older versioned assets
-        if (is_dir($destinationFolder . '/css')) {
-            Utils::deleteDirectoryAndContents($destinationFolder . '/css');
+        if (is_dir($destinationFolder.'/css')) {
+            Utils::deleteDirectoryAndContents($destinationFolder.'/css');
         }
-        if (is_dir($destinationFolder . '/js')) {
-            Utils::deleteDirectoryAndContents($destinationFolder . '/js');
+        if (is_dir($destinationFolder.'/js')) {
+            Utils::deleteDirectoryAndContents($destinationFolder.'/js');
         }
         Utils::copyDirectory("{$assetsFolder}/images/", "{$destinationFolder}/images");
 
@@ -92,10 +95,10 @@ class HtmlWriter
 
         foreach ($assets as $path => [$destination, $fileName]) {
             if (file_exists($path)) {
-                if (!is_dir($destination)) {
+                if (! is_dir($destination)) {
                     mkdir($destination, 0o777, true);
                 }
-                copy($path, $destination . $fileName);
+                copy($path, $destination.$fileName);
             }
         }
     }
@@ -112,10 +115,10 @@ class HtmlWriter
 
         $auth = $this->config->get('auth');
         if ($auth) {
-            if ('bearer' === $auth['in'] || 'basic' === $auth['in']) {
+            if ($auth['in'] === 'bearer' || $auth['in'] === 'basic') {
                 $auth['name'] = 'Authorization';
                 $auth['location'] = 'header';
-                $auth['prefix'] = ucfirst($auth['in']) . ' ';
+                $auth['prefix'] = ucfirst($auth['in']).' ';
             } else {
                 $auth['location'] = $auth['in'];
                 $auth['prefix'] = '';
@@ -123,7 +126,7 @@ class HtmlWriter
         }
 
         return [
-            'title' => $this->config->get('title') ?: config('app.name', '') . ' Documentation',
+            'title' => $this->config->get('title') ?: config('app.name', '').' Documentation',
             'example_languages' => $this->config->get('example_languages'),
             'logo' => $this->config->get('logo') ?? false,
             'last_updated' => $this->getLastUpdated(),
@@ -144,17 +147,17 @@ class HtmlWriter
         $lastUpdated = $this->config->get('last_updated', 'Last updated: {date:F j, Y}');
 
         $tokens = [
-            'date' => fn($format) => date($format),
-            'git' => fn($format) => match ($format) {
-                'short' => trim(shell_exec('git rev-parse --short HEAD')),
-                'long' => trim(shell_exec('git rev-parse HEAD')),
+            'date' => fn ($format) => date($format),
+            'git' => fn ($format) => match ($format) {
+                'short' => mb_trim(shell_exec('git rev-parse --short HEAD')),
+                'long' => mb_trim(shell_exec('git rev-parse HEAD')),
                 default => throw new InvalidArgumentException("The `git` token only supports formats 'short' and 'long', but you specified {$format}"),
             },
         ];
 
         foreach ($tokens as $token => $resolver) {
             $matches = [];
-            if (preg_match('#(\{' . $token . ':(.+?)})#', $lastUpdated, $matches)) {
+            if (preg_match('#(\{'.$token.':(.+?)})#', $lastUpdated, $matches)) {
                 $lastUpdated = str_replace($matches[1], $resolver($matches[2]), $lastUpdated);
             }
         }
@@ -173,10 +176,10 @@ class HtmlWriter
                 'name' => $heading['text'],
                 'subheadings' => [],
             ];
-            if (1 === $heading['level']) {
+            if ($heading['level'] === 1) {
                 $headings[] = $element;
                 $lastL1ElementIndex = count($headings) - 1;
-            } elseif (2 === $heading['level'] && !is_null($lastL1ElementIndex)) {
+            } elseif ($heading['level'] === 2 && ! is_null($lastL1ElementIndex)) {
                 $headings[$lastL1ElementIndex]['subheadings'][] = $element;
             }
         }
@@ -188,8 +191,8 @@ class HtmlWriter
                 'slug' => $groupSlug,
                 'name' => $group['name'],
                 'subheadings' => collect($group['subgroups'])->flatMap(function ($endpoints, $subgroupName) use ($groupSlug) {
-                    if ('' === $subgroupName) {
-                        return $endpoints->map(fn(OutputEndpointData $endpoint) => [
+                    if ($subgroupName === '') {
+                        return $endpoints->map(fn (OutputEndpointData $endpoint) => [
                             'slug' => $endpoint->fullSlug(),
                             'name' => $endpoint->name(),
                             'subheadings' => [],
@@ -198,9 +201,9 @@ class HtmlWriter
 
                     return [
                         [
-                            'slug' => "{$groupSlug}-" . Str::slug($subgroupName),
+                            'slug' => "{$groupSlug}-".Str::slug($subgroupName),
                             'name' => $subgroupName,
-                            'subheadings' => $endpoints->map(fn($endpoint) => [
+                            'subheadings' => $endpoints->map(fn ($endpoint) => [
                                 'slug' => $endpoint->fullSlug(),
                                 'name' => $endpoint->name(),
                                 'subheadings' => [],
@@ -218,10 +221,10 @@ class HtmlWriter
                 'name' => $heading['text'],
                 'subheadings' => [],
             ];
-            if (1 === $heading['level']) {
+            if ($heading['level'] === 1) {
                 $headings[] = $element;
                 $lastL1ElementIndex = count($headings) - 1;
-            } elseif (2 === $heading['level'] && !is_null($lastL1ElementIndex)) {
+            } elseif ($heading['level'] === 2 && ! is_null($lastL1ElementIndex)) {
                 $headings[$lastL1ElementIndex]['subheadings'][] = $element;
             }
         }

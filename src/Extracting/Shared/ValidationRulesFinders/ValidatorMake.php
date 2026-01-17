@@ -17,15 +17,15 @@ class ValidatorMake
     public static function find(Node $node)
     {
         // Make sure it's an assignment
-        if (!$node instanceof Node\Stmt\Expression) {
+        if (! $node instanceof Node\Stmt\Expression) {
             return;
         }
 
-        $validatorNode = (new NodeFinder())->findFirst($node, function ($node): bool {
+        $validatorNode = (new NodeFinder)->findFirst($node, function ($node): bool {
             return $node instanceof Node\Expr\StaticCall
-                && !empty($node->class->name)
+                && ! empty($node->class->name)
                 && str_ends_with($node->class->name, 'Validator')
-                && 'make' == $node->name->name;
+                && $node->name->name === 'make';
         });
 
         if ($validatorNode instanceof Node\Expr\StaticCall) {

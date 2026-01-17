@@ -13,7 +13,7 @@ use Knuckles\Scribe\Tools\WritingUtils;
 class WritingUtilsTest extends BaseLaravelTest
 {
     /** @test */
-    public function printQueryParamsAsKeyValueJs()
+    public function print_query_params_as_key_value_js()
     {
         $queryParams = WritingUtils::printQueryParamsAsKeyValue($this->queryParams());
         $this->assertStringsEqualNormalizingNewlines(<<<'EOL'
@@ -30,7 +30,7 @@ class WritingUtilsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function printQueryParamsAsKeyValuePhp()
+    public function print_query_params_as_key_value_php()
     {
         $queryParams = WritingUtils::printQueryParamsAsKeyValue($this->queryParams(), "'", ' =>', 4, '[]');
         $this->assertStringsEqualNormalizingNewlines(<<<'EOL'
@@ -47,7 +47,7 @@ class WritingUtilsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function printQueryParamsAsKeyValuePython()
+    public function print_query_params_as_key_value_python()
     {
         $queryParams = WritingUtils::printQueryParamsAsKeyValue($this->queryParams(), "'", ':', 2, '{}');
         $this->assertStringsEqualNormalizingNewlines(<<<'EOL'
@@ -64,7 +64,7 @@ class WritingUtilsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function printQueryParamsAsStringBash()
+    public function print_query_params_as_string_bash()
     {
         $queryParams = WritingUtils::printQueryParamsAsString($this->queryParams());
 
@@ -81,7 +81,7 @@ class WritingUtilsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function getSampleBodyWithArrayFields()
+    public function get_sample_body_with_array_fields()
     {
         $sampleBody = WritingUtils::getSampleBody($this->bodyParamsWithArrayFields());
 

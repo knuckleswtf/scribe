@@ -15,20 +15,20 @@ abstract class GetFieldsFromTagStrategy extends TagStrategyWithFormRequestFallba
         $fields = [];
 
         foreach ($tagsOnClass as $tag) {
-            if (strtolower($tag->getName()) !== strtolower($this->tagName)) {
+            if (mb_strtolower($tag->getName()) !== mb_strtolower($this->tagName)) {
                 continue;
             }
 
-            $fieldData = $this->parseTag(trim($tag->getContent()));
+            $fieldData = $this->parseTag(mb_trim($tag->getContent()));
             $fields[$fieldData['name']] = $fieldData;
         }
 
         foreach ($tagsOnMethod as $tag) {
-            if (strtolower($tag->getName()) !== strtolower($this->tagName)) {
+            if (mb_strtolower($tag->getName()) !== mb_strtolower($this->tagName)) {
                 continue;
             }
 
-            $fieldData = $this->parseTag(trim($tag->getContent()));
+            $fieldData = $this->parseTag(mb_trim($tag->getContent()));
             $fields[$fieldData['name']] = $fieldData;
         }
 
@@ -41,11 +41,11 @@ abstract class GetFieldsFromTagStrategy extends TagStrategyWithFormRequestFallba
         string $description,
         string $type,
         string $tagContent,
-        string $fieldName
+        string $fieldName,
     ): array {
         [$description, $example, $enumValues, $exampleWasSpecified] = $this->parseExampleFromParamDescription($description, $type);
 
-        if ($exampleWasSpecified && null === $example) {
+        if ($exampleWasSpecified && $example === null) {
             $example = null;
         } else {
             $example = $this->setExampleIfNeeded($example, $type, $tagContent, $fieldName, $enumValues);
@@ -59,9 +59,9 @@ abstract class GetFieldsFromTagStrategy extends TagStrategyWithFormRequestFallba
         string $type,
         string $tagContent,
         string $fieldName,
-        ?array $enumValues = []
+        ?array $enumValues = [],
     ): mixed {
-        return (is_null($currentExample) && !$this->shouldExcludeExample($tagContent))
+        return (is_null($currentExample) && ! $this->shouldExcludeExample($tagContent))
             ? $this->generateDummyValue($type, hints: ['name' => $fieldName, 'enumValues' => $enumValues])
             : $currentExample;
     }

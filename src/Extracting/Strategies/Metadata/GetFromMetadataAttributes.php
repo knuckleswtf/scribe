@@ -32,7 +32,7 @@ class GetFromMetadataAttributes extends PhpAttributeStrategy
         ExtractedEndpointData $endpointData,
         array $attributesOnMethod,
         array $attributesOnFormRequest = [],
-        array $attributesOnController = []
+        array $attributesOnController = [],
     ): ?array {
         $metadata = [
             'groupName' => '',

@@ -52,7 +52,7 @@ class UrlParamsNormalizer
                     'id'
                 );
 
-                if (!$alreadyFoundResourceParam) {
+                if (! $alreadyFoundResourceParam) {
                     // This is the first resource param (from the end).
                     // We set it to `params/{id}` (or whatever field it's bound to)
                     $replaceWith = [
@@ -112,7 +112,7 @@ class UrlParamsNormalizer
         $arguments = [];
         foreach ($method->getParameters() as $argument) {
             $argumentType = $argument->getType();
-            if (!$argumentType instanceof \ReflectionNamedType) {
+            if (! $argumentType instanceof \ReflectionNamedType) {
                 continue;
             }
 
@@ -137,15 +137,15 @@ class UrlParamsNormalizer
      *
      * There are other ways, but they're dynamic and beyond our scope.
      *
-     * @param string               $paramName                The name of the URL parameter
-     * @param array<string, Model> $typeHintedEloquentModels
-     * @param null|string          $default                  Default field to use
+     * @param  string  $paramName  The name of the URL parameter
+     * @param  array<string, Model>  $typeHintedEloquentModels
+     * @param  null|string  $default  Default field to use
      */
     protected static function getRouteKeyForUrlParam(
         Route $route,
         string $paramName,
         array $typeHintedEloquentModels = [],
-        ?string $default = null
+        ?string $default = null,
     ): ?string {
         if ($binding = self::getInlineRouteKey($route, $paramName)) {
             return $binding;
@@ -168,7 +168,7 @@ class UrlParamsNormalizer
      * If there is, check if it's an Eloquent model.
      * If it is, return it's `getRouteKeyName()`.
      *
-     * @param Model[] $typeHintedEloquentModels
+     * @param  Model[]  $typeHintedEloquentModels
      */
     protected static function getRouteKeyFromModel(string $paramName, array $typeHintedEloquentModels): ?string
     {
@@ -200,14 +200,14 @@ class UrlParamsNormalizer
     {
         $argumentType = $argument->getType();
         // No type-hint, or primitive type
-        if (!$argumentType instanceof \ReflectionNamedType) {
+        if (! $argumentType instanceof \ReflectionNamedType) {
             return null;
         }
 
         $argumentClassName = $argumentType->getName();
         if (class_exists($argumentClassName)) {
             try {
-                return new $argumentClassName();
+                return new $argumentClassName;
             } catch (\Throwable $e) {
                 return null;
             }

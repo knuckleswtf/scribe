@@ -14,7 +14,7 @@ use Knuckles\Scribe\Writing\HtmlWriter;
 class HtmlWriterTest extends BaseLaravelTest
 {
     /** @test */
-    public function setsLastUpdatedCorrectly()
+    public function sets_last_updated_correctly()
     {
         $config = ['base_url' => 'http://local.test', 'title' => 'API Docs'];
         $config['last_updated'] = '';
@@ -32,7 +32,7 @@ class HtmlWriterTest extends BaseLaravelTest
         $writer = new HtmlWriter(new DocumentationConfig($config));
         $lastUpdated = $writer->getMetadata()['last_updated'];
         $date = date('l, jS F');
-        $commit = trim(shell_exec('git rev-parse --short HEAD'));
+        $commit = mb_trim(shell_exec('git rev-parse --short HEAD'));
         $this->assertEquals("Last updated on {$date} (Git commit {$commit})", $lastUpdated);
     }
 }

@@ -17,7 +17,7 @@ class RequestValidateFacade
 {
     public static function find(Node $node)
     {
-        if (!$node instanceof Node\Stmt\Expression) {
+        if (! $node instanceof Node\Stmt\Expression) {
             return;
         }
 
@@ -31,11 +31,11 @@ class RequestValidateFacade
             && $expr->class instanceof Node\Name
             && in_array($expr->class->name, ['Request', Request::class])
         ) {
-            if ('validate' === $expr->name->name) {
+            if ($expr->name->name === 'validate') {
                 return $expr->args[0]->value;
             }
 
-            if ('validateWithBag' === $expr->name->name) {
+            if ($expr->name->name === 'validateWithBag') {
                 return $expr->args[1]->value;
             }
         }

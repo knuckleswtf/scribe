@@ -15,7 +15,7 @@ use Knuckles\Scribe\Tests\BaseUnitTest;
 class OutputEndpointDataTest extends BaseUnitTest
 {
     /** @test */
-    public function canNestArrayAndObjectParametersCorrectly()
+    public function can_nest_array_and_object_parameters_correctly()
     {
         $parameters = [
             'dad' => Parameter::create([
@@ -63,7 +63,7 @@ class OutputEndpointDataTest extends BaseUnitTest
     }
 
     /** @test */
-    public function setsMissingAncestorsForObjectFieldsProperly()
+    public function sets_missing_ancestors_for_object_fields_properly()
     {
         $parameters = [
             'dad.cars[]' => Parameter::create([

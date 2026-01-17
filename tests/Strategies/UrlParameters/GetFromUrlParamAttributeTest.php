@@ -19,7 +19,7 @@ class GetFromUrlParamAttributeTest extends TestCase
     use ArraySubsetAsserts;
 
     /** @test */
-    public function canFetchFromUrlparamAttribute()
+    public function can_fetch_from_urlparam_attribute()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->controller = new \ReflectionClass(UrlParamAttributeTestController::class);
@@ -91,7 +91,7 @@ class GetFromUrlParamAttributeTest extends TestCase
     }
 
     /** @test */
-    public function canFetchFromUrlparamAttributeOnClosure()
+    public function can_fetch_from_urlparam_attribute_on_closure()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->controller = null;
@@ -118,7 +118,8 @@ class GetFromUrlParamAttributeTest extends TestCase
 
     protected function endpoint(\Closure $configure): ExtractedEndpointData
     {
-        $endpoint = new class extends ExtractedEndpointData {
+        $endpoint = new class extends ExtractedEndpointData
+        {
             public function __construct(array $parameters = []) {}
         };
         $configure($endpoint);

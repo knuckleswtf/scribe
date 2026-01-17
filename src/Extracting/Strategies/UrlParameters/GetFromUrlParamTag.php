@@ -27,12 +27,12 @@ class GetFromUrlParamTag extends GetFieldsFromTagStrategy
             $type = 'string';
         } else {
             [$_, $name, $__, $type, $required, $description] = $content;
-            $description = trim(str_replace(['No-example.', 'No-example'], '', $description));
-            if ('required' === $description) {
+            $description = mb_trim(str_replace(['No-example.', 'No-example'], '', $description));
+            if ($description === 'required') {
                 $required = true;
                 $description = '';
             } else {
-                $required = 'required' === trim($required);
+                $required = mb_trim($required) === 'required';
             }
 
             if (empty($type) && $this->isSupportedTypeInDocBlocks($description)) {

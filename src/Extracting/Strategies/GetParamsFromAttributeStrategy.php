@@ -19,7 +19,7 @@ class GetParamsFromAttributeStrategy extends PhpAttributeStrategy
         ExtractedEndpointData $endpointData,
         array $attributesOnMethod,
         array $attributesOnFormRequest = [],
-        array $attributesOnController = []
+        array $attributesOnController = [],
     ): ?array {
         $parameters = [];
         foreach ([...$attributesOnController, ...$attributesOnFormRequest, ...$attributesOnMethod] as $attributeInstance) {
@@ -37,7 +37,7 @@ class GetParamsFromAttributeStrategy extends PhpAttributeStrategy
                 'name' => $data['name'],
                 'enumValues' => $data['enumValues'],
             ]);
-        } elseif ('No-example' === $data['example'] || 'No-example.' === $data['example']) {
+        } elseif ($data['example'] === 'No-example' || $data['example'] === 'No-example.') {
             $data['example'] = null;
         }
 
@@ -45,7 +45,7 @@ class GetParamsFromAttributeStrategy extends PhpAttributeStrategy
             $data['nullable'] = false;
         }
 
-        $data['description'] = trim($data['description'] ?? '');
+        $data['description'] = mb_trim($data['description'] ?? '');
 
         return $data;
     }

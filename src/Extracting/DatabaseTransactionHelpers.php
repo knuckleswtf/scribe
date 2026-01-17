@@ -59,7 +59,7 @@ trait DatabaseTransactionHelpers
         $methods = ['beginTransaction', 'rollback'];
 
         foreach ($methods as $method) {
-            if (!method_exists($driver, $method)) {
+            if (! method_exists($driver, $method)) {
                 return false;
             }
         }

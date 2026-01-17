@@ -17,15 +17,17 @@ class Upgrade extends Command
                             ';
 
     protected $description = '';
+
     protected bool $applyChanges;
+
     protected string $configName;
 
     public function handle(): void
     {
-        $this->applyChanges = !$this->option('dry-run');
+        $this->applyChanges = ! $this->option('dry-run');
 
         $this->configName = $this->option('config');
-        if (!($oldConfig = config($this->configName))) {
+        if (! ($oldConfig = config($this->configName))) {
             $this->error("The specified config (config/{$this->configName}.php) doesn't exist.");
 
             return;
@@ -45,7 +47,7 @@ class Upgrade extends Command
         }
         $this->line('Checking for config file changes...');
 
-        $upgrader = Upgrader::ofConfigFile("config/{$this->configName}.php", __DIR__ . '/../../config/scribe.php')
+        $upgrader = Upgrader::ofConfigFile("config/{$this->configName}.php", __DIR__.'/../../config/scribe.php')
             ->dontTouch(
                 'routes',
                 'laravel.middleware',
@@ -58,10 +60,9 @@ class Upgrade extends Command
                 'external.html_attributes'
             )
             ->move('default_group', 'groups.default')
-            ->move('faker_seed', 'examples.faker_seed')
-        ;
+            ->move('faker_seed', 'examples.faker_seed');
 
-        if (!$isMajorUpgrade) {
+        if (! $isMajorUpgrade) {
             $upgrader->dontTouch('groups');
         }
 
@@ -82,7 +83,7 @@ class Upgrade extends Command
         }
         $this->newLine();
 
-        if (!$isMajorUpgrade) {
+        if (! $isMajorUpgrade) {
             $this->info('✔ Done.');
             $this->info(sprintf('See the full changelog at https://github.com/knuckleswtf/scribe/blob/%s/CHANGELOG.md', Scribe::VERSION));
 
@@ -118,13 +119,13 @@ class Upgrade extends Command
         $this->info('In v3, you sorted endpoints/groups by editing/renaming the generated YAML files (or `beforeGroup`/`afterGroup` for custom endpoints).');
         $this->info("We'll automatically import your current sorting into the config item `groups.order`.");
 
-        $defaultGroup = config($this->configName . '.default_group');
+        $defaultGroup = config($this->configName.'.default_group');
         $pathConfig = new PathConfig($this->configName);
         $extractedEndpoints = GroupedEndpointsFactory::fromCamelDir($pathConfig)->get();
 
         $order = array_map(function (array $group) {
             return array_map(function (array $endpoint) {
-                return $endpoint['metadata']['title'] ?: ($endpoint['httpMethods'][0] . ' /' . $endpoint['uri']);
+                return $endpoint['metadata']['title'] ?: ($endpoint['httpMethods'][0].' /'.$endpoint['uri']);
             }, $group['endpoints']);
         }, $extractedEndpoints);
         $groupsOrder = array_keys($order);
@@ -135,9 +136,9 @@ class Upgrade extends Command
         if ($userDefinedEndpoints) {
             foreach ($userDefinedEndpoints as $endpoint) {
                 $groupName = $endpoint['metadata']['groupName'] ?? $defaultGroup;
-                $endpointTitle = $endpoint['metadata']['title'] ?? ($endpoint['httpMethods'][0] . ' /' . $endpoint['uri']);
+                $endpointTitle = $endpoint['metadata']['title'] ?? ($endpoint['httpMethods'][0].' /'.$endpoint['uri']);
 
-                if (!isset($order[$groupName])) {
+                if (! isset($order[$groupName])) {
                     // This is a new group; place it at the right spot.
                     if ($nextGroup = $endpoint['metadata']['beforeGroup'] ?? null) {
                         $index = $keyIndices[$nextGroup];

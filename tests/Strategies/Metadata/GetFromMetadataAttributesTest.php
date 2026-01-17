@@ -25,7 +25,7 @@ class GetFromMetadataAttributesTest extends TestCase
     use ArraySubsetAsserts;
 
     /** @test */
-    public function canFetchFromAuthenticatedAttributeOrAuthenticatedParameter()
+    public function can_fetch_from_authenticated_attribute_or_authenticated_parameter()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->controller = new \ReflectionClass(MetadataAttributesTestController::class);
@@ -168,7 +168,8 @@ class GetFromMetadataAttributesTest extends TestCase
 
     protected function endpoint(\Closure $configure): ExtractedEndpointData
     {
-        $endpoint = new class extends ExtractedEndpointData {
+        $endpoint = new class extends ExtractedEndpointData
+        {
             public function __construct(array $parameters = []) {}
         };
         $configure($endpoint);

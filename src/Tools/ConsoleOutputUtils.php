@@ -102,8 +102,8 @@ class ConsoleOutputUtils
             return;
         }
 
-        if (!self::$output) {
-            self::bootstrapOutput(new ConsoleOutput());
+        if (! self::$output) {
+            self::bootstrapOutput(new ConsoleOutput);
         }
         self::$output->writeln("<fg=yellow>  ⚠ {$message}</>");
     }
@@ -116,28 +116,28 @@ class ConsoleOutputUtils
             return;
         }
 
-        if (!self::$output) {
-            self::bootstrapOutput(new ConsoleOutput());
+        if (! self::$output) {
+            self::bootstrapOutput(new ConsoleOutput);
         }
         self::$output->writeln("<fg=gray>  ℹ {$message}</>");
     }
 
     public static function debug(string $message): void
     {
-        if (!Globals::$shouldBeVerbose) {
+        if (! Globals::$shouldBeVerbose) {
             return;
         }
 
-        if (!self::$output) {
-            self::bootstrapOutput(new ConsoleOutput());
+        if (! self::$output) {
+            self::bootstrapOutput(new ConsoleOutput);
         }
         self::$output->writeln("<fg=gray>  🐛 {$message}</>");
     }
 
     public static function success(string $message): void
     {
-        if (!self::$output) {
-            self::bootstrapOutput(new ConsoleOutput());
+        if (! self::$output) {
+            self::bootstrapOutput(new ConsoleOutput);
         }
         self::$output->writeln("<fg=green>  ✔ {$message}</>");
     }
@@ -150,8 +150,8 @@ class ConsoleOutputUtils
             return;
         }
 
-        if (!self::$output) {
-            self::bootstrapOutput(new ConsoleOutput());
+        if (! self::$output) {
+            self::bootstrapOutput(new ConsoleOutput);
         }
         self::$output->writeln("<fg=red>  ✖ {$message}</>");
     }

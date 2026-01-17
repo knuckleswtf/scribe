@@ -21,7 +21,7 @@ class WritingUtils
     /**
      * Print a value as valid PHP, handling arrays and proper indentation.
      *
-     * @param mixed $value
+     * @param  mixed  $value
      *
      * @throws ExceptionInterface
      */
@@ -33,7 +33,7 @@ class WritingUtils
         $result = '';
         $padWith = str_repeat(' ', $indentationLevel);
         foreach ($split as $index => $line) {
-            $result .= (0 == $index ? '' : "\n{$padWith}") . $line;
+            $result .= ($index === 0 ? '' : "\n{$padWith}").$line;
         }
 
         return $result;
@@ -46,12 +46,12 @@ class WritingUtils
             $qs .= static::printSingleQueryParamsAsString('', $paramName, $value, true);
         }
 
-        return rtrim($qs, '&');
+        return mb_rtrim($qs, '&');
     }
 
     public static function printSingleQueryParamsAsString(string $prefix, int|string $key, mixed $parameters, bool $firstLevel): string
     {
-        if (!is_array($parameters)) {
+        if (! is_array($parameters)) {
             if ($firstLevel) {
                 return sprintf('%s=%s&', urlencode($key), urlencode($parameters));
             }
@@ -91,7 +91,7 @@ class WritingUtils
         string $braces = '{}',
         int $closingBraceIndentation = 0,
         string $startLinesWith = '',
-        string $endLinesWith = ','
+        string $endLinesWith = ',',
     ): string {
         $output = isset($braces[0]) ? "{$braces[0]}\n" : '';
         foreach ($cleanQueryParams as $parameter => $value) {
@@ -106,9 +106,9 @@ class WritingUtils
             );
         }
 
-        $closing = isset($braces[1]) ? str_repeat(' ', $closingBraceIndentation) . "{$braces[1]}" : '';
+        $closing = isset($braces[1]) ? str_repeat(' ', $closingBraceIndentation)."{$braces[1]}" : '';
 
-        return $output . $closing;
+        return $output.$closing;
     }
 
     /**
@@ -117,31 +117,31 @@ class WritingUtils
      * Lists like ("filter", ["haha"]) becomes ["filter[]" => "haha"]
      * Maps like ("filter", ["name" => "john", "age" => "12"]) become ["filter[name]" => "john", "filter[age]" => 12].
      *
-     * @param string $parameter The name of the parameter
-     * @param mixed  $value     Value of the parameter
+     * @param  string  $parameter  The name of the parameter
+     * @param  mixed  $value  Value of the parameter
      */
     public static function getParameterNamesAndValuesForFormData(string $parameter, $value): array
     {
-        if (!is_array($value)) {
+        if (! is_array($value)) {
             return [$parameter => $value];
         }
 
         // We assume it's a list if its first key is 0
         $keys = array_keys($value);
-        if (count($keys) && 0 === $keys[0]) {
+        if (count($keys) && $keys[0] === 0) {
             if (is_array($value[0])) {
                 // handle nested arrays/objects
                 $params = [];
                 $expanded = self::getParameterNamesAndValuesForFormData('', $value[0]);
                 foreach ($expanded as $fieldName => $itemValue) {
-                    $paramName = $parameter . '[]' . $fieldName;
+                    $paramName = $parameter.'[]'.$fieldName;
                     $params[$paramName] = $itemValue;
                 }
 
                 return $params;
             }
 
-            return [$parameter . '[]' => $value[0]];
+            return [$parameter.'[]' => $value[0]];
         }
 
         // Transform hashes
@@ -150,11 +150,11 @@ class WritingUtils
             if (is_array($itemValue)) {
                 $expanded = self::getParameterNamesAndValuesForFormData('', $itemValue);
                 foreach ($expanded as $fieldName => $subItemValue) {
-                    $paramName = $parameter . "[{$item}]" . $fieldName;
+                    $paramName = $parameter."[{$item}]".$fieldName;
                     $params[$paramName] = $subItemValue;
                 }
             } else {
-                $params[$parameter . "[{$item}]"] = $itemValue;
+                $params[$parameter."[{$item}]"] = $itemValue;
             }
         }
 
@@ -163,13 +163,13 @@ class WritingUtils
 
     public static function getSampleBody(array $nestedBodyParameters)
     {
-        if (!empty($nestedBodyParameters['[]'])) {
+        if (! empty($nestedBodyParameters['[]'])) {
             return [self::getSampleBody($nestedBodyParameters['[]']['__fields'])];
         }
 
         return array_map(function ($param) {
-            if (!empty($param['__fields'])) {
-                if ('object[]' === $param['type']) {
+            if (! empty($param['__fields'])) {
+                if ($param['type'] === 'object[]') {
                     return [self::getSampleBody($param['__fields'])];
                 }
 
@@ -194,8 +194,8 @@ class WritingUtils
             1 => "<code>{$list[0]}</code>",
             2 => "<code>{$list[0]}</code> {$conjunction} <code>{$list[1]}</code>",
             default => '<code>'
-                . implode('</code>, <code>', array_slice($list, 0, -1))
-                . "</code>, {$conjunction} <code>" . end($list) . '</code>',
+                .implode('</code>, <code>', array_slice($list, 0, -1))
+                ."</code>, {$conjunction} <code>".end($list).'</code>',
         };
     }
 
@@ -204,9 +204,9 @@ class WritingUtils
      */
     public static function getVersionedAsset(string $assetPath): string
     {
-        $index = strrpos($assetPath, '.');
+        $index = mb_strrpos($assetPath, '.');
 
-        return substr_replace($assetPath, '-' . Scribe::VERSION, $index, 0);
+        return substr_replace($assetPath, '-'.Scribe::VERSION, $index, 0);
     }
 
     protected static function printSingleQueryParamAsKeyValue(
@@ -216,16 +216,16 @@ class WritingUtils
         string $quote,
         string $parameter,
         string $delimiter,
-        string $endLinesWith
+        string $endLinesWith,
     ): string {
-        if (!is_array($value)) {
+        if (! is_array($value)) {
             $output = str_repeat(' ', $spacesIndentation);
             // Example: -----"param_name": "value"----
             $formattedValue = is_bool($value) ? ($value ? 1 : 0) : $value;
             $output .= "{$startLinesWith}{$quote}{$parameter}{$quote}{$delimiter} {$quote}{$formattedValue}{$quote}{$endLinesWith}\n";
         } else {
             $output = '';
-            if (0 == count($value)) {
+            if (count($value) === 0) {
                 return $output;
             }
 

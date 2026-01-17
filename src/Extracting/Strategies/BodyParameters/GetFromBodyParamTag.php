@@ -26,16 +26,16 @@ class GetFromBodyParamTag extends GetFieldsFromTagStrategy
             $description = '';
         } else {
             [$_, $name, $type, $required, $deprecated, $description] = $parsedContent;
-            $description = trim(str_replace(['No-example.', 'No-example'], '', $description));
-            if ('required' == $description) {
+            $description = mb_trim(str_replace(['No-example.', 'No-example'], '', $description));
+            if ($description === 'required') {
                 $required = $description;
                 $description = '';
-            } elseif ('deprecated' == $description) {
+            } elseif ($description === 'deprecated') {
                 $deprecated = $description;
                 $description = '';
             }
-            $required = 'required' === trim($required);
-            $deprecated = 'deprecated' === trim($deprecated);
+            $required = mb_trim($required) === 'required';
+            $deprecated = mb_trim($deprecated) === 'deprecated';
         }
 
         $type = static::normalizeTypeName($type);
