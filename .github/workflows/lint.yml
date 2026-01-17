@@ -40,3 +40,8 @@ jobs:
         env:
           COMPOSER_MEMORY_LIMIT: "-1"
         run: composer lint
+
+      - name: '🧽 Pint'
+        env:
+          COMPOSER_MEMORY_LIMIT: "-1"
+        run: composer style:check

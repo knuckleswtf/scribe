@@ -17,7 +17,7 @@ Scribe is a Laravel package that generates API documentation for humans from Lar
 
 ### PHP Standards
 - **PHP Version**: Minimum PHP 8.1
-- **Coding Style**: Use PHP-CS-Fixer with auto mode (see `.php-cs-fixer.dist.php`)
+- **Coding Style**: Use Pint with auto mode (see `pint.json`)
 - **Type Declarations**: Use strict types (`declare(strict_types=1);`)
 - **Indentation**: 4 spaces for PHP, 2 spaces for YAML/JSON/Markdown
 - **Line Endings**: LF (Unix-style)
@@ -52,7 +52,7 @@ composer update        # Update dependencies
 ### Code Quality
 ```bash
 composer lint          # Run PHPStan static analysis (level 6)
-composer style:check   # Check code style with PHP-CS-Fixer
+composer style:check   # Check code style with Pint
 composer style:fix     # Fix code style issues automatically
 ```
 

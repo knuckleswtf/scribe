@@ -1,36 +1,36 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# shared pre-commit hook to run php-cs-fixer
+# shared pre-commit hook to run pint
 # Try several fallbacks so it works on Unix and common Windows setups.
 
 # Prefer directly executable vendor binary
-if [ -x "./vendor/bin/php-cs-fixer" ]; then
-  ./vendor/bin/php-cs-fixer fix
+if [ -x "./vendor/bin/pint" ]; then
+  ./vendor/bin/pint .
   exit $?
 fi
 
 # If it's a PHP wrapper script, run with php
-if [ -f "./vendor/bin/php-cs-fixer" ]; then
-  php "./vendor/bin/php-cs-fixer" fix
+if [ -f "./vendor/bin/pint" ]; then
+  php "./vendor/bin/pint" .
   exit $?
 fi
 
 # If a Windows batch exists under vendor/bin
-if [ -x "./vendor/bin/php-cs-fixer.bat" ]; then
-  ./vendor/bin/php-cs-fixer.bat fix
+if [ -x "./vendor/bin/pint.bat" ]; then
+  ./vendor/bin/pint.bat .
   exit $?
 fi
 
-if [ -f "./vendor/bin/php-cs-fixer.bat" ]; then
+if [ -f "./vendor/bin/pint.bat" ]; then
   # Try running with cmd.exe for Windows Git environments
   if command -v cmd.exe >/dev/null 2>&1; then
-    cmd.exe /C "vendor\\bin\\php-cs-fixer.bat fix"
+    cmd.exe /C "vendor\\bin\\pint.bat fix"
     exit $?
   fi
 fi
 
 # Nothing to run; do not block the push but inform the user
-echo "php-cs-fixer not found at ./vendor/bin/php-cs-fixer; skipping pre-push formatting."
+echo "pint not found at ./vendor/bin/pint; skipping pre-push formatting."
 exit 0
 
