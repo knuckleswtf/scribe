@@ -2021,23 +2021,23 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         // In OpenAPI 3.1, the array schema should use examples instead of example
         $this->assertArrayHasKey('examples', $responseSchema);
         $this->assertArrayNotHasKey('example', $responseSchema);
-        
+
         // Check that nested properties also use examples
         $this->assertArrayHasKey('items', $responseSchema);
         $this->assertArrayHasKey('properties', $responseSchema['items']);
-        
+
         $idProperty = $responseSchema['items']['properties']['id'];
         $nameProperty = $responseSchema['items']['properties']['name'];
-        
+
         $this->assertArrayHasKey('examples', $idProperty);
         $this->assertEquals([1], $idProperty['examples']);
         $this->assertArrayNotHasKey('example', $idProperty);
-        
+
         $this->assertArrayHasKey('examples', $nameProperty);
         $this->assertEquals(['Item 1'], $nameProperty['examples']);
         $this->assertArrayNotHasKey('example', $nameProperty);
     }
-  
+
     protected function createMockEndpointData(array $custom = []): OutputEndpointData
     {
         $faker = Factory::create();

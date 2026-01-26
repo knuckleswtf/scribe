@@ -67,37 +67,7 @@ class BaseGenerator extends OpenApiGenerator
     public function pathParameters(array $parameters, array $endpoints, array $urlParameters): array
     {
         foreach ($urlParameters as $name => $details) {
-            $parameterData = [
-                'in' => 'path',
-                'name' => $name,
-                'description' => $details->description,
-                'example' => $details->example,
-                // Currently, OAS requires path parameters to be required
-                'required' => true,
-                'schema' => [
-                    'type' => $details->type,
-                ],
-            ];
-            // Workaround for optional parameters
-            if (empty($details->required)) {
-                $parameterData['description'] = rtrim('Optional parameter. ' . $parameterData['description']);
-                $parameterData['examples'] = [
-                    'omitted' => [
-                        'summary' => 'When the value is omitted',
-                        'value' => '',
-                    ],
-                ];
-
-                if (null !== $parameterData['example']) {
-                    $parameterData['examples']['present'] = [
-                        'summary' => 'When the value is present',
-                        'value' => $parameterData['example'],
-                    ];
-                }
-
-                // Can't have `example` and `examples`
-                unset($parameterData['example']);
-            }
+            $parameterData = $this->urlParamToOpenApiParameterObject($name, $details);
             $parameters[$name] = $parameterData;
         }
 
@@ -304,46 +274,9 @@ class BaseGenerator extends OpenApiGenerator
     {
         $parameters = [];
 
-        if (count($endpoint->queryParameters)) {
-            /**
-             * @var string    $name
-             * @var Parameter $details
-             */
-            foreach ($endpoint->queryParameters as $name => $details) {
-                $parameterData = [
-                    'in' => 'query',
-                    'name' => $name,
-                    'description' => $details->description,
-                    'example' => $details->example,
-                    'required' => $details->required,
-                    'schema' => $this->generateFieldData($details),
-                ];
-                if ($details->deprecated) {
-                    $parameterData['deprecated'] = true;
-                }
-                $parameters[] = $parameterData;
-            }
-        }
+        $parameters = $this->generateQueryParams($endpoint, $parameters);
 
-        if (count($endpoint->headers)) {
-            foreach ($endpoint->headers as $name => $value) {
-                if (in_array(strtolower($name), ['content-type', 'accept', 'authorization'])) {
-                    // These headers are not allowed in the spec.
-                    // https://swagger.io/docs/specification/describing-parameters/#header-parameters
-                    continue;
-                }
-
-                $parameters[] = [
-                    'in' => 'header',
-                    'name' => $name,
-                    'description' => '',
-                    'example' => $value,
-                    'schema' => [
-                        'type' => 'string',
-                    ],
-                ];
-            }
-        }
+        $parameters = $this->generateHeaders($endpoint, $parameters);
 
         return $parameters;
     }
@@ -669,5 +602,102 @@ class BaseGenerator extends OpenApiGenerator
         if (null === $value) {
             $this->applyNullable($schema, true);
         }
+    }
+
+    protected function generateQueryParams(OutputEndpointData $endpoint, array $parameters): array
+    {
+        if (count($endpoint->queryParameters)) {
+            /**
+             * @var string $name
+             * @var Parameter $details
+             */
+            foreach ($endpoint->queryParameters as $name => $details) {
+                $parameterData = $this->queryParamToOpenApiParameterObject($name, $details);
+                $parameters[] = $parameterData;
+            }
+        }
+        return $parameters;
+    }
+
+    protected function generateHeaders(OutputEndpointData $endpoint, mixed $parameters): mixed
+    {
+        if (count($endpoint->headers)) {
+            foreach ($endpoint->headers as $name => $value) {
+                if (in_array(strtolower($name), ['content-type', 'accept', 'authorization'])) {
+                    // These headers are not allowed in the spec.
+                    // https://swagger.io/docs/specification/describing-parameters/#header-parameters
+                    continue;
+                }
+
+                $parameters[] = $this->headerToOpenApiParameterObject($name, $value);
+            }
+        }
+        return $parameters;
+    }
+
+    protected function headerToOpenApiParameterObject(string $name, string $value): array
+    {
+        return [
+            'in' => 'header',
+            'name' => $name,
+            'description' => '',
+            'example' => $value,
+            'schema' => [
+                'type' => 'string',
+            ],
+        ];
+    }
+
+    protected function queryParamToOpenApiParameterObject(string $name, Parameter $details): array
+    {
+        $parameterData = [
+            'in' => 'query',
+            'name' => $name,
+            'description' => $details->description,
+            'example' => $details->example,
+            'required' => $details->required,
+            'schema' => $this->generateFieldData($details),
+        ];
+        if ($details->deprecated) {
+            $parameterData['deprecated'] = true;
+        }
+        return $parameterData;
+    }
+
+    protected function urlParamToOpenApiParameterObject(string $name, Parameter $details): array
+    {
+        $parameterData = [
+            'in' => 'path',
+            'name' => $name,
+            'description' => $details->description,
+            'example' => $details->example,
+            // Currently, OAS requires path parameters to be required
+            'required' => true,
+            'schema' => [
+                'type' => $details->type,
+            ],
+        ];
+        // Workaround for optional parameters
+        if (empty($details->required)) {
+            $parameterData['description'] = rtrim('Optional parameter. ' . $parameterData['description']);
+            $parameterData['examples'] = [
+                'omitted' => [
+                    'summary' => 'When the value is omitted',
+                    'value' => '',
+                ],
+            ];
+
+            if ($parameterData['example'] !== null) {
+                $parameterData['examples']['present'] = [
+                    'summary' => 'When the value is present',
+                    'value' => $parameterData['example'],
+                ];
+            }
+
+            // Can't have `example` and `examples`
+            unset($parameterData['example']);
+        }
+
+        return $parameterData;
     }
 }
