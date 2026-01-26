@@ -7,7 +7,7 @@ use Knuckles\Scribe\Extracting\Strategies\GetFieldsFromTagStrategy;
 
 class GetFromQueryParamTag extends GetFieldsFromTagStrategy
 {
-    protected string $tagName = "queryParam";
+    protected string $tagName = 'queryParam';
 
     public function parseTag(string $tagContent): array
     {
@@ -30,25 +30,25 @@ class GetFromQueryParamTag extends GetFieldsFromTagStrategy
             [$_, $name, $type, $required, $deprecated, $description] = $content;
 
             $description = trim(str_replace(['No-example.', 'No-example'], '', $description));
-            if ($description === 'required') {
+            if ('required' === $description) {
                 // No description was supplied
                 $required = true;
                 $description = '';
-            } elseif ($description === 'deprecated') {
+            } elseif ('deprecated' === $description) {
                 $deprecated = true;
                 $description = '';
             } else {
-                $required = trim($required) === 'required';
-                $deprecated = trim($deprecated) === 'deprecated';
+                $required = 'required' === trim($required);
+                $deprecated = 'deprecated' === trim($deprecated);
             }
 
             $type = trim($type);
             if ($type) {
-                if ($type === 'required') {
+                if ('required' === $type) {
                     // Type wasn't supplied
                     $type = 'string';
                     $required = true;
-                } elseif ($type === 'deprecated') {
+                } elseif ('deprecated' === $type) {
                     // Type wasn't supplied but deprecated was
                     $type = 'string';
                     $deprecated = true;
@@ -57,11 +57,11 @@ class GetFromQueryParamTag extends GetFieldsFromTagStrategy
                     // Type in annotation is optional
                     if (!$this->isSupportedTypeInDocBlocks($type)) {
                         // Then that wasn't a type, but part of the description
-                        $description = trim("$type $description");
+                        $description = trim("{$type} {$description}");
                         $type = '';
                     }
                 }
-            } else if ($this->isSupportedTypeInDocBlocks($description)) {
+            } elseif ($this->isSupportedTypeInDocBlocks($description)) {
                 // Only type was supplied
                 $type = $description;
                 $description = '';
@@ -70,11 +70,10 @@ class GetFromQueryParamTag extends GetFieldsFromTagStrategy
             $type = empty($type)
                 ? (Str::contains(strtolower($description), ['number', 'count', 'page']) ? 'integer' : 'string')
                 : static::normalizeTypeName($type);
-
         }
 
-        [$description, $example, $enumValues, $exampleWasSpecified] =
-            $this->getDescriptionAndExample($description, $type, $tagContent, $name);
+        [$description, $example, $enumValues, $exampleWasSpecified]
+            = $this->getDescriptionAndExample($description, $type, $tagContent, $name);
 
         return compact('name', 'description', 'required', 'deprecated', 'example', 'type', 'enumValues', 'exampleWasSpecified');
     }

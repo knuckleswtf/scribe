@@ -6,6 +6,6 @@ class CouldntGetRouteDetails extends \RuntimeException implements ScribeExceptio
 {
     public static function new(): self
     {
-        return new self("Unable to retrieve controller and method for route; try running `php artisan route:clear`");
+        return new self('Unable to retrieve controller and method for route; try running `php artisan route:clear`');
     }
 }

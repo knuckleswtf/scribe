@@ -14,8 +14,6 @@ class GetFromHeaderTag extends TagStrategyWithFormRequestFallback
     /**
      * @param Tag[] $tagsOnMethod
      * @param Tag[] $tagsOnClass
-     *
-     * @return array
      */
     public function getFromTags(array $tagsOnMethod, array $tagsOnClass = []): array
     {

@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Tests\Fixtures;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Knuckles\Scribe\Attributes\ResponseField;
 
@@ -10,7 +11,7 @@ class TestPetApiResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      *
      * @return array
      */
@@ -27,7 +28,7 @@ class TestPetApiResource extends JsonResource
             }),
             'ownership' => $this->whenPivotLoaded('pet_user', function () {
                 return $this->pivot;
-            })
+            }),
         ];
 
         return $result;

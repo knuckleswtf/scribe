@@ -7,10 +7,15 @@ use Illuminate\Support\Str;
 use Knuckles\Scribe\Matching\RouteMatcher;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class RouteMatcherTest extends BaseLaravelTest
 {
     /** @test */
-    public function respects_domains_rule_for_laravel_router()
+    public function respectsDomainsRuleForLaravelRouter()
     {
         $this->registerLaravelRoutes();
 
@@ -37,7 +42,7 @@ class RouteMatcherTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function respects_prefixes_rule_for_laravel_router()
+    public function respectsPrefixesRuleForLaravelRouter()
     {
         $this->registerLaravelRoutes();
         $routeRules[0]['match']['domains'] = ['*'];
@@ -64,7 +69,7 @@ class RouteMatcherTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function includes_route_if_listed_explicitly_for_laravel_router()
+    public function includesRouteIfListedExplicitlyForLaravelRouter()
     {
         $this->registerLaravelRoutes();
         $mustInclude = 'domain1-1';
@@ -78,7 +83,7 @@ class RouteMatcherTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function includes_route_if_match_for_an_include_pattern_for_laravel_router()
+    public function includesRouteIfMatchForAnIncludePatternForLaravelRouter()
     {
         $this->registerLaravelRoutes();
         $mustInclude = ['domain1-1', 'domain1-2'];
@@ -93,7 +98,7 @@ class RouteMatcherTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function exclude_route_if_listed_explicitly_for_laravel_router()
+    public function excludeRouteIfListedExplicitlyForLaravelRouter()
     {
         $this->registerLaravelRoutes();
         $mustNotInclude = 'prefix1.domain1-1';
@@ -107,7 +112,7 @@ class RouteMatcherTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function exclude_route_if_match_for_an_exclude_pattern_for_laravel_router()
+    public function excludeRouteIfMatchForAnExcludePatternForLaravelRouter()
     {
         $this->registerLaravelRoutes();
         $mustNotInclude = ['prefix1.domain1-1', 'prefix1.domain1-2'];
@@ -122,7 +127,7 @@ class RouteMatcherTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function merges_routes_from_different_rule_groups_for_laravel_router()
+    public function mergesRoutesFromDifferentRuleGroupsForLaravelRouter()
     {
         $this->registerLaravelRoutes();
 
@@ -155,6 +160,13 @@ class RouteMatcherTest extends BaseLaravelTest
                 && Str::is('domain2.*', $route['route']->getDomain());
         });
         $this->assertCount(2, $secondRuleGroup);
+    }
+
+    protected function matchRoutes(array $routeRules): array
+    {
+        $matcher = new RouteMatcher();
+
+        return $matcher->getRoutes($routeRules);
     }
 
     private function registerLaravelRoutes()
@@ -199,11 +211,5 @@ class RouteMatcherTest extends BaseLaravelTest
                 return 'hi';
             })->name('prefix2.domain2-2');
         });
-    }
-
-    protected function matchRoutes(array $routeRules): array
-    {
-        $matcher = new RouteMatcher();
-        return $matcher->getRoutes($routeRules);
     }
 }

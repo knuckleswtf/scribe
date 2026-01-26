@@ -13,7 +13,7 @@ class TestOpenApiGenerator extends OpenApiGenerator
         $permissions = $endpoint->custom['permissions'];
 
         $pathItem['security'] = [
-            ['default' => $permissions]
+            ['default' => $permissions],
         ];
 
         return $pathItem;

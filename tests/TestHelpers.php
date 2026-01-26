@@ -8,7 +8,7 @@ trait TestHelpers
 {
     /**
      * @param string $command
-     * @param array $parameters
+     * @param array  $parameters
      *
      * @return mixed
      */
@@ -24,14 +24,16 @@ trait TestHelpers
     protected function generate(array $flags = []): mixed
     {
         return $this->artisan(
-            'scribe:generate', array_merge(['--no-upgrade-check' => true], $flags)
+            'scribe:generate',
+            array_merge(['--no-upgrade-check' => true], $flags)
         );
     }
 
     protected function generateAndExpectConsoleOutput(
-        array $options = [], array $expected = [], array $notExpected = []
-    ): void
-    {
+        array $options = [],
+        array $expected = [],
+        array $notExpected = []
+    ): void {
         $output = $this->generate($options);
 
         foreach ($expected as $string) {

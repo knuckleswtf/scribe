@@ -15,3 +15,4 @@ docs/make.bat
 tests/public/docs/
 tests/resources/**
 .phpunit.result.cache
+.php-cs-fixer.cache

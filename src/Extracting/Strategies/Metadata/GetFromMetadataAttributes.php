@@ -13,7 +13,7 @@ use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\Strategies\PhpAttributeStrategy;
 
 /**
- * @extends PhpAttributeStrategy<Group|Subgroup|Endpoint|Authenticated>
+ * @extends PhpAttributeStrategy<Authenticated|Endpoint|Group|Subgroup>
  */
 class GetFromMetadataAttributes extends PhpAttributeStrategy
 {
@@ -33,15 +33,14 @@ class GetFromMetadataAttributes extends PhpAttributeStrategy
         array $attributesOnMethod,
         array $attributesOnFormRequest = [],
         array $attributesOnController = []
-    ): ?array
-    {
+    ): ?array {
         $metadata = [
-            "groupName" => "",
-            "groupDescription" => "",
-            "subgroup" => "",
-            "subgroupDescription" => "",
-            "title" => "",
-            "description" => "",
+            'groupName' => '',
+            'groupDescription' => '',
+            'subgroup' => '',
+            'subgroupDescription' => '',
+            'title' => '',
+            'description' => '',
         ];
         foreach ([...$attributesOnController, ...$attributesOnFormRequest, ...$attributesOnMethod] as $attributeInstance) {
             $metadata = array_merge($metadata, $attributeInstance->toArray());
@@ -49,5 +48,4 @@ class GetFromMetadataAttributes extends PhpAttributeStrategy
 
         return $metadata;
     }
-
 }

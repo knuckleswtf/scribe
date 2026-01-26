@@ -6,6 +6,7 @@ use Illuminate\Routing\Controller;
 
 /**
  * @hideFromAPIDocumentation
+ *
  * @group Group A
  */
 class TestIgnoreThisController extends Controller

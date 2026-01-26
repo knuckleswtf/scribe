@@ -8,7 +8,7 @@ use PhpParser\Node;
  * This class looks for
  *   $anyVariable = $request->validate(...);
  * or just
- *   $request->validate(...);
+ *   $request->validate(...);.
  *
  * Also supports `$req` instead of `$request`
  * Also supports `->validateWithBag('', ...)`
@@ -17,7 +17,9 @@ class RequestValidate
 {
     public static function find(Node $node)
     {
-        if (!($node instanceof Node\Stmt\Expression)) return;
+        if (!$node instanceof Node\Stmt\Expression) {
+            return;
+        }
 
         $expr = $node->expr;
         if ($expr instanceof Node\Expr\Assign) {
@@ -27,13 +29,13 @@ class RequestValidate
         if (
             $expr instanceof Node\Expr\MethodCall
             && $expr->var instanceof Node\Expr\Variable
-            && in_array($expr->var->name, ["request", "req"])
+            && in_array($expr->var->name, ['request', 'req'])
         ) {
-            if ($expr->name->name == "validate") {
+            if ('validate' == $expr->name->name) {
                 return $expr->args[0]->value;
             }
 
-            if ($expr->name->name == "validateWithBag") {
+            if ('validateWithBag' == $expr->name->name) {
                 return $expr->args[1]->value;
             }
         }

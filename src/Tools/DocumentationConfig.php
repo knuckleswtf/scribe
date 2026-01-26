@@ -3,7 +3,6 @@
 namespace Knuckles\Scribe\Tools;
 
 use Illuminate\Support\Str;
-use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 
 class DocumentationConfig
 {
@@ -18,7 +17,6 @@ class DocumentationConfig
      * Get a config item with dot notation.
      * If the key does not exist, $default (or null) will be returned.
      *
-     * @param string $key
      * @param mixed $default
      *
      * @return array|mixed

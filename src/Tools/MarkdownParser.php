@@ -3,9 +3,8 @@
 namespace Knuckles\Scribe\Tools;
 
 use Illuminate\Support\Str;
-use Parsedown;
 
-class MarkdownParser extends Parsedown
+class MarkdownParser extends \Parsedown
 {
     public array $headings = [];
 

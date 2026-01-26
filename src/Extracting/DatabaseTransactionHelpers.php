@@ -5,10 +5,14 @@ namespace Knuckles\Scribe\Extracting;
 use Knuckles\Scribe\Exceptions\CouldntStartDatabaseTransaction;
 use Knuckles\Scribe\Exceptions\DatabaseTransactionsNotSupported;
 use Knuckles\Scribe\Tools\DocumentationConfig;
-use PDOException;
 
 trait DatabaseTransactionHelpers
 {
+    /**
+     * Returns an instance of the documentation config.
+     */
+    abstract public function getConfig(): DocumentationConfig;
+
     private function connectionsToTransact()
     {
         return $this->getConfig()->get('database_connections_to_transact', []);
@@ -29,20 +33,19 @@ trait DatabaseTransactionHelpers
                 }
             } else {
                 $driverClassName = get_class($driver);
+
                 throw DatabaseTransactionsNotSupported::create($connection, $driverClassName);
             }
         }
     }
 
-    /**
-     * @return void
-     */
     private function endDbTransaction()
     {
         foreach ($this->connectionsToTransact() as $connection) {
             $database ??= app('db');
 
             $driver = $database->connection($connection);
+
             try {
                 $driver->rollback();
             } catch (\Exception $e) {
@@ -63,11 +66,4 @@ trait DatabaseTransactionHelpers
 
         return true;
     }
-
-    /**
-     * Returns an instance of the documentation config
-     *
-     * @return DocumentationConfig
-     */
-    abstract public function getConfig(): DocumentationConfig;
 }

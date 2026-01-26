@@ -215,7 +215,7 @@ paths:
                                     param: { type: string, example: '4' }
                                     param2: { type: string, example: architecto }
                                     param3: { type: string, example: architecto }
-                                    param4: { type: string, example: null }
+                                    param4: { type: string, example: null, nullable: true }
             tags:
                 - Other😎
             security: []

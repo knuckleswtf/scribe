@@ -11,17 +11,21 @@ use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\Utils as u;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class ExtractedEndpointDataTest extends BaseLaravelTest
 {
     /** @test */
-    public function normalizes_resource_url_params()
+    public function normalizesResourceUrlParams()
     {
         Route::apiResource('things', TestController::class)->only('show');
         $route = $this->getRoute(['prefixes' => '*']);
 
         $this->assertEquals('things/{thing}', $this->originalUri($route));
         $this->assertEquals('things/{id}', $this->expectedUri($route));
-
 
         Route::apiResource('things.otherthings', TestController::class)->only('destroy');
         $route = $this->getRoute(['prefixes' => '*/otherthings/*']);
@@ -31,12 +35,16 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function allows_user_specified_normalization()
+    public function allowsUserSpecifiedNormalization()
     {
         Scribe::normalizeEndpointUrlUsing(function (string $url, LaravelRoute $route) {
-            if ($url == 'things/{thing}') return 'things/{the_id_of_the_thing}';
+            if ('things/{thing}' == $url) {
+                return 'things/{the_id_of_the_thing}';
+            }
 
-            if ($route->named('things.otherthings.destroy')) return 'things/{thing-id}/otherthings/{other_thing-id}';
+            if ($route->named('things.otherthings.destroy')) {
+                return 'things/{thing-id}/otherthings/{other_thing-id}';
+            }
         });
 
         Route::apiResource('things', TestController::class)->only('show');
@@ -53,11 +61,18 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function allows_user_specified_normalization_fallback_to_default()
+    public function allowsUserSpecifiedNormalizationFallbackToDefault()
     {
-        Scribe::normalizeEndpointUrlUsing(function (string $url, LaravelRoute $route,
-            \ReflectionFunctionAbstract $method, ?\ReflectionClass $controller, callable $default) {
-            if ($route->named('things.otherthings.destroy')) return 'things/{thing-id}/otherthings/{other_thing-id}';
+        Scribe::normalizeEndpointUrlUsing(function (
+            string $url,
+            LaravelRoute $route,
+            \ReflectionFunctionAbstract $method,
+            ?\ReflectionClass $controller,
+            callable $default
+        ) {
+            if ($route->named('things.otherthings.destroy')) {
+                return 'things/{thing-id}/otherthings/{other_thing-id}';
+            }
 
             return $default();
         });
@@ -76,7 +91,7 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function normalizes_resource_url_params_from_underscores_to_hyphens()
+    public function normalizesResourceUrlParamsFromUnderscoresToHyphens()
     {
         Route::apiResource('audio-things', TestController::class)->only('show');
         $route = $this->getRoute(['prefixes' => '*']);
@@ -92,7 +107,7 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function normalizes_nonresource_url_params_with_inline_bindings()
+    public function normalizesNonresourceUrlParamsWithInlineBindings()
     {
         Route::get('things/{thing:slug}', [TestController::class, 'show']);
         $route = $this->getRoute(['prefixes' => '*']);
@@ -100,11 +115,11 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
         $this->assertEquals('things/{thing}', $this->originalUri($route));
         $this->assertEquals('things/{thing_slug}', $this->expectedUri($route));
     }
-    
+
     /** @test */
-    public function normalizes_url_param_with_eloquent_model_binding()
+    public function normalizesUrlParamWithEloquentModelBinding()
     {
-        Route::get("test-posts/{test_post}", [TestController::class, 'withInjectedModelFullParamName']);
+        Route::get('test-posts/{test_post}', [TestController::class, 'withInjectedModelFullParamName']);
         $route = $this->getRoute(['prefixes' => '*']);
 
         $this->assertEquals('test-posts/{test_post}', $this->originalUri($route));
@@ -129,8 +144,9 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
         } else {
             // We're testing resource routes, and we may not have methods that exist for all of them (show, index, etc).
             // Just use this dummy so we don't have null
-           $method = new \ReflectionFunction('dump'); 
+            $method = new \ReflectionFunction('dump');
         }
+
         return new ExtractedEndpointData([
             'route' => $route,
             'uri' => $route->uri,
@@ -142,8 +158,9 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
     protected function getRoute(array $matchRules): LaravelRoute
     {
         $routeRules[0]['match'] = array_merge($matchRules, ['domains' => '*']);
-        $matchedRoutes = (new RouteMatcher)->getRoutes($routeRules);
+        $matchedRoutes = (new RouteMatcher())->getRoutes($routeRules);
         $this->assertCount(1, $matchedRoutes);
+
         return $matchedRoutes[0]->getRoute();
     }
 }

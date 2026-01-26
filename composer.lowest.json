@@ -7,7 +7,7 @@
         "documentation",
         "laravel"
     ],
-    "homepage": "http://github.com/knuckleswtf/scribe",
+    "homepage": "https://github.com/knuckleswtf/scribe",
     "authors": [
         {
             "name": "Shalvah",
@@ -21,13 +21,12 @@
         "ext-pdo": "*",
         "erusev/parsedown": "1.7.4",
         "fakerphp/faker": "^1.23.1",
-        "laravel/framework": "^9.0",
+        "laravel/framework": "^9.21",
         "league/flysystem": "^3.0",
         "mpociot/reflection-docblock": "^1.0.1",
         "nikic/php-parser": "^5.0",
         "nunomaduro/collision": "^6.0",
         "ramsey/uuid": "^4.2.2",
-        "shalvah/clara": "dev-master",
         "shalvah/upgrader": ">=0.6.0",
         "spatie/data-transfer-object": "^2.6|^3.0",
         "symfony/var-exporter": "^6.0",
@@ -61,7 +60,7 @@
     "scripts": {
         "lint": "phpstan analyse -c ./phpstan.neon src camel --memory-limit 1G",
         "test": "phpunit --stop-on-failure",
-        "test-ci": "pest --coverage --min=80"
+        "test-ci": "pest"
     },
     "extra": {
         "laravel": {

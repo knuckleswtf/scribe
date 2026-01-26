@@ -8,8 +8,7 @@ class AnnotationParser
      * Parse an annotation like 'status=400 when="things go wrong" {"message": "failed"}'.
      * Fields are always optional and may appear at the start or the end of the string.
      *
-     * @param string $annotationContent
-     * @param array $allowedFields List of fields to look for.
+     * @param array $allowedFields list of fields to look for
      *
      * @return array{content: string, fields: string[]}
      */
@@ -18,7 +17,7 @@ class AnnotationParser
         $parsedFields = array_fill_keys($allowedFields, null);
 
         foreach ($allowedFields as $field) {
-            preg_match("/$field=([^\\s'\"]+|\".+?\"|'.+?')\\s*/", $annotationContent, $fieldAndValue);
+            preg_match("/{$field}=([^\\s'\"]+|\".+?\"|'.+?')\\s*/", $annotationContent, $fieldAndValue);
 
             if (count($fieldAndValue)) {
                 [$matchingText, $attributeValue] = $fieldAndValue;
@@ -30,7 +29,7 @@ class AnnotationParser
 
         return [
             'content' => trim($annotationContent),
-            'fields' => $parsedFields
+            'fields' => $parsedFields,
         ];
     }
 
@@ -38,9 +37,6 @@ class AnnotationParser
      * Parse an annotation like 'title=This message="everything good"' into a key-value array.
      * All non key-value fields will be ignored. Useful for `@apiResourceAdditional`,
      * where users may specify arbitrary fields.
-     *
-     * @param string $annotationContent
-     * @return array
      */
     public static function parseIntoFields(string $annotationContent): array
     {

@@ -22,14 +22,11 @@ class MakeStrategy extends GeneratorCommand
 
     protected function getDefaultNamespace($rootNamespace)
     {
-        return $rootNamespace.'\Docs\Strategies';
+        return $rootNamespace . '\Docs\Strategies';
     }
 
     protected function replaceClass($stub, $name)
     {
-        $stub = parent::replaceClass($stub, $name);
-
-        return $stub;
+        return parent::replaceClass($stub, $name);
     }
-
 }

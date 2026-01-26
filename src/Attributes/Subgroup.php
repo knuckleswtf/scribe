@@ -2,15 +2,20 @@
 
 namespace Knuckles\Scribe\Attributes;
 
-use Attribute;
-
-#[Attribute(Attribute::TARGET_FUNCTION | Attribute::TARGET_METHOD | Attribute::TARGET_CLASS)]
+#[\Attribute(\Attribute::TARGET_FUNCTION | \Attribute::TARGET_METHOD | \Attribute::TARGET_CLASS)]
 class Subgroup
 {
     public function __construct(
         public mixed $name,
         public ?string $description = '',
-    ){
+    ) {}
+
+    public function toArray()
+    {
+        return [
+            'subgroup' => $this->getName(),
+            'subgroupDescription' => $this->description,
+        ];
     }
 
     protected function getName(): string
@@ -26,13 +31,5 @@ class Subgroup
         throw new \InvalidArgumentException(
             'The name property of a subgroup must be either a PHP Backed Enum or a string'
         );
-    }
-
-    public function toArray()
-    {
-        return [
-            "subgroup" => $this->getName(),
-            "subgroupDescription" => $this->description,
-        ];
     }
 }

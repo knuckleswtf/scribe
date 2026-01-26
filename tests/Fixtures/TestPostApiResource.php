@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Tests\Fixtures;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class TestPostApiResource extends JsonResource
@@ -9,7 +10,7 @@ class TestPostApiResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      *
      * @return array
      */
@@ -17,7 +18,7 @@ class TestPostApiResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'title' => $this->title ,
+            'title' => $this->title,
             'body' => $this->body,
             'tags' => $this->whenLoaded('tags', function () {
                 return TestTagApiResource::collection($this->tags);

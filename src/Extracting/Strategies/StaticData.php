@@ -18,10 +18,10 @@ class StaticData extends Strategy
         array $only = [],
         array $except = [],
         array $data = [],
-    ): array
-    {
+    ): array {
         return static::wrapWithSettings(
-            only: $only, except: $except,
+            only: $only,
+            except: $except,
             otherSettings: compact(
                 'data',
             )

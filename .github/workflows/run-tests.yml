@@ -12,19 +12,21 @@ jobs:
       fail-fast: false
       matrix:
         php:
-        - '8.4'
-        - '8.3'
-        - '8.2'
-        - '8.1'
+          - '8.4'
+          - '8.3'
+          - '8.2'
+          - '8.1'
         deps:
-        - highest
+          - highest
         include:
-          - {php: '8.1', deps: lowest}
+          - { php: '8.1', deps: lowest }
 
     name: Tests (PHP ${{ matrix.php }} - ${{ matrix.deps }})
 
     steps:
-      - uses: actions/checkout@v3
+      - name: '🛎 Checkout'
+        uses: actions/checkout@v6
+
       - name: Setup PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
         with:
@@ -39,7 +41,6 @@ jobs:
       - name: Install dependencies (lowest)
         if: ${{ matrix.deps == 'lowest' }}
         run: COMPOSER=composer.lowest.json composer update --prefer-stable
-
 
       - name: Execute tests (Laravel)
         run: composer test-ci

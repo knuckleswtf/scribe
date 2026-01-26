@@ -8,7 +8,7 @@ use PhpParser\Node;
  * This class looks for
  *   $anyVariable = $this->validate($request, ...);
  * or just
- *   $this->validate($request, ...);
+ *   $this->validate($request, ...);.
  *
  * Also supports `$req` instead of `$request`
  */
@@ -16,7 +16,9 @@ class ThisValidate
 {
     public static function find(Node $node)
     {
-        if (!($node instanceof Node\Stmt\Expression)) return;
+        if (!$node instanceof Node\Stmt\Expression) {
+            return;
+        }
 
         $expr = $node->expr;
         if ($expr instanceof Node\Expr\Assign) {
@@ -26,9 +28,9 @@ class ThisValidate
         if (
             $expr instanceof Node\Expr\MethodCall
             && $expr->var instanceof Node\Expr\Variable
-            && $expr->var->name === "this"
+            && 'this' === $expr->var->name
         ) {
-            if ($expr->name->name == "validate") {
+            if ('validate' == $expr->name->name) {
                 return $expr->args[1]->value;
             }
         }

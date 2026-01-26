@@ -2,8 +2,9 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\Responses;
 
+use Illuminate\Database\Eloquent\Factory;
+use Illuminate\Database\Eloquent\LegacyFactoryServiceProvider;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Foundation\Application;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Schema;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
@@ -16,24 +17,20 @@ use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\Utils;
 use Mpociot\Reflection\DocBlock\Tag;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class UseApiResourceTagsTest extends BaseLaravelTest
 {
-    protected function getPackageProviders($app)
-    {
-        $providers = parent::getPackageProviders($app);
-        if (class_exists(\Illuminate\Database\Eloquent\LegacyFactoryServiceProvider::class)) {
-            $providers[] = \Illuminate\Database\Eloquent\LegacyFactoryServiceProvider ::class;
-        }
-        return $providers;
-    }
-
     public function setUp(): void
     {
         parent::setUp();
 
         $this->setConfig(['database_connections_to_transact' => []]);
 
-        $factory = app(\Illuminate\Database\Eloquent\Factory::class);
+        $factory = app(Factory::class);
         $factory->define(TestUser::class, function () {
             return [
                 'id' => 4,
@@ -42,8 +39,8 @@ class UseApiResourceTagsTest extends BaseLaravelTest
                 'email' => 'a@b.com',
             ];
         });
-        $factory->state(TestUser::class, 'state1', ["state1" => true]);
-        $factory->state(TestUser::class, 'random-state', ["random-state" => true]);
+        $factory->state(TestUser::class, 'state1', ['state1' => true]);
+        $factory->state(TestUser::class, 'random-state', ['random-state' => true]);
         $factory->define(TestPet::class, function () {
             return [
                 'id' => 1,
@@ -54,11 +51,11 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_parse_apiresource_tags()
+    public function canParseApiresourceTags()
     {
         $config = new DocumentationConfig([]);
 
-        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+        $route = new Route(['POST'], '/somethingRandom', ['uses' => [TestController::class, 'dummy']]);
 
         $strategy = new UseApiResourceTags($config);
         $tags = [
@@ -82,15 +79,15 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_parse_apiresource_tags_without_apiresourcemodel()
+    public function canParseApiresourceTagsWithoutApiresourcemodel()
     {
         $config = new DocumentationConfig([]);
 
-        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+        $route = new Route(['POST'], '/somethingRandom', ['uses' => [TestController::class, 'dummy']]);
 
         $strategy = new UseApiResourceTags($config);
         $tags = [
-            new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestEmptyApiResource')
+            new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestEmptyApiResource'),
         ];
         $results = $strategy->getApiResourceResponseFromTags($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
         $this->assertArraySubset([
@@ -100,17 +97,17 @@ class UseApiResourceTagsTest extends BaseLaravelTest
                     'data' => [],
                     'request-id' => 'ea02ebc1-4e3c-497f-9ea8-7a1ac5008af2',
                     'error_code' => 0,
-                    'messages' => []
+                    'messages' => [],
                 ]),
             ],
         ], $results);
     }
 
     /** @test */
-    public function respects_models_source_settings()
+    public function respectsModelsSourceSettings()
     {
         $config = new DocumentationConfig(['examples' => ['models_source' => ['databaseFirst', 'factoryMake']]]);
-        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+        $route = new Route(['POST'], '/somethingRandom', ['uses' => [TestController::class, 'dummy']]);
 
         $strategy = new UseApiResourceTags($config);
         $tags = [
@@ -135,7 +132,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
                     'data' => [
                         'id' => 1,
                         'name' => 'Testy Testes',
-                        'email' => 'um'
+                        'email' => 'um',
                     ],
                 ]),
             ],
@@ -143,11 +140,11 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_parse_apiresource_tags_with_scenario_and_status_attributes()
+    public function canParseApiresourceTagsWithScenarioAndStatusAttributes()
     {
         $config = new DocumentationConfig([]);
 
-        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+        $route = new Route(['POST'], '/somethingRandom', ['uses' => [TestController::class, 'dummy']]);
 
         $strategy = new UseApiResourceTags($config);
         $tags = [
@@ -155,7 +152,10 @@ class UseApiResourceTagsTest extends BaseLaravelTest
             new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser'),
         ];
         $results = $strategy->getApiResourceResponseFromTags(
-            $strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route), false
+            $strategy->getApiResourceTag($tags),
+            $tags,
+            ExtractedEndpointData::fromRoute($route),
+            false
         );
 
         $this->assertArraySubset([
@@ -174,11 +174,11 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function properly_binds_route_and_request_when_fetching_apiresource_response()
+    public function properlyBindsRouteAndRequestWhenFetchingApiresourceResponse()
     {
         $config = new DocumentationConfig([]);
 
-        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+        $route = new Route(['POST'], '/somethingRandom', ['uses' => [TestController::class, 'dummy']]);
         $route->name('someone');
 
         $strategy = new UseApiResourceTags($config);
@@ -201,11 +201,11 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_parse_apiresourcemodel_tags_with_factory_states()
+    public function canParseApiresourcemodelTagsWithFactoryStates()
     {
         $config = new DocumentationConfig([]);
 
-        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+        $route = new Route(['POST'], '/somethingRandom', ['uses' => [TestController::class, 'dummy']]);
 
         $strategy = new UseApiResourceTags($config);
         $tags = [
@@ -230,13 +230,12 @@ class UseApiResourceTagsTest extends BaseLaravelTest
         ], $results);
     }
 
-
     /** @test */
-    public function can_infer_model_from_mixin_tag_and_parse_apiresource_tags_with_factory_states()
+    public function canInferModelFromMixinTagAndParseApiresourceTagsWithFactoryStates()
     {
         $config = new DocumentationConfig([]);
 
-        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+        $route = new Route(['POST'], '/somethingRandom', ['uses' => [TestController::class, 'dummy']]);
 
         $strategy = new UseApiResourceTags($config);
         $tags = [
@@ -261,11 +260,11 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function loads_specified_relations_for_model()
+    public function loadsSpecifiedRelationsForModel()
     {
-        $factory = app(\Illuminate\Database\Eloquent\Factory::class);
+        $factory = app(Factory::class);
         $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
-            if ($user->id === 4) {
+            if (4 === $user->id) {
                 $child = Utils::getModelFactory(TestUser::class)->make(['id' => 5, 'parent_id' => 4]);
                 $user->setRelation('children', collect([$child]));
             }
@@ -273,7 +272,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
 
         $config = new DocumentationConfig([]);
 
-        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+        $route = new Route(['POST'], '/somethingRandom', ['uses' => [TestController::class, 'dummy']]);
 
         $strategy = new UseApiResourceTags($config);
         $tags = [
@@ -304,18 +303,18 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function loads_specified_relations_for_generated_model()
+    public function loadsSpecifiedRelationsForGeneratedModel()
     {
-        $factory = app(\Illuminate\Database\Eloquent\Factory::class);
+        $factory = app(Factory::class);
         $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
-            if ($user->id === 4) {
+            if (4 === $user->id) {
                 $child = Utils::getModelFactory(TestUser::class)->make(['id' => 5, 'parent_id' => 4]);
                 $user->setRelation('children', collect([$child]));
             }
         });
         $config = new DocumentationConfig([]);
 
-        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+        $route = new Route(['POST'], '/somethingRandom', ['uses' => [TestController::class, 'dummy']]);
 
         $strategy = new UseApiResourceTags($config);
         $tags = [
@@ -346,11 +345,11 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function loads_specified_nested_relations_for_generated_model()
+    public function loadsSpecifiedNestedRelationsForGeneratedModel()
     {
-        $factory = app(\Illuminate\Database\Eloquent\Factory::class);
+        $factory = app(Factory::class);
         $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
-            if ($user->id === 4) {
+            if (4 === $user->id) {
                 $child = Utils::getModelFactory(TestUser::class)->make(['id' => 5, 'parent_id' => 4]);
                 $user->setRelation('children', collect([$child]));
 
@@ -361,7 +360,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
 
         $config = new DocumentationConfig([]);
 
-        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+        $route = new Route(['POST'], '/somethingRandom', ['uses' => [TestController::class, 'dummy']]);
 
         $strategy = new UseApiResourceTags($config);
         $tags = [
@@ -388,8 +387,8 @@ class UseApiResourceTagsTest extends BaseLaravelTest
                                         'id' => 6,
                                         'name' => 'Tested Again',
                                         'email' => 'a@b.com',
-                                    ]
-                                ]
+                                    ],
+                                ],
                             ],
                         ],
                     ],
@@ -399,9 +398,9 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function loads_specified_many_to_many_relations_for_generated_model()
+    public function loadsSpecifiedManyToManyRelationsForGeneratedModel()
     {
-        $factory = app(\Illuminate\Database\Eloquent\Factory::class);
+        $factory = app(Factory::class);
         $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
             $pet = Utils::getModelFactory(TestPet::class)->make(['id' => 1]);
             $user->setRelation('pets', collect([$pet]));
@@ -409,7 +408,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
 
         $config = new DocumentationConfig([]);
 
-        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+        $route = new Route(['POST'], '/somethingRandom', ['uses' => [TestController::class, 'dummy']]);
 
         $strategy = new UseApiResourceTags($config);
         $tags = [
@@ -430,7 +429,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
                             [
                                 'id' => 1,
                                 'name' => 'Mephistopheles',
-                                'species' => 'dog'
+                                'species' => 'dog',
                             ],
                         ],
                     ],
@@ -440,11 +439,11 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function loads_specified_many_to_many_and_nested_relations_for_generated_model()
+    public function loadsSpecifiedManyToManyAndNestedRelationsForGeneratedModel()
     {
-        $factory = app(\Illuminate\Database\Eloquent\Factory::class);
+        $factory = app(Factory::class);
         $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
-            if ($user->id === 4) {
+            if (4 === $user->id) {
                 $child = Utils::getModelFactory(TestUser::class)->make(['id' => 5, 'parent_id' => 4]);
                 $user->setRelation('children', collect([$child]));
 
@@ -455,7 +454,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
 
         $config = new DocumentationConfig([]);
 
-        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+        $route = new Route(['POST'], '/somethingRandom', ['uses' => [TestController::class, 'dummy']]);
 
         $strategy = new UseApiResourceTags($config);
         $tags = [
@@ -481,12 +480,11 @@ class UseApiResourceTagsTest extends BaseLaravelTest
                                     [
                                         'id' => 1,
                                         'name' => 'Mephistopheles',
-                                        'species' => 'dog'
+                                        'species' => 'dog',
                                     ],
                                 ],
-                            ]
-                        ]
-
+                            ],
+                        ],
                     ],
                 ]),
             ],
@@ -494,16 +492,16 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function loads_specified_many_to_many_relations_for_generated_model_with_pivot()
+    public function loadsSpecifiedManyToManyRelationsForGeneratedModelWithPivot()
     {
-        $factory = app(\Illuminate\Database\Eloquent\Factory::class);
+        $factory = app(Factory::class);
         $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
             $pet = Utils::getModelFactory(TestPet::class)->make(['id' => 1]);
 
             $pivot = $pet->newPivot($user, [
                 'pet_id' => $pet->id,
                 'user_id' => $user->id,
-                'duration' => 2
+                'duration' => 2,
             ], 'pet_user', true);
 
             $pet->setRelation('pivot', $pivot);
@@ -513,7 +511,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
 
         $config = new DocumentationConfig([]);
 
-        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+        $route = new Route(['POST'], '/somethingRandom', ['uses' => [TestController::class, 'dummy']]);
 
         $strategy = new UseApiResourceTags($config);
         $tags = [
@@ -538,8 +536,8 @@ class UseApiResourceTagsTest extends BaseLaravelTest
                                 'ownership' => [
                                     'pet_id' => 1,
                                     'user_id' => 4,
-                                    'duration' => 2
-                                ]
+                                    'duration' => 2,
+                                ],
                             ],
                         ],
                     ],
@@ -549,7 +547,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function loads_specified_morph_to_many_relations_for_generated_model_with_pivot()
+    public function loadsSpecifiedMorphToManyRelationsForGeneratedModelWithPivot()
     {
         Schema::create('test_posts', function (Blueprint $table) {
             $table->id();
@@ -574,7 +572,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
 
         $config = new DocumentationConfig([]);
 
-        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+        $route = new Route(['POST'], '/somethingRandom', ['uses' => [TestController::class, 'dummy']]);
 
         $strategy = new UseApiResourceTags($config);
         $tags = [
@@ -595,7 +593,7 @@ class UseApiResourceTagsTest extends BaseLaravelTest
                             [
                                 'id' => 1,
                                 'name' => 'tag 1',
-                                'priority' => "high"
+                                'priority' => 'high',
                             ],
                         ],
                     ],
@@ -605,11 +603,11 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_parse_apiresourcecollection_tags()
+    public function canParseApiresourcecollectionTags()
     {
         $config = new DocumentationConfig([]);
 
-        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+        $route = new Route(['POST'], '/somethingRandom', ['uses' => [TestController::class, 'dummy']]);
 
         $strategy = new UseApiResourceTags($config);
         $tags = [
@@ -640,11 +638,11 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_parse_apiresourcecollection_tags_with_collection_class()
+    public function canParseApiresourcecollectionTagsWithCollectionClass()
     {
         $config = new DocumentationConfig([]);
 
-        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+        $route = new Route(['POST'], '/somethingRandom', ['uses' => [TestController::class, 'dummy']]);
 
         $strategy = new UseApiResourceTags($config);
         $tags = [
@@ -678,11 +676,11 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_parse_apiresourcecollection_tags_with_collection_class_and_pagination()
+    public function canParseApiresourcecollectionTagsWithCollectionClassAndPagination()
     {
         $config = new DocumentationConfig([]);
 
-        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+        $route = new Route(['POST'], '/somethingRandom', ['uses' => [TestController::class, 'dummy']]);
 
         $strategy = new UseApiResourceTags($config);
         $tags = [
@@ -704,17 +702,17 @@ class UseApiResourceTagsTest extends BaseLaravelTest
                     ],
                     'links' => [
                         'self' => 'link-value',
-                        "first" => '/?page=1',
-                        "last" => null,
-                        "prev" => null,
-                        "next" => '/?page=2',
+                        'first' => '/?page=1',
+                        'last' => null,
+                        'prev' => null,
+                        'next' => '/?page=2',
                     ],
-                    "meta" => [
-                        "current_page" => 1,
-                        "from" => 1,
-                        "path" => '/',
-                        "per_page" => "1",
-                        "to" => 1,
+                    'meta' => [
+                        'current_page' => 1,
+                        'from' => 1,
+                        'path' => '/',
+                        'per_page' => '1',
+                        'to' => 1,
                     ],
                 ]),
             ],
@@ -722,17 +720,17 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_parse_apiresourceadditional_tags()
+    public function canParseApiresourceadditionalTags()
     {
         $config = new DocumentationConfig([]);
 
-        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+        $route = new Route(['POST'], '/somethingRandom', ['uses' => [TestController::class, 'dummy']]);
 
         $strategy = new UseApiResourceTags($config);
         $tags = [
             new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestUserApiResource'),
             new Tag('apiResourceModel', '\Knuckles\Scribe\Tests\Fixtures\TestUser'),
-            new Tag('apiResourceAdditional', 'a=b "custom field"=c e="custom value" "another field"="true value"')
+            new Tag('apiResourceAdditional', 'a=b "custom field"=c e="custom value" "another field"="true value"'),
         ];
         $results = $strategy->getApiResourceResponseFromTags($strategy->getApiResourceTag($tags), $tags, ExtractedEndpointData::fromRoute($route));
 
@@ -755,11 +753,11 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_parse_apiresourcecollection_tags_with_collection_class_pagination_and_apiresourceadditional_tag()
+    public function canParseApiresourcecollectionTagsWithCollectionClassPaginationAndApiresourceadditionalTag()
     {
         $config = new DocumentationConfig([]);
 
-        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+        $route = new Route(['POST'], '/somethingRandom', ['uses' => [TestController::class, 'dummy']]);
 
         $strategy = new UseApiResourceTags($config);
         $tags = [
@@ -782,17 +780,17 @@ class UseApiResourceTagsTest extends BaseLaravelTest
                     ],
                     'links' => [
                         'self' => 'link-value',
-                        "first" => '/?page=1',
-                        "last" => null,
-                        "prev" => null,
-                        "next" => '/?page=2',
+                        'first' => '/?page=1',
+                        'last' => null,
+                        'prev' => null,
+                        'next' => '/?page=2',
                     ],
                     'meta' => [
-                        "current_page" => 1,
-                        "from" => 1,
-                        "path" => '/',
-                        "per_page" => "1",
-                        "to" => 1,
+                        'current_page' => 1,
+                        'from' => 1,
+                        'path' => '/',
+                        'per_page' => '1',
+                        'to' => 1,
                     ],
                     'a' => 'b',
                 ]),
@@ -801,11 +799,11 @@ class UseApiResourceTagsTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_parse_apiresourcecollection_tags_with_collection_class_and_cursor_pagination()
+    public function canParseApiresourcecollectionTagsWithCollectionClassAndCursorPagination()
     {
         $config = new DocumentationConfig([]);
 
-        $route = new Route(['POST'], "/somethingRandom", ['uses' => [TestController::class, 'dummy']]);
+        $route = new Route(['POST'], '/somethingRandom', ['uses' => [TestController::class, 'dummy']]);
 
         $strategy = new UseApiResourceTags($config);
         $tags = [
@@ -828,13 +826,13 @@ class UseApiResourceTagsTest extends BaseLaravelTest
                     ],
                     'links' => [
                         'self' => 'link-value',
-                        "first" => null,
-                        "last" => null,
-                        "prev" => null,
-                        "next" => "/?cursor={$nextCursor}",
+                        'first' => null,
+                        'last' => null,
+                        'prev' => null,
+                        'next' => "/?cursor={$nextCursor}",
                     ],
-                    "meta" => [
-                        "path" => '/',
+                    'meta' => [
+                        'path' => '/',
                         'per_page' => 1,
                         'next_cursor' => $nextCursor,
                         'prev_cursor' => null,
@@ -842,5 +840,15 @@ class UseApiResourceTagsTest extends BaseLaravelTest
                 ]),
             ],
         ], $results);
+    }
+
+    protected function getPackageProviders($app)
+    {
+        $providers = parent::getPackageProviders($app);
+        if (class_exists(LegacyFactoryServiceProvider::class)) {
+            $providers[] = LegacyFactoryServiceProvider::class;
+        }
+
+        return $providers;
     }
 }

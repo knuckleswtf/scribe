@@ -40,11 +40,11 @@ class MatchedRoute implements \ArrayAccess
 
     public function offsetSet($offset, $value): void
     {
-        $this->$offset = $value;
+        $this->{$offset} = $value;
     }
 
     public function offsetUnset($offset): void
     {
-        $this->$offset = null;
+        $this->{$offset} = null;
     }
 }

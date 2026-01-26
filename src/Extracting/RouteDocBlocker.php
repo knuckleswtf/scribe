@@ -6,7 +6,6 @@ use Illuminate\Routing\Route;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\Utils as u;
 use Mpociot\Reflection\DocBlock;
-use ReflectionClass;
 
 /**
  * Class RouteDocBlocker
@@ -28,6 +27,9 @@ class RouteDocBlocker
     }
 
     /**
+     * @param mixed      $className
+     * @param null|mixed $methodName
+     *
      * @return array{method: DocBlock, class: DocBlock} Method and class docblocks
      */
     public static function getDocBlocks(Route $route, $className, $methodName = null): array
@@ -43,10 +45,10 @@ class RouteDocBlocker
             return $docBlocks;
         }
 
-        $class = new ReflectionClass($className);
+        $class = new \ReflectionClass($className);
 
-        if (! $class->hasMethod($methodName)) {
-            throw new \Exception("Error while fetching docblock for route ". c::getRouteRepresentation($route).": Class $className does not contain method $methodName");
+        if (!$class->hasMethod($methodName)) {
+            throw new \Exception('Error while fetching docblock for route ' . c::getRouteRepresentation($route) . ": Class {$className} does not contain method {$methodName}");
         }
 
         $method = u::getReflectedRouteMethod([$className, $methodName]);
@@ -61,9 +63,7 @@ class RouteDocBlocker
     }
 
     /**
-     * @param string|object $classNameOrInstance
-     *
-     * @return string
+     * @param object|string $classNameOrInstance
      */
     protected static function normalizeClassName($classNameOrInstance): string
     {

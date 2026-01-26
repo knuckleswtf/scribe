@@ -2,9 +2,8 @@
 
 namespace Knuckles\Scribe\Writing;
 
-use Illuminate\Translation\FileLoader;
-use Knuckles\Scribe\Tools\Globals;
 use Illuminate\Contracts\Translation\Loader as LoaderContract;
+use Illuminate\Translation\FileLoader;
 
 class CustomTranslationsLoader extends FileLoader
 {
@@ -27,7 +26,7 @@ class CustomTranslationsLoader extends FileLoader
         // `lang/scribe/en/auth.php`, `lang/scribe/en/links.php`
         // We want to trick it into accepting a simple `lang/scribe.php`.
 
-        if ($namespace == 'scribe') {
+        if ('scribe' == $namespace) {
             if (isset($this->scribeTranslationsCache)) {
                 $lines = $this->scribeTranslationsCache[$group] ?? [];
             } elseif ($this->files->exists($full = "{$this->hints[$namespace]}/scribe.php")) {
@@ -53,6 +52,7 @@ class CustomTranslationsLoader extends FileLoader
                 $this->userTranslationsCache = $this->files->getRequire($userTranslationsFile);
             }
             $userTranslations = $this->userTranslationsCache[$group] ?? [];
+
             return array_replace_recursive($lines, $userTranslations);
         }
 

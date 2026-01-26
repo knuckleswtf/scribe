@@ -7,7 +7,7 @@ use Knuckles\Scribe\Extracting\Strategies\GetFieldsFromTagStrategy;
 
 class GetFromUrlParamTag extends GetFieldsFromTagStrategy
 {
-    protected string $tagName = "urlParam";
+    protected string $tagName = 'urlParam';
 
     protected function parseTag(string $tagContent): array
     {
@@ -28,11 +28,11 @@ class GetFromUrlParamTag extends GetFieldsFromTagStrategy
         } else {
             [$_, $name, $__, $type, $required, $description] = $content;
             $description = trim(str_replace(['No-example.', 'No-example'], '', $description));
-            if ($description === 'required') {
+            if ('required' === $description) {
                 $required = true;
                 $description = '';
             } else {
-                $required = trim($required) === 'required';
+                $required = 'required' === trim($required);
             }
 
             if (empty($type) && $this->isSupportedTypeInDocBlocks($description)) {
@@ -46,8 +46,8 @@ class GetFromUrlParamTag extends GetFieldsFromTagStrategy
                 : static::normalizeTypeName($type);
         }
 
-        [$description, $example, $enumValues, $exampleWasSpecified] =
-            $this->getDescriptionAndExample($description, $type, $tagContent, $name);
+        [$description, $example, $enumValues, $exampleWasSpecified]
+            = $this->getDescriptionAndExample($description, $type, $tagContent, $name);
 
         return compact('name', 'description', 'required', 'example', 'type', 'enumValues', 'exampleWasSpecified');
     }

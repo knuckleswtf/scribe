@@ -13,6 +13,7 @@ class ResponseFileTools
 
         if (is_string($merge)) {
             $json = str_replace("'", '"', $merge);
+
             return json_encode(array_merge(json_decode($content, true), json_decode($json, true)));
         }
 
@@ -29,6 +30,7 @@ class ResponseFileTools
 
             $filePath = storage_path($filePath);
         }
+
         return file_get_contents($filePath, true);
     }
 }

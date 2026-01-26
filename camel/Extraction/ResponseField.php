@@ -2,7 +2,6 @@
 
 namespace Knuckles\Camel\Extraction;
 
-
 use Knuckles\Camel\BaseDTO;
 
 class ResponseField extends BaseDTO
@@ -19,11 +18,14 @@ class ResponseField extends BaseDTO
     /** @var string */
     public $type;
 
-    /** @var boolean */
+    /** @var bool */
     public $required;
 
     /** @var mixed */
     public $example;
 
     public array $enumValues = [];
+
+    /** @var bool */
+    public $nullable;
 }

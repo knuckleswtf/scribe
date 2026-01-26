@@ -7,7 +7,7 @@ use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Extracting\FindsFormRequestForMethod;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Mpociot\Reflection\DocBlock;
-use ReflectionFunctionAbstract;
+use Mpociot\Reflection\DocBlock\Tag;
 
 abstract class TagStrategyWithFormRequestFallback extends Strategy
 {
@@ -16,10 +16,11 @@ abstract class TagStrategyWithFormRequestFallback extends Strategy
     public function __invoke(ExtractedEndpointData $endpointData, array $routeRules = []): ?array
     {
         $this->endpointData = $endpointData;
+
         return $this->getParametersFromDocBlockInFormRequestOrMethod($endpointData->route, $endpointData->method);
     }
 
-    public function getParametersFromDocBlockInFormRequestOrMethod(Route $route, ReflectionFunctionAbstract $method): array
+    public function getParametersFromDocBlockInFormRequestOrMethod(Route $route, \ReflectionFunctionAbstract $method): array
     {
         $classTags = RouteDocBlocker::getDocBlocksFromRoute($route)['class']?->getTags() ?: [];
         // If there's a FormRequest, w.e check there for tags.
@@ -33,14 +34,13 @@ abstract class TagStrategyWithFormRequestFallback extends Strategy
         }
 
         $methodDocBlock = RouteDocBlocker::getDocBlocksFromRoute($route)['method'];
+
         return $this->getFromTags($methodDocBlock->getTags(), $classTags);
     }
 
     /**
-     * @param \Mpociot\Reflection\DocBlock\Tag[] $tagsOnMethod
-     * @param \Mpociot\Reflection\DocBlock\Tag[] $tagsOnClass
-     *
-     * @return array
+     * @param Tag[] $tagsOnMethod
+     * @param Tag[] $tagsOnClass
      */
     abstract public function getFromTags(array $tagsOnMethod, array $tagsOnClass = []): array;
 }

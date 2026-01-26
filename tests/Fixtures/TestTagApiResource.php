@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Tests\Fixtures;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class TestTagApiResource extends JsonResource
@@ -9,7 +10,7 @@ class TestTagApiResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      *
      * @return array
      */
@@ -17,7 +18,7 @@ class TestTagApiResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name ,
+            'name' => $this->name,
             'priority' => $this->whenPivotLoaded('taggables', function () {
                 return $this->pivot->priority;
             }),

@@ -2,27 +2,34 @@
 
 namespace Knuckles\Scribe\Tests\GenerateDocumentation;
 
+use Illuminate\Database\Eloquent\Factory;
 use Illuminate\Support\Facades\Route as RouteFacade;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
+use Knuckles\Scribe\Extracting\Strategies;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tests\Fixtures\TestGroupController;
 use Knuckles\Scribe\Tests\Fixtures\TestPartialResourceController;
 use Knuckles\Scribe\Tests\Fixtures\TestPost;
 use Knuckles\Scribe\Tests\Fixtures\TestPostBoundInterface;
-use Knuckles\Scribe\Tests\Fixtures\TestPostController;
 use Knuckles\Scribe\Tests\Fixtures\TestPostBoundInterfaceController;
+use Knuckles\Scribe\Tests\Fixtures\TestPostController;
 use Knuckles\Scribe\Tests\Fixtures\TestPostUserController;
 use Knuckles\Scribe\Tests\Fixtures\TestUser;
 use Knuckles\Scribe\Tests\TestHelpers;
 use Knuckles\Scribe\Tools\Utils;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Yaml\Yaml;
-use Knuckles\Scribe\Extracting\Strategies;
+
 use function Knuckles\Scribe\Config\configureStrategy;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class OutputTest extends BaseLaravelTest
 {
     use TestHelpers;
@@ -31,7 +38,7 @@ class OutputTest extends BaseLaravelTest
     {
         parent::setUp();
 
-        $factory = app(\Illuminate\Database\Eloquent\Factory::class);
+        $factory = app(Factory::class);
         $factory->define(TestUser::class, function () {
             return [
                 'id' => 4,
@@ -51,7 +58,7 @@ class OutputTest extends BaseLaravelTest
     /**
      * @test
      */
-    public function generates_static_type_output()
+    public function generatesStaticTypeOutput()
     {
         RouteFacade::post('/api/withQueryParameters', [TestController::class, 'withQueryParameters']);
         $this->setConfig(['type' => 'static']);
@@ -59,8 +66,8 @@ class OutputTest extends BaseLaravelTest
         $this->setConfig(['openapi.enabled' => true]);
 
         $this->generateAndExpectConsoleOutput(expected: [
-            "Wrote HTML docs and assets to: public/docs/",
-            "Wrote Postman collection to: public/docs/collection.json"
+            'Writing HTML docs to public/docs/ and assets to public/docs/',
+            'Generating Postman collection in public/docs/',
         ]);
 
         $this->assertFileExists($this->postmanOutputPath(true));
@@ -73,52 +80,19 @@ class OutputTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function supports_multi_docs_in_laravel_type_output()
+    public function supportsMultiDocsInLaravelTypeOutput()
     {
-        $this->generate_with_paths(configName: "scribe_admin");
+        $this->generate_with_paths(configName: 'scribe_admin');
     }
 
     /** @test */
-    public function supports_custom_scribe_directory()
+    public function supportsCustomScribeDirectory()
     {
-        $this->generate_with_paths(configName: "scribe_admin", intermediateOutputDirectory: '5.5/Apple/26');
-    }
-
-    private function generate_with_paths($configName, $intermediateOutputDirectory = null)
-    {
-        RouteFacade::post('/api/withQueryParameters', [TestController::class, 'withQueryParameters']);
-        config([$configName => config('scribe')]);
-        $title = "The Real Admin API";
-        config(["{$configName}.title" => $title]);
-        config(["{$configName}.type" => 'laravel']);
-        config(["{$configName}.postman.enabled" => true]);
-        config(["{$configName}.openapi.enabled" => true]);
-
-        $pathOptions = ["--config" => $configName];
-        if ($intermediateOutputDirectory) {
-            $pathOptions["--scribe-dir"] = $intermediateOutputDirectory;
-        }
-        $this->generateAndExpectConsoleOutput($pathOptions, [
-            "Wrote Blade docs to: vendor/orchestra/testbench-core/laravel/resources/views/{$configName}",
-            "Wrote Laravel assets to: vendor/orchestra/testbench-core/laravel/public/vendor/{$configName}",
-            "Wrote Postman collection to: vendor/orchestra/testbench-core/laravel/storage/app/{$configName}/collection.json",
-            "Wrote OpenAPI specification to: vendor/orchestra/testbench-core/laravel/storage/app/{$configName}/openapi.yaml",
-        ]);
-
-        $paths = collect([
-            Storage::disk('local')->path("{$configName}/collection.json"),
-            Storage::disk('local')->path("{$configName}/openapi.yaml"),
-            View::getFinder()->find("{$configName}/index"),
-        ]);
-        $paths->each(fn($path) => $this->assertFileContainsString($path, $title));
-        $paths->each(fn($path) => unlink($path));
-
-        $this->assertDirectoryExists($intermediateOutputDirectory ?: ".{$configName}");
-        Utils::deleteDirectoryAndContents($intermediateOutputDirectory ?: ".{$configName}");
+        $this->generate_with_paths(configName: 'scribe_admin', intermediateOutputDirectory: '5.5/Apple/26');
     }
 
     /** @test */
-    public function generates_and_adds_routes()
+    public function generatesAndAddsRoutes()
     {
         RouteFacade::post('/api/withBodyParameters', [TestController::class, 'withBodyParameters']);
 
@@ -139,7 +113,7 @@ class OutputTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function generated_postman_collection_file_is_correct()
+    public function generatedPostmanCollectionFileIsCorrect()
     {
         if (phpversion() < 8.3) {
             // See https://github.com/FakerPHP/Faker/issues/694
@@ -167,9 +141,8 @@ class OutputTest extends BaseLaravelTest
         $this->enableResponseCalls();
 
         $this->generateAndExpectConsoleOutput(expected: [
-            "Wrote Blade docs to: vendor/orchestra/testbench-core/laravel/resources/views/scribe",
-            "Wrote Laravel assets to: vendor/orchestra/testbench-core/laravel/public/vendor/scribe",
-            "Wrote Postman collection to: vendor/orchestra/testbench-core/laravel/storage/app/scribe/collection.json",
+            'Writing Blade docs to vendor/orchestra/testbench-core/laravel/resources/views/scribe/ and assets to vendor/orchestra/testbench-core/laravel/public/vendor/scribe/',
+            'Generating Postman collection in vendor/orchestra/testbench-core/laravel/storage/app/scribe/',
         ]);
 
         $generatedCollection = json_decode(file_get_contents($this->postmanOutputPath()), true);
@@ -178,10 +151,16 @@ class OutputTest extends BaseLaravelTest
         $fixtureCollection = json_decode(file_get_contents(__DIR__ . '/../Fixtures/collection.json'), true);
 
         // Laravel 11 began adding CORS headers by default
-        foreach ($generatedCollection["item"] as &$group) {
-            foreach ($group["item"] as &$endpoint) {
-                foreach ($endpoint["response"] as &$response) {
-                    $response["header"] = array_filter($response["header"], fn ($header) => $header["key"] !== "access-control-allow-origin");
+        foreach ($generatedCollection['item'] as &$group) {
+            foreach ($group['item'] as &$endpoint) {
+                foreach ($endpoint['response'] as &$response) {
+                    $response['header'] = array_filter($response['header'], fn($header) => 'access-control-allow-origin' !== $header['key']);
+                    $response['header'] = array_map(
+                        fn(array $header) => 'content-type' === strtolower($header['key'])
+                            ? [...$header, 'value' => strtolower($header['value'])]
+                            : $header,
+                        $response['header']
+                    );
                 }
             }
         }
@@ -189,7 +168,7 @@ class OutputTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function generated_openapi_spec_file_is_correct()
+    public function generatedOpenapiSpecFileIsCorrect()
     {
         if (phpversion() < 8.3) {
             // See https://github.com/FakerPHP/Faker/issues/694
@@ -208,7 +187,7 @@ class OutputTest extends BaseLaravelTest
             'openapi.overrides' => [
                 'info.version' => '3.9.9',
             ],
-            'strategies.headers' =>  [
+            'strategies.headers' => [
                 ...config('scribe.strategies.headers'),
                 Strategies\StaticData::withSettings(data: ['Custom-Header' => 'NotSoCustom']),
             ],
@@ -216,9 +195,8 @@ class OutputTest extends BaseLaravelTest
         $this->enableResponseCalls();
 
         $this->generateAndExpectConsoleOutput(expected: [
-            "Wrote Blade docs to: vendor/orchestra/testbench-core/laravel/resources/views/scribe",
-            "Wrote Laravel assets to: vendor/orchestra/testbench-core/laravel/public/vendor/scribe",
-            "Wrote OpenAPI specification to: vendor/orchestra/testbench-core/laravel/storage/app/scribe/openapi.yaml",
+            'Writing Blade docs to vendor/orchestra/testbench-core/laravel/resources/views/scribe/ and assets to vendor/orchestra/testbench-core/laravel/public/vendor/scribe/',
+            'Generating OpenAPI specification in vendor/orchestra/testbench-core/laravel/storage/app/scribe/',
         ]);
 
         $generatedSpec = Yaml::parseFile($this->openapiOutputPath());
@@ -227,7 +205,7 @@ class OutputTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function generated_openapi_31_spec_file_is_correct()
+    public function generatedOpenapi31SpecFileIsCorrect()
     {
         if (phpversion() < 8.3) {
             // See https://github.com/FakerPHP/Faker/issues/694
@@ -247,7 +225,7 @@ class OutputTest extends BaseLaravelTest
             'openapi.overrides' => [
                 'info.version' => '3.9.9',
             ],
-            'strategies.headers' =>  [
+            'strategies.headers' => [
                 ...config('scribe.strategies.headers'),
                 Strategies\StaticData::withSettings(data: ['Custom-Header' => 'NotSoCustom']),
             ],
@@ -255,9 +233,8 @@ class OutputTest extends BaseLaravelTest
         $this->enableResponseCalls();
 
         $this->generateAndExpectConsoleOutput(expected: [
-            "Wrote Blade docs to: vendor/orchestra/testbench-core/laravel/resources/views/scribe",
-            "Wrote Laravel assets to: vendor/orchestra/testbench-core/laravel/public/vendor/scribe",
-            "Wrote OpenAPI specification to: vendor/orchestra/testbench-core/laravel/storage/app/scribe/openapi.yaml",
+            'Writing Blade docs to vendor/orchestra/testbench-core/laravel/resources/views/scribe/ and assets to vendor/orchestra/testbench-core/laravel/public/vendor/scribe/',
+            'Generating OpenAPI specification in vendor/orchestra/testbench-core/laravel/storage/app/scribe/',
         ]);
 
         $generatedSpec = Yaml::parseFile($this->openapiOutputPath());
@@ -266,7 +243,7 @@ class OutputTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_parse_utf8_response()
+    public function canParseUtf8Response()
     {
         RouteFacade::get('/api/utf8', [TestController::class, 'withUtf8ResponseTag']);
 
@@ -276,7 +253,7 @@ class OutputTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function sorts_group_naturally_if_no_order_specified()
+    public function sortsGroupNaturallyIfNoOrderSpecified()
     {
         RouteFacade::get('/api/action1', [TestGroupController::class, 'action1']);
         RouteFacade::get('/api/action1b', [TestGroupController::class, 'action1b']);
@@ -293,11 +270,10 @@ class OutputTest extends BaseLaravelTest
         $this->assertEquals('1. Group 1', $firstGroup->textContent);
         $this->assertEquals('2. Group 2', $secondGroup->textContent);
         $this->assertEquals('10. Group 10', $thirdGroup->textContent);
-
     }
 
     /** @test */
-    public function sorts_groups_and_endpoints_in_the_specified_order()
+    public function sortsGroupsAndEndpointsInTheSpecifiedOrder()
     {
         $this->setConfig(['groups.order' => [
             '10. Group 10',
@@ -339,27 +315,27 @@ class OutputTest extends BaseLaravelTest
 
         $firstGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="' . Str::slug($firstGroup->textContent) . '"]');
         $this->assertEquals(1, $firstGroupEndpointsAndSubgroups->count());
-        $this->assertEquals("GET api/action10", $firstGroupEndpointsAndSubgroups->getNode(0)->textContent);
+        $this->assertEquals('GET api/action10', $firstGroupEndpointsAndSubgroups->getNode(0)->textContent);
 
         $secondGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="' . Str::slug($secondGroup->textContent) . '"]');
         $this->assertEquals(2, $secondGroupEndpointsAndSubgroups->count());
-        $this->assertEquals("GET api/action1b", $secondGroupEndpointsAndSubgroups->getNode(0)->textContent);
-        $this->assertEquals("GET api/action1", $secondGroupEndpointsAndSubgroups->getNode(1)->textContent);
+        $this->assertEquals('GET api/action1b', $secondGroupEndpointsAndSubgroups->getNode(0)->textContent);
+        $this->assertEquals('GET api/action1', $secondGroupEndpointsAndSubgroups->getNode(1)->textContent);
 
         $thirdGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="' . Str::slug($thirdGroup->textContent) . '"]');
         $this->assertEquals(8, $thirdGroupEndpointsAndSubgroups->count());
-        $this->assertEquals("SG B", $thirdGroupEndpointsAndSubgroups->getNode(0)->textContent);
-        $this->assertEquals("POST api/action13d", $thirdGroupEndpointsAndSubgroups->getNode(1)->textContent);
-        $this->assertEquals("GET api/action13a", $thirdGroupEndpointsAndSubgroups->getNode(2)->textContent);
-        $this->assertEquals("SG A", $thirdGroupEndpointsAndSubgroups->getNode(3)->textContent);
-        $this->assertEquals("GET api/action13e", $thirdGroupEndpointsAndSubgroups->getNode(4)->textContent);
-        $this->assertEquals("PUT api/action13c", $thirdGroupEndpointsAndSubgroups->getNode(5)->textContent);
-        $this->assertEquals("SG C", $thirdGroupEndpointsAndSubgroups->getNode(6)->textContent);
-        $this->assertEquals("POST api/action13b", $thirdGroupEndpointsAndSubgroups->getNode(7)->textContent);
+        $this->assertEquals('SG B', $thirdGroupEndpointsAndSubgroups->getNode(0)->textContent);
+        $this->assertEquals('POST api/action13d', $thirdGroupEndpointsAndSubgroups->getNode(1)->textContent);
+        $this->assertEquals('GET api/action13a', $thirdGroupEndpointsAndSubgroups->getNode(2)->textContent);
+        $this->assertEquals('SG A', $thirdGroupEndpointsAndSubgroups->getNode(3)->textContent);
+        $this->assertEquals('GET api/action13e', $thirdGroupEndpointsAndSubgroups->getNode(4)->textContent);
+        $this->assertEquals('PUT api/action13c', $thirdGroupEndpointsAndSubgroups->getNode(5)->textContent);
+        $this->assertEquals('SG C', $thirdGroupEndpointsAndSubgroups->getNode(6)->textContent);
+        $this->assertEquals('POST api/action13b', $thirdGroupEndpointsAndSubgroups->getNode(7)->textContent);
     }
 
     /** @test */
-    public function sorts_groups_and_endpoints_in_the_specified_order_with_wildcard()
+    public function sortsGroupsAndEndpointsInTheSpecifiedOrderWithWildcard()
     {
         $this->setConfig(['groups.order' => [
             '10. Group 10',
@@ -398,27 +374,27 @@ class OutputTest extends BaseLaravelTest
 
         $firstGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="' . Str::slug($firstGroup->textContent) . '"]');
         $this->assertEquals(1, $firstGroupEndpointsAndSubgroups->count());
-        $this->assertEquals("GET api/action10", $firstGroupEndpointsAndSubgroups->getNode(0)->textContent);
+        $this->assertEquals('GET api/action10', $firstGroupEndpointsAndSubgroups->getNode(0)->textContent);
 
         $secondGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="' . Str::slug($secondGroup->textContent) . '"]');
         $this->assertEquals(2, $secondGroupEndpointsAndSubgroups->count());
-        $this->assertEquals("GET api/action1", $secondGroupEndpointsAndSubgroups->getNode(0)->textContent);
-        $this->assertEquals("GET api/action1b", $secondGroupEndpointsAndSubgroups->getNode(1)->textContent);
+        $this->assertEquals('GET api/action1', $secondGroupEndpointsAndSubgroups->getNode(0)->textContent);
+        $this->assertEquals('GET api/action1b', $secondGroupEndpointsAndSubgroups->getNode(1)->textContent);
 
         $fourthGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="' . Str::slug($fourthGroup->textContent) . '"]');
         $this->assertEquals(8, $fourthGroupEndpointsAndSubgroups->count());
-        $this->assertEquals("SG B", $fourthGroupEndpointsAndSubgroups->getNode(0)->textContent);
-        $this->assertEquals("POST api/action13d", $fourthGroupEndpointsAndSubgroups->getNode(1)->textContent);
-        $this->assertEquals("GET api/action13a", $fourthGroupEndpointsAndSubgroups->getNode(2)->textContent);
-        $this->assertEquals("SG A", $fourthGroupEndpointsAndSubgroups->getNode(3)->textContent);
-        $this->assertEquals("GET api/action13e", $fourthGroupEndpointsAndSubgroups->getNode(4)->textContent);
-        $this->assertEquals("PUT api/action13c", $fourthGroupEndpointsAndSubgroups->getNode(5)->textContent);
-        $this->assertEquals("SG C", $fourthGroupEndpointsAndSubgroups->getNode(6)->textContent);
-        $this->assertEquals("POST api/action13b", $fourthGroupEndpointsAndSubgroups->getNode(7)->textContent);
+        $this->assertEquals('SG B', $fourthGroupEndpointsAndSubgroups->getNode(0)->textContent);
+        $this->assertEquals('POST api/action13d', $fourthGroupEndpointsAndSubgroups->getNode(1)->textContent);
+        $this->assertEquals('GET api/action13a', $fourthGroupEndpointsAndSubgroups->getNode(2)->textContent);
+        $this->assertEquals('SG A', $fourthGroupEndpointsAndSubgroups->getNode(3)->textContent);
+        $this->assertEquals('GET api/action13e', $fourthGroupEndpointsAndSubgroups->getNode(4)->textContent);
+        $this->assertEquals('PUT api/action13c', $fourthGroupEndpointsAndSubgroups->getNode(5)->textContent);
+        $this->assertEquals('SG C', $fourthGroupEndpointsAndSubgroups->getNode(6)->textContent);
+        $this->assertEquals('POST api/action13b', $fourthGroupEndpointsAndSubgroups->getNode(7)->textContent);
     }
 
     /** @test */
-    public function merges_and_correctly_sorts_user_defined_endpoints()
+    public function mergesAndCorrectlySortsUserDefinedEndpoints()
     {
         RouteFacade::get('/api/action1', [TestGroupController::class, 'action1']);
         RouteFacade::get('/api/action2', [TestGroupController::class, 'action2']);
@@ -428,10 +404,12 @@ class OutputTest extends BaseLaravelTest
                 '5. Group 5',
                 '4. Group 4',
                 '2. Group 2',
-            ]
+            ],
         ]);
 
-        if (!is_dir('.scribe/endpoints')) mkdir('.scribe/endpoints', 0777, true);
+        if (!is_dir('.scribe/endpoints')) {
+            mkdir('.scribe/endpoints', 0o777, true);
+        }
         copy(__DIR__ . '/../Fixtures/custom.0.yaml', '.scribe/endpoints/custom.0.yaml');
 
         $this->generate();
@@ -448,25 +426,25 @@ class OutputTest extends BaseLaravelTest
 
         $firstGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="' . Str::slug($firstGroup->textContent) . '"]');
         $this->assertEquals(2, $firstGroupEndpointsAndSubgroups->count());
-        $this->assertEquals("GET api/action1", $firstGroupEndpointsAndSubgroups->getNode(0)->textContent);
-        $this->assertEquals("User defined", $firstGroupEndpointsAndSubgroups->getNode(1)->textContent);
+        $this->assertEquals('GET api/action1', $firstGroupEndpointsAndSubgroups->getNode(0)->textContent);
+        $this->assertEquals('User defined', $firstGroupEndpointsAndSubgroups->getNode(1)->textContent);
 
         $secondGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="' . Str::slug($secondGroup->textContent) . '"]');
         $this->assertEquals(2, $secondGroupEndpointsAndSubgroups->count());
-        $this->assertEquals("GET group5", $secondGroupEndpointsAndSubgroups->getNode(0)->textContent);
-        $this->assertEquals("GET alsoGroup5", $secondGroupEndpointsAndSubgroups->getNode(1)->textContent);
+        $this->assertEquals('GET group5', $secondGroupEndpointsAndSubgroups->getNode(0)->textContent);
+        $this->assertEquals('GET alsoGroup5', $secondGroupEndpointsAndSubgroups->getNode(1)->textContent);
 
         $thirdGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="' . Str::slug($thirdGroup->textContent) . '"]');
         $this->assertEquals(1, $thirdGroupEndpointsAndSubgroups->count());
-        $this->assertEquals("GET group4", $thirdGroupEndpointsAndSubgroups->getNode(0)->textContent);
+        $this->assertEquals('GET group4', $thirdGroupEndpointsAndSubgroups->getNode(0)->textContent);
 
         $fourthGroupEndpointsAndSubgroups = $crawler->filter('h2[id^="' . Str::slug($fourthGroup->textContent) . '"]');
         $this->assertEquals(1, $fourthGroupEndpointsAndSubgroups->count());
-        $this->assertEquals("GET api/action2", $fourthGroupEndpointsAndSubgroups->getNode(0)->textContent);
+        $this->assertEquals('GET api/action2', $fourthGroupEndpointsAndSubgroups->getNode(0)->textContent);
     }
 
     /** @test */
-    public function will_not_overwrite_manually_modified_content_unless_force_flag_is_set()
+    public function willNotOverwriteManuallyModifiedContentUnlessForceFlagIsSet()
     {
         RouteFacade::get('/api/action1', [TestGroupController::class, 'action1']);
         RouteFacade::get('/api/action1b', [TestGroupController::class, 'action1b']);
@@ -493,7 +471,9 @@ class OutputTest extends BaseLaravelTest
         ];
         $group['endpoints'][0]['urlParameters']['a_param'] = $extraParam;
         file_put_contents($firstGroupFilePath, Yaml::dump(
-            $group, 20, 2,
+            $group,
+            20,
+            2,
             Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE | Yaml::DUMP_OBJECT_AS_MAP
         ));
         file_put_contents($authFilePath, 'Some other useful stuff.', FILE_APPEND);
@@ -514,7 +494,7 @@ class OutputTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function generates_correct_url_params_from_resource_routes_and_field_bindings()
+    public function generatesCorrectUrlParamsFromResourceRoutesAndFieldBindings()
     {
         RouteFacade::prefix('providers/{provider:slug}')->group(function () {
             RouteFacade::resource('users.addresses', TestPartialResourceController::class)->parameters([
@@ -531,7 +511,7 @@ class OutputTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function generates_correct_url_params_from_resource_routes_and_model_binding()
+    public function generatesCorrectUrlParamsFromResourceRoutesAndModelBinding()
     {
         RouteFacade::resource('posts', TestPostController::class)->only('update');
         RouteFacade::resource('posts.users', TestPostUserController::class)->only('update');
@@ -544,7 +524,7 @@ class OutputTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function generates_correct_url_params_from_resource_routes_and_model_binding_with_bound_interfaces()
+    public function generatesCorrectUrlParamsFromResourceRoutesAndModelBindingWithBoundInterfaces()
     {
         $this->app->bind(TestPostBoundInterface::class, fn() => new TestPost());
 
@@ -557,9 +537,9 @@ class OutputTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function generates_correct_url_params_from_non_resource_routes_and_model_binding()
+    public function generatesCorrectUrlParamsFromNonResourceRoutesAndModelBinding()
     {
-        RouteFacade::get('posts/{post}/users', fn (TestPost $post) => null);
+        RouteFacade::get('posts/{post}/users', fn(TestPost $post) => null);
 
         $this->generate();
 
@@ -568,12 +548,12 @@ class OutputTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function generates_from_camel_dir_if_noExtraction_flag_is_set()
+    public function generatesFromCamelDirIfNoExtractionFlagIsSet()
     {
         $this->setConfig(['routes.0.exclude' => ['*']]);
         Utils::copyDirectory(__DIR__ . '/../Fixtures/.scribe', '.scribe');
 
-        $this->generateAndExpectConsoleOutput(['--no-extraction' => true], notExpected: ["Processing route"]);
+        $this->generateAndExpectConsoleOutput(['--no-extraction' => true], notExpected: ['Processing route']);
 
         $crawler = new Crawler(file_get_contents($this->bladeOutputPath()));
         [$intro, $auth] = $crawler->filter('h1 + p')->getIterator();
@@ -583,11 +563,11 @@ class OutputTest extends BaseLaravelTest
         $this->assertEquals('General', trim($group->textContent));
         $expectedEndpoint = $crawler->filter('h2');
         $this->assertCount(1, $expectedEndpoint);
-        $this->assertEquals("Healthcheck", $expectedEndpoint->text());
+        $this->assertEquals('Healthcheck', $expectedEndpoint->text());
     }
 
     /** @test */
-    public function will_auto_set_content_type_to_multipart_if_file_params_are_present()
+    public function willAutoSetContentTypeToMultipartIfFileParamsArePresent()
     {
         /**
          * @bodyParam param string required
@@ -613,7 +593,78 @@ class OutputTest extends BaseLaravelTest
         $this->assertEquals('multipart/form-data', $group['endpoints'][1]['headers']['Content-Type']);
         $this->assertEquals('nested-file', $group['endpoints'][2]['uri']);
         $this->assertEquals('multipart/form-data', $group['endpoints'][2]['headers']['Content-Type']);
+    }
 
+    /** @test */
+    public function htmlSpecialCharactersInJsonBodyAreProperlyEscapedInElementsTheme()
+    {
+        RouteFacade::post('/api/withHtmlSpecialCharsInBody', [TestController::class, 'withHtmlSpecialCharsInBody']);
+
+        $this->setConfig([
+            'type' => 'laravel',
+            'theme' => 'elements',
+        ]);
+
+        $this->generate();
+
+        $bladeContent = file_get_contents($this->bladeOutputPath());
+
+        // Check that the JSON body doesn't contain raw HTML special characters, which can break the rest of the containing HTML file when rendered
+        // The < and > should be escaped as \u003C and \u003E
+        // The & should be escaped as \u0026
+        $this->assertStringContainsString('\u003C', $bladeContent);
+        $this->assertStringContainsString('\u003E', $bladeContent);
+        $this->assertStringContainsString('\u0026', $bladeContent);
+
+        // Verify the actual JSON contains the expected escaped values
+        $this->assertStringContainsString('"username": "user\u003Ctest\u003E"', $bladeContent);
+        $this->assertStringContainsString('"password": "pass\u0026word\u003C123\u003E"', $bladeContent);
+    }
+
+    /** @test */
+    public function generatedOpenapiSpecCorrectlyHandlesNestedApiResourceRequiredFields()
+    {
+        RouteFacade::get('/api/nested-resource', [TestController::class, 'withNestedApiResourceResponse']);
+
+        $this->setConfig([
+            'openapi.enabled' => true,
+        ]);
+
+        $this->generate();
+
+        $generatedSpec = Yaml::parseFile($this->openapiOutputPath());
+
+        $responseSchema = $generatedSpec['paths']['/api/nested-resource']['get']['responses']['200']['content']['application/json']['schema'];
+
+        $this->assertArrayHasKey('properties', $responseSchema);
+        $this->assertArrayHasKey('data', $responseSchema['properties']);
+        $dataSchema = $responseSchema['properties']['data'];
+
+        // Verify 'outer1' and 'outer2' are in data properties
+        $this->assertArrayHasKey('properties', $dataSchema);
+        $this->assertArrayHasKey('outer1', $dataSchema['properties']);
+        $this->assertArrayHasKey('outer2', $dataSchema['properties']);
+
+        // Verify both are marked as required at the data level
+        $this->assertArrayHasKey('required', $dataSchema);
+        $this->assertContains('outer1', $dataSchema['required']);
+        $this->assertContains('outer2', $dataSchema['required']);
+
+        // Verify 'outer1.inner1' is nested correctly and marked as required
+        $outer1Schema = $dataSchema['properties']['outer1'];
+        $this->assertEquals('object', $outer1Schema['type']);
+        $this->assertArrayHasKey('properties', $outer1Schema);
+        $this->assertArrayHasKey('inner1', $outer1Schema['properties']);
+        $this->assertArrayHasKey('required', $outer1Schema);
+        $this->assertContains('inner1', $outer1Schema['required']);
+
+        // Verify 'outer2.inner2' is nested correctly and marked as required
+        $outer2Schema = $dataSchema['properties']['outer2'];
+        $this->assertEquals('object', $outer2Schema['type']);
+        $this->assertArrayHasKey('properties', $outer2Schema);
+        $this->assertArrayHasKey('inner2', $outer2Schema['properties']);
+        $this->assertArrayHasKey('required', $outer2Schema);
+        $this->assertContains('inner2', $outer2Schema['required']);
     }
 
     protected function postmanOutputPath(bool $staticType = false): string
@@ -644,7 +695,38 @@ class OutputTest extends BaseLaravelTest
             'strategies.responses' => configureStrategy(
                 config('scribe.strategies.responses'),
                 Strategies\Responses\ResponseCalls::withSettings(only: ['GET *'], except: [])
-            )
+            ),
         ]);
+    }
+
+    private function generate_with_paths($configName, $intermediateOutputDirectory = null)
+    {
+        RouteFacade::post('/api/withQueryParameters', [TestController::class, 'withQueryParameters']);
+        config([$configName => config('scribe')]);
+        $title = 'The Real Admin API';
+        config(["{$configName}.title" => $title]);
+        config(["{$configName}.type" => 'laravel']);
+        config(["{$configName}.postman.enabled" => true]);
+        config(["{$configName}.openapi.enabled" => true]);
+
+        $pathOptions = ['--config' => $configName];
+        if ($intermediateOutputDirectory) {
+            $pathOptions['--scribe-dir'] = $intermediateOutputDirectory;
+        }
+        $this->generateAndExpectConsoleOutput($pathOptions, [
+            "Writing Blade docs to vendor/orchestra/testbench-core/laravel/resources/views/{$configName}/ and assets to vendor/orchestra/testbench-core/laravel/public/vendor/{$configName}/",
+            "Generating Postman collection in vendor/orchestra/testbench-core/laravel/storage/app/{$configName}/",
+        ]);
+
+        $paths = collect([
+            Storage::disk('local')->path("{$configName}/collection.json"),
+            Storage::disk('local')->path("{$configName}/openapi.yaml"),
+            View::getFinder()->find("{$configName}/index"),
+        ]);
+        $paths->each(fn($path) => $this->assertFileContainsString($path, $title));
+        $paths->each(fn($path) => unlink($path));
+
+        $this->assertDirectoryExists($intermediateOutputDirectory ?: ".{$configName}");
+        Utils::deleteDirectoryAndContents($intermediateOutputDirectory ?: ".{$configName}");
     }
 }

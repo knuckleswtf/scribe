@@ -33,8 +33,20 @@ class ScribeServiceProvider extends ServiceProvider
 
         if (!class_exists('Str')) {
             // We don't want to have to use the FQN in our blade files.
-            class_alias(\Illuminate\Support\Str::class, 'Str');
+            class_alias(Str::class, 'Str');
         }
+    }
+
+    // Allows our custom translation layer to be loaded on demand,
+    // so we minimize issues with interference from framework/package/environment.
+    // ALso, Laravel's `app->runningInConsole()` isn't reliable enough. See issue #676
+    public function loadCustomTranslationLayer(): void
+    {
+        $this->app->extend('translation.loader', function ($defaultFileLoader) {
+            return app(CustomTranslationsLoader::class, ['loader' => $defaultFileLoader]);
+        });
+        $this->app->forgetInstance('translator');
+        self::$customTranslationLayerLoaded = true;
     }
 
     /**
@@ -63,7 +75,8 @@ class ScribeServiceProvider extends ServiceProvider
     {
         // Register custom Markdown Blade compiler so we can automatically have MD views converted to HTML
         $this->app->view->getEngineResolver()
-            ->register('blademd', fn() => new BladeMarkdownEngine($this->app['blade.compiler']));
+            ->register('blademd', fn() => new BladeMarkdownEngine($this->app['blade.compiler']))
+        ;
         $this->app->view->addExtension('md.blade.php', 'blademd');
 
         $this->loadViewsFrom(__DIR__ . '/../resources/views/', 'scribe');
@@ -78,8 +91,8 @@ class ScribeServiceProvider extends ServiceProvider
         ];
         foreach ($viewGroups as $group => $path) {
             $this->publishes([
-                __DIR__ . "/../resources/views/$path" => $this->app->basePath("resources/views/vendor/scribe/$path"),
-            ], "scribe-$group");
+                __DIR__ . "/../resources/views/{$path}" => $this->app->basePath("resources/views/vendor/scribe/{$path}"),
+            ], "scribe-{$group}");
         }
     }
 
@@ -103,17 +116,5 @@ class ScribeServiceProvider extends ServiceProvider
                 DiffConfig::class,
             ]);
         }
-    }
-
-    // Allows our custom translation layer to be loaded on demand,
-    // so we minimize issues with interference from framework/package/environment.
-    // ALso, Laravel's `app->runningInConsole()` isn't reliable enough. See issue #676
-    public function loadCustomTranslationLayer(): void
-    {
-        $this->app->extend('translation.loader', function ($defaultFileLoader) {
-            return app(CustomTranslationsLoader::class, ['loader' => $defaultFileLoader]);
-        });
-        $this->app->forgetInstance('translator');
-        self::$customTranslationLayerLoaded = true;
     }
 }

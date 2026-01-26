@@ -5,10 +5,15 @@ namespace Knuckles\Scribe\Tests\Unit;
 use Knuckles\Scribe\Tests\BaseUnitTest;
 use Knuckles\Scribe\Tools\ConfigDiffer;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class ConfigDifferTest extends BaseUnitTest
 {
     /** @test */
-    public function returns_empty_when_there_are_no_changes()
+    public function returnsEmptyWhenThereAreNoChanges()
     {
         $default = [
             'title' => null,
@@ -38,18 +43,18 @@ class ConfigDifferTest extends BaseUnitTest
         $differ = new ConfigDiffer($default, $user);
         $diff = $differ->getDiff();
         $this->assertEquals([
-            "theme" => '"elements"',
+            'theme' => '"elements"',
         ], $diff);
     }
 
     /** @test */
-    public function ignores_specified_paths()
+    public function ignoresSpecifiedPaths()
     {
         $default = [
             'theme' => 'default',
             'description' => '',
             'test' => [
-                'array' => [ 'old-item' ],
+                'array' => ['old-item'],
                 'string' => null,
             ],
         ];
@@ -58,13 +63,13 @@ class ConfigDifferTest extends BaseUnitTest
             'description' => 'Details',
             'test' => [
                 'string' => 'value',
-                'array' => [ 'new-item' ]
+                'array' => ['new-item'],
             ],
         ];
         $differ = new ConfigDiffer($default, $user, ignorePaths: ['description', 'test.array']);
         $diff = $differ->getDiff();
         $this->assertEquals([
-            "theme" => '"elements"',
+            'theme' => '"elements"',
             'test.string' => '"value"',
         ], $diff);
     }

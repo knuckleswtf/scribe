@@ -9,6 +9,7 @@ use Illuminate\Foundation\Http\FormRequest;
  * @queryParam user_id required The id of the user. Example: me
  * @queryParam page required The page number. Example: 4
  * @queryParam url_encoded  Used for testing that URL parameters will be URL-encoded where needed. Example: + []&=
+ *
  * @bodyParam user_id int required The id of the user. Example: 9
  * @bodyParam room_id string The id of the room.
  * @bodyParam forever boolean Whether to ban the user forever. Example: false

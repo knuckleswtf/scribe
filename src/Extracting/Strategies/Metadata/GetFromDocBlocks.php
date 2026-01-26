@@ -34,17 +34,18 @@ class GetFromDocBlocks extends Strategy
         if (!is_null($authStatus = $this->getAuthStatusFromDocBlock($methodDocBlock, $classDocBlock))) {
             $metadata['authenticated'] = $authStatus;
         }
+
         return $metadata;
     }
 
     protected function getAuthStatusFromDocBlock(DocBlock $methodDocBlock, ?DocBlock $classDocBlock = null): ?bool
     {
         foreach ($methodDocBlock->getTags() as $tag) {
-            if (strtolower($tag->getName()) === 'authenticated') {
+            if ('authenticated' === strtolower($tag->getName())) {
                 return true;
             }
 
-            if (strtolower($tag->getName()) === 'unauthenticated') {
+            if ('unauthenticated' === strtolower($tag->getName())) {
                 return false;
             }
         }
@@ -57,8 +58,8 @@ class GetFromDocBlocks extends Strategy
     protected function getDeprecatedStatusFromDocBlock(DocBlock $methodDocBlock, ?DocBlock $classDocBlock = null): bool|string
     {
         foreach ($methodDocBlock->getTags() as $tag) {
-            if (strtolower($tag->getName()) === 'deprecated') {
-                return $tag->getContent() === '' ? true : $tag->getContent();
+            if ('deprecated' === strtolower($tag->getName())) {
+                return '' === $tag->getContent() ? true : $tag->getContent();
             }
         }
 
@@ -75,7 +76,7 @@ class GetFromDocBlocks extends Strategy
     protected function getEndpointGroupAndTitleDetails(DocBlock $methodDocBlock, DocBlock $controllerDocBlock)
     {
         foreach ($methodDocBlock->getTags() as $tag) {
-            if ($tag->getName() === 'group') {
+            if ('group' === $tag->getName()) {
                 $endpointGroupParts = explode("\n", trim($tag->getContent()));
                 $endpointGroupName = array_shift($endpointGroupParts);
                 $endpointGroupDescription = trim(implode("\n", $endpointGroupParts));
@@ -107,7 +108,7 @@ class GetFromDocBlocks extends Strategy
 
         // Fall back to the controller
         foreach ($controllerDocBlock->getTags() as $tag) {
-            if ($tag->getName() === 'group') {
+            if ('group' === $tag->getName()) {
                 $endpointGroupParts = explode("\n", trim($tag->getContent()));
                 $endpointGroupName = array_shift($endpointGroupParts);
                 $endpointGroupDescription = implode("\n", $endpointGroupParts);
@@ -122,13 +123,13 @@ class GetFromDocBlocks extends Strategy
     protected function getEndpointSubGroup(DocBlock $methodDocBlock, DocBlock $controllerDocBlock): ?string
     {
         foreach ($methodDocBlock->getTags() as $tag) {
-            if (strtolower($tag->getName()) === 'subgroup') {
+            if ('subgroup' === strtolower($tag->getName())) {
                 return trim($tag->getContent());
             }
         }
 
         foreach ($controllerDocBlock->getTags() as $tag) {
-            if (strtolower($tag->getName()) === 'subgroup') {
+            if ('subgroup' === strtolower($tag->getName())) {
                 return trim($tag->getContent());
             }
         }
@@ -139,13 +140,13 @@ class GetFromDocBlocks extends Strategy
     protected function getEndpointSubGroupDescription(DocBlock $methodDocBlock, DocBlock $controllerDocBlock): ?string
     {
         foreach ($methodDocBlock->getTags() as $tag) {
-            if (strtolower($tag->getName()) === 'subgroupdescription') {
+            if ('subgroupdescription' === strtolower($tag->getName())) {
                 return trim($tag->getContent());
             }
         }
 
         foreach ($controllerDocBlock->getTags() as $tag) {
-            if (strtolower($tag->getName()) === 'subgroupdescription') {
+            if ('subgroupdescription' === strtolower($tag->getName())) {
                 return trim($tag->getContent());
             }
         }

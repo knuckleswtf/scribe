@@ -2,6 +2,8 @@
 
 namespace Knuckles\Scribe\Tests\Strategies;
 
+use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
+use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Routing\Route;
 use Knuckles\Scribe\Extracting\Strategies\BodyParameters;
 use Knuckles\Scribe\Extracting\Strategies\QueryParameters;
@@ -10,16 +12,20 @@ use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tests\Fixtures\TestRequest;
 use Knuckles\Scribe\Tests\Fixtures\TestRequestQueryParams;
 use Knuckles\Scribe\Tools\DocumentationConfig;
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Knuckles\Scribe\Tools\Globals;
 use PHPUnit\Framework\Assert;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class GetFromFormRequestTest extends BaseLaravelTest
 {
     use ArraySubsetAsserts;
 
     /** @test */
-    public function can_fetch_bodyparams_from_form_request()
+    public function canFetchBodyparamsFromFormRequest()
     {
         $method = new \ReflectionMethod(TestController::class, 'withFormRequestParameter');
         $results = $this->fetchViaBodyParams($method);
@@ -110,7 +116,7 @@ class GetFromFormRequestTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function can_fetch_queryparams_from_form_request()
+    public function canFetchQueryparamsFromFormRequest()
     {
         $method = new \ReflectionMethod(TestController::class, 'withFormRequestParameterQueryParams');
         $results = $this->fetchViaQueryParams($method);
@@ -135,7 +141,7 @@ class GetFromFormRequestTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function will_ignore_not_relevant_form_request()
+    public function willIgnoreNotRelevantFormRequest()
     {
         $method = new \ReflectionMethod(TestController::class, 'withFormRequestParameter');
         $this->assertEquals([], $this->fetchViaQueryParams($method));
@@ -148,7 +154,7 @@ class GetFromFormRequestTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function sets_examples_from_parent_if_set()
+    public function setsExamplesFromParentIfSet()
     {
         $strategy = new BodyParameters\GetFromFormRequest(new DocumentationConfig([]));
         $dataExample = [
@@ -178,7 +184,7 @@ class GetFromFormRequestTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function generates_proper_examples_if_not_set()
+    public function generatesProperExamplesIfNotSet()
     {
         $strategy = new BodyParameters\GetFromFormRequest(new DocumentationConfig([]));
         $parametersFromFormRequest = $strategy->getParametersFromValidationRules(
@@ -201,7 +207,7 @@ class GetFromFormRequestTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function creates_missing_parent_fields()
+    public function createsMissingParentFields()
     {
         $strategy = new BodyParameters\GetFromFormRequest(new DocumentationConfig([]));
         $parametersFromFormRequest = $strategy->getParametersFromValidationRules(
@@ -225,14 +231,15 @@ class GetFromFormRequestTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function allows_customisation_of_form_request_instantiation()
+    public function allowsCustomisationOfFormRequestInstantiation()
     {
         $controllerMethod = new \ReflectionMethod(TestController::class, 'withFormRequestParameter');
 
         Globals::$__instantiateFormRequestUsing = function (string $className, Route $route, string $method) use (&$controllerMethod) {
             Assert::assertEquals(TestRequest::class, $className);
             Assert::assertEquals($controllerMethod, $method);
-            return new TestRequestQueryParams;
+
+            return new TestRequestQueryParams();
         };
 
         $this->fetchViaBodyParams($controllerMethod);
@@ -241,12 +248,12 @@ class GetFromFormRequestTest extends BaseLaravelTest
     }
 
     /** @test */
-    public function custom_rule_example_doesnt_override_form_request_example()
+    public function customRuleExampleDoesntOverrideFormRequestExample()
     {
         $strategy = new BodyParameters\GetFromFormRequest(new DocumentationConfig([]));
         $parametersFromFormRequest = $strategy->getParametersFromValidationRules(
             [
-                'dummy' => ['required', new DummyValidationRule],
+                'dummy' => ['required', new DummyValidationRule()],
             ],
             [
                 'dummy' => [
@@ -264,19 +271,21 @@ class GetFromFormRequestTest extends BaseLaravelTest
     protected function fetchViaBodyParams(\ReflectionMethod $method): array
     {
         $strategy = new BodyParameters\GetFromFormRequest(new DocumentationConfig([]));
-        $route = new Route(['POST'], "/test", ['uses' => [TestController::class, 'dummy']]);
+        $route = new Route(['POST'], '/test', ['uses' => [TestController::class, 'dummy']]);
+
         return $strategy->getParametersFromFormRequest($method, $route);
     }
 
     protected function fetchViaQueryParams(\ReflectionMethod $method): array
     {
         $strategy = new QueryParameters\GetFromFormRequest(new DocumentationConfig([]));
-        $route = new Route(['POST'], "/test", ['uses' => [TestController::class, 'dummy']]);
+        $route = new Route(['POST'], '/test', ['uses' => [TestController::class, 'dummy']]);
+
         return $strategy->getParametersFromFormRequest($method, $route);
     }
 }
 
-class DummyValidationRule implements \Illuminate\Contracts\Validation\Rule
+class DummyValidationRule implements Rule
 {
     public function passes($attribute, $value)
     {

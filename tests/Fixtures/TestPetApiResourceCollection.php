@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Tests\Fixtures;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class TestPetApiResourceCollection extends ResourceCollection
@@ -9,19 +10,17 @@ class TestPetApiResourceCollection extends ResourceCollection
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      *
      * @return array
      */
     public function toArray($request)
     {
-        $data = [
+        return [
             'data' => $this->collection,
             'links' => [
                 'self' => 'link-value',
             ],
         ];
-
-        return $data;
     }
 }

@@ -11,7 +11,7 @@ use Illuminate\Support\Collection;
 class BaseDTOCollection extends Collection
 {
     /**
-     * @var string The name of the base DTO class.
+     * @var string the name of the base DTO class
      */
     public static string $base = '';
 
@@ -29,13 +29,14 @@ class BaseDTOCollection extends Collection
     /**
      * Append items to the collection, mutating it.
      *
-     * @param T[]|array[] $items
+     * @param array[]|T[] $items
      */
     public function concat($items)
     {
         foreach ($items as $item) {
             $this->push(is_array($item) ? new static::$base($item) : $item);
         }
+
         return $this;
     }
 

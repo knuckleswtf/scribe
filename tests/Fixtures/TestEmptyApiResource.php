@@ -10,8 +10,7 @@ class TestEmptyApiResource extends JsonResource
     /**
      * Create a new resource instance.
      *
-     * @param  mixed  $resource
-     * @return void
+     * @param mixed $resource
      */
     public function __construct($resource = [])
     {
@@ -21,7 +20,8 @@ class TestEmptyApiResource extends JsonResource
     /**
      * Get any additional data that should be returned with the resource array.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
+     *
      * @return array
      */
     public function with($request)
@@ -29,14 +29,14 @@ class TestEmptyApiResource extends JsonResource
         return [
             'request-id' => 'ea02ebc1-4e3c-497f-9ea8-7a1ac5008af2',
             'error_code' => 0,
-            'messages'   => []
+            'messages' => [],
         ];
     }
 
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      *
      * @return array
      */
