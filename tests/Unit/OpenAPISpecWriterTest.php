@@ -1822,6 +1822,222 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $this->assertArrayNotHasKey('nullable', $schemaForNull);
     }
 
+    /** @test */
+    public function uses_examples_array_in_openapi_31_for_request_body()
+    {
+        $config = array_merge($this->config, [
+            'openapi' => ['version' => '3.1.0'],
+        ]);
+
+        $endpoint = $this->createMockEndpointData([
+            'uri' => '/test',
+            'httpMethods' => ['POST'],
+            'bodyParameters' => [
+                'string_field' => [
+                    'name' => 'string_field',
+                    'type' => 'string',
+                    'required' => true,
+                    'description' => 'A string field',
+                    'example' => 'test value',
+                ],
+                'integer_field' => [
+                    'name' => 'integer_field',
+                    'type' => 'integer',
+                    'required' => false,
+                    'description' => 'An integer field',
+                    'example' => 42,
+                ],
+            ],
+        ]);
+
+        $groups = [$this->createGroup([$endpoint])];
+        $writer = new OpenAPISpecWriter(new DocumentationConfig($config));
+        $results = $writer->generateSpecContent($groups);
+
+        $requestBodySchema = $results['paths']['/test']['post']['requestBody']['content']['application/json']['schema'];
+        $stringFieldSchema = $requestBodySchema['properties']['string_field'];
+        $integerFieldSchema = $requestBodySchema['properties']['integer_field'];
+
+        // In OpenAPI 3.1, use examples (plural, as an array) instead of example (singular)
+        $this->assertArrayHasKey('examples', $stringFieldSchema);
+        $this->assertIsArray($stringFieldSchema['examples']);
+        $this->assertEquals(['test value'], $stringFieldSchema['examples']);
+        $this->assertArrayNotHasKey('example', $stringFieldSchema);
+
+        $this->assertArrayHasKey('examples', $integerFieldSchema);
+        $this->assertIsArray($integerFieldSchema['examples']);
+        $this->assertEquals([42], $integerFieldSchema['examples']);
+        $this->assertArrayNotHasKey('example', $integerFieldSchema);
+    }
+
+    /** @test */
+    public function uses_example_in_openapi_30_for_request_body()
+    {
+        $config = array_merge($this->config, [
+            'openapi' => ['version' => '3.0.3'],
+        ]);
+
+        $endpoint = $this->createMockEndpointData([
+            'uri' => '/test',
+            'httpMethods' => ['POST'],
+            'bodyParameters' => [
+                'string_field' => [
+                    'name' => 'string_field',
+                    'type' => 'string',
+                    'required' => true,
+                    'description' => 'A string field',
+                    'example' => 'test value',
+                ],
+            ],
+        ]);
+
+        $groups = [$this->createGroup([$endpoint])];
+        $writer = new OpenAPISpecWriter(new DocumentationConfig($config));
+        $results = $writer->generateSpecContent($groups);
+
+        $requestBodySchema = $results['paths']['/test']['post']['requestBody']['content']['application/json']['schema'];
+        $stringFieldSchema = $requestBodySchema['properties']['string_field'];
+
+        // In OpenAPI 3.0, use example (singular)
+        $this->assertArrayHasKey('example', $stringFieldSchema);
+        $this->assertEquals('test value', $stringFieldSchema['example']);
+        $this->assertArrayNotHasKey('examples', $stringFieldSchema);
+    }
+
+    /** @test */
+    public function uses_examples_array_in_openapi_31_for_response_body()
+    {
+        $config = array_merge($this->config, [
+            'openapi' => ['version' => '3.1.0'],
+        ]);
+
+        $endpoint = $this->createMockEndpointData([
+            'uri' => '/test',
+            'httpMethods' => ['GET'],
+            'responses' => [[
+                'status' => 200,
+                'description' => 'Success',
+                'content' => '{"message": "Hello", "count": 5}',
+            ]],
+        ]);
+
+        $groups = [$this->createGroup([$endpoint])];
+        $writer = new OpenAPISpecWriter(new DocumentationConfig($config));
+        $results = $writer->generateSpecContent($groups);
+
+        $responseSchema = $results['paths']['/test']['get']['responses']['200']['content']['application/json']['schema'];
+        $messageProperty = $responseSchema['properties']['message'];
+        $countProperty = $responseSchema['properties']['count'];
+
+        // In OpenAPI 3.1, use examples (plural, as an array) instead of example (singular)
+        $this->assertArrayHasKey('examples', $messageProperty);
+        $this->assertIsArray($messageProperty['examples']);
+        $this->assertEquals(['Hello'], $messageProperty['examples']);
+        $this->assertArrayNotHasKey('example', $messageProperty);
+
+        $this->assertArrayHasKey('examples', $countProperty);
+        $this->assertIsArray($countProperty['examples']);
+        $this->assertEquals([5], $countProperty['examples']);
+        $this->assertArrayNotHasKey('example', $countProperty);
+    }
+
+    /** @test */
+    public function uses_examples_array_in_openapi_31_for_nested_objects()
+    {
+        $config = array_merge($this->config, [
+            'openapi' => ['version' => '3.1.0'],
+        ]);
+
+        $endpoint = $this->createMockEndpointData([
+            'uri' => '/test',
+            'httpMethods' => ['POST'],
+            'bodyParameters' => [
+                'user' => [
+                    'name' => 'user',
+                    'type' => 'object',
+                    'required' => true,
+                    'description' => 'User object',
+                    'example' => [],
+                ],
+                'user.name' => [
+                    'name' => 'user.name',
+                    'type' => 'string',
+                    'required' => true,
+                    'description' => 'User name',
+                    'example' => 'John Doe',
+                ],
+                'user.age' => [
+                    'name' => 'user.age',
+                    'type' => 'integer',
+                    'required' => false,
+                    'description' => 'User age',
+                    'example' => 30,
+                ],
+            ],
+        ]);
+
+        $groups = [$this->createGroup([$endpoint])];
+        $writer = new OpenAPISpecWriter(new DocumentationConfig($config));
+        $results = $writer->generateSpecContent($groups);
+
+        $requestBodySchema = $results['paths']['/test']['post']['requestBody']['content']['application/json']['schema'];
+        $userSchema = $requestBodySchema['properties']['user'];
+        $nameSchema = $userSchema['properties']['name'];
+        $ageSchema = $userSchema['properties']['age'];
+
+        // In OpenAPI 3.1, nested properties should also use examples
+        $this->assertArrayHasKey('examples', $nameSchema);
+        $this->assertEquals(['John Doe'], $nameSchema['examples']);
+        $this->assertArrayNotHasKey('example', $nameSchema);
+
+        $this->assertArrayHasKey('examples', $ageSchema);
+        $this->assertEquals([30], $ageSchema['examples']);
+        $this->assertArrayNotHasKey('example', $ageSchema);
+    }
+
+    /** @test */
+    public function uses_examples_array_in_openapi_31_for_array_responses()
+    {
+        $config = array_merge($this->config, [
+            'openapi' => ['version' => '3.1.0'],
+        ]);
+
+        $endpoint = $this->createMockEndpointData([
+            'uri' => '/test',
+            'httpMethods' => ['GET'],
+            'responses' => [[
+                'status' => 200,
+                'description' => 'Success',
+                'content' => '[{"id": 1, "name": "Item 1"}, {"id": 2, "name": "Item 2"}]',
+            ]],
+        ]);
+
+        $groups = [$this->createGroup([$endpoint])];
+        $writer = new OpenAPISpecWriter(new DocumentationConfig($config));
+        $results = $writer->generateSpecContent($groups);
+
+        $responseSchema = $results['paths']['/test']['get']['responses']['200']['content']['application/json']['schema'];
+
+        // In OpenAPI 3.1, the array schema should use examples instead of example
+        $this->assertArrayHasKey('examples', $responseSchema);
+        $this->assertArrayNotHasKey('example', $responseSchema);
+
+        // Check that nested properties also use examples
+        $this->assertArrayHasKey('items', $responseSchema);
+        $this->assertArrayHasKey('properties', $responseSchema['items']);
+
+        $idProperty = $responseSchema['items']['properties']['id'];
+        $nameProperty = $responseSchema['items']['properties']['name'];
+
+        $this->assertArrayHasKey('examples', $idProperty);
+        $this->assertEquals([1], $idProperty['examples']);
+        $this->assertArrayNotHasKey('example', $idProperty);
+
+        $this->assertArrayHasKey('examples', $nameProperty);
+        $this->assertEquals(['Item 1'], $nameProperty['examples']);
+        $this->assertArrayNotHasKey('example', $nameProperty);
+    }
+
     protected function createMockEndpointData(array $custom = []): OutputEndpointData
     {
         $faker = Factory::create();

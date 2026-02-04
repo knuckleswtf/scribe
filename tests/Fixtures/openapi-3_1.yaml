@@ -17,9 +17,10 @@ paths:
                     in: header
                     name: Custom-Header
                     description: ''
-                    example: NotSoCustom
                     schema:
                         type: string
+                        examples:
+                            - NotSoCustom
             responses: {  }
             tags:
                 - 'Group A'
@@ -33,7 +34,8 @@ paths:
                                 name:
                                     type: string
                                     description: 'Name of image.'
-                                    example: cat.jpg
+                                    examples:
+                                        - cat.jpg
                                 image:
                                     type: string
                                     format: binary
@@ -52,9 +54,10 @@ paths:
                     in: header
                     name: Custom-Header
                     description: ''
-                    example: NotSoCustom
                     schema:
                         type: string
+                        examples:
+                            - NotSoCustom
             responses:
                 200:
                     description: ""
@@ -62,20 +65,20 @@ paths:
                         application/json:
                             schema:
                                 type: object
-                                example:
-                                    id: 4
+                                examples:
+                                  - id: 4
                                     name: banana
                                     color: red
                                     weight: '1 kg'
                                     delicious: true
                                     responseTag: true
                                 properties:
-                                    id: { type: integer, example: 4 }
-                                    name: { type: string, example: banana }
-                                    color: { type: string, example: red }
-                                    weight: { type: string, example: '1 kg' }
-                                    delicious: { type: boolean, example: true }
-                                    responseTag: { type: boolean, example: true }
+                                    id: { type: integer, examples: [4] }
+                                    name: { type: string, examples: [banana] }
+                                    color: { type: string, examples: [red] }
+                                    weight: { type: string, examples: ['1 kg'] }
+                                    delicious: { type: boolean, examples: [true] }
+                                    responseTag: { type: boolean, examples: [true] }
             tags:
                 - 'Group A'
             security: []
@@ -89,59 +92,60 @@ paths:
                     in: query
                     name: location_id
                     description: 'The id of the location.'
-                    example: architecto
                     required: true
                     schema:
                         type: string
                         description: 'The id of the location.'
-                        example: architecto
+                        examples:
+                            - architecto
                 -
                     in: query
                     name: user_id
                     description: 'The id of the user.'
-                    example: me
                     required: true
                     schema:
                         type: string
                         description: 'The id of the user.'
-                        example: me
+                        examples:
+                            - me
                 -
                     in: query
                     name: page
                     description: 'The page number.'
-                    example: '4'
                     required: true
                     schema:
                         type: string
                         description: 'The page number.'
-                        example: '4'
+                        examples:
+                            - '4'
                 -
                     in: query
                     name: filters
                     description: 'The filters.'
-                    example: architecto
                     required: false
                     schema:
                         type: string
                         description: 'The filters.'
-                        example: architecto
+                        examples:
+                            - architecto
                 -
                     in: query
                     name: url_encoded
                     description: 'Used for testing that URL parameters will be URL-encoded where needed.'
-                    example: '+ []&='
                     required: false
                     schema:
                         type: string
                         description: 'Used for testing that URL parameters will be URL-encoded where needed.'
-                        example: '+ []&='
+                        examples:
+                            - '+ []&='
                 -
                     in: header
                     name: Custom-Header
                     description: ''
-                    example: NotSoCustom
                     schema:
                         type: string
+                        examples:
+                            - NotSoCustom
             responses:
                 200:
                     description: ""
@@ -149,7 +153,8 @@ paths:
                         'text/plain':
                             schema:
                                 type: "string"
-                                example: ""
+                                examples:
+                                    - ""
             tags:
                 - 'Group A'
             security: []
@@ -163,9 +168,10 @@ paths:
                     in: header
                     name: Custom-Header
                     description: ''
-                    example: NotSoCustom
                     schema:
                         type: string
+                        examples:
+                            - NotSoCustom
             responses:
                 200:
                     description: ""
@@ -173,7 +179,8 @@ paths:
                         'text/plain':
                             schema:
                                 type: "string"
-                                example: ""
+                                examples:
+                                    - ""
             tags:
                 - 'Group A'
     '/api/echoesUrlParameters/{param}/{param2}/{param3}/{param4}':
@@ -186,19 +193,20 @@ paths:
                     in: query
                     name: something
                     description: ''
-                    example: architecto
                     required: false
                     schema:
                         type: string
                         description: ''
-                        example: architecto
+                        examples:
+                            - architecto
                 -
                     in: header
                     name: Custom-Header
                     description: ''
-                    example: NotSoCustom
                     schema:
                         type: string
+                        examples:
+                            - NotSoCustom
             responses:
                 200:
                     description: ''
@@ -206,16 +214,16 @@ paths:
                         application/json:
                             schema:
                                 type: object
-                                example:
-                                    param: '4'
+                                examples:
+                                  - param: '4'
                                     param2: architecto
                                     param3: architecto
                                     param4: null
                                 properties:
-                                    param: { type: string, example: '4' }
-                                    param2: { type: string, example: architecto }
-                                    param3: { type: string, example: architecto }
-                                    param4: { type: [string, 'null'], example: null }
+                                    param: { type: string, examples: ['4'] }
+                                    param2: { type: string, examples: [architecto] }
+                                    param3: { type: string, examples: [architecto] }
+                                    param4: { type: [string, 'null'], examples: [null] }
             tags:
                 - Other😎
             security: []
@@ -224,10 +232,11 @@ paths:
                 in: path
                 name: param
                 description: ''
-                example: '4'
                 required: true
                 schema:
                     type: string
+                    examples:
+                        - '4'
             -
                 in: path
                 name: param2
@@ -235,7 +244,8 @@ paths:
                 required: true
                 schema:
                     type: string
-                example: architecto
+                    examples:
+                        - architecto
             -
                 in: path
                 name: param3
@@ -270,9 +280,10 @@ paths:
                 - in: header
                   name: Custom-Header
                   description: ''
-                  example: NotSoCustom
                   schema:
                       type: string
+                      examples:
+                          - NotSoCustom
             responses: {}
             tags:
                 - Group A
@@ -283,30 +294,30 @@ paths:
                         schema:
                             type: array
                             description: Details.
-                            example:
-                            - first_name: 'John'
-                              last_name: 'Doe'
-                              contacts:
-                              - first_name: Janelle
-                                last_name: Monáe
-                              roles: [Admin]
+                            examples:
+                            - - first_name: 'John'
+                                last_name: 'Doe'
+                                contacts:
+                                - first_name: Janelle
+                                  last_name: Monáe
+                                roles: [Admin]
                             items:
                                 type: object
                                 properties:
-                                    first_name: { type: string, description: 'The first name of the user.', example: John }
-                                    last_name: { type: string, description: 'The last name of the user.', example: Doe}
+                                    first_name: { type: string, description: 'The first name of the user.', examples: [John] }
+                                    last_name: { type: string, description: 'The last name of the user.', examples: [Doe] }
                                     contacts:
                                         type: array
                                         description: 'Contact info'
-                                        example:
-                                            - []
+                                        examples:
+                                            - [[]]
                                         items:
                                             type: object
                                             properties:
-                                                first_name: { type: string, description: 'The first name of the contact.', example: Janelle }
-                                                last_name: { type: string, description: 'The last name of the contact.', example: Monáe }
+                                                first_name: { type: string, description: 'The first name of the contact.', examples: [Janelle] }
+                                                last_name: { type: string, description: 'The last name of the contact.', examples: [Monáe] }
                                             required: [ first_name, last_name ]
-                                    roles: { type: array, description: 'The name of the role.', example: [ Admin ], items: { type: string } }
+                                    roles: { type: array, description: 'The name of the role.', examples: [ [ Admin ] ], items: { type: string } }
                                 required:
                                     - first_name
                                     - last_name
