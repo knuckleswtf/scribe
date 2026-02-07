@@ -22,6 +22,7 @@ use Knuckles\Scribe\Tests\Fixtures\TestUserApiResource;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\Utils;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use PHPUnit\Framework\Attributes\TestWith;
 
 /**
  * @internal
@@ -316,6 +317,42 @@ class UseResponseAttributesTest extends BaseLaravelTest
         ], $results);
     }
 
+    #[TestWith(['factoryCreate', true])]
+    #[TestWith(['factoryCreateQuietly', false])]
+    public function test_it_can_suppress_model_events_using_factory_create_quietly(string $modelFactoryStrategy, bool $expectModelEvents)
+    {
+        Schema::create('test_users', function (Blueprint $table) {
+            $table->id();
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('email');
+            $table->integer('parent_id')->nullable();
+        });
+
+        $modelEventFired = false;
+        TestUser::creating(function () use (&$modelEventFired) {
+            $modelEventFired = true;
+        });
+
+        $documentationConfig = ['examples' => ['models_source' => [$modelFactoryStrategy]]];
+
+        $results = $this->fetch($this->endpoint('apiResourceAttributesIncludeChildren'), $documentationConfig);
+        $this->assertArraySubset([
+            [
+                'status' => 200,
+                'content' => json_encode([
+                    'data' => [
+                        'id' => 4,
+                        'name' => 'Tested Again',
+                        'email' => 'a@b.com',
+                        'children' => [],
+                    ],
+                ]),
+            ],
+        ], $results);
+        $this->assertSame($expectModelEvents, $modelEventFired);
+    }
+
     /** @test */
     public function can_parse_apiresource_attributes_and_load_children_and_children_count_using_factory_create()
     {
@@ -370,7 +407,7 @@ class UseResponseAttributesTest extends BaseLaravelTest
 
     protected function fetch($endpoint, array $documentationConfig = []): array
     {
-        $strategy = new UseResponseAttributes(new DocumentationConfig([]));
+        $strategy = new UseResponseAttributes(new DocumentationConfig($documentationConfig));
 
         return $strategy($endpoint, []);
     }

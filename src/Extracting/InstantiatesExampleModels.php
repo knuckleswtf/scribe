@@ -45,6 +45,7 @@ trait InstantiatesExampleModels
 
         $strategies = [
             'factoryCreate' => fn () => $this->getExampleModelFromFactoryCreate($type, $factoryStates, $relations, $withCount),
+            'factoryCreateQuietly' => fn () => $this->getExampleModelFromFactoryCreate($type, $factoryStates, $relations, $withCount, true),
             'factoryMake' => fn () => $this->getExampleModelFromFactoryMake($type, $factoryStates, $relations),
             'databaseFirst' => fn () => $this->getExampleModelFromDatabaseFirst($type, $relations),
         ];
@@ -71,7 +72,7 @@ trait InstantiatesExampleModels
      * @param  string[]  $withCount
      * @return null|Model
      */
-    protected function getExampleModelFromFactoryCreate(string $type, array $factoryStates = [], array $relations = [], array $withCount = [])
+    protected function getExampleModelFromFactoryCreate(string $type, array $factoryStates = [], array $relations = [], array $withCount = [], bool $quietly = false)
     {
         // Since $relations and $withCount refer to the same underlying relationships in the model,
         // combining them ensures that all required relationships are initialized when passed to the factory.
@@ -79,7 +80,9 @@ trait InstantiatesExampleModels
 
         $factory = Utils::getModelFactory($type, $factoryStates, $allRelations);
 
-        return $factory->create()->refresh()->load($relations)->loadCount($withCount);
+        $factory = $quietly ? Model::withoutEvents(fn () => $factory->create()) : $factory->create();
+
+        return $factory->refresh()->load($relations)->loadCount($withCount);
     }
 
     /**
