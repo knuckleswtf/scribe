@@ -317,9 +317,13 @@ class UseResponseAttributesTest extends BaseLaravelTest
         ], $results);
     }
 
-    #[TestWith(['factoryCreate', true])]
-    #[TestWith(['factoryCreateQuietly', false])]
-    public function test_it_can_suppress_model_events_using_factory_create_quietly(string $modelFactoryStrategy, bool $expectModelEvents)
+    /**
+     * @test
+     *
+     * @testWith ["factoryCreate", true]
+     *           ["factoryCreateQuietly", false]
+     */
+    public function it_can_suppress_model_events_using_factory_create_quietly(string $modelFactoryStrategy, bool $expectModelEvents)
     {
         Schema::create('test_users', function (Blueprint $table) {
             $table->id();
@@ -333,7 +337,6 @@ class UseResponseAttributesTest extends BaseLaravelTest
         TestUser::creating(function () use (&$modelEventFired) {
             $modelEventFired = true;
         });
-
         $documentationConfig = ['examples' => ['models_source' => [$modelFactoryStrategy]]];
 
         $results = $this->fetch($this->endpoint('apiResourceAttributesIncludeChildren'), $documentationConfig);
