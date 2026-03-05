@@ -33,8 +33,8 @@
         "parsedown/parsedown": "^1.7",
         "ramsey/uuid": "^4.2.2",
         "shalvah/upgrader": "^0.6.0",
-        "symfony/var-exporter": "^6.0 || ^7.0",
-        "symfony/yaml": "^6.0 || ^7.0"
+        "symfony/var-exporter": "^6.0 || ^7.0 || ^8.0",
+        "symfony/yaml": "^6.0 || ^7.0 || ^8.0"
     },
     "require-dev": {
         "dms/phpunit-arraysubset-asserts": "^0.5.0",
@@ -47,8 +47,8 @@
         "phpstan/phpstan": "^2.1.5",
         "phpunit/phpunit": "^9.0 || ^10.0 || ^11.0 || ^12.0",
         "spatie/ray": "^1.41",
-        "symfony/css-selector": "^6.0 || ^7.0",
-        "symfony/dom-crawler": "^6.0 || ^7.0"
+        "symfony/css-selector": "^6.0 || ^7.0 || ^8.0",
+        "symfony/dom-crawler": "^6.0 || ^7.0 || ^8.0"
     },
     "replace": {
         "mpociot/laravel-apidoc-generator": "*"
