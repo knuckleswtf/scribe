@@ -230,7 +230,7 @@ class BaseGenerator extends OpenApiGenerator
                     $path
                 );
                 if ($required) {
-                    $schema['required'] = $required;
+                    $schema['items']['required'] = $required;
                 }
             }
         }
