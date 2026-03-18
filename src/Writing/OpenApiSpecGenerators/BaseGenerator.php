@@ -490,14 +490,22 @@ class BaseGenerator extends OpenApiGenerator
                         return [$key => $this->generateSchemaForResponseValue($value, $endpoint, $key)];
                     })->toArray();
 
+                    $required = $this->filterRequiredResponseFields($endpoint, array_keys($properties));
+
+                    $items = [
+                        'type' => $this->convertScribeOrPHPTypeToOpenAPIType(gettype($decoded[0])),
+                        'properties' => $this->objectIfEmpty($properties),
+                    ];
+
+                    if ($required) {
+                        $items['required'] = $required;
+                    }
+
                     return [
                         $contentType => [
                             'schema' => [
                                 'type' => 'array',
-                                'items' => [
-                                    'type' => $this->convertScribeOrPHPTypeToOpenAPIType(gettype($decoded[0])),
-                                    'properties' => $this->objectIfEmpty($properties),
-                                ],
+                                'items' => $items,
                                 'example' => $decoded,
                             ],
                         ],
