@@ -110,4 +110,32 @@ class OutputEndpointDataTest extends BaseUnitTest
             ],
         ], $nested);
     }
+
+    /** @test */
+    public function does_not_crash_when_explicit_array_body_parameter_has_null_example()
+    {
+        // Reproduces: "Trying to access array offset on value of type null" at OutputEndpointData.php:258
+        // This happens when the user explicitly declares a "[]" parameter without providing an example.
+        $parameters = [
+            '[]' => Parameter::create([
+                'name' => '[]',
+                'type' => 'object[]',
+                'description' => 'List of items',
+                'required' => true,
+                // 'example' intentionally omitted → defaults to null
+            ]),
+            '[].name' => Parameter::create([
+                'name' => '[].name',
+                'type' => 'string',
+                'description' => 'Item name',
+                'required' => true,
+                'example' => 'John',
+            ]),
+        ];
+        $cleanParameters = [['name' => 'John']];
+
+        $nested = OutputEndpointData::nestArrayAndObjectFields($parameters, $cleanParameters);
+
+        $this->assertArrayHasKey('[]', $nested);
+    }
 }
