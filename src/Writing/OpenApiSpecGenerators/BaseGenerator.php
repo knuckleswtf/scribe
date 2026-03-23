@@ -230,7 +230,7 @@ class BaseGenerator extends OpenApiGenerator
                     $path
                 );
                 if ($required) {
-                    $schema['required'] = $required;
+                    $schema['items']['required'] = $required;
                 }
             }
         }
@@ -239,7 +239,7 @@ class BaseGenerator extends OpenApiGenerator
     }
 
     /**
-     * Given an enpoint and a set of object keys at a path, return the properties that are specified as required.
+     * Given an endpoint and a set of object keys at a path, return the properties that are specified as required.
      */
     public function filterRequiredResponseFields(OutputEndpointData $endpoint, array $properties, string $path = ''): array
     {
@@ -490,14 +490,22 @@ class BaseGenerator extends OpenApiGenerator
                         return [$key => $this->generateSchemaForResponseValue($value, $endpoint, $key)];
                     })->toArray();
 
+                    $required = $this->filterRequiredResponseFields($endpoint, array_keys($properties));
+
+                    $items = [
+                        'type' => $this->convertScribeOrPHPTypeToOpenAPIType(gettype($decoded[0])),
+                        'properties' => $this->objectIfEmpty($properties),
+                    ];
+
+                    if ($required) {
+                        $items['required'] = $required;
+                    }
+
                     return [
                         $contentType => [
                             'schema' => [
                                 'type' => 'array',
-                                'items' => [
-                                    'type' => $this->convertScribeOrPHPTypeToOpenAPIType(gettype($decoded[0])),
-                                    'properties' => $this->objectIfEmpty($properties),
-                                ],
+                                'items' => $items,
                                 'example' => $decoded,
                             ],
                         ],

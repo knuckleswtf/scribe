@@ -1175,11 +1175,11 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                                                 'description' => 'Is primary resource',
                                             ],
                                         ],
-                                    ],
-                                    'required' => [
-                                        'name',
-                                        'uuid',
-                                        'primary',
+                                        'required' => [
+                                            'name',
+                                            'uuid',
+                                            'primary',
+                                        ],
                                     ],
                                 ],
                             ],
@@ -1483,11 +1483,11 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                                                 'description' => 'Is primary resource',
                                             ],
                                         ],
-                                    ],
-                                    'required' => [
-                                        'name',
-                                        'uuid',
-                                        'primary',
+                                        'required' => [
+                                            'name',
+                                            'uuid',
+                                            'primary',
+                                        ],
                                     ],
                                 ],
                             ],
