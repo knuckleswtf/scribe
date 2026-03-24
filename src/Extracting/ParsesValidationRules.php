@@ -781,7 +781,7 @@ trait ParsesValidationRules
                     break;
 
                 case 'exists':
-                    $parameterData['description'] .= " The <code>{$ruleArguments[1]}</code> of an existing record in the {$ruleArguments[0]} table.";
+                    $parameterData['description'] .= " Must match an existing stored value.";
 
                     break;
 
