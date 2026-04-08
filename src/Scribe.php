@@ -95,4 +95,15 @@ class Scribe
     {
         Globals::$__normalizeEndpointUrlUsing = $callable;
     }
+
+    /**
+     * Specify a callback that will be executed after all extraction strategies have run for a route.
+     * This allows you to modify the extracted endpoint data before it is saved.
+     *
+     * @param  callable(ExtractedEndpointData): void  $callable
+     */
+    public static function afterExtracting(callable $callable)
+    {
+        Globals::$__afterExtracting = $callable;
+    }
 }
