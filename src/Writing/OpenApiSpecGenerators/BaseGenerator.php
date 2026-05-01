@@ -682,7 +682,7 @@ class BaseGenerator extends OpenApiGenerator
         ];
         // Workaround for optional parameters
         if (empty($details->required)) {
-            $parameterData['description'] = rtrim('Optional parameter. '.$parameterData['description']);
+            $parameterData['description'] = mb_rtrim('Optional parameter. '.$parameterData['description']);
             $parameterData['examples'] = [
                 'omitted' => [
                     'summary' => 'When the value is omitted',
