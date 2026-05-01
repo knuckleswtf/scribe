@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+## 5.9.0 (21 March 2026)
+### Modified
+- Add symfony/yaml v8 support ([#1063](https://github.com/knuckleswtf/scribe/pull/1063))
+
 ## 5.8.0 (23 February 2026)
 ### Added
 - Allow opt in suppressing of model events when generating response data with factories ([#1057](https://github.com/knuckleswtf/scribe/pull/1057))
