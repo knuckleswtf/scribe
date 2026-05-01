@@ -19,4 +19,6 @@ class Globals
     public static $__instantiateFormRequestUsing;
 
     public static $__normalizeEndpointUrlUsing;
+
+    public static $__afterExtracting;
 }

@@ -17,6 +17,7 @@ use Knuckles\Camel\Output\OutputEndpointData;
 use Knuckles\Scribe\Extracting\Strategies\StaticData;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\DocumentationConfig;
+use Knuckles\Scribe\Tools\Globals;
 use Knuckles\Scribe\Tools\RoutePatternMatcher;
 
 class Extractor
@@ -95,6 +96,10 @@ class Extractor
 
         $this->fetchResponseFields($endpointData, $routeRules);
         $this->mergeInheritedMethodsData('responseFields', $endpointData, $inheritedDocsOverrides);
+
+        if (is_callable(Globals::$__afterExtracting)) {
+            call_user_func_array(Globals::$__afterExtracting, [$endpointData]);
+        }
 
         self::$routeBeingProcessed = null;
 
