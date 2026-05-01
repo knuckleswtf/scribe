@@ -1,10 +1,13 @@
 * text=auto
 
+/.agents export-ignore
+/.githooks export-ignore
 /.github export-ignore
 /tests export-ignore
 /.editorconfig export-ignore
 /.gitattributes export-ignore
 /.gitignore export-ignore
+/AGENTS.md export-ignore
 /composer.lowest.json export-ignore
 /composer.lowest.lock export-ignore
 /phpunit.xml export-ignore
