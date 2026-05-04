@@ -885,6 +885,60 @@ class OpenAPISpecWriterTest extends BaseUnitTest
     }
 
     /** @test */
+    public function adds_required_fields_on_bare_array_of_objects()
+    {
+        $endpointData = $this->createMockEndpointData([
+            'httpMethods' => ['GET'],
+            'uri' => '/path1',
+            'responses' => [
+                [
+                    'status' => 200,
+                    'description' => 'Successfully.',
+                    'content' => '[{"id": 1, "name": "John"}, {"id": 2, "name": "Jane"}]',
+                ],
+            ],
+            'responseFields' => [
+                'id' => [
+                    'name' => 'id',
+                    'type' => 'integer',
+                    'description' => 'The ID',
+                    'required' => true,
+                ],
+                'name' => [
+                    'name' => 'name',
+                    'type' => 'string',
+                    'description' => 'The name',
+                    'required' => true,
+                ],
+            ],
+        ]);
+
+        $groups = [$this->createGroup([$endpointData])];
+        $results = $this->generate($groups);
+
+        $this->assertArraySubset([
+            '200' => [
+                'description' => 'Successfully.',
+                'content' => [
+                    'application/json' => [
+                        'schema' => [
+                            'type' => 'array',
+                            'items' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'id' => ['type' => 'integer'],
+                                    'name' => ['type' => 'string'],
+                                ],
+                                'required' => ['id', 'name'],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ], $results['paths']['/path1']['get']['responses']);
+    }
+
+    /** @test */
     public function adds_response_content_type_correctly()
     {
         $endpointData1 = $this->createMockEndpointData([
@@ -1175,11 +1229,11 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                                                 'description' => 'Is primary resource',
                                             ],
                                         ],
-                                    ],
-                                    'required' => [
-                                        'name',
-                                        'uuid',
-                                        'primary',
+                                        'required' => [
+                                            'name',
+                                            'uuid',
+                                            'primary',
+                                        ],
                                     ],
                                 ],
                             ],
@@ -1483,11 +1537,11 @@ class OpenAPISpecWriterTest extends BaseUnitTest
                                                 'description' => 'Is primary resource',
                                             ],
                                         ],
-                                    ],
-                                    'required' => [
-                                        'name',
-                                        'uuid',
-                                        'primary',
+                                        'required' => [
+                                            'name',
+                                            'uuid',
+                                            'primary',
+                                        ],
                                     ],
                                 ],
                             ],

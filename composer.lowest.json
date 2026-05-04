@@ -17,7 +17,6 @@
     "require": {
         "php": ">=8.1",
         "ext-fileinfo": "*",
-        "ext-json": "*",
         "ext-pdo": "*",
         "erusev/parsedown": "1.7.4",
         "fakerphp/faker": "^1.23.1",

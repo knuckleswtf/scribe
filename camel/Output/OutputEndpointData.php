@@ -255,7 +255,12 @@ class OutputEndpointData extends BaseDTO
             $finalParameters = ['[]' => $finalParameters['[]']];
             // At this point, the examples are likely [[], []],
             // but have been correctly set in clean parameters, so let's update them
-            if ($finalParameters['[]']['example'][0] === [] && ! empty($cleanParameters)) {
+            if (
+                is_array($finalParameters['[]']['example'])
+                && isset($finalParameters['[]']['example'][0])
+                && $finalParameters['[]']['example'][0] === []
+                && ! empty($cleanParameters)
+            ) {
                 $finalParameters['[]']['example'] = $cleanParameters;
             }
         }
