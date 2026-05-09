@@ -12,6 +12,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+## 5.10.0 (09 May 2026)
+### Added
+- Add `afterExtracting` hook to modify endpoint data after extraction ([#1072](https://github.com/knuckleswtf/scribe/pull/1072))
+- Allow Blade syntax in `base_url` config ([#1076](https://github.com/knuckleswtf/scribe/pull/1076))
+
+### Fixed
+- Fix: Move `required` from array schema to object schema inside `items` ([#1068](https://github.com/knuckleswtf/scribe/pull/1068))
+- Handle null example in array body parameter ([#1065](https://github.com/knuckleswtf/scribe/pull/1065))
+
 ## 5.9.0 (21 March 2026)
 ### Modified
 - Add symfony/yaml v8 support ([#1063](https://github.com/knuckleswtf/scribe/pull/1063))
