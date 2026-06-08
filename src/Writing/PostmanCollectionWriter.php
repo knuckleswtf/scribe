@@ -318,8 +318,8 @@ class PostmanCollectionWriter
                 }
             } else {
                 $query[] = [
-                    'key' => urlencode($name),
-                    'value' => $parameterData->example !== null ? urlencode($parameterData->example) : '',
+                    'key' => $name,
+                    'value' => $parameterData->example !== null ? (string) $parameterData->example : '',
                     'description' => strip_tags($parameterData->description),
                     // Default query params to disabled if they aren't required and have empty values
                     'disabled' => ! $parameterData->required && empty($parameterData->example),
@@ -329,9 +329,12 @@ class PostmanCollectionWriter
 
         $base['query'] = $query;
 
-        // Create raw url-parameter (Insomnia uses this on import)
+        // Create raw url-parameter (Insomnia uses this on import).
+        // Per Postman Collection v2.1, query[].key/value are stored raw and the client
+        // encodes them when sending. The raw URL string still needs encoding to be a
+        // syntactically valid URL, so we only encode it here.
         $queryString = collect($base['query'])->map(function ($queryParamData) {
-            return $queryParamData['key'].'='.$queryParamData['value'];
+            return rawurlencode($queryParamData['key']).'='.rawurlencode($queryParamData['value']);
         })->implode('&');
         $base['raw'] = sprintf('%s/%s%s', $base['host'], $base['path'], $queryString ? "?{$queryString}" : null);
 
@@ -344,7 +347,7 @@ class PostmanCollectionWriter
             return [
                 'id' => $name,
                 'key' => $name,
-                'value' => urlencode($parameter->example),
+                'value' => $parameter->example,
                 'description' => $parameter->description,
             ];
         })->values()->toArray();
