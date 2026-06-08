@@ -12,6 +12,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+## 5.11.0 (08 Jun 2026)
+### Fixed
+- Fix nested BelongsTo relationships loading in `ResponseFromApiResource` ([#1066](https://github.com/knuckleswtf/scribe/pull/1066))
+- Fix: Don't pre-urlencode Postman collection query keys/values ([#1075](https://github.com/knuckleswtf/scribe/pull/1075))
+
+### Modified
+- Update description for `exists` validation rule ([#1069](https://github.com/knuckleswtf/scribe/pull/1069))
+
 ## 5.10.0 (09 May 2026)
 ### Added
 - Add `afterExtracting` hook to modify endpoint data after extraction ([#1072](https://github.com/knuckleswtf/scribe/pull/1072))
