@@ -70,6 +70,15 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true
         },
+        "policy": {
+            "advisories": {
+                "ignore-id": [
+                    "PKSA-mdq4-51ck-6kdq",
+                    "PKSA-8qx3-n5y5-vvnd",
+                    "PKSA-w7xr-vk7n-rstm"
+                ]
+            }
+        },
         "preferred-install": "dist",
         "process-timeout": 600,
         "sort-packages": true
