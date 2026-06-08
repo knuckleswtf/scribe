@@ -456,7 +456,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
             ['exists_param' => 'exists:users,id'],
             [],
             [
-                'description' => 'The <code>id</code> of an existing record in the users table.',
+                'description' => 'Must match an existing stored value.',
             ],
         ];
 

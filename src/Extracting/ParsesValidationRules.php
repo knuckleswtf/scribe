@@ -781,7 +781,7 @@ trait ParsesValidationRules
                     break;
 
                 case 'exists':
-                    $parameterData['description'] .= " Must match an existing stored value.";
+                    $parameterData['description'] .= ' Must match an existing stored value.';
 
                     break;
 
