@@ -35,4 +35,30 @@ class HtmlWriterTest extends BaseLaravelTest
         $commit = mb_trim(shell_exec('git rev-parse --short HEAD'));
         $this->assertEquals("Last updated on {$date} (Git commit {$commit})", $lastUpdated);
     }
+
+    /** @test */
+    public function renders_blade_syntax_in_base_url()
+    {
+        config()->set('app.url', 'https://resolved.example.com');
+
+        $writer = new HtmlWriter(new DocumentationConfig([
+            'base_url' => "{{ config('app.url') }}/api",
+            'title' => 'API Docs',
+        ]));
+
+        $baseUrl = (new \ReflectionClass($writer))->getProperty('baseUrl')->getValue($writer);
+        $this->assertEquals('https://resolved.example.com/api', $baseUrl);
+    }
+
+    /** @test */
+    public function leaves_plain_base_url_untouched()
+    {
+        $writer = new HtmlWriter(new DocumentationConfig([
+            'base_url' => 'https://plain.example.com',
+            'title' => 'API Docs',
+        ]));
+
+        $baseUrl = (new \ReflectionClass($writer))->getProperty('baseUrl')->getValue($writer);
+        $this->assertEquals('https://plain.example.com', $baseUrl);
+    }
 }

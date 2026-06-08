@@ -3,6 +3,7 @@
 namespace Knuckles\Scribe\Writing;
 
 use http\Exception\InvalidArgumentException;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
 use Knuckles\Camel\Output\OutputEndpointData;
@@ -28,7 +29,8 @@ class HtmlWriter
     {
         $this->config = $config ?: new DocumentationConfig(config('scribe', []));
         $this->markdownParser = new MarkdownParser;
-        $this->baseUrl = $this->config->get('base_url') ?? config('app.url');
+        $baseUrl = $this->config->get('base_url') ?? config('app.url');
+        $this->baseUrl = Str::contains($baseUrl, ['{{', '{!!', '@']) ? Blade::render($baseUrl) : $baseUrl;
         // If they're using the default static path,
         // then use '../docs/{asset}', so assets can work via Laravel app or via index.html
         $this->assetPathPrefix = '../docs/';

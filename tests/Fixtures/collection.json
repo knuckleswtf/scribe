@@ -170,12 +170,12 @@
                 },
                 {
                   "key": "url_encoded",
-                  "value": "%2B+%5B%5D%26%3D",
+                  "value": "+ []&=",
                   "description": "Used for testing that URL parameters will be URL-encoded where needed.",
                   "disabled": false
                 }
               ],
-              "raw": "{{baseUrl}}/api/withQueryParameters?location_id=architecto&user_id=me&page=4&filters=architecto&url_encoded=%2B+%5B%5D%26%3D"
+              "raw": "{{baseUrl}}/api/withQueryParameters?location_id=architecto&user_id=me&page=4&filters=architecto&url_encoded=%2B%20%5B%5D%26%3D"
             },
             "method": "GET",
             "header": [
