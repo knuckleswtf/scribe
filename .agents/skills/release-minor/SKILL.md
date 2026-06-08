@@ -10,6 +10,7 @@ This skill automates the process of tagging a new minor release for Scribe.
 ## Workflow
 
 1.  **Analyze Commits & Build Changelog**:
+    -   First, update the local repo from remote (including any tags) using `git pull --all`.
     -   Identify the last release tag (e.g., using `git tag --sort=-v:refname | head -n 1`).
     -   Get all commits from the last tag to `HEAD`.
     -   Analyze commit messages to categorize them into "Added", "Modified", "Fixed", or "Removed".
@@ -33,6 +34,7 @@ This skill automates the process of tagging a new minor release for Scribe.
     -   Push the changes to the remote repository.
 
 4.  **Create GitHub Release**:
+    -   Wait for the latest pushed commit to pass CI. Use the `gh` CLI to check its status periodically. If it does not pass, abort. DO NOT continue the rest of the flow.
     -   Use the `gh` CLI to create a new release.
     -   Command: `gh release create <New Version> --title "<New Version>" --notes "<Changelog Content>"`
     -   Ensure the notes correspond exactly to the added changelog section.
