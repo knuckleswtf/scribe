@@ -244,21 +244,33 @@ class Utils
                 }
             }
 
-            foreach ($relations as $relation) {
-                // Support nested relations; see https://github.com/knuckleswtf/scribe/pull/364 for a detailed example
-                // Example: App\Models\Author with=posts.categories
-                $relationChain = explode('.', $relation);
-                $relationVector = array_shift($relationChain);
+            // Support nested relations; see https://github.com/knuckleswtf/scribe/pull/364 for a detailed example
+            // Example: App\Models\Author with=posts.categories
+            // Group relations by their first segment so that shared parents (e.g. 'order.status'
+            // and 'order.delivery') are merged into a single factory call instead of overwriting
+            // each other. See https://github.com/knuckleswtf/scribe/issues/991 for details.
+            $groupedRelations = [];
+            foreach ($relations as $relationPath) {
+                $segments = explode('.', $relationPath);
+                $firstSegment = array_shift($segments);
+                if (! empty($segments)) {
+                    $groupedRelations[$firstSegment][] = implode('.', $segments);
+                } else {
+                    // Direct relation without nesting — ensure the key exists
+                    if (! isset($groupedRelations[$firstSegment])) {
+                        $groupedRelations[$firstSegment] = [];
+                    }
+                }
+            }
 
-                $relation = (new $modelName)->{$relationVector}();
-                $relationType = get_class($relation);
-                $relationModel = get_class($relation->getModel());
+            foreach ($groupedRelations as $relationVector => $childRelations) {
+                $relationInstance = (new $modelName)->{$relationVector}();
+                $relationType = get_class($relationInstance);
+                $relationModel = get_class($relationInstance->getModel());
 
-                $factoryChain = empty($relationChain)
-                    ? call_user_func_array([$relationModel, 'factory'], [])
-                    : self::getModelFactory($relationModel, $states, [implode('.', $relationChain)]);
+                $factoryChain = self::getModelFactory($relationModel, $states, $childRelations);
 
-                if ($relation instanceof BelongsToMany) {
+                if ($relationInstance instanceof BelongsToMany) {
                     $pivot = method_exists($factory, 'pivot'.$relationVector)
                         ? $factory->{'pivot'.$relationVector}()
                         : [];

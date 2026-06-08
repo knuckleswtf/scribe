@@ -15,6 +15,8 @@ use Knuckles\Scribe\Attributes\ResponseFromTransformer;
 use Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseAttributes;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestModel;
+use Knuckles\Scribe\Tests\Fixtures\TestOrderOwner;
+use Knuckles\Scribe\Tests\Fixtures\TestOrderOwnerApiResource;
 use Knuckles\Scribe\Tests\Fixtures\TestPet;
 use Knuckles\Scribe\Tests\Fixtures\TestTransformer;
 use Knuckles\Scribe\Tests\Fixtures\TestUser;
@@ -398,6 +400,158 @@ class UseResponseAttributesTest extends BaseLaravelTest
         ], $results);
     }
 
+    /** @test */
+    public function can_parse_apiresource_attributes_and_load_single_nested_belongs_to()
+    {
+        Schema::create('test_order_statuses', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+        });
+        Schema::create('test_order_deliveries', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->foreignId('status_id')->nullable();
+            $table->foreignId('user_id')->nullable();
+        });
+        Schema::create('test_orders', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('status_id')->nullable();
+            $table->foreignId('delivery_id')->nullable();
+        });
+        Schema::create('test_order_owners', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('order_id')->nullable();
+            $table->foreignId('status_id')->nullable();
+        });
+
+        $documentationConfig = ['examples' => ['models_source' => ['factoryCreate']]];
+
+        $results = $this->fetch($this->endpoint('apiResourceAttributesWithSingleNestedBelongsTo'), $documentationConfig);
+
+        $decoded = json_decode($results[0]['content'], true);
+        $this->assertNotNull($decoded['data']['order']['status'], 'order.status should not be null');
+        $this->assertEquals('pending', $decoded['data']['order']['status']['name']);
+        $this->assertNull($decoded['data']['order']['delivery'], 'order.delivery should be null when not requested');
+    }
+
+    /** @test */
+    public function can_parse_apiresource_attributes_and_load_mixed_direct_and_nested_belongs_to()
+    {
+        Schema::create('test_order_statuses', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+        });
+        Schema::create('test_order_deliveries', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->foreignId('status_id')->nullable();
+            $table->foreignId('user_id')->nullable();
+        });
+        Schema::create('test_orders', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('status_id')->nullable();
+            $table->foreignId('delivery_id')->nullable();
+        });
+        Schema::create('test_order_owners', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('order_id')->nullable();
+            $table->foreignId('status_id')->nullable();
+        });
+
+        $documentationConfig = ['examples' => ['models_source' => ['factoryCreate']]];
+
+        $results = $this->fetch($this->endpoint('apiResourceAttributesWithMixedDirectAndNestedRelations'), $documentationConfig);
+
+        $decoded = json_decode($results[0]['content'], true);
+        $this->assertNotNull($decoded['data']['status'], 'direct status on owner should not be null');
+        $this->assertEquals('pending', $decoded['data']['status']['name']);
+        $this->assertNotNull($decoded['data']['order']['status'], 'order.status should not be null');
+        $this->assertEquals('pending', $decoded['data']['order']['status']['name']);
+        $this->assertNotNull($decoded['data']['order']['delivery'], 'order.delivery should not be null');
+        $this->assertEquals('express', $decoded['data']['order']['delivery']['name']);
+    }
+
+    /** @test */
+    public function can_parse_apiresource_attributes_and_load_three_levels_of_nesting()
+    {
+        Schema::create('test_users', function (Blueprint $table) {
+            $table->id();
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('email');
+            $table->integer('parent_id')->nullable();
+        });
+        Schema::create('test_order_statuses', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+        });
+        Schema::create('test_order_delivery_users', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+        });
+        Schema::create('test_order_deliveries', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->foreignId('status_id')->nullable();
+            $table->foreignId('user_id')->nullable();
+        });
+        Schema::create('test_orders', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('status_id')->nullable();
+            $table->foreignId('delivery_id')->nullable();
+        });
+        Schema::create('test_order_owners', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('order_id')->nullable();
+            $table->foreignId('status_id')->nullable();
+        });
+
+        $documentationConfig = ['examples' => ['models_source' => ['factoryCreate']]];
+
+        $results = $this->fetch($this->endpoint('apiResourceAttributesWithThreeLevelsOfNesting'), $documentationConfig);
+
+        $decoded = json_decode($results[0]['content'], true);
+        $this->assertNotNull($decoded['data']['order']['delivery']['status'], 'order.delivery.status should not be null');
+        $this->assertEquals('pending', $decoded['data']['order']['delivery']['status']['name']);
+        $this->assertNotNull($decoded['data']['order']['delivery']['user'], 'order.delivery.user should not be null');
+        $this->assertEquals('john', $decoded['data']['order']['delivery']['user']['name']);
+    }
+
+    /** @test */
+    public function can_parse_apiresource_attributes_and_load_multiple_nested_belongs_to_with_shared_parent()
+    {
+        Schema::create('test_order_statuses', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+        });
+        Schema::create('test_order_deliveries', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->foreignId('status_id')->nullable();
+            $table->foreignId('user_id')->nullable();
+        });
+        Schema::create('test_orders', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('status_id')->nullable();
+            $table->foreignId('delivery_id')->nullable();
+        });
+        Schema::create('test_order_owners', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('order_id')->nullable();
+            $table->foreignId('status_id')->nullable();
+        });
+
+        $documentationConfig = ['examples' => ['models_source' => ['factoryCreate']]];
+
+        $results = $this->fetch($this->endpoint('apiResourceAttributesWithNestedBelongsToRelations'), $documentationConfig);
+
+        $decoded = json_decode($results[0]['content'], true);
+        $this->assertNotNull($decoded['data']['order']['status'], 'order.status should not be null — both BelongsTo nested relations must be loaded');
+        $this->assertNotNull($decoded['data']['order']['delivery'], 'order.delivery should not be null — both BelongsTo nested relations must be loaded');
+        $this->assertEquals('pending', $decoded['data']['order']['status']['name']);
+        $this->assertEquals('express', $decoded['data']['order']['delivery']['name']);
+    }
+
     protected function getPackageProviders($app)
     {
         $providers = parent::getPackageProviders($app);
@@ -474,4 +628,16 @@ class ResponseAttributesTestController
 
     #[ResponseFromApiResource(TestUserApiResource::class, with: ['children'])]
     public function apiResourceAttributesIncludeChildren() {}
+
+    #[ResponseFromApiResource(TestOrderOwnerApiResource::class, TestOrderOwner::class, with: ['order.status', 'order.delivery'])]
+    public function apiResourceAttributesWithNestedBelongsToRelations() {}
+
+    #[ResponseFromApiResource(TestOrderOwnerApiResource::class, TestOrderOwner::class, with: ['order.status'])]
+    public function apiResourceAttributesWithSingleNestedBelongsTo() {}
+
+    #[ResponseFromApiResource(TestOrderOwnerApiResource::class, TestOrderOwner::class, with: ['order.status', 'status', 'order.delivery'])]
+    public function apiResourceAttributesWithMixedDirectAndNestedRelations() {}
+
+    #[ResponseFromApiResource(TestOrderOwnerApiResource::class, TestOrderOwner::class, with: ['order.delivery.status', 'order.delivery.user'])]
+    public function apiResourceAttributesWithThreeLevelsOfNesting() {}
 }
