@@ -818,7 +818,7 @@ trait ParsesValidationRules
             if (in_array(mb_strtolower($rule), ['regex', 'date', 'date_format'])) {
                 $ruleArguments = [$argumentsString];
             } else {
-                $ruleArguments = str_getcsv($argumentsString);
+                $ruleArguments = str_getcsv($argumentsString, escape: '\\');
             }
         }
 
