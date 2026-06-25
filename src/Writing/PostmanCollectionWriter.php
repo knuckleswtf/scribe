@@ -301,7 +301,7 @@ class PostmanCollectionWriter
                     $query[] = [
                         'key' => "{$name}[{$index}]",
                         'value' => is_string($value) ? $value : (string) $value,
-                        'description' => strip_tags($parameterData->description),
+                        'description' => strip_tags((string) $parameterData->description),
                         // Default query params to disabled if they aren't required and have empty values
                         'disabled' => ! $parameterData->required && empty($parameterData->example),
                     ];
@@ -311,7 +311,7 @@ class PostmanCollectionWriter
                     $query[] = [
                         'key' => "{$name}[]",
                         'value' => '',
-                        'description' => strip_tags($parameterData->description),
+                        'description' => strip_tags((string) $parameterData->description),
                         // Default query params to disabled if they aren't required and have empty values
                         'disabled' => true,
                     ];
@@ -320,7 +320,7 @@ class PostmanCollectionWriter
                 $query[] = [
                     'key' => $name,
                     'value' => $parameterData->example !== null ? (string) $parameterData->example : '',
-                    'description' => strip_tags($parameterData->description),
+                    'description' => strip_tags((string) $parameterData->description),
                     // Default query params to disabled if they aren't required and have empty values
                     'disabled' => ! $parameterData->required && empty($parameterData->example),
                 ];
