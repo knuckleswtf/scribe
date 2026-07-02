@@ -69,7 +69,7 @@
         $description .= " Example: `$exampleAsString`";
     }
 @endphp
-{!! Parsedown::instance()->text(trim($description)) !!}
+{!! Parsedown::instance()->text(trim((string) $description)) !!}
 @if(!empty($enumValues))
 Must be one of:
 <ul style="list-style-type: square;">{!! implode(" ", array_map(fn($val) => "<li><code>$val</code></li>", $enumValues)) !!}</ul>
