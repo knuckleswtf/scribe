@@ -75,7 +75,7 @@ trait ParamHelpers
     protected function generateDummyValue(string $type, array $hints = [])
     {
         if (! empty($hints['enumValues'])) {
-            return Arr::random($hints['enumValues']);
+            return $this->getFaker()->randomElement($hints['enumValues']);
         }
 
         $fakeFactory = $this->getDummyValueGenerator($type, $hints);
