@@ -251,6 +251,8 @@ class Writer
         $contents = str_replace('url="../docs/openapi.yaml"', 'url="{{ route("'.$this->paths->outputPath('openapi', '.').'") }}"', $contents);
         // With Elements theme, we'd have <elements-api apiDescriptionUrl="../docs/openapi.yaml"
         $contents = str_replace('Url="../docs/openapi.yaml"', 'Url="{{ route("'.$this->paths->outputPath('openapi', '.').'") }}"', $contents);
+        // Scribe JS API
+        $contents = str_replace('..\/docs\/openapi.yaml', '{{ route("'.$this->paths->outputPath('openapi', '.').'") }}', $contents);
 
         file_put_contents("{$this->laravelTypeOutputPath}/index.blade.php", $contents);
     }

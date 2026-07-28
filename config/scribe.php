@@ -85,6 +85,8 @@ return [
 
     'external' => [
         'html_attributes' => [],
+        // Configuration specific for the scalar theme: https://scalar.com/products/api-references/configuration
+        'scalar_config' => [],
     ],
 
     'try_it_out' => [
