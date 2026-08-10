@@ -18,8 +18,7 @@ use Knuckles\Scribe\Tools\Utils as u;
  */
 class ExtractedEndpointDataTest extends BaseLaravelTest
 {
-    /** @test */
-    public function normalizes_resource_url_params()
+    public function test_normalizes_resource_url_params()
     {
         Route::apiResource('things', TestController::class)->only('show');
         $route = $this->getRoute(['prefixes' => '*']);
@@ -34,8 +33,7 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
         $this->assertEquals('things/{thing_id}/otherthings/{id}', $this->expectedUri($route));
     }
 
-    /** @test */
-    public function allows_user_specified_normalization()
+    public function test_allows_user_specified_normalization()
     {
         Scribe::normalizeEndpointUrlUsing(function (string $url, LaravelRoute $route) {
             if ($url === 'things/{thing}') {
@@ -60,8 +58,7 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
         Scribe::normalizeEndpointUrlUsing(null);
     }
 
-    /** @test */
-    public function allows_user_specified_normalization_fallback_to_default()
+    public function test_allows_user_specified_normalization_fallback_to_default()
     {
         Scribe::normalizeEndpointUrlUsing(function (
             string $url,
@@ -90,8 +87,7 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
         Scribe::normalizeEndpointUrlUsing(null);
     }
 
-    /** @test */
-    public function normalizes_resource_url_params_from_underscores_to_hyphens()
+    public function test_normalizes_resource_url_params_from_underscores_to_hyphens()
     {
         Route::apiResource('audio-things', TestController::class)->only('show');
         $route = $this->getRoute(['prefixes' => '*']);
@@ -106,8 +102,7 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
         $this->assertEquals('big-users/{big_user_id}/audio-things/{audio_thing_id}/things', $this->expectedUri($route));
     }
 
-    /** @test */
-    public function normalizes_nonresource_url_params_with_inline_bindings()
+    public function test_normalizes_nonresource_url_params_with_inline_bindings()
     {
         Route::get('things/{thing:slug}', [TestController::class, 'show']);
         $route = $this->getRoute(['prefixes' => '*']);
@@ -116,8 +111,7 @@ class ExtractedEndpointDataTest extends BaseLaravelTest
         $this->assertEquals('things/{thing_slug}', $this->expectedUri($route));
     }
 
-    /** @test */
-    public function normalizes_url_param_with_eloquent_model_binding()
+    public function test_normalizes_url_param_with_eloquent_model_binding()
     {
         Route::get('test-posts/{test_post}', [TestController::class, 'withInjectedModelFullParamName']);
         $route = $this->getRoute(['prefixes' => '*']);

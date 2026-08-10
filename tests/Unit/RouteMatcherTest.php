@@ -14,8 +14,7 @@ use Knuckles\Scribe\Tests\BaseLaravelTest;
  */
 class RouteMatcherTest extends BaseLaravelTest
 {
-    /** @test */
-    public function respects_domains_rule_for_laravel_router()
+    public function test_respects_domains_rule_for_laravel_router()
     {
         $this->registerLaravelRoutes();
 
@@ -41,8 +40,7 @@ class RouteMatcherTest extends BaseLaravelTest
         }
     }
 
-    /** @test */
-    public function respects_prefixes_rule_for_laravel_router()
+    public function test_respects_prefixes_rule_for_laravel_router()
     {
         $this->registerLaravelRoutes();
         $routeRules[0]['match']['domains'] = ['*'];
@@ -68,8 +66,7 @@ class RouteMatcherTest extends BaseLaravelTest
         }
     }
 
-    /** @test */
-    public function includes_route_if_listed_explicitly_for_laravel_router()
+    public function test_includes_route_if_listed_explicitly_for_laravel_router()
     {
         $this->registerLaravelRoutes();
         $mustInclude = 'domain1-1';
@@ -82,8 +79,7 @@ class RouteMatcherTest extends BaseLaravelTest
         $this->assertCount(1, $oddRuleOut);
     }
 
-    /** @test */
-    public function includes_route_if_match_for_an_include_pattern_for_laravel_router()
+    public function test_includes_route_if_match_for_an_include_pattern_for_laravel_router()
     {
         $this->registerLaravelRoutes();
         $mustInclude = ['domain1-1', 'domain1-2'];
@@ -97,8 +93,7 @@ class RouteMatcherTest extends BaseLaravelTest
         $this->assertCount(count($mustInclude), $oddRuleOut);
     }
 
-    /** @test */
-    public function exclude_route_if_listed_explicitly_for_laravel_router()
+    public function test_exclude_route_if_listed_explicitly_for_laravel_router()
     {
         $this->registerLaravelRoutes();
         $mustNotInclude = 'prefix1.domain1-1';
@@ -111,8 +106,7 @@ class RouteMatcherTest extends BaseLaravelTest
         $this->assertCount(0, $oddRuleOut);
     }
 
-    /** @test */
-    public function exclude_route_if_match_for_an_exclude_pattern_for_laravel_router()
+    public function test_exclude_route_if_match_for_an_exclude_pattern_for_laravel_router()
     {
         $this->registerLaravelRoutes();
         $mustNotInclude = ['prefix1.domain1-1', 'prefix1.domain1-2'];
@@ -126,8 +120,7 @@ class RouteMatcherTest extends BaseLaravelTest
         $this->assertCount(0, $oddRuleOut);
     }
 
-    /** @test */
-    public function merges_routes_from_different_rule_groups_for_laravel_router()
+    public function test_merges_routes_from_different_rule_groups_for_laravel_router()
     {
         $this->registerLaravelRoutes();
 

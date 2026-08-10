@@ -2,13 +2,13 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\UrlParameters;
 
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Schema;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Extracting\Shared\UrlParamsNormalizer;
 use Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromLaravelAPI;
+use Knuckles\Scribe\Tests\ArraySubsetAsserts;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\Category;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
@@ -24,8 +24,7 @@ class GetFromLaravelAPITest extends BaseLaravelTest
 {
     use ArraySubsetAsserts;
 
-    /** @test */
-    public function can_infer_type_from_model_binding()
+    public function test_can_infer_type_from_model_binding()
     {
         // $endpoint = $this->endpointForRoute("users/{id}", TestController::class, 'withInjectedModel');
         $endpoint = $this->endpointForRoute('categories/{category}/users/{id}/', TestController::class, 'withInjectedEnumAndModel');
@@ -47,8 +46,7 @@ class GetFromLaravelAPITest extends BaseLaravelTest
         $this->assertIsInt($results['id']['example']);
     }
 
-    /** @test */
-    public function can_infer_description_from_url()
+    public function test_can_infer_description_from_url()
     {
         $endpoint = $this->endpointForRoute('everything/{cat_id}', TestController::class, 'dummy');
         $results = $this->fetch($endpoint);
@@ -72,8 +70,7 @@ class GetFromLaravelAPITest extends BaseLaravelTest
         ], $results['id']);
     }
 
-    /** @test */
-    public function can_infer_example_from_wheres()
+    public function test_can_infer_example_from_wheres()
     {
         $regex = '/catz\d+-\d/';
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) use ($regex) {
@@ -93,8 +90,7 @@ class GetFromLaravelAPITest extends BaseLaravelTest
         $this->assertMatchesRegularExpression($regex, $results['cat_id']['example']);
     }
 
-    /** @test */
-    public function can_infer_data_from_field_bindings()
+    public function test_can_infer_data_from_field_bindings()
     {
         $endpoint = $this->endpointForRoute('audio/{audio:slug}', TestController::class, 'dummy');
         $results = $this->fetch($endpoint);
@@ -124,8 +120,7 @@ class GetFromLaravelAPITest extends BaseLaravelTest
         ], $results['user_id']);
     }
 
-    /** @test */
-    public function can_infer_from_model_even_if_not_bound()
+    public function test_can_infer_from_model_even_if_not_bound()
     {
         $oldNamespace = $this->app->getNamespace();
         $reflectedApp = new \ReflectionClass($this->app);
@@ -146,8 +141,7 @@ class GetFromLaravelAPITest extends BaseLaravelTest
         $property->setValue($this->app, $oldNamespace);
     }
 
-    /** @test */
-    public function can_infer_correct_uri_from_route_with_optional_parameter_and_named_resource_routename()
+    public function test_can_infer_correct_uri_from_route_with_optional_parameter_and_named_resource_routename()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->method = new \ReflectionMethod(TestController::class, 'dummy');

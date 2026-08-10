@@ -11,6 +11,7 @@ use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tests\Fixtures\TestCustomEndpointMetadata;
 use Knuckles\Scribe\Tools\DocumentationConfig;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * @internal
@@ -48,8 +49,7 @@ class ExtractorTest extends BaseLaravelTest
         ],
     ];
 
-    /** @test */
-    public function clean_can_properly_parse_array_keys()
+    public function test_clean_can_properly_parse_array_keys()
     {
         $parameters = Parameter::arrayOf([
             'object' => [
@@ -121,8 +121,7 @@ class ExtractorTest extends BaseLaravelTest
         ], $cleanBodyParameters);
     }
 
-    /** @test */
-    public function does_not_generate_values_for_excluded_params_and_excludes_them_from_clean_params()
+    public function test_does_not_generate_values_for_excluded_params_and_excludes_them_from_clean_params()
     {
         $route = $this->createRouteOldSyntax('POST', '/api/test', 'withExcludedExamples');
         $parsed = $this->process($route)->toArray();
@@ -154,8 +153,7 @@ class ExtractorTest extends BaseLaravelTest
         ], $queryParameters);
     }
 
-    /** @test */
-    public function can_parse_route_methods()
+    public function test_can_parse_route_methods()
     {
         $route = $this->createRouteOldSyntax('GET', '/get', 'withEndpointDescription');
         $parsed = $this->process($route);
@@ -174,8 +172,7 @@ class ExtractorTest extends BaseLaravelTest
         $this->assertEquals(['DELETE'], $parsed->httpMethods);
     }
 
-    /** @test */
-    public function invokes_strategy_based_on_new_strategy_configs()
+    public function test_invokes_strategy_based_on_new_strategy_configs()
     {
         $route = $this->createRoute('GET', '/get', 'shouldFetchRouteResponse');
         $this->config['strategies']['responses'] = [
@@ -197,8 +194,7 @@ class ExtractorTest extends BaseLaravelTest
         $this->assertNotEmpty($parsed->responses);
     }
 
-    /** @test */
-    public function overrides_headers_based_on_short_strategy_config()
+    public function test_overrides_headers_based_on_short_strategy_config()
     {
         $route = $this->createRoute('GET', '/get', 'dummy');
         $this->config['strategies']['headers'] = [Strategies\Headers\GetFromHeaderAttribute::class];
@@ -219,8 +215,7 @@ class ExtractorTest extends BaseLaravelTest
         $this->assertArraySubset($parsed->headers, $headers);
     }
 
-    /** @test */
-    public function overrides_headers_based_on_extended_strategy_config()
+    public function test_overrides_headers_based_on_extended_strategy_config()
     {
         $route = $this->createRoute('GET', '/get', 'dummy');
         $this->config['strategies']['headers'] = [Strategies\Headers\GetFromHeaderAttribute::class];
@@ -246,8 +241,7 @@ class ExtractorTest extends BaseLaravelTest
         $this->assertEmpty($parsed->headers);
     }
 
-    /** @test */
-    public function overrides_headers_based_on_full_strategy_config()
+    public function test_overrides_headers_based_on_full_strategy_config()
     {
         $route = $this->createRoute('GET', '/get', 'dummy');
         $this->config['strategies']['headers'] = [Strategies\Headers\GetFromHeaderAttribute::class];
@@ -274,14 +268,13 @@ class ExtractorTest extends BaseLaravelTest
     }
 
     /**
-     * @test
-     *
      * @dataProvider authRules
      *
      * @param  mixed  $config
      * @param  mixed  $expected
      */
-    public function adds_appropriate_field_based_on_configured_auth_type($config, $expected)
+    #[DataProvider('authRules')]
+    public function test_adds_appropriate_field_based_on_configured_auth_type($config, $expected)
     {
         $route = $this->createRouteOldSyntax('POST', '/withAuthenticatedTag', 'withAuthenticatedTag');
         $generator = $this->makeExtractor(array_merge($this->config, $config));
@@ -362,8 +355,7 @@ class ExtractorTest extends BaseLaravelTest
         ];
     }
 
-    /** @test */
-    public function generates_consistent_examples_when_faker_seed_is_set()
+    public function test_generates_consistent_examples_when_faker_seed_is_set()
     {
         $route = $this->createRouteOldSyntax('POST', '/withBodyParameters', 'withBodyParameters');
 
@@ -387,8 +379,7 @@ class ExtractorTest extends BaseLaravelTest
         $this->assertCount(1, $results);
     }
 
-    /** @test */
-    public function can_use_arrays_in_routes_uses()
+    public function test_can_use_arrays_in_routes_uses()
     {
         $route = $this->createRoute('GET', '/api/array/test', 'withEndpointDescription');
 
@@ -398,8 +389,7 @@ class ExtractorTest extends BaseLaravelTest
         $this->assertSame("This will be the long description.\nIt can also be multiple lines long.", $parsed->metadata->description);
     }
 
-    /** @test */
-    public function can_use_closure_in_routes_uses()
+    public function test_can_use_closure_in_routes_uses()
     {
         /**
          * A short title.
@@ -423,16 +413,14 @@ class ExtractorTest extends BaseLaravelTest
         $this->assertSame('Name of the location', $parsed->bodyParameters['name']->description);
     }
 
-    /** @test */
-    public function endpoint_metadata_supports_custom_declarations()
+    public function test_endpoint_metadata_supports_custom_declarations()
     {
         $route = $this->createRouteOldSyntax('POST', '/api/test', 'dummy');
         $parsed = $this->process($route);
         $this->assertSame('some custom metadata', $parsed->metadata->custom['myProperty']);
     }
 
-    /** @test */
-    public function can_override_data_for_inherited_methods()
+    public function test_can_override_data_for_inherited_methods()
     {
         $route = $this->createRoute('POST', '/api/test', 'endpoint', TestParentController::class);
         $parent = $this->process($route);

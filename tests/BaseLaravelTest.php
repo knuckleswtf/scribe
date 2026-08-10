@@ -2,7 +2,6 @@
 
 namespace Knuckles\Scribe\Tests;
 
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Illuminate\Foundation\Application;
 use Knuckles\Scribe\Config;
 use Knuckles\Scribe\Config\AuthIn;

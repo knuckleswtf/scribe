@@ -2,8 +2,8 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\Headers;
 
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Knuckles\Scribe\Extracting\Strategies\Headers\GetFromHeaderTag;
+use Knuckles\Scribe\Tests\ArraySubsetAsserts;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Mpociot\Reflection\DocBlock\Tag;
 use PHPUnit\Framework\TestCase;
@@ -17,8 +17,7 @@ class GetFromHeaderTagTest extends TestCase
 {
     use ArraySubsetAsserts;
 
-    /** @test */
-    public function can_fetch_from_header_tag()
+    public function test_can_fetch_from_header_tag()
     {
         $strategy = new GetFromHeaderTag(new DocumentationConfig([]));
         $tags = [

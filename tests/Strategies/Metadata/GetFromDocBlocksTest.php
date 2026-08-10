@@ -2,8 +2,8 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\Metadata;
 
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Knuckles\Scribe\Extracting\Strategies\Metadata\GetFromDocBlocks;
+use Knuckles\Scribe\Tests\ArraySubsetAsserts;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Mpociot\Reflection\DocBlock;
 use PHPUnit\Framework\TestCase;
@@ -17,8 +17,7 @@ class GetFromDocBlocksTest extends TestCase
 {
     use ArraySubsetAsserts;
 
-    /** @test */
-    public function can_fetch_metadata_from_method_docblock()
+    public function test_can_fetch_metadata_from_method_docblock()
     {
         $strategy = new GetFromDocBlocks(new DocumentationConfig([]));
         $methodDocblock = <<<'DOCBLOCK'
@@ -37,8 +36,7 @@ class GetFromDocBlocksTest extends TestCase
         $this->assertSame("Endpoint description.\nMultiline.", $results['description']);
     }
 
-    /** @test */
-    public function can_fetch_metadata_from_method_and_class()
+    public function test_can_fetch_metadata_from_method_and_class()
     {
         $strategy = new GetFromDocBlocks(new DocumentationConfig([]));
         $methodDocblock = <<<'DOCBLOCK'
@@ -109,8 +107,7 @@ class GetFromDocBlocksTest extends TestCase
         $this->assertSame('', $results['description']);
     }
 
-    /** @test */
-    public function can_override_group_name_group_description_and_auth_status_from_method()
+    public function test_can_override_group_name_group_description_and_auth_status_from_method()
     {
         $strategy = new GetFromDocBlocks(new DocumentationConfig([]));
         $methodDocblock = <<<'DOCBLOCK'

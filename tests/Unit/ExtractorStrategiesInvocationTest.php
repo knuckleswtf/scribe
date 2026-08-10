@@ -9,6 +9,7 @@ use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tests\BaseUnitTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * @internal
@@ -28,8 +29,7 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
         parent::tearDown();
     }
 
-    /** @test */
-    public function only_specified_strategies_are_loaded()
+    public function test_only_specified_strategies_are_loaded()
     {
         $config = [
             'strategies' => [
@@ -46,8 +46,7 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
         $this->assertFalse(EmptyStrategy2::$called);
     }
 
-    /** @test */
-    public function supports_override_tuples()
+    public function test_supports_override_tuples()
     {
         $config = [
             'strategies' => [
@@ -70,8 +69,7 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
         ], $endpointData->headers);
     }
 
-    /** @test */
-    public function supports_strategy_settings_tuples()
+    public function test_supports_strategy_settings_tuples()
     {
         $config = [
             'strategies' => [
@@ -93,8 +91,7 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
         ], $endpointData->headers);
     }
 
-    /** @test */
-    public function respects_strategy_s_only_setting()
+    public function test_respects_strategy_s_only_setting()
     {
         $config = [
             'strategies' => [
@@ -112,8 +109,7 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
         $this->assertTrue(EmptyStrategy1::$called);
     }
 
-    /** @test */
-    public function respects_strategy_s_except_setting()
+    public function test_respects_strategy_s_except_setting()
     {
         $config = [
             'strategies' => [
@@ -136,8 +132,7 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
         $this->assertTrue(EmptyStrategy1::$called);
     }
 
-    /** @test */
-    public function responses_from_different_strategies_get_added()
+    public function test_responses_from_different_strategies_get_added()
     {
         $config = [
             'strategies' => [
@@ -161,10 +156,9 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
     }
 
     /**
-     * @test
      * This is a generalized test, as opposed to the one above for responses only
      */
-    public function combines_results_from_different_strategies_in_same_stage()
+    public function test_combines_results_from_different_strategies_in_same_stage()
     {
         $config = [
             'strategies' => [
@@ -183,8 +177,7 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
         $this->assertArraySubset($expectedMetadata, $parsed->metadata->toArray());
     }
 
-    /** @test */
-    public function missing_metadata_is_filled_in()
+    public function test_missing_metadata_is_filled_in()
     {
         $config = [
             'strategies' => [
@@ -204,11 +197,10 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
     }
 
     /**
-     * @test
-     *
      * @dataProvider responsesToSort
      */
-    public function sort_responses_by_status_code(array $responses)
+    #[DataProvider('responsesToSort')]
+    public function test_sort_responses_by_status_code(array $responses)
     {
         $config = [
             'strategies' => [
@@ -234,8 +226,7 @@ class ExtractorStrategiesInvocationTest extends BaseUnitTest
         ];
     }
 
-    /** @test */
-    public function overwrites_metadata_from_previous_strategies_in_same_stage()
+    public function test_overwrites_metadata_from_previous_strategies_in_same_stage()
     {
         $config = [
             'strategies' => [

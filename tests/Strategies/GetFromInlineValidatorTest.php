@@ -2,10 +2,10 @@
 
 namespace Knuckles\Scribe\Tests\Strategies;
 
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Extracting\Strategies\BodyParameters;
 use Knuckles\Scribe\Extracting\Strategies\QueryParameters;
+use Knuckles\Scribe\Tests\ArraySubsetAsserts;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
@@ -95,8 +95,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
         ],
     ];
 
-    /** @test */
-    public function can_fetch_from_request_validate_assignment()
+    public function test_can_fetch_from_request_validate_assignment()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidate');
@@ -108,8 +107,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
         $this->assertIsArray($results['ids']['example']);
     }
 
-    /** @test */
-    public function can_fetch_from_request_validate_expression()
+    public function test_can_fetch_from_request_validate_expression()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidateNoAssignment');
@@ -121,8 +119,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
         $this->assertIsArray($results['ids']['example']);
     }
 
-    /** @test */
-    public function can_fetch_from_request_validatewithbag()
+    public function test_can_fetch_from_request_validatewithbag()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidateWithBag');
@@ -134,8 +131,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
         $this->assertIsArray($results['ids']['example']);
     }
 
-    /** @test */
-    public function can_fetch_from_request_validate_facade_assignment()
+    public function test_can_fetch_from_request_validate_facade_assignment()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidateFacade');
@@ -147,8 +143,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
         $this->assertIsArray($results['ids']['example']);
     }
 
-    /** @test */
-    public function can_fetch_from_request_validate_facade_expression()
+    public function test_can_fetch_from_request_validate_facade_expression()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidateFacadeNoAssignment');
@@ -160,8 +155,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
         $this->assertIsArray($results['ids']['example']);
     }
 
-    /** @test */
-    public function can_fetch_from_request_validate_facade_with_full_import()
+    public function test_can_fetch_from_request_validate_facade_with_full_import()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidateFacadeWithFullImport');
@@ -173,8 +167,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
         $this->assertIsArray($results['ids']['example']);
     }
 
-    /** @test */
-    public function can_fetch_from_request_validatewithbag_facade()
+    public function test_can_fetch_from_request_validatewithbag_facade()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidateWithBagFacade');
@@ -186,8 +179,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
         $this->assertIsArray($results['ids']['example']);
     }
 
-    /** @test */
-    public function can_fetch_from_this_validate()
+    public function test_can_fetch_from_this_validate()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->method = new \ReflectionMethod(TestController::class, 'withInlineThisValidate');
@@ -199,8 +191,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
         $this->assertIsArray($results['ids']['example']);
     }
 
-    /** @test */
-    public function can_fetch_from_validator_make()
+    public function test_can_fetch_from_validator_make()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->method = new \ReflectionMethod(TestController::class, 'withInlineValidatorMake');
@@ -212,8 +203,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
         $this->assertIsArray($results['ids']['example']);
     }
 
-    /** @test */
-    public function can_fetch_from_validator_make_validate()
+    public function test_can_fetch_from_validator_make_validate()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->method = new \ReflectionMethod(TestController::class, 'withInlineValidatorMakeValidate');
@@ -225,8 +215,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
         $this->assertIsArray($results['ids']['example']);
     }
 
-    /** @test */
-    public function respects_query_params_comment()
+    public function test_respects_query_params_comment()
     {
         $queryParamsEndpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->method = new \ReflectionMethod(TestController::class, 'withInlineRequestValidateQueryParams');
@@ -246,8 +235,7 @@ class GetFromInlineValidatorTest extends BaseLaravelTest
         $this->assertEquals([], $results);
     }
 
-    /** @test */
-    public function can_fetch_inline_enum_rules()
+    public function test_can_fetch_inline_enum_rules()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->method = new \ReflectionMethod(TestController::class, 'withEnumRule');

@@ -2,7 +2,6 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\QueryParameters;
 
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Deprecated;
@@ -11,6 +10,7 @@ use Knuckles\Scribe\Attributes\Group;
 use Knuckles\Scribe\Attributes\Subgroup;
 use Knuckles\Scribe\Attributes\Unauthenticated;
 use Knuckles\Scribe\Extracting\Strategies\Metadata\GetFromMetadataAttributes;
+use Knuckles\Scribe\Tests\ArraySubsetAsserts;
 use Knuckles\Scribe\Tests\Fixtures\TestGroupBackedEnum;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use PHPUnit\Framework\TestCase;
@@ -24,8 +24,7 @@ class GetFromMetadataAttributesTest extends TestCase
 {
     use ArraySubsetAsserts;
 
-    /** @test */
-    public function can_fetch_from_authenticated_attribute_or_authenticated_parameter()
+    public function test_can_fetch_from_authenticated_attribute_or_authenticated_parameter()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->controller = new \ReflectionClass(MetadataAttributesTestController::class);

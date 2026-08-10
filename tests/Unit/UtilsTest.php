@@ -12,8 +12,7 @@ use Knuckles\Scribe\Tools\Utils;
  */
 class UtilsTest extends BaseLaravelTest
 {
-    /** @test */
-    public function make_directory_recursive()
+    public function test_make_directory_recursive()
     {
         $dir = __DIR__.'/test_dir';
         Utils::makeDirectoryRecursive($dir);

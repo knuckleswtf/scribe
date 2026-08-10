@@ -27,8 +27,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         'base_url' => 'http://api.api.dev',
     ];
 
-    /** @test */
-    public function follows_correct_spec_structure()
+    public function test_follows_correct_spec_structure()
     {
         $endpointData1 = $this->createMockEndpointData();
         $endpointData2 = $this->createMockEndpointData();
@@ -45,8 +44,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $this->assertGreaterThan(0, count($results['paths']));
     }
 
-    /** @test */
-    public function adds_endpoints_correctly_as_operations_under_paths()
+    public function test_adds_endpoints_correctly_as_operations_under_paths()
     {
         $endpointData1 = $this->createMockEndpointData(['uri' => 'path1', 'httpMethods' => ['GET']]);
         $endpointData2 = $this->createMockEndpointData(['uri' => 'path1', 'httpMethods' => ['POST']]);
@@ -77,8 +75,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         });
     }
 
-    /** @test */
-    public function adds_authentication_details_correctly_as_security_info()
+    public function test_adds_authentication_details_correctly_as_security_info()
     {
         $endpointData1 = $this->createMockEndpointData(['uri' => 'path1', 'httpMethods' => ['GET'], 'metadata.authenticated' => true]);
         $endpointData2 = $this->createMockEndpointData(['uri' => 'path1', 'httpMethods' => ['POST'], 'metadata.authenticated' => false]);
@@ -132,8 +129,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $this->assertCount(0, $results['paths']['/path1']['post']['security']);
     }
 
-    /** @test */
-    public function adds_deprecation_info_correctly()
+    public function test_adds_deprecation_info_correctly()
     {
         $endpointData1 = $this->createMockEndpointData(['uri' => 'path1', 'httpMethods' => ['GET'], 'metadata.deprecated' => true]);
         $endpointData2 = $this->createMockEndpointData(['uri' => 'path2', 'httpMethods' => ['GET'], 'metadata.deprecated' => false]);
@@ -148,8 +144,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $this->assertArrayNotHasKey('deprecated', $results['paths']['/path2']['get']);
     }
 
-    /** @test */
-    public function adds_deprecated_params_info_correctly()
+    public function test_adds_deprecated_params_info_correctly()
     {
         $endpointData1 = $this->createMockEndpointData([
             'uri' => 'path1',
@@ -208,8 +203,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $this->assertTrue($properties['object_param']['deprecated']);
     }
 
-    /** @test */
-    public function adds_url_parameters_correctly_as_parameters_on_path_item_object()
+    public function test_adds_url_parameters_correctly_as_parameters_on_path_item_object()
     {
         $endpointData1 = $this->createMockEndpointData([
             'httpMethods' => ['POST'],
@@ -258,8 +252,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         ], $results['paths']['/path1/{param}/{optionalParam}']['parameters'][1]);
     }
 
-    /** @test */
-    public function adds_headers_correctly_as_parameters_on_operation_object()
+    public function test_adds_headers_correctly_as_parameters_on_operation_object()
     {
         $endpointData1 = $this->createMockEndpointData(['httpMethods' => ['POST'], 'uri' => 'path1', 'headers.Extra-Header' => 'Some-example']);
         $endpointData2 = $this->createMockEndpointData(['uri' => 'path1', 'httpMethods' => ['GET'], 'headers' => []]);
@@ -278,8 +271,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         ], $results['paths']['/path1']['post']['parameters'][0]);
     }
 
-    /** @test */
-    public function adds_query_parameters_correctly_as_parameters_on_operation_object()
+    public function test_adds_query_parameters_correctly_as_parameters_on_operation_object()
     {
         $endpointData1 = $this->createMockEndpointData([
             'httpMethods' => ['GET'],
@@ -317,8 +309,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         ], $results['paths']['/path1']['get']['parameters'][0]);
     }
 
-    /** @test */
-    public function adds_body_parameters_correctly_as_request_body_on_operation_object()
+    public function test_adds_body_parameters_correctly_as_request_body_on_operation_object()
     {
         $endpointData1 = $this->createMockEndpointData([
             'httpMethods' => ['POST'],
@@ -503,8 +494,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         ], $results['paths']['/path2']['put']['requestBody']);
     }
 
-    /** @test */
-    public function adds_responses_correctly_as_responses_on_operation_object()
+    public function test_adds_responses_correctly_as_responses_on_operation_object()
     {
         $endpointData1 = $this->createMockEndpointData([
             'httpMethods' => ['POST'],
@@ -665,8 +655,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         ], $results['paths']['/path2']['put']['responses']);
     }
 
-    /** @test */
-    public function applies_required_flag_for_nested_response_fields_with_dot_notation()
+    public function test_applies_required_flag_for_nested_response_fields_with_dot_notation()
     {
         $endpointData = $this->createMockEndpointData([
             'httpMethods' => ['GET'],
@@ -713,8 +702,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $this->assertNotContains('displayValue', $statusSchema['required']);
     }
 
-    /** @test */
-    public function applies_required_flag_for_nested_response_fields_from_api_resources_with_data_prefix()
+    public function test_applies_required_flag_for_nested_response_fields_from_api_resources_with_data_prefix()
     {
         $endpointData = $this->createMockEndpointData([
             'httpMethods' => ['GET'],
@@ -765,8 +753,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $this->assertNotContains('displayValue', $statusSchema['required']);
     }
 
-    /** @test */
-    public function handles_required_params_correctly_for_nested_arrays()
+    public function test_handles_required_params_correctly_for_nested_arrays()
     {
         $endpointData = $this->createMockEndpointData([
             'httpMethods' => ['GET'],
@@ -838,8 +825,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $this->assertContains('inner2', $dataSchema['properties']['outer2']['required']);
     }
 
-    /** @test */
-    public function adds_responses_correctly_as_array_of_objects()
+    public function test_adds_responses_correctly_as_array_of_objects()
     {
         $endpointData1 = $this->createMockEndpointData([
             'httpMethods' => ['GET'],
@@ -884,8 +870,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         ], $results['paths']['/path1']['get']['responses']);
     }
 
-    /** @test */
-    public function adds_required_fields_on_bare_array_of_objects()
+    public function test_adds_required_fields_on_bare_array_of_objects()
     {
         $endpointData = $this->createMockEndpointData([
             'httpMethods' => ['GET'],
@@ -938,8 +923,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         ], $results['paths']['/path1']['get']['responses']);
     }
 
-    /** @test */
-    public function adds_response_content_type_correctly()
+    public function test_adds_response_content_type_correctly()
     {
         $endpointData1 = $this->createMockEndpointData([
             'httpMethods' => ['GET'],
@@ -1045,8 +1029,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         ], $results['paths']['/path3']['get']['responses']);
     }
 
-    /** @test */
-    public function handles_custom_content_type_with_various_response_body_types()
+    public function test_handles_custom_content_type_with_various_response_body_types()
     {
         $customJsonType = 'application/vnd.api+json';
 
@@ -1099,8 +1082,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $this->assertEquals(123, $integerResponseSpec['content'][$customJsonType]['schema']['example']);
     }
 
-    /** @test */
-    public function handles_non_json_response_content_as_text_plain()
+    public function test_handles_non_json_response_content_as_text_plain()
     {
         $endpoint = $this->createMockEndpointData([
             'httpMethods' => ['GET'],
@@ -1120,8 +1102,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $this->assertEquals('This is a simple text response.', $responseSpec['content']['text/plain']['schema']['example']);
     }
 
-    /** @test */
-    public function handles_null_and_empty_array_response_content()
+    public function test_handles_null_and_empty_array_response_content()
     {
         $endpointWithNullContent = $this->createMockEndpointData([
             'uri' => '/null-response',
@@ -1158,8 +1139,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $this->assertEquals([], $schemaForEmptyArray['example']);
     }
 
-    /** @test */
-    public function adds_required_fields_on_array_of_objects()
+    public function test_adds_required_fields_on_array_of_objects()
     {
         $endpointData = $this->createMockEndpointData([
             'httpMethods' => ['GEt'],
@@ -1244,8 +1224,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         ], $results['paths']['/path1']['get']['responses']);
     }
 
-    /** @test */
-    public function generates_correctly_for_array_of_strings()
+    public function test_generates_correctly_for_array_of_strings()
     {
         $endpointData = $this->createMockEndpointData([
             'httpMethods' => ['GET'],
@@ -1293,8 +1272,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         ], $results['paths']['/path1']['get']['responses']);
     }
 
-    /** @test */
-    public function adds_multiple_responses_correctly_using_one_of()
+    public function test_adds_multiple_responses_correctly_using_one_of()
     {
         $endpointData1 = $this->createMockEndpointData([
             'httpMethods' => ['POST'],
@@ -1372,8 +1350,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         ], $results['paths']['/path1']['post']['responses']);
     }
 
-    /** @test */
-    public function adds_more_than_two_answers_correctly_using_one_of()
+    public function test_adds_more_than_two_answers_correctly_using_one_of()
     {
         $endpointData1 = $this->createMockEndpointData([
             'httpMethods' => ['POST'],
@@ -1466,8 +1443,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         ], $results['paths']['/path1']['post']['responses']);
     }
 
-    /** @test */
-    public function adds_enum_values_to_response_properties()
+    public function test_adds_enum_values_to_response_properties()
     {
         $endpointData = $this->createMockEndpointData([
             'httpMethods' => ['GEt'],
@@ -1552,8 +1528,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         ], $results['paths']['/path1']['get']['responses']);
     }
 
-    /** @test */
-    public function does_not_add_empty_enum_arrays_when_response_field_has_no_enum_values()
+    public function test_does_not_add_empty_enum_arrays_when_response_field_has_no_enum_values()
     {
         $endpointData = $this->createMockEndpointData([
             'httpMethods' => ['GET'],
@@ -1597,8 +1572,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $this->assertContains('message', $responseSchema['required']);
     }
 
-    /** @test */
-    public function adds_enum_values_to_response_properties_when_specified()
+    public function test_adds_enum_values_to_response_properties_when_specified()
     {
         $endpointData = $this->createMockEndpointData([
             'httpMethods' => ['GET'],
@@ -1634,8 +1608,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $this->assertContains('status', $responseSchema['required']);
     }
 
-    /** @test */
-    public function lists_required_properties_in_request_body()
+    public function test_lists_required_properties_in_request_body()
     {
         $endpointData = $this->createMockEndpointData([
             'uri' => '/path',
@@ -1688,8 +1661,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         ], $results['paths']['/path']['post']);
     }
 
-    /** @test */
-    public function can_extend_openapi_generator()
+    public function test_can_extend_openapi_generator()
     {
         $endpointData1 = $this->createMockEndpointData([
             'uri' => '/path',
@@ -1714,8 +1686,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $this->assertEquals([['default' => ['post:view']]], $results['paths']['/path']['post']['security']);
     }
 
-    /** @test */
-    public function can_extend_openapi_generator_parameters()
+    public function test_can_extend_openapi_generator_parameters()
     {
         $endpointData1 = $this->createMockEndpointData([
             'uri' => '/{slug}/path',
@@ -1761,8 +1732,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         ], $results['components']['parameters']);
     }
 
-    /** @test */
-    public function uses_openapi31_when_configured()
+    public function test_uses_openapi31_when_configured()
     {
         $config = array_merge($this->config, [
             'openapi' => ['version' => '3.1.0'],
@@ -1776,8 +1746,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $this->assertEquals('3.1.0', $results['openapi']);
     }
 
-    /** @test */
-    public function uses_json_schema_nullable_syntax_in_openapi31()
+    public function test_uses_json_schema_nullable_syntax_in_openapi31()
     {
         $config = array_merge($this->config, [
             'openapi' => ['version' => '3.1.0'],
@@ -1812,8 +1781,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $this->assertArrayNotHasKey('nullable', $nullableFieldSchema);
     }
 
-    /** @test */
-    public function uses_nullable_property_in_openapi30()
+    public function test_uses_nullable_property_in_openapi30()
     {
         $config = array_merge($this->config, [
             'openapi' => ['version' => '3.0.3'],
@@ -1846,8 +1814,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $this->assertTrue($nullableFieldSchema['nullable']);
     }
 
-    /** @test */
-    public function handles_null_response_content_in_openapi31()
+    public function test_handles_null_response_content_in_openapi31()
     {
         $config = array_merge($this->config, [
             'openapi' => ['version' => '3.1.0'],
@@ -1876,8 +1843,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $this->assertArrayNotHasKey('nullable', $schemaForNull);
     }
 
-    /** @test */
-    public function uses_examples_array_in_openapi_31_for_request_body()
+    public function test_uses_examples_array_in_openapi_31_for_request_body()
     {
         $config = array_merge($this->config, [
             'openapi' => ['version' => '3.1.0'],
@@ -1924,8 +1890,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $this->assertArrayNotHasKey('example', $integerFieldSchema);
     }
 
-    /** @test */
-    public function uses_example_in_openapi_30_for_request_body()
+    public function test_uses_example_in_openapi_30_for_request_body()
     {
         $config = array_merge($this->config, [
             'openapi' => ['version' => '3.0.3'],
@@ -1958,8 +1923,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $this->assertArrayNotHasKey('examples', $stringFieldSchema);
     }
 
-    /** @test */
-    public function uses_examples_array_in_openapi_31_for_response_body()
+    public function test_uses_examples_array_in_openapi_31_for_response_body()
     {
         $config = array_merge($this->config, [
             'openapi' => ['version' => '3.1.0'],
@@ -1995,8 +1959,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $this->assertArrayNotHasKey('example', $countProperty);
     }
 
-    /** @test */
-    public function uses_examples_array_in_openapi_31_for_nested_objects()
+    public function test_uses_examples_array_in_openapi_31_for_nested_objects()
     {
         $config = array_merge($this->config, [
             'openapi' => ['version' => '3.1.0'],
@@ -2049,8 +2012,7 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $this->assertArrayNotHasKey('example', $ageSchema);
     }
 
-    /** @test */
-    public function uses_examples_array_in_openapi_31_for_array_responses()
+    public function test_uses_examples_array_in_openapi_31_for_array_responses()
     {
         $config = array_merge($this->config, [
             'openapi' => ['version' => '3.1.0'],

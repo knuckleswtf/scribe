@@ -59,8 +59,7 @@ class UseResponseAttributesTest extends BaseLaravelTest
         });
     }
 
-    /** @test */
-    public function can_parse_plain_response_attributes()
+    public function test_can_parse_plain_response_attributes()
     {
         $results = $this->fetch($this->endpoint('plainResponseAttributes'));
 
@@ -81,8 +80,7 @@ class UseResponseAttributesTest extends BaseLaravelTest
         ], $results);
     }
 
-    /** @test */
-    public function can_parse_responsefile_attributes()
+    public function test_can_parse_responsefile_attributes()
     {
         $results = $this->fetch($this->endpoint('responseFileAttributes'));
 
@@ -94,8 +92,7 @@ class UseResponseAttributesTest extends BaseLaravelTest
         ], $results);
     }
 
-    /** @test */
-    public function can_parse_apiresource_attributes()
+    public function test_can_parse_apiresource_attributes()
     {
         $factory = app(Factory::class);
         $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
@@ -146,8 +143,7 @@ class UseResponseAttributesTest extends BaseLaravelTest
         ], $results);
     }
 
-    /** @test */
-    public function can_parse_apiresource_attributes_with_no_model_specified()
+    public function test_can_parse_apiresource_attributes_with_no_model_specified()
     {
         $factory = app(Factory::class);
         $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
@@ -198,8 +194,7 @@ class UseResponseAttributesTest extends BaseLaravelTest
         ], $results);
     }
 
-    /** @test */
-    public function can_parse_transformer_attributes()
+    public function test_can_parse_transformer_attributes()
     {
         $results = $this->fetch($this->endpoint('transformerAttributes'));
 
@@ -229,8 +224,7 @@ class UseResponseAttributesTest extends BaseLaravelTest
         ], $results);
     }
 
-    /** @test */
-    public function can_parse_apiresource_attributes_with_cursor_pagination()
+    public function test_can_parse_apiresource_attributes_with_cursor_pagination()
     {
         $factory = app(Factory::class);
         $factory->afterMaking(TestUser::class, function (TestUser $user, $faker) {
@@ -278,8 +272,7 @@ class UseResponseAttributesTest extends BaseLaravelTest
         ], $results);
     }
 
-    /** @test */
-    public function can_parse_apiresource_attributes_and_load_children_using_factory_create()
+    public function test_can_parse_apiresource_attributes_and_load_children_using_factory_create()
     {
         Schema::create('test_users', function (Blueprint $table) {
             $table->id();
@@ -320,12 +313,12 @@ class UseResponseAttributesTest extends BaseLaravelTest
     }
 
     /**
-     * @test
-     *
      * @testWith ["factoryCreate", true]
      *           ["factoryCreateQuietly", false]
      */
-    public function it_can_suppress_model_events_using_factory_create_quietly(string $modelFactoryStrategy, bool $expectModelEvents)
+    #[TestWith(['factoryCreate', true])]
+    #[TestWith(['factoryCreateQuietly', false])]
+    public function test_it_can_suppress_model_events_using_factory_create_quietly(string $modelFactoryStrategy, bool $expectModelEvents)
     {
         Schema::create('test_users', function (Blueprint $table) {
             $table->id();
@@ -358,8 +351,7 @@ class UseResponseAttributesTest extends BaseLaravelTest
         $this->assertSame($expectModelEvents, $modelEventFired);
     }
 
-    /** @test */
-    public function can_parse_apiresource_attributes_and_load_children_and_children_count_using_factory_create()
+    public function test_can_parse_apiresource_attributes_and_load_children_and_children_count_using_factory_create()
     {
         Schema::create('test_users', function (Blueprint $table) {
             $table->id();
@@ -400,8 +392,7 @@ class UseResponseAttributesTest extends BaseLaravelTest
         ], $results);
     }
 
-    /** @test */
-    public function can_parse_apiresource_attributes_and_load_single_nested_belongs_to()
+    public function test_can_parse_apiresource_attributes_and_load_single_nested_belongs_to()
     {
         Schema::create('test_order_statuses', function (Blueprint $table) {
             $table->id();
@@ -434,8 +425,7 @@ class UseResponseAttributesTest extends BaseLaravelTest
         $this->assertNull($decoded['data']['order']['delivery'], 'order.delivery should be null when not requested');
     }
 
-    /** @test */
-    public function can_parse_apiresource_attributes_and_load_mixed_direct_and_nested_belongs_to()
+    public function test_can_parse_apiresource_attributes_and_load_mixed_direct_and_nested_belongs_to()
     {
         Schema::create('test_order_statuses', function (Blueprint $table) {
             $table->id();
@@ -471,8 +461,7 @@ class UseResponseAttributesTest extends BaseLaravelTest
         $this->assertEquals('express', $decoded['data']['order']['delivery']['name']);
     }
 
-    /** @test */
-    public function can_parse_apiresource_attributes_and_load_three_levels_of_nesting()
+    public function test_can_parse_apiresource_attributes_and_load_three_levels_of_nesting()
     {
         Schema::create('test_users', function (Blueprint $table) {
             $table->id();
@@ -517,8 +506,7 @@ class UseResponseAttributesTest extends BaseLaravelTest
         $this->assertEquals('john', $decoded['data']['order']['delivery']['user']['name']);
     }
 
-    /** @test */
-    public function can_parse_apiresource_attributes_and_load_multiple_nested_belongs_to_with_shared_parent()
+    public function test_can_parse_apiresource_attributes_and_load_multiple_nested_belongs_to_with_shared_parent()
     {
         Schema::create('test_order_statuses', function (Blueprint $table) {
             $table->id();

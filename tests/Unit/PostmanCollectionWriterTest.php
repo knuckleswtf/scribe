@@ -16,8 +16,7 @@ use Knuckles\Scribe\Writing\PostmanCollectionWriter;
  */
 class PostmanCollectionWriterTest extends BaseUnitTest
 {
-    /** @test */
-    public function correct_structure_is_followed()
+    public function test_correct_structure_is_followed()
     {
         $config = ['title' => 'Test API', 'description' => 'A fake description', 'base_url' => 'http://localhost'];
 
@@ -27,8 +26,7 @@ class PostmanCollectionWriterTest extends BaseUnitTest
         $this->assertSame('A fake description', $collection['info']['description']);
     }
 
-    /** @test */
-    public function endpoint_is_parsed()
+    public function test_endpoint_is_parsed()
     {
         $endpointData = $this->createMockEndpointData('some/path');
 
@@ -53,8 +51,7 @@ class PostmanCollectionWriterTest extends BaseUnitTest
         ], data_get($item, 'request.header'), 'JSON Accept header is added');
     }
 
-    /** @test */
-    public function headers_are_pulled_from_route()
+    public function test_headers_are_pulled_from_route()
     {
         $endpointData = $this->createMockEndpointData('some/path');
         $endpointData->headers = ['X-Fake' => 'Test'];
@@ -68,8 +65,7 @@ class PostmanCollectionWriterTest extends BaseUnitTest
         ], data_get($collection, 'item.0.item.0.request.header'));
     }
 
-    /** @test */
-    public function url_parameters_are_represented_properly()
+    public function test_url_parameters_are_represented_properly()
     {
         $endpointData = $this->createMockEndpointData('fake/{param}');
         $endpointData->urlParameters['param'] = new Parameter([
@@ -96,8 +92,7 @@ class PostmanCollectionWriterTest extends BaseUnitTest
         ], $variableData[0]);
     }
 
-    /** @test */
-    public function query_parameters_are_documented()
+    public function test_query_parameters_are_documented()
     {
         $endpointData = $this->createMockEndpointData('fake/path');
 
@@ -145,8 +140,7 @@ class PostmanCollectionWriterTest extends BaseUnitTest
         ], $variableData[2]);
     }
 
-    /** @test */
-    public function url_parameters_are_not_included_if_missing_from_path()
+    public function test_url_parameters_are_not_included_if_missing_from_path()
     {
         $endpointData = $this->createMockEndpointData('fake/path');
 
@@ -165,8 +159,7 @@ class PostmanCollectionWriterTest extends BaseUnitTest
         $this->assertCount(0, $variableData);
     }
 
-    /** @test */
-    public function query_parameters_are_disabled_with_no_value_when_not_required()
+    public function test_query_parameters_are_disabled_with_no_value_when_not_required()
     {
         $endpointData = $this->createMockEndpointData('fake/path');
         $endpointData->queryParameters = [
@@ -207,8 +200,7 @@ class PostmanCollectionWriterTest extends BaseUnitTest
         ], $variableData);
     }
 
-    /** @test */
-    public function query_parameter_keys_and_values_are_not_pre_url_encoded()
+    public function test_query_parameter_keys_and_values_are_not_pre_url_encoded()
     {
         // Per Postman Collection v2.1 spec, query[].key/value are stored as raw strings
         // and the Postman client encodes them when sending. Pre-encoding here causes
@@ -265,8 +257,7 @@ class PostmanCollectionWriterTest extends BaseUnitTest
         $this->assertStringContainsString('filter%5Bemail%5D=test%40example.com', $url['raw']);
     }
 
-    /** @test */
-    public function auth_info_is_added_correctly()
+    public function test_auth_info_is_added_correctly()
     {
         $endpointData1 = $this->createMockEndpointData('some/path');
         $endpointData1->metadata->authenticated = true;
@@ -321,8 +312,7 @@ class PostmanCollectionWriterTest extends BaseUnitTest
         $this->assertEquals(['type' => 'noauth'], $collection['item'][0]['item'][1]['request']['auth']);
     }
 
-    /** @test */
-    public function organizes_groups_and_subgroups_correctly()
+    public function test_organizes_groups_and_subgroups_correctly()
     {
         $endpointData1 = $this->createMockEndpointData('endpoint1');
         $endpointData1->metadata->subgroup = 'Subgroup A';

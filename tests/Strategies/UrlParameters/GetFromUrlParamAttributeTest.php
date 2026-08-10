@@ -2,10 +2,10 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\UrlParameters;
 
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Attributes\UrlParam;
 use Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromUrlParamAttribute;
+use Knuckles\Scribe\Tests\ArraySubsetAsserts;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use PHPUnit\Framework\TestCase;
 
@@ -18,8 +18,7 @@ class GetFromUrlParamAttributeTest extends TestCase
 {
     use ArraySubsetAsserts;
 
-    /** @test */
-    public function can_fetch_from_urlparam_attribute()
+    public function test_can_fetch_from_urlparam_attribute()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->controller = new \ReflectionClass(UrlParamAttributeTestController::class);
@@ -90,8 +89,7 @@ class GetFromUrlParamAttributeTest extends TestCase
         ], $results);
     }
 
-    /** @test */
-    public function can_fetch_from_urlparam_attribute_on_closure()
+    public function test_can_fetch_from_urlparam_attribute_on_closure()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->controller = null;

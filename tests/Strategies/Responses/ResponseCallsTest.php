@@ -22,8 +22,7 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class ResponseCallsTest extends BaseLaravelTest
 {
-    /** @test */
-    public function can_call_route_and_fetch_response()
+    public function test_can_call_route_and_fetch_response()
     {
         $route = LaravelRouteFacade::post('/shouldFetchRouteResponse', [TestController::class, 'shouldFetchRouteResponse']);
 
@@ -39,8 +38,7 @@ class ResponseCallsTest extends BaseLaravelTest
         ], json_decode($responses[0]['content'], true));
     }
 
-    /** @test */
-    public function can_upload_file_parameters_in_response_calls()
+    public function test_can_upload_file_parameters_in_response_calls()
     {
         $route = RouteFacade::post('/withFormDataParams', [TestController::class, 'withFormDataParams']);
 
@@ -69,8 +67,7 @@ class ResponseCallsTest extends BaseLaravelTest
         ], $responses[0]);
     }
 
-    /** @test */
-    public function uses_configured_settings_when_calling_route()
+    public function test_uses_configured_settings_when_calling_route()
     {
         $route = LaravelRouteFacade::post('/echo/{id}', [TestController::class, 'echoesRequestValues']);
 
@@ -101,8 +98,7 @@ class ResponseCallsTest extends BaseLaravelTest
         $this->assertEquals('Bearer bearerToken', $responseContent['auth']);
     }
 
-    /** @test */
-    public function can_override_application_config_during_response_call()
+    public function test_can_override_application_config_during_response_call()
     {
         $route = LaravelRouteFacade::post('/echoesConfig', [TestController::class, 'echoesConfig']);
         $responses = $this->invokeStrategy($route);
@@ -119,8 +115,7 @@ class ResponseCallsTest extends BaseLaravelTest
         $this->assertNotEquals($originalValue, $newValue);
     }
 
-    /** @test */
-    public function calls_before_response_call_hook()
+    public function test_calls_before_response_call_hook()
     {
         Scribe::beforeResponseCall(function (Request $request, ExtractedEndpointData $endpointData) {
             $request->headers->set('header', 'overridden_'.$request->headers->get('header'));
@@ -159,8 +154,7 @@ class ResponseCallsTest extends BaseLaravelTest
         Scribe::beforeResponseCall(fn () => null);
     }
 
-    /** @test */
-    public function does_not_make_response_call_if_success_response_already_gotten()
+    public function test_does_not_make_response_call_if_success_response_already_gotten()
     {
         $route = LaravelRouteFacade::post('/shouldFetchRouteResponse', [TestController::class, 'shouldFetchRouteResponse']);
 
@@ -177,8 +171,7 @@ class ResponseCallsTest extends BaseLaravelTest
         $this->assertNull($responses);
     }
 
-    /** @test */
-    public function can_get_content_from_streamed_response()
+    public function test_can_get_content_from_streamed_response()
     {
         $route = LaravelRouteFacade::post('/withStreamedResponse', [TestController::class, 'withStreamedResponse']);
 
