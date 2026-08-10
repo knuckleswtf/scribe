@@ -3,9 +3,33 @@
 namespace Knuckles\Scribe\Tests;
 
 use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Pagination\Paginator;
 
 trait TestHelpers
 {
+    /**
+     * The `meta` block of a response paginated with the simple paginator. Laravel started
+     * adding `current_page_url` to it during the 12.x branch, so the shape can't be
+     * hardcoded while the test matrix spans Laravel 9 to 13. Detected from the paginator
+     * itself rather than from a version number, since it landed in a patch release.
+     */
+    protected function paginationMeta(array $meta): array
+    {
+        if (! array_key_exists('current_page_url', (new Paginator([], 1))->toArray())) {
+            return $meta;
+        }
+
+        $withCurrentPageUrl = [];
+        foreach ($meta as $key => $value) {
+            $withCurrentPageUrl[$key] = $value;
+            if ($key === 'current_page') {
+                $withCurrentPageUrl['current_page_url'] = $meta['path'].'?page='.$value;
+            }
+        }
+
+        return $withCurrentPageUrl;
+    }
+
     /**
      * @param  string  $command
      * @param  array  $parameters

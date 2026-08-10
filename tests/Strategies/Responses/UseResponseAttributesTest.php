@@ -130,13 +130,13 @@ class UseResponseAttributesTest extends BaseLaravelTest
                         'prev' => null,
                         'next' => '/?page=2',
                     ],
-                    'meta' => [
+                    'meta' => $this->paginationMeta([
                         'current_page' => 1,
                         'from' => 1,
                         'path' => '/',
                         'per_page' => 1,
                         'to' => 1,
-                    ],
+                    ]),
                     'a' => 'b',
                 ]),
             ],
@@ -181,13 +181,13 @@ class UseResponseAttributesTest extends BaseLaravelTest
                         'prev' => null,
                         'next' => '/?page=2',
                     ],
-                    'meta' => [
+                    'meta' => $this->paginationMeta([
                         'current_page' => 1,
                         'from' => 1,
                         'path' => '/',
                         'per_page' => 1,
                         'to' => 1,
-                    ],
+                    ]),
                     'a' => 'b',
                 ]),
             ],

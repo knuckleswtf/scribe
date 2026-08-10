@@ -53,6 +53,8 @@ class OutputTest extends BaseLaravelTest
     {
         Utils::deleteDirectoryAndContents('public/docs');
         Utils::deleteDirectoryAndContents('.scribe');
+
+        parent::tearDown();
     }
 
     public function test_generates_static_type_output()
@@ -135,7 +137,7 @@ class OutputTest extends BaseLaravelTest
 
         $this->generateAndExpectConsoleOutput(expected: [
             'Writing Blade docs to vendor/orchestra/testbench-core/laravel/resources/views/scribe/ and assets to vendor/orchestra/testbench-core/laravel/public/vendor/scribe/',
-            'Generating Postman collection in vendor/orchestra/testbench-core/laravel/storage/app/scribe/',
+            'Generating Postman collection in '.$this->storageOutputPath(),
         ]);
 
         $generatedCollection = json_decode(file_get_contents($this->postmanOutputPath()), true);
@@ -188,7 +190,7 @@ class OutputTest extends BaseLaravelTest
 
         $this->generateAndExpectConsoleOutput(expected: [
             'Writing Blade docs to vendor/orchestra/testbench-core/laravel/resources/views/scribe/ and assets to vendor/orchestra/testbench-core/laravel/public/vendor/scribe/',
-            'Generating OpenAPI specification in vendor/orchestra/testbench-core/laravel/storage/app/scribe/',
+            'Generating OpenAPI specification in '.$this->storageOutputPath(),
         ]);
 
         $generatedSpec = Yaml::parseFile($this->openapiOutputPath());
@@ -225,7 +227,7 @@ class OutputTest extends BaseLaravelTest
 
         $this->generateAndExpectConsoleOutput(expected: [
             'Writing Blade docs to vendor/orchestra/testbench-core/laravel/resources/views/scribe/ and assets to vendor/orchestra/testbench-core/laravel/public/vendor/scribe/',
-            'Generating OpenAPI specification in vendor/orchestra/testbench-core/laravel/storage/app/scribe/',
+            'Generating OpenAPI specification in '.$this->storageOutputPath(),
         ]);
 
         $generatedSpec = Yaml::parseFile($this->openapiOutputPath());
@@ -644,6 +646,18 @@ class OutputTest extends BaseLaravelTest
         $this->assertContains('inner2', $outer2Schema['required']);
     }
 
+    /**
+     * The directory Scribe reports writing its Postman/OpenAPI output to, as printed
+     * to the console. Derived from the `local` disk rather than hardcoded, because the
+     * testbench skeleton moved it from storage/app to storage/app/private in v10.
+     */
+    protected function storageOutputPath(string $configName = 'scribe'): string
+    {
+        $path = Storage::disk('local')->path($configName);
+
+        return str_replace('\\', '/', str_replace(getcwd().DIRECTORY_SEPARATOR, '', $path)).'/';
+    }
+
     protected function postmanOutputPath(bool $staticType = false): string
     {
         return $staticType
@@ -692,7 +706,7 @@ class OutputTest extends BaseLaravelTest
         }
         $this->generateAndExpectConsoleOutput($pathOptions, [
             "Writing Blade docs to vendor/orchestra/testbench-core/laravel/resources/views/{$configName}/ and assets to vendor/orchestra/testbench-core/laravel/public/vendor/{$configName}/",
-            "Generating Postman collection in vendor/orchestra/testbench-core/laravel/storage/app/{$configName}/",
+            'Generating Postman collection in '.$this->storageOutputPath($configName),
         ]);
 
         $paths = collect([

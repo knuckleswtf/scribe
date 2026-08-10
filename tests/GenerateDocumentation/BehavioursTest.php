@@ -47,6 +47,8 @@ class BehavioursTest extends BaseLaravelTest
     {
         Utils::deleteDirectoryAndContents('public/docs');
         Utils::deleteDirectoryAndContents('.scribe');
+
+        parent::tearDown();
     }
 
     public function test_can_process_traditional_laravel_route_syntax_and_callable_tuple_syntax()
