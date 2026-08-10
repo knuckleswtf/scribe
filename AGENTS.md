@@ -7,7 +7,7 @@ This repository contains the source code for Scribe, a PHP package that generate
 This project uses **Composer** for dependency management and scripts.
 - **Test Runner**: [Pest](https://pestphp.com/) (which wraps PHPUnit).
 - **Static Analysis**: [PHPStan](https://phpstan.org/).
-- **Code Style**: [PHP-CS-Fixer](https://cs.symfony.com/).
+- **Code Style**: [Pint](https://laravel.com/docs/pint) (configured in `pint.json`).
 
 ### Key Commands
 
@@ -61,7 +61,8 @@ Adhere strictly to the existing style. The project generally follows **PSR-12**.
 
 - **Framework**: Tests are written using PHPUnit class syntax (extending `BaseLaravelTest` or `TestCase`), but executed via Pest.
 - **Location**: Place unit tests in `tests/Unit/`.
-- **Naming**: Test classes end in `Test.php`. Test methods use the `/** @test */` annotation or start with `test`.
+- **Naming**: Test classes end in `Test.php`. Test methods must be named `test_*` — the suite runs on PHPUnit 9 through 12, and the `/** @test */` annotation is no longer read by PHPUnit 12.
+- **Data providers**: Carry both `@dataProvider` and `#[DataProvider]` (likewise `@testWith` and `#[TestWith]`). Neither form alone covers PHPUnit 9 through 12; providers must be `static`.
 - **Assertions**: Use standard PHPUnit assertions (e.g., `$this->assertEquals`, `$this->assertCount`).
 - **Mocking**: Use Mockery or Laravel's mocking helpers if applicable.
 

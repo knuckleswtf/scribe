@@ -116,7 +116,7 @@ Scribe uses a strategy pattern for extraction:
 ## CI/CD
 
 ### GitHub Actions
-- **Tests**: Run on PHP 8.1-8.4 with highest and lowest dependencies
+- **Tests**: An explicit matrix pinning the framework with `composer update --with="laravel/framework:…"` — Laravel 9 through 13 across PHP 8.1-8.4, plus one lowest-dependency job on Laravel 9
 - **Lint**: Run PHPStan on PHP 8.3 and 8.4
 - Runs on `v4` and `v5` branches and all PRs
 
