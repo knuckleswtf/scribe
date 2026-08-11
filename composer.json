@@ -32,6 +32,7 @@
         "parsedown/parsedown": "^1.7",
         "ramsey/uuid": "^4.2.2",
         "shalvah/upgrader": "^0.6.0",
+        "symfony/polyfill-mbstring": "^1.31",
         "symfony/var-exporter": "^6.0 || ^7.0 || ^8.0",
         "symfony/yaml": "^6.0 || ^7.0 || ^8.0"
     },
