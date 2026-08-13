@@ -31,7 +31,7 @@ jobs:
         uses: actions/cache@v6
         with:
           path: vendor
-          key: composer-${{ hashFiles('composer.lock') }}
+          key: composer-${{ matrix.php }}-${{ hashFiles('composer.json') }}
 
       - name: Install dependencies
         run: composer install

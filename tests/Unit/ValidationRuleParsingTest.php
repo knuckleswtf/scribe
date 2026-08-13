@@ -15,6 +15,7 @@ use Knuckles\Scribe\Extracting\ParsesValidationRules;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures;
 use Knuckles\Scribe\Tools\DocumentationConfig;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 $laravel10Rules = version_compare(Application::VERSION, '10.0', '>=');
 
@@ -46,11 +47,10 @@ class ValidationRuleParsingTest extends BaseLaravelTest
     }
 
     /**
-     * @test
-     *
      * @dataProvider supportedRules
      */
-    public function can_parse_supported_rules(array $ruleset, array $customInfo, array $expected)
+    #[DataProvider('supportedRules')]
+    public function test_can_parse_supported_rules(array $ruleset, array $customInfo, array $expected)
     {
         // Needed for `exists` rule
         Schema::create('users', function ($table) {
@@ -476,8 +476,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         ];
     }
 
-    /** @test */
-    public function can_parse_rule_objects()
+    public function test_can_parse_rule_objects()
     {
         $results = $this->strategy->parse([
             'in_param' => ['numeric', Rule::in([3, 5, 6])],
@@ -488,8 +487,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         );
     }
 
-    /** @test */
-    public function can_transform_arrays_and_objects()
+    public function test_can_transform_arrays_and_objects()
     {
         $ruleset = [
             'array_param' => 'array|required',
@@ -537,8 +535,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         $this->assertEquals('string', $results['*.foo[].bar']['type']);
     }
 
-    /** @test */
-    public function child_does_not_overwrite_parent_status()
+    public function test_child_does_not_overwrite_parent_status()
     {
         $ruleset = [
             'array_param' => 'array|required',
@@ -550,8 +547,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         $this->assertEquals(true, $results['array_param']['required']);
     }
 
-    /** @test */
-    public function can_parse_custom_closure_rules()
+    public function test_can_parse_custom_closure_rules()
     {
         // Single line DocComment
         $ruleset = [
@@ -592,8 +588,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         );
     }
 
-    /** @test */
-    public function can_parse_custom_rule_classes()
+    public function test_can_parse_custom_rule_classes()
     {
         $ruleset = [
             'param1' => ['bail', 'required', new DummyWithDocsValidationRule],
@@ -614,8 +609,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         }
     }
 
-    /** @test */
-    public function can_parse_enum_rules()
+    public function test_can_parse_enum_rules()
     {
         $results = $this->strategy->parse([
             'enum' => [
@@ -672,8 +666,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         ));
     }
 
-    /** @test */
-    public function can_translate_validation_rules_with_types_with_translator_without_array_support()
+    public function test_can_translate_validation_rules_with_types_with_translator_without_array_support()
     {
         // Single line DocComment
         $ruleset = [
@@ -698,8 +691,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         $this->assertEquals('successfully translated by concatenated string.', $results['nested']['description']);
     }
 
-    /** @test */
-    public function can_parse_nullable_rules()
+    public function test_can_parse_nullable_rules()
     {
         $ruleset = [
             'nullable_param' => 'nullable|string',
@@ -748,8 +740,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         $this->assertTrue($results['object.field2']['nullable']);
     }
 
-    /** @test */
-    public function can_parse_rules_which_reference_other_fields()
+    public function test_can_parse_rules_which_reference_other_fields()
     {
         $ruleset = [
             'to_time' => 'date|max:6',
@@ -764,8 +755,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         $this->assertEquals('Must be a valid date. Must be a date before <code>to_time</code>.', $results['from_time']['description']);
     }
 
-    /** @test */
-    public function sometimes_rule_prevents_required_from_required_rule()
+    public function test_sometimes_rule_prevents_required_from_required_rule()
     {
         $ruleset = [
             'optional_field' => 'sometimes|required',
@@ -777,8 +767,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         $this->assertTrue($results['optional_field']['sometimes'], 'Field should have "sometimes" flag set');
     }
 
-    /** @test */
-    public function sometimes_rule_prevents_required_from_accepted_rule()
+    public function test_sometimes_rule_prevents_required_from_accepted_rule()
     {
         $ruleset = [
             'consent_cgu' => 'sometimes|accepted',
@@ -790,8 +779,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         $this->assertFalse($results['consent_cgu']['required'], 'Field with "sometimes|accepted" should not be required');
     }
 
-    /** @test */
-    public function required_before_sometimes_remains_required()
+    public function test_required_before_sometimes_remains_required()
     {
         $ruleset = [
             'should_be_required' => 'required|sometimes',
@@ -803,8 +791,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         $this->assertTrue($results['should_be_required']['sometimes'], 'Field should have "sometimes" flag set');
     }
 
-    /** @test */
-    public function accepted_before_sometimes_remains_required()
+    public function test_accepted_before_sometimes_remains_required()
     {
         $ruleset = [
             'should_be_required' => 'accepted|sometimes',
@@ -816,8 +803,7 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         $this->assertTrue($results['should_be_required']['sometimes'], 'Field should have "sometimes" flag set');
     }
 
-    /** @test */
-    public function sometimes_with_other_validation_rules()
+    public function test_sometimes_with_other_validation_rules()
     {
         $ruleset = [
             'sometimes_email' => 'sometimes|email',

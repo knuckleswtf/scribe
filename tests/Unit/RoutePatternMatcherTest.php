@@ -13,8 +13,7 @@ use Knuckles\Scribe\Tools\RoutePatternMatcher;
  */
 class RoutePatternMatcherTest extends BaseUnitTest
 {
-    /** @test */
-    public function matches_by_route_name()
+    public function test_matches_by_route_name()
     {
         $route = new Route(['POST'], '/abc', ['as' => 'users.show']);
         $this->assertTrue(RoutePatternMatcher::matches($route, ['users.show']));
@@ -22,8 +21,7 @@ class RoutePatternMatcherTest extends BaseUnitTest
         $this->assertFalse(RoutePatternMatcher::matches($route, ['users.index']));
     }
 
-    /** @test */
-    public function matches_by_route_method_and_path()
+    public function test_matches_by_route_method_and_path()
     {
         $route = new Route(['POST'], '/abc', ['as' => 'users.show']);
         $this->assertTrue(RoutePatternMatcher::matches($route, ['POST /abc']));
@@ -39,8 +37,7 @@ class RoutePatternMatcherTest extends BaseUnitTest
         $this->assertFalse(RoutePatternMatcher::matches($route, ['GET abc']));
     }
 
-    /** @test */
-    public function matches_by_route_path()
+    public function test_matches_by_route_path()
     {
         $route = new Route(['POST'], '/abc', ['as' => 'users.show']);
         $this->assertTrue(RoutePatternMatcher::matches($route, ['/abc']));
@@ -53,8 +50,7 @@ class RoutePatternMatcherTest extends BaseUnitTest
         $this->assertFalse(RoutePatternMatcher::matches($route, ['d*']));
     }
 
-    /** @test */
-    public function matches_route_with_multiple_methods()
+    public function test_matches_route_with_multiple_methods()
     {
         $route = new Route(['GET', 'HEAD'], '/abc', ['as' => 'users.show']);
         $this->assertTrue(RoutePatternMatcher::matches($route, ['HEAD /abc']));

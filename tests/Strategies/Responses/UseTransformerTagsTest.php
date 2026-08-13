@@ -8,6 +8,7 @@ use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestUser;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Mpociot\Reflection\DocBlock\Tag;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * @internal
@@ -23,14 +24,13 @@ class UseTransformerTagsTest extends BaseLaravelTest
     }
 
     /**
-     * @test
-     *
      * @dataProvider serializerAndExpected
      *
      * @param  mixed  $serializer
      * @param  mixed  $expected
      */
-    public function can_parse_transformer_tag($serializer, $expected)
+    #[DataProvider('serializerAndExpected')]
+    public function test_can_parse_transformer_tag($serializer, $expected)
     {
         $config = new DocumentationConfig(['fractal' => ['serializer' => $serializer]]);
 
@@ -77,8 +77,7 @@ class UseTransformerTagsTest extends BaseLaravelTest
         ];
     }
 
-    /** @test */
-    public function can_parse_transformer_tag_with_model()
+    public function test_can_parse_transformer_tag_with_model()
     {
         $strategy = new UseTransformerTags(new DocumentationConfig([]));
         $tags = [
@@ -101,8 +100,7 @@ class UseTransformerTagsTest extends BaseLaravelTest
         ], $results);
     }
 
-    /** @test */
-    public function can_parse_transformer_tag_with_model_and_factory_states()
+    public function test_can_parse_transformer_tag_with_model_and_factory_states()
     {
         $factory = app(Factory::class);
         $factory->define(TestUser::class, function () {
@@ -133,8 +131,7 @@ class UseTransformerTagsTest extends BaseLaravelTest
         ], $results);
     }
 
-    /** @test */
-    public function can_parse_transformer_tag_with_status_code()
+    public function test_can_parse_transformer_tag_with_status_code()
     {
         $strategy = new UseTransformerTags(new DocumentationConfig([]));
         $tags = [
@@ -156,8 +153,7 @@ class UseTransformerTagsTest extends BaseLaravelTest
         ], $results);
     }
 
-    /** @test */
-    public function can_parse_transformercollection_tag()
+    public function test_can_parse_transformercollection_tag()
     {
         $strategy = new UseTransformerTags(new DocumentationConfig([]));
         $tags = [
@@ -186,8 +182,7 @@ class UseTransformerTagsTest extends BaseLaravelTest
         ], $results);
     }
 
-    /** @test */
-    public function can_parse_transformercollection_tag_with_model()
+    public function test_can_parse_transformercollection_tag_with_model()
     {
         $strategy = new UseTransformerTags(new DocumentationConfig([]));
         $tags = [
@@ -217,8 +212,7 @@ class UseTransformerTagsTest extends BaseLaravelTest
         ], $results);
     }
 
-    /** @test */
-    public function can_parse_transformercollection_tag_with_model_and_paginator_data()
+    public function test_can_parse_transformercollection_tag_with_model_and_paginator_data()
     {
         $strategy = new UseTransformerTags(new DocumentationConfig([]));
         $tags = [

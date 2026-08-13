@@ -14,8 +14,7 @@ use Knuckles\Scribe\Tests\BaseUnitTest;
  */
 class OutputEndpointDataTest extends BaseUnitTest
 {
-    /** @test */
-    public function can_nest_array_and_object_parameters_correctly()
+    public function test_can_nest_array_and_object_parameters_correctly()
     {
         $parameters = [
             'dad' => Parameter::create([
@@ -62,8 +61,7 @@ class OutputEndpointDataTest extends BaseUnitTest
         ], $nested);
     }
 
-    /** @test */
-    public function sets_missing_ancestors_for_object_fields_properly()
+    public function test_sets_missing_ancestors_for_object_fields_properly()
     {
         $parameters = [
             'dad.cars[]' => Parameter::create([
@@ -111,8 +109,7 @@ class OutputEndpointDataTest extends BaseUnitTest
         ], $nested);
     }
 
-    /** @test */
-    public function does_not_crash_when_explicit_array_body_parameter_has_null_example()
+    public function test_does_not_crash_when_explicit_array_body_parameter_has_null_example()
     {
         // Reproduces: "Trying to access array offset on value of type null" at OutputEndpointData.php:258
         // This happens when the user explicitly declares a "[]" parameter without providing an example.

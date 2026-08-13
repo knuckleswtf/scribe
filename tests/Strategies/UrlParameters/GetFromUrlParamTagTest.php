@@ -2,8 +2,8 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\UrlParameters;
 
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromUrlParamTag;
+use Knuckles\Scribe\Tests\ArraySubsetAsserts;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Mpociot\Reflection\DocBlock\Tag;
 use PHPUnit\Framework\TestCase;
@@ -17,8 +17,7 @@ class GetFromUrlParamTagTest extends TestCase
 {
     use ArraySubsetAsserts;
 
-    /** @test */
-    public function can_fetch_from_urlparam_tag()
+    public function test_can_fetch_from_urlparam_tag()
     {
         $strategy = new GetFromUrlParamTag(new DocumentationConfig([]));
         $tags = [

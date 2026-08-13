@@ -12,8 +12,7 @@ use Knuckles\Scribe\Tools\ConfigDiffer;
  */
 class ConfigDifferTest extends BaseUnitTest
 {
-    /** @test */
-    public function returns_empty_when_there_are_no_changes()
+    public function test_returns_empty_when_there_are_no_changes()
     {
         $default = [
             'title' => null,
@@ -29,8 +28,7 @@ class ConfigDifferTest extends BaseUnitTest
         $this->assertEquals([], $diff);
     }
 
-    /** @test */
-    public function works()
+    public function test_works()
     {
         $default = [
             'title' => null,
@@ -47,8 +45,7 @@ class ConfigDifferTest extends BaseUnitTest
         ], $diff);
     }
 
-    /** @test */
-    public function ignores_specified_paths()
+    public function test_ignores_specified_paths()
     {
         $default = [
             'theme' => 'default',

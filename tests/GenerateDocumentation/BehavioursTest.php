@@ -47,10 +47,11 @@ class BehavioursTest extends BaseLaravelTest
     {
         Utils::deleteDirectoryAndContents('public/docs');
         Utils::deleteDirectoryAndContents('.scribe');
+
+        parent::tearDown();
     }
 
-    /** @test */
-    public function can_process_traditional_laravel_route_syntax_and_callable_tuple_syntax()
+    public function test_can_process_traditional_laravel_route_syntax_and_callable_tuple_syntax()
     {
         RouteFacade::get('/api/test', [TestController::class, 'withEndpointDescription']);
         RouteFacade::get('/api/array/test', [TestController::class, 'withEndpointDescription']);
@@ -61,26 +62,22 @@ class BehavioursTest extends BaseLaravelTest
         ]);
     }
 
-    /** @test */
-    public function processes_head_routes_as_head_not_get()
+    public function test_processes_head_routes_as_head_not_get()
     {
         RouteFacade::addRoute('HEAD', '/api/test', [TestController::class, 'withEndpointDescription']);
         $this->generateAndExpectConsoleOutput(expected: ['[HEAD] api/test']);
     }
 
     /**
-     * @test
-     *
      * @see https://github.com/knuckleswtf/scribe/issues/53
      */
-    public function can_process_closure_routes()
+    public function test_can_process_closure_routes()
     {
         RouteFacade::get('/api/closure', fn () => 'hi');
         $this->generateAndExpectConsoleOutput(expected: ['[GET] api/closure']);
     }
 
-    /** @test */
-    public function calls_after_generating_hook_with_correct_paths()
+    public function test_calls_after_generating_hook_with_correct_paths()
     {
         $paths = [];
         Scribe::afterGenerating(function (array $outputPaths) use (&$paths) {
@@ -132,8 +129,7 @@ class BehavioursTest extends BaseLaravelTest
         Scribe::afterGenerating(fn () => null);
     }
 
-    /** @test */
-    public function calls_bootstrap_hook()
+    public function test_calls_bootstrap_hook()
     {
         $commandInstance = null;
 
@@ -150,8 +146,7 @@ class BehavioursTest extends BaseLaravelTest
         Scribe::bootstrap(fn () => null);
     }
 
-    /** @test */
-    public function skips_methods_and_classes_with_hidefromapidocumentation_tag()
+    public function test_skips_methods_and_classes_with_hidefromapidocumentation_tag()
     {
         RouteFacade::get('/api/skip', [TestController::class, 'skip']);
         RouteFacade::get('/api/skipClass', TestIgnoreThisController::class.'@dummy');
@@ -164,15 +159,13 @@ class BehavioursTest extends BaseLaravelTest
         ]);
     }
 
-    /** @test */
-    public function warns_of_nonexistent_response_files()
+    public function test_warns_of_nonexistent_response_files()
     {
         RouteFacade::get('/api/non-existent', [TestController::class, 'withNonExistentResponseFile']);
         $this->generateAndExpectConsoleOutput(expected: ['@responseFile i-do-not-exist.json does not exist']);
     }
 
-    /** @test */
-    public function can_parse_resource_routes()
+    public function test_can_parse_resource_routes()
     {
         RouteFacade::resource('/api/users', TestResourceController::class)->only(['index', 'store']);
 
@@ -187,8 +180,7 @@ class BehavioursTest extends BaseLaravelTest
         );
     }
 
-    /** @test */
-    public function supports_partial_resource_controller()
+    public function test_supports_partial_resource_controller()
     {
         RouteFacade::resource('/api/users', TestPartialResourceController::class);
 
@@ -198,8 +190,7 @@ class BehavioursTest extends BaseLaravelTest
         ]);
     }
 
-    /** @test */
-    public function can_customise_static_output_path()
+    public function test_can_customise_static_output_path()
     {
         RouteFacade::get('/api/action1', TestGroupController::class.'@action1');
 
@@ -213,8 +204,7 @@ class BehavioursTest extends BaseLaravelTest
         Utils::deleteDirectoryAndContents('static/');
     }
 
-    /** @test */
-    public function can_generate_with_apiresource_tag_but_without_apiresourcemodel_tag()
+    public function test_can_generate_with_apiresource_tag_but_without_apiresourcemodel_tag()
     {
         RouteFacade::get('/api/test', [TestController::class, 'withEmptyApiResource']);
         $this->generateAndExpectConsoleOutput(expected: [

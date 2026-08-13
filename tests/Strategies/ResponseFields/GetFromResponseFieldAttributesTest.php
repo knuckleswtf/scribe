@@ -2,12 +2,12 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\ResponseFields;
 
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Camel\Extraction\ResponseCollection;
 use Knuckles\Scribe\Attributes\ResponseField;
 use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 use Knuckles\Scribe\Extracting\Strategies\ResponseFields\GetFromResponseFieldAttribute;
+use Knuckles\Scribe\Tests\ArraySubsetAsserts;
 use Knuckles\Scribe\Tests\Fixtures\TestNestedOuterResource;
 use Knuckles\Scribe\Tests\Fixtures\TestPet;
 use Knuckles\Scribe\Tests\Fixtures\TestPetApiResource;
@@ -23,8 +23,7 @@ class GetFromResponseFieldAttributesTest extends TestCase
 {
     use ArraySubsetAsserts;
 
-    /** @test */
-    public function can_fetch_from_responsefield_attribute()
+    public function test_can_fetch_from_responsefield_attribute()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->controller = new \ReflectionClass(ResponseFieldAttributeTestController::class);
@@ -66,8 +65,7 @@ class GetFromResponseFieldAttributesTest extends TestCase
         ], $results);
     }
 
-    /** @test */
-    public function can_read_from_to_array_on_api_resources()
+    public function test_can_read_from_to_array_on_api_resources()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->controller = new \ReflectionClass(ResponseFieldAttributeTestController::class);
@@ -88,8 +86,7 @@ class GetFromResponseFieldAttributesTest extends TestCase
         ], $results);
     }
 
-    /** @test */
-    public function attributes_from_nested_api_resources_are_correctly_merged()
+    public function test_attributes_from_nested_api_resources_are_correctly_merged()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->controller = new \ReflectionClass(ResponseFieldAttributeTestController::class);

@@ -2,9 +2,9 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\BodyParameters;
 
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Illuminate\Routing\Route;
 use Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromBodyParamTag;
+use Knuckles\Scribe\Tests\ArraySubsetAsserts;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Mpociot\Reflection\DocBlock\Tag;
@@ -26,8 +26,7 @@ class GetFromBodyParamTagTest extends TestCase
         $this->strategy = new GetFromBodyParamTag(new DocumentationConfig([]));
     }
 
-    /** @test */
-    public function can_fetch_from_bodyparam_tag()
+    public function test_can_fetch_from_bodyparam_tag()
     {
         $tags = [
             new Tag('bodyParam', 'user_id int required The id of the user. Example: 9'),
@@ -168,8 +167,7 @@ class GetFromBodyParamTagTest extends TestCase
         ], $results);
     }
 
-    /** @test */
-    public function retains_null_as_example_if_specified()
+    public function test_retains_null_as_example_if_specified()
     {
         $tags = [
             new Tag('bodyParam', 'id int required The id to use. Leave null to autogenerate. Example: null'),
@@ -193,8 +191,7 @@ class GetFromBodyParamTagTest extends TestCase
         ], $results);
     }
 
-    /** @test */
-    public function can_fetch_from_bodyparam_tag_for_array_body()
+    public function test_can_fetch_from_bodyparam_tag_for_array_body()
     {
         $tags = [
             new Tag('bodyParam', '[].first_name string The first name of the user. Example: John'),
@@ -239,8 +236,7 @@ class GetFromBodyParamTagTest extends TestCase
         ], $results);
     }
 
-    /** @test */
-    public function can_fetch_from_form_request_method_argument()
+    public function test_can_fetch_from_form_request_method_argument()
     {
         $method = new \ReflectionMethod(TestController::class, 'withFormRequestParameter');
         $route = new Route(['POST'], '/withFormRequestParameter', ['uses' => [TestController::class, 'withFormRequestParameter']]);
@@ -279,8 +275,7 @@ class GetFromBodyParamTagTest extends TestCase
         ], $results);
     }
 
-    /** @test */
-    public function fetches_from_method_when_form_request_is_not_annotated()
+    public function test_fetches_from_method_when_form_request_is_not_annotated()
     {
         $methodName = 'withNonCommentedFormRequestParameter';
         $method = new \ReflectionMethod(TestController::class, $methodName);

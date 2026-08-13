@@ -2,9 +2,9 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\QueryParameters;
 
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Illuminate\Routing\Route;
 use Knuckles\Scribe\Extracting\Strategies\QueryParameters\GetFromQueryParamTag;
+use Knuckles\Scribe\Tests\ArraySubsetAsserts;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Mpociot\Reflection\DocBlock\Tag;
@@ -19,8 +19,7 @@ class GetFromQueryParamTagTest extends TestCase
 {
     use ArraySubsetAsserts;
 
-    /** @test */
-    public function can_fetch_from_queryparam_tag()
+    public function test_can_fetch_from_queryparam_tag()
     {
         $strategy = new GetFromQueryParamTag(new DocumentationConfig([]));
         $tags = [
@@ -148,8 +147,7 @@ class GetFromQueryParamTagTest extends TestCase
         ], $results);
     }
 
-    /** @test */
-    public function can_fetch_from_form_request_method_argument()
+    public function test_can_fetch_from_form_request_method_argument()
     {
         $methodName = 'withFormRequestParameter';
         $method = new \ReflectionMethod(TestController::class, $methodName);

@@ -2,10 +2,10 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\Headers;
 
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Attributes\Header;
 use Knuckles\Scribe\Extracting\Strategies\Headers\GetFromHeaderAttribute;
+use Knuckles\Scribe\Tests\ArraySubsetAsserts;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use PHPUnit\Framework\TestCase;
 
@@ -18,8 +18,7 @@ class GetFromHeaderAttributeTest extends TestCase
 {
     use ArraySubsetAsserts;
 
-    /** @test */
-    public function can_fetch_from_header_attribute()
+    public function test_can_fetch_from_header_attribute()
     {
         $results = $this->getHeaderFromAttribute('methodWithAttributes');
 
@@ -30,8 +29,7 @@ class GetFromHeaderAttributeTest extends TestCase
         $this->assertNotEmpty($results['Some-Custom']);
     }
 
-    /** @test */
-    public function can_fetch_child_of_header_attribute()
+    public function test_can_fetch_child_of_header_attribute()
     {
         $results = $this->getHeaderFromAttribute('methodWithCustomHeaderAttribute');
 

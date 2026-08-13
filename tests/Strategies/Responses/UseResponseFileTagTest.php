@@ -2,10 +2,11 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\Responses;
 
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseFileTag;
+use Knuckles\Scribe\Tests\ArraySubsetAsserts;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Mpociot\Reflection\DocBlock\Tag;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -18,11 +19,10 @@ class UseResponseFileTagTest extends TestCase
     use ArraySubsetAsserts;
 
     /**
-     * @test
-     *
      * @dataProvider responseFileTags
      */
-    public function allows_multiple_responsefile_tags_for_multiple_statuses_and_scenarios(array $tags, array $expected)
+    #[DataProvider('responseFileTags')]
+    public function test_allows_multiple_responsefile_tags_for_multiple_statuses_and_scenarios(array $tags, array $expected)
     {
         $filePath = __DIR__.'/../../Fixtures/response_test.json';
         $filePath2 = __DIR__.'/../../Fixtures/response_error_test.json';
@@ -83,8 +83,7 @@ class UseResponseFileTagTest extends TestCase
         ];
     }
 
-    /** @test */
-    public function can_add_or_replace_key_value_pair_in_response_file()
+    public function test_can_add_or_replace_key_value_pair_in_response_file()
     {
         $strategy = new UseResponseFileTag(new DocumentationConfig([]));
         $tags = [
@@ -100,8 +99,7 @@ class UseResponseFileTagTest extends TestCase
         ], $results);
     }
 
-    /** @test */
-    public function supports_relative_or_absolute_paths()
+    public function test_supports_relative_or_absolute_paths()
     {
         $filePath = __DIR__.'/../../Fixtures/response_test.json';
         $strategy = new UseResponseFileTag(new DocumentationConfig([]));

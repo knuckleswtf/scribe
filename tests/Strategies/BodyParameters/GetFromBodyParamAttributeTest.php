@@ -2,11 +2,11 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\BodyParameters;
 
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Illuminate\Foundation\Http\FormRequest;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Attributes\BodyParam;
 use Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromBodyParamAttribute;
+use Knuckles\Scribe\Tests\ArraySubsetAsserts;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use PHPUnit\Framework\TestCase;
 
@@ -19,8 +19,7 @@ class GetFromBodyParamAttributeTest extends TestCase
 {
     use ArraySubsetAsserts;
 
-    /** @test */
-    public function can_fetch_from_bodyparam_attribute()
+    public function test_can_fetch_from_bodyparam_attribute()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->controller = new \ReflectionClass(BodyParamAttributeTestController::class);
@@ -178,8 +177,7 @@ class GetFromBodyParamAttributeTest extends TestCase
         ], $results);
     }
 
-    /** @test */
-    public function can_fetch_from_bodyparam_attribute_on_formrequest()
+    public function test_can_fetch_from_bodyparam_attribute_on_formrequest()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->controller = new \ReflectionClass(BodyParamAttributeTestController::class);
@@ -208,8 +206,7 @@ class GetFromBodyParamAttributeTest extends TestCase
         ], $results);
     }
 
-    /** @test */
-    public function can_fetch_from_bodyparam_attribute_for_array_body()
+    public function test_can_fetch_from_bodyparam_attribute_for_array_body()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->controller = null;

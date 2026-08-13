@@ -13,8 +13,7 @@ use Knuckles\Scribe\Writing\HtmlWriter;
  */
 class HtmlWriterTest extends BaseLaravelTest
 {
-    /** @test */
-    public function sets_last_updated_correctly()
+    public function test_sets_last_updated_correctly()
     {
         $config = ['base_url' => 'http://local.test', 'title' => 'API Docs'];
         $config['last_updated'] = '';
@@ -36,8 +35,7 @@ class HtmlWriterTest extends BaseLaravelTest
         $this->assertEquals("Last updated on {$date} (Git commit {$commit})", $lastUpdated);
     }
 
-    /** @test */
-    public function renders_blade_syntax_in_base_url()
+    public function test_renders_blade_syntax_in_base_url()
     {
         config()->set('app.url', 'https://resolved.example.com');
 
@@ -50,8 +48,7 @@ class HtmlWriterTest extends BaseLaravelTest
         $this->assertEquals('https://resolved.example.com/api', $baseUrl);
     }
 
-    /** @test */
-    public function leaves_plain_base_url_untouched()
+    public function test_leaves_plain_base_url_untouched()
     {
         $writer = new HtmlWriter(new DocumentationConfig([
             'base_url' => 'https://plain.example.com',

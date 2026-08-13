@@ -12,8 +12,7 @@ use Knuckles\Scribe\Tools\PathConfig;
  */
 class PathConfigurationTest extends BaseUnitTest
 {
-    /** @test */
-    public function resolves_default_cache_path()
+    public function test_resolves_default_cache_path()
     {
         $pathConfig = new PathConfig('scribe');
         $this->assertEquals('.scribe', $pathConfig->intermediateOutputPath());
@@ -22,8 +21,7 @@ class PathConfigurationTest extends BaseUnitTest
         $this->assertEquals('scribe/tim', $pathConfig->outputPath('tim'));
     }
 
-    /** @test */
-    public function resolves_cache_path_with_subdirectories()
+    public function test_resolves_cache_path_with_subdirectories()
     {
         $pathConfig = new PathConfig('scribe/bob');
         $this->assertEquals('.scribe/bob', $pathConfig->intermediateOutputPath());
@@ -32,8 +30,7 @@ class PathConfigurationTest extends BaseUnitTest
         $this->assertEquals('scribe/bob/tim', $pathConfig->outputPath('tim'));
     }
 
-    /** @test */
-    public function supports_custom_cache_path()
+    public function test_supports_custom_cache_path()
     {
         $pathConfig = new PathConfig('scribe/bob', scribeDir: 'scribe_cache');
         $this->assertEquals('scribe_cache', $pathConfig->intermediateOutputPath());

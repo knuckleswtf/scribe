@@ -53,12 +53,11 @@ class OutputTest extends BaseLaravelTest
     {
         Utils::deleteDirectoryAndContents('public/docs');
         Utils::deleteDirectoryAndContents('.scribe');
+
+        parent::tearDown();
     }
 
-    /**
-     * @test
-     */
-    public function generates_static_type_output()
+    public function test_generates_static_type_output()
     {
         RouteFacade::post('/api/withQueryParameters', [TestController::class, 'withQueryParameters']);
         $this->setConfig(['type' => 'static']);
@@ -79,20 +78,17 @@ class OutputTest extends BaseLaravelTest
         unlink($this->bladeOutputPath());
     }
 
-    /** @test */
-    public function supports_multi_docs_in_laravel_type_output()
+    public function test_supports_multi_docs_in_laravel_type_output()
     {
         $this->generate_with_paths(configName: 'scribe_admin');
     }
 
-    /** @test */
-    public function supports_custom_scribe_directory()
+    public function test_supports_custom_scribe_directory()
     {
         $this->generate_with_paths(configName: 'scribe_admin', intermediateOutputDirectory: '5.5/Apple/26');
     }
 
-    /** @test */
-    public function generates_and_adds_routes()
+    public function test_generates_and_adds_routes()
     {
         RouteFacade::post('/api/withBodyParameters', [TestController::class, 'withBodyParameters']);
 
@@ -112,8 +108,7 @@ class OutputTest extends BaseLaravelTest
         $response->assertStatus(200);
     }
 
-    /** @test */
-    public function generated_postman_collection_file_is_correct()
+    public function test_generated_postman_collection_file_is_correct()
     {
         if (phpversion() < 8.3) {
             // See https://github.com/FakerPHP/Faker/issues/694
@@ -142,7 +137,7 @@ class OutputTest extends BaseLaravelTest
 
         $this->generateAndExpectConsoleOutput(expected: [
             'Writing Blade docs to vendor/orchestra/testbench-core/laravel/resources/views/scribe/ and assets to vendor/orchestra/testbench-core/laravel/public/vendor/scribe/',
-            'Generating Postman collection in vendor/orchestra/testbench-core/laravel/storage/app/scribe/',
+            'Generating Postman collection in '.$this->storageOutputPath(),
         ]);
 
         $generatedCollection = json_decode(file_get_contents($this->postmanOutputPath()), true);
@@ -167,8 +162,7 @@ class OutputTest extends BaseLaravelTest
         $this->assertEquals($fixtureCollection, $generatedCollection);
     }
 
-    /** @test */
-    public function generated_openapi_spec_file_is_correct()
+    public function test_generated_openapi_spec_file_is_correct()
     {
         if (phpversion() < 8.3) {
             // See https://github.com/FakerPHP/Faker/issues/694
@@ -196,7 +190,7 @@ class OutputTest extends BaseLaravelTest
 
         $this->generateAndExpectConsoleOutput(expected: [
             'Writing Blade docs to vendor/orchestra/testbench-core/laravel/resources/views/scribe/ and assets to vendor/orchestra/testbench-core/laravel/public/vendor/scribe/',
-            'Generating OpenAPI specification in vendor/orchestra/testbench-core/laravel/storage/app/scribe/',
+            'Generating OpenAPI specification in '.$this->storageOutputPath(),
         ]);
 
         $generatedSpec = Yaml::parseFile($this->openapiOutputPath());
@@ -204,8 +198,7 @@ class OutputTest extends BaseLaravelTest
         $this->assertEquals($fixtureSpec, $generatedSpec);
     }
 
-    /** @test */
-    public function generated_openapi31_spec_file_is_correct()
+    public function test_generated_openapi31_spec_file_is_correct()
     {
         if (phpversion() < 8.3) {
             // See https://github.com/FakerPHP/Faker/issues/694
@@ -234,7 +227,7 @@ class OutputTest extends BaseLaravelTest
 
         $this->generateAndExpectConsoleOutput(expected: [
             'Writing Blade docs to vendor/orchestra/testbench-core/laravel/resources/views/scribe/ and assets to vendor/orchestra/testbench-core/laravel/public/vendor/scribe/',
-            'Generating OpenAPI specification in vendor/orchestra/testbench-core/laravel/storage/app/scribe/',
+            'Generating OpenAPI specification in '.$this->storageOutputPath(),
         ]);
 
         $generatedSpec = Yaml::parseFile($this->openapiOutputPath());
@@ -242,8 +235,7 @@ class OutputTest extends BaseLaravelTest
         $this->assertEquals($fixtureSpec, $generatedSpec);
     }
 
-    /** @test */
-    public function can_parse_utf8_response()
+    public function test_can_parse_utf8_response()
     {
         RouteFacade::get('/api/utf8', [TestController::class, 'withUtf8ResponseTag']);
 
@@ -252,8 +244,7 @@ class OutputTest extends BaseLaravelTest
         $this->assertFileContainsString($this->bladeOutputPath(), 'Лорем ипсум долор сит амет');
     }
 
-    /** @test */
-    public function sorts_group_naturally_if_no_order_specified()
+    public function test_sorts_group_naturally_if_no_order_specified()
     {
         RouteFacade::get('/api/action1', [TestGroupController::class, 'action1']);
         RouteFacade::get('/api/action1b', [TestGroupController::class, 'action1b']);
@@ -272,8 +263,7 @@ class OutputTest extends BaseLaravelTest
         $this->assertEquals('10. Group 10', $thirdGroup->textContent);
     }
 
-    /** @test */
-    public function sorts_groups_and_endpoints_in_the_specified_order()
+    public function test_sorts_groups_and_endpoints_in_the_specified_order()
     {
         $this->setConfig(['groups.order' => [
             '10. Group 10',
@@ -334,8 +324,7 @@ class OutputTest extends BaseLaravelTest
         $this->assertEquals('POST api/action13b', $thirdGroupEndpointsAndSubgroups->getNode(7)->textContent);
     }
 
-    /** @test */
-    public function sorts_groups_and_endpoints_in_the_specified_order_with_wildcard()
+    public function test_sorts_groups_and_endpoints_in_the_specified_order_with_wildcard()
     {
         $this->setConfig(['groups.order' => [
             '10. Group 10',
@@ -393,8 +382,7 @@ class OutputTest extends BaseLaravelTest
         $this->assertEquals('POST api/action13b', $fourthGroupEndpointsAndSubgroups->getNode(7)->textContent);
     }
 
-    /** @test */
-    public function merges_and_correctly_sorts_user_defined_endpoints()
+    public function test_merges_and_correctly_sorts_user_defined_endpoints()
     {
         RouteFacade::get('/api/action1', [TestGroupController::class, 'action1']);
         RouteFacade::get('/api/action2', [TestGroupController::class, 'action2']);
@@ -443,8 +431,7 @@ class OutputTest extends BaseLaravelTest
         $this->assertEquals('GET api/action2', $fourthGroupEndpointsAndSubgroups->getNode(0)->textContent);
     }
 
-    /** @test */
-    public function will_not_overwrite_manually_modified_content_unless_force_flag_is_set()
+    public function test_will_not_overwrite_manually_modified_content_unless_force_flag_is_set()
     {
         RouteFacade::get('/api/action1', [TestGroupController::class, 'action1']);
         RouteFacade::get('/api/action1b', [TestGroupController::class, 'action1b']);
@@ -493,8 +480,7 @@ class OutputTest extends BaseLaravelTest
         $this->assertFileNotContainsString($authFilePath, 'Some other useful stuff.');
     }
 
-    /** @test */
-    public function generates_correct_url_params_from_resource_routes_and_field_bindings()
+    public function test_generates_correct_url_params_from_resource_routes_and_field_bindings()
     {
         RouteFacade::prefix('providers/{provider:slug}')->group(function () {
             RouteFacade::resource('users.addresses', TestPartialResourceController::class)->parameters([
@@ -510,8 +496,7 @@ class OutputTest extends BaseLaravelTest
         $this->assertEquals('providers/{provider_slug}/users/{user_id}/addresses/{uuid}', $groupB['endpoints'][0]['uri']);
     }
 
-    /** @test */
-    public function generates_correct_url_params_from_resource_routes_and_model_binding()
+    public function test_generates_correct_url_params_from_resource_routes_and_model_binding()
     {
         RouteFacade::resource('posts', TestPostController::class)->only('update');
         RouteFacade::resource('posts.users', TestPostUserController::class)->only('update');
@@ -523,8 +508,7 @@ class OutputTest extends BaseLaravelTest
         $this->assertEquals('posts/{post_slug}/users/{id}', $group['endpoints'][1]['uri']);
     }
 
-    /** @test */
-    public function generates_correct_url_params_from_resource_routes_and_model_binding_with_bound_interfaces()
+    public function test_generates_correct_url_params_from_resource_routes_and_model_binding_with_bound_interfaces()
     {
         $this->app->bind(TestPostBoundInterface::class, fn () => new TestPost);
 
@@ -536,8 +520,7 @@ class OutputTest extends BaseLaravelTest
         $this->assertEquals('posts/{slug}', $group['endpoints'][0]['uri']);
     }
 
-    /** @test */
-    public function generates_correct_url_params_from_non_resource_routes_and_model_binding()
+    public function test_generates_correct_url_params_from_non_resource_routes_and_model_binding()
     {
         RouteFacade::get('posts/{post}/users', fn (TestPost $post) => null);
 
@@ -547,8 +530,7 @@ class OutputTest extends BaseLaravelTest
         $this->assertEquals('posts/{post_slug}/users', $group['endpoints'][0]['uri']);
     }
 
-    /** @test */
-    public function generates_from_camel_dir_if_no_extraction_flag_is_set()
+    public function test_generates_from_camel_dir_if_no_extraction_flag_is_set()
     {
         $this->setConfig(['routes.0.exclude' => ['*']]);
         Utils::copyDirectory(__DIR__.'/../Fixtures/.scribe', '.scribe');
@@ -566,8 +548,7 @@ class OutputTest extends BaseLaravelTest
         $this->assertEquals('Healthcheck', $expectedEndpoint->text());
     }
 
-    /** @test */
-    public function will_auto_set_content_type_to_multipart_if_file_params_are_present()
+    public function test_will_auto_set_content_type_to_multipart_if_file_params_are_present()
     {
         /**
          * @bodyParam param string required
@@ -595,8 +576,7 @@ class OutputTest extends BaseLaravelTest
         $this->assertEquals('multipart/form-data', $group['endpoints'][2]['headers']['Content-Type']);
     }
 
-    /** @test */
-    public function html_special_characters_in_json_body_are_properly_escaped_in_elements_theme()
+    public function test_html_special_characters_in_json_body_are_properly_escaped_in_elements_theme()
     {
         RouteFacade::post('/api/withHtmlSpecialCharsInBody', [TestController::class, 'withHtmlSpecialCharsInBody']);
 
@@ -621,8 +601,7 @@ class OutputTest extends BaseLaravelTest
         $this->assertStringContainsString('"password": "pass\u0026word\u003C123\u003E"', $bladeContent);
     }
 
-    /** @test */
-    public function generated_openapi_spec_correctly_handles_nested_api_resource_required_fields()
+    public function test_generated_openapi_spec_correctly_handles_nested_api_resource_required_fields()
     {
         RouteFacade::get('/api/nested-resource', [TestController::class, 'withNestedApiResourceResponse']);
 
@@ -665,6 +644,18 @@ class OutputTest extends BaseLaravelTest
         $this->assertArrayHasKey('inner2', $outer2Schema['properties']);
         $this->assertArrayHasKey('required', $outer2Schema);
         $this->assertContains('inner2', $outer2Schema['required']);
+    }
+
+    /**
+     * The directory Scribe reports writing its Postman/OpenAPI output to, as printed
+     * to the console. Derived from the `local` disk rather than hardcoded, because the
+     * testbench skeleton moved it from storage/app to storage/app/private in v10.
+     */
+    protected function storageOutputPath(string $configName = 'scribe'): string
+    {
+        $path = Storage::disk('local')->path($configName);
+
+        return str_replace('\\', '/', str_replace(getcwd().DIRECTORY_SEPARATOR, '', $path)).'/';
     }
 
     protected function postmanOutputPath(bool $staticType = false): string
@@ -715,7 +706,7 @@ class OutputTest extends BaseLaravelTest
         }
         $this->generateAndExpectConsoleOutput($pathOptions, [
             "Writing Blade docs to vendor/orchestra/testbench-core/laravel/resources/views/{$configName}/ and assets to vendor/orchestra/testbench-core/laravel/public/vendor/{$configName}/",
-            "Generating Postman collection in vendor/orchestra/testbench-core/laravel/storage/app/{$configName}/",
+            'Generating Postman collection in '.$this->storageOutputPath($configName),
         ]);
 
         $paths = collect([

@@ -2,10 +2,10 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\QueryParameters;
 
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Attributes\QueryParam;
 use Knuckles\Scribe\Extracting\Strategies\QueryParameters\GetFromQueryParamAttribute;
+use Knuckles\Scribe\Tests\ArraySubsetAsserts;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use PHPUnit\Framework\TestCase;
 
@@ -18,8 +18,7 @@ class GetFromQueryParamAttributeTest extends TestCase
 {
     use ArraySubsetAsserts;
 
-    /** @test */
-    public function can_fetch_from_queryparam_attribute()
+    public function test_can_fetch_from_queryparam_attribute()
     {
         $endpoint = $this->endpoint(function (ExtractedEndpointData $e) {
             $e->controller = new \ReflectionClass(QueryParamAttributeTestController::class);

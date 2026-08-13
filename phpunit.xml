@@ -1,27 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          backupGlobals="false"
-         backupStaticAttributes="false"
+         backupStaticProperties="false"
          bootstrap="vendor/autoload.php"
+         cacheDirectory=".phpunit.cache"
          cacheResult="true"
          colors="false"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
          processIsolation="false"
          stopOnFailure="false"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
-    <coverage>
-        <include>
-            <directory suffix=".php">src/</directory>
-            <directory suffix=".php">camel/</directory>
-        </include>
-        <exclude>
-            <file>src/ScribeServiceProvider.php</file>
-            <file>src/Tools/ConfigDiffer.php</file>
-            <file>src/Commands/DiffConfig.php</file>
-        </exclude>
-    </coverage>
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/12.5/phpunit.xsd">
     <php>
         <server name="SCRIBE_TESTS" value="1" />
     </php>
@@ -34,4 +21,15 @@
             <directory>tests/Unit</directory>
         </testsuite>
     </testsuites>
+    <source>
+        <include>
+            <directory suffix=".php">src/</directory>
+            <directory suffix=".php">camel/</directory>
+        </include>
+        <exclude>
+            <file>src/ScribeServiceProvider.php</file>
+            <file>src/Tools/ConfigDiffer.php</file>
+            <file>src/Commands/DiffConfig.php</file>
+        </exclude>
+    </source>
 </phpunit>

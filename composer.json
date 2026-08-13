@@ -32,14 +32,14 @@
         "parsedown/parsedown": "^1.7",
         "ramsey/uuid": "^4.2.2",
         "shalvah/upgrader": "^0.6.0",
+        "symfony/polyfill-mbstring": "^1.31",
         "symfony/var-exporter": "^6.0 || ^7.0 || ^8.0",
         "symfony/yaml": "^6.0 || ^7.0 || ^8.0"
     },
     "require-dev": {
-        "dms/phpunit-arraysubset-asserts": "^0.5.0",
         "laravel/legacy-factories": "^1.3.0",
         "laravel/pint": "^1.20",
-        "league/fractal": "^0.20",
+        "league/fractal": "^0.20.1",
         "nikic/fast-route": "^1.3",
         "orchestra/testbench": "^7.0 || ^8.0 || ^9.10 || ^10.0 || ^11.0",
         "pestphp/pest": "^1.21 || ^2.0 || ^3.0 || ^4.0",

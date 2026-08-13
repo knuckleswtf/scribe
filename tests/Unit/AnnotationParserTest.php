@@ -4,6 +4,7 @@ namespace Knuckles\Scribe\Tests\Unit;
 
 use Knuckles\Scribe\Tests\BaseUnitTest;
 use Knuckles\Scribe\Tools\AnnotationParser;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * @internal
@@ -13,11 +14,10 @@ use Knuckles\Scribe\Tools\AnnotationParser;
 class AnnotationParserTest extends BaseUnitTest
 {
     /**
-     * @test
-     *
      * @dataProvider annotationsWithContentAndFields
      */
-    public function can_parse_annotation_into_content_and_fields(string $annotation, array $expected)
+    #[DataProvider('annotationsWithContentAndFields')]
+    public function test_can_parse_annotation_into_content_and_fields(string $annotation, array $expected)
     {
         $result = AnnotationParser::parseIntoContentAndFields($annotation, ['status', 'scenario']);
 
@@ -59,11 +59,10 @@ class AnnotationParserTest extends BaseUnitTest
     }
 
     /**
-     * @test
-     *
      * @dataProvider annotationsWithFields
      */
-    public function can_parse_annotation_into_fields(string $annotation, array $expected)
+    #[DataProvider('annotationsWithFields')]
+    public function test_can_parse_annotation_into_fields(string $annotation, array $expected)
     {
         $result = AnnotationParser::parseIntoFields($annotation);
 

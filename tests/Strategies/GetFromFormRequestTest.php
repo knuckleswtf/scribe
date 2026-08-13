@@ -2,11 +2,11 @@
 
 namespace Knuckles\Scribe\Tests\Strategies;
 
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Routing\Route;
 use Knuckles\Scribe\Extracting\Strategies\BodyParameters;
 use Knuckles\Scribe\Extracting\Strategies\QueryParameters;
+use Knuckles\Scribe\Tests\ArraySubsetAsserts;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tests\Fixtures\TestRequest;
@@ -24,8 +24,7 @@ class GetFromFormRequestTest extends BaseLaravelTest
 {
     use ArraySubsetAsserts;
 
-    /** @test */
-    public function can_fetch_bodyparams_from_form_request()
+    public function test_can_fetch_bodyparams_from_form_request()
     {
         $method = new \ReflectionMethod(TestController::class, 'withFormRequestParameter');
         $results = $this->fetchViaBodyParams($method);
@@ -115,8 +114,7 @@ class GetFromFormRequestTest extends BaseLaravelTest
         $this->assertIsInt($results['ids']['example'][0]);
     }
 
-    /** @test */
-    public function can_fetch_queryparams_from_form_request()
+    public function test_can_fetch_queryparams_from_form_request()
     {
         $method = new \ReflectionMethod(TestController::class, 'withFormRequestParameterQueryParams');
         $results = $this->fetchViaQueryParams($method);
@@ -140,8 +138,7 @@ class GetFromFormRequestTest extends BaseLaravelTest
         ], $results['q_param']);
     }
 
-    /** @test */
-    public function will_ignore_not_relevant_form_request()
+    public function test_will_ignore_not_relevant_form_request()
     {
         $method = new \ReflectionMethod(TestController::class, 'withFormRequestParameter');
         $this->assertEquals([], $this->fetchViaQueryParams($method));
@@ -153,8 +150,7 @@ class GetFromFormRequestTest extends BaseLaravelTest
         $this->assertEquals([], $this->fetchViaBodyParams($method));
     }
 
-    /** @test */
-    public function sets_examples_from_parent_if_set()
+    public function test_sets_examples_from_parent_if_set()
     {
         $strategy = new BodyParameters\GetFromFormRequest(new DocumentationConfig([]));
         $dataExample = [
@@ -183,8 +179,7 @@ class GetFromFormRequestTest extends BaseLaravelTest
         $this->assertEquals($dataExample['meta']['tags'], $parsed['data.meta.tags']['example']);
     }
 
-    /** @test */
-    public function generates_proper_examples_if_not_set()
+    public function test_generates_proper_examples_if_not_set()
     {
         $strategy = new BodyParameters\GetFromFormRequest(new DocumentationConfig([]));
         $parametersFromFormRequest = $strategy->getParametersFromValidationRules(
@@ -206,8 +201,7 @@ class GetFromFormRequestTest extends BaseLaravelTest
         $this->assertTrue(is_string($parsed['data.meta.tags']['example'][0]));
     }
 
-    /** @test */
-    public function creates_missing_parent_fields()
+    public function test_creates_missing_parent_fields()
     {
         $strategy = new BodyParameters\GetFromFormRequest(new DocumentationConfig([]));
         $parametersFromFormRequest = $strategy->getParametersFromValidationRules(
@@ -230,8 +224,7 @@ class GetFromFormRequestTest extends BaseLaravelTest
         $this->assertArraySubset($expected, $parsed);
     }
 
-    /** @test */
-    public function allows_customisation_of_form_request_instantiation()
+    public function test_allows_customisation_of_form_request_instantiation()
     {
         $controllerMethod = new \ReflectionMethod(TestController::class, 'withFormRequestParameter');
 
@@ -247,8 +240,7 @@ class GetFromFormRequestTest extends BaseLaravelTest
         Globals::$__instantiateFormRequestUsing = null;
     }
 
-    /** @test */
-    public function custom_rule_example_doesnt_override_form_request_example()
+    public function test_custom_rule_example_doesnt_override_form_request_example()
     {
         $strategy = new BodyParameters\GetFromFormRequest(new DocumentationConfig([]));
         $parametersFromFormRequest = $strategy->getParametersFromValidationRules(

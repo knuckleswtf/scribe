@@ -2,7 +2,6 @@
 
 namespace Knuckles\Scribe\Tests;
 
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Illuminate\Foundation\Application;
 use Knuckles\Scribe\Config;
 use Knuckles\Scribe\Config\AuthIn;
@@ -89,6 +88,12 @@ class BaseLaravelTest extends TestCase
             'database' => ':memory:',
             'prefix' => '',
         ]);
+        // Testbench 10 ships this on, testbench 11 ships it off. When it is on, Laravel
+        // registers a `GET storage/{path}` route, which Scribe then documents, throwing
+        // off every route/group count in the tests. Pin it so the suite doesn't depend
+        // on the testbench version.
+        $app['config']->set('filesystems.disks.local.serve', false);
+
         ScribeServiceProvider::$customTranslationLayerLoaded = false;
     }
 

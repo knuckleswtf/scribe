@@ -2,10 +2,10 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\ResponseFields;
 
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Camel\Extraction\ResponseCollection;
 use Knuckles\Scribe\Extracting\Strategies\ResponseFields\GetFromResponseFieldTag;
+use Knuckles\Scribe\Tests\ArraySubsetAsserts;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Mpociot\Reflection\DocBlock\Tag;
 use PHPUnit\Framework\TestCase;
@@ -19,8 +19,7 @@ class GetFromResponseFieldTagTest extends TestCase
 {
     use ArraySubsetAsserts;
 
-    /** @test */
-    public function can_fetch_from_responsefield_tag()
+    public function test_can_fetch_from_responsefield_tag()
     {
         $tags = [
             new Tag('responseField', 'id int The id of the newly created user.'),
@@ -40,8 +39,7 @@ class GetFromResponseFieldTagTest extends TestCase
         ], $results);
     }
 
-    /** @test */
-    public function can_infer_type_from_first2xx_response()
+    public function test_can_infer_type_from_first2xx_response()
     {
         $responses = [
             [
@@ -73,8 +71,7 @@ class GetFromResponseFieldTagTest extends TestCase
         ], $results);
     }
 
-    /** @test */
-    public function can_infer_type_from_first2xx_response_for_lists()
+    public function test_can_infer_type_from_first2xx_response_for_lists()
     {
         $responses = [
             [
@@ -98,8 +95,7 @@ class GetFromResponseFieldTagTest extends TestCase
         ], $results);
     }
 
-    /** @test */
-    public function defaults_to_nothing_when_type_inference_fails()
+    public function test_defaults_to_nothing_when_type_inference_fails()
     {
         $tags = [
             new Tag('responseField', 'id The id of the newly created user.'),
@@ -114,8 +110,7 @@ class GetFromResponseFieldTagTest extends TestCase
         ], $results);
     }
 
-    /** @test */
-    public function applies_wrap_key_prefix_to_api_resource_fields()
+    public function test_applies_wrap_key_prefix_to_api_resource_fields()
     {
         $tags = [
             new Tag('apiResource', '\Knuckles\Scribe\Tests\Fixtures\TestNestedOuterResourceWithTags'),

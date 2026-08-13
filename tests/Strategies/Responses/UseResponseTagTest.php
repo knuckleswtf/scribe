@@ -2,10 +2,11 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\Responses;
 
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseTag;
+use Knuckles\Scribe\Tests\ArraySubsetAsserts;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Mpociot\Reflection\DocBlock\Tag;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -18,11 +19,10 @@ class UseResponseTagTest extends TestCase
     use ArraySubsetAsserts;
 
     /**
-     * @test
-     *
      * @dataProvider responseTags
      */
-    public function allows_multiple_response_tags_for_multiple_statuses_and_scenarios(array $tags, array $expected)
+    #[DataProvider('responseTags')]
+    public function test_allows_multiple_response_tags_for_multiple_statuses_and_scenarios(array $tags, array $expected)
     {
         $strategy = new UseResponseTag(new DocumentationConfig([]));
         $results = $strategy->getDocBlockResponses($tags);

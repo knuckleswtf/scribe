@@ -44,8 +44,7 @@ class AfterExtractingHookTest extends BaseLaravelTest
         parent::tearDown();
     }
 
-    /** @test */
-    public function can_use_after_extracting_hook()
+    public function test_can_use_after_extracting_hook()
     {
         $route = new Route(['GET'], 'api/test', ['uses' => [TestController::class, 'withEndpointDescription']]);
 
@@ -61,8 +60,7 @@ class AfterExtractingHookTest extends BaseLaravelTest
         $this->assertSame('Hook', $parsed->headers['X-Modified-By']);
     }
 
-    /** @test */
-    public function after_extracting_hook_is_called_only_once_per_route()
+    public function test_after_extracting_hook_is_called_only_once_per_route()
     {
         $route = new Route(['GET'], 'api/test', ['uses' => [TestController::class, 'withEndpointDescription']]);
 
@@ -77,8 +75,7 @@ class AfterExtractingHookTest extends BaseLaravelTest
         $this->assertSame(1, $callCount);
     }
 
-    /** @test */
-    public function after_extracting_hook_can_access_route_middlewares()
+    public function test_after_extracting_hook_can_access_route_middlewares()
     {
         $route = new Route(['GET'], 'api/test', ['uses' => [TestController::class, 'withEndpointDescription']]);
         $route->middleware(['auth:agent_api', 'throttle:60,1']);

@@ -1,5 +1,8 @@
 {
     "preset": "laravel",
+    "notPath": [
+        "tests/ArraySubsetAsserts.php"
+    ],
     "rules": {
         "align_multiline_comment": true,
         "array_push": true,

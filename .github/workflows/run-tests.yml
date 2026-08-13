@@ -11,17 +11,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php:
-          - '8.4'
-          - '8.3'
-          - '8.2'
-          - '8.1'
-        deps:
-          - highest
+        # composer.json allows Laravel ^9.21, but the test suite itself needs 9.41+
+        # (Rule::enum() only exists from 9.41.0), so that is the floor we pin here.
         include:
-          - { php: '8.1', deps: lowest }
+          - { php: '8.1', laravel: '^9.41', deps: lowest }
+          - { php: '8.1', laravel: '^9.41', deps: highest }
+          - { php: '8.1', laravel: '^10.0', deps: highest }
+          - { php: '8.2', laravel: '^11.0', deps: highest }
+          - { php: '8.2', laravel: '^12.0', deps: highest }
+          - { php: '8.3', laravel: '^12.0', deps: highest }
+          - { php: '8.3', laravel: '^13.0', deps: highest }
+          - { php: '8.4', laravel: '^13.0', deps: highest }
 
-    name: Tests (PHP ${{ matrix.php }} - ${{ matrix.deps }})
+    name: Tests (PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }} - ${{ matrix.deps }})
 
     steps:
       - name: '🛎 Checkout'
@@ -35,17 +37,10 @@ jobs:
           coverage: xdebug
 
       - name: Install dependencies
-        if: ${{ matrix.deps == 'highest' }}
-        run: composer update
+        run: |
+          composer update --no-interaction --prefer-dist \
+            ${{ matrix.deps == 'lowest' && '--prefer-lowest --prefer-stable' || '' }} \
+            --with="laravel/framework:${{ matrix.laravel }}"
 
-      - name: Install dependencies (lowest)
-        if: ${{ matrix.deps == 'lowest' }}
-        run: COMPOSER=composer.lowest.json composer update --prefer-stable
-
-      - name: Execute tests (Laravel)
+      - name: Execute tests
         run: composer test-ci
-        if: ${{ matrix.deps == 'highest' }}
-
-      - name: Execute tests (Lowest)
-        run: COMPOSER=composer.lowest.json composer test-ci
-        if: ${{ matrix.deps == 'lowest' }}
