@@ -14,14 +14,11 @@
 </head>
 <body>
 
-<script
-    id="api-reference"
-@foreach($htmlAttributes as $attribute => $value)
-    {{-- Attributes specified first override later ones --}}
-    {!! $attribute !!}="{!! $value !!}"
-@endforeach
-    data-url="{!! $metadata['openapi_spec_url'] !!}">
-</script>
+<div id="app"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+<script>
+    Scalar.createApiReference('#app', {!! $scalarConfig !!})
+</script>
 </body>
 </html>
