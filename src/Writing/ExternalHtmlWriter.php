@@ -12,11 +12,17 @@ class ExternalHtmlWriter extends HtmlWriter
     public function generate(array $groupedEndpoints, string $sourceFolder, string $destinationFolder)
     {
         $template = $this->config->get('theme');
+        $metadata = $this->getMetadata();
+
+        $scalarConfig = $this->config->get('external.scalar_config', []);
+        $scalarConfig['url'] = $metadata['openapi_spec_url'];
+
         $output = View::make("scribe::external.{$template}", [
-            'metadata' => $this->getMetadata(),
+            'metadata' => $metadata,
             'baseUrl' => $this->baseUrl,
             'tryItOut' => $this->config->get('try_it_out'),
             'htmlAttributes' => $this->config->get('external.html_attributes', []),
+            'scalarConfig' => \json_encode($scalarConfig),
         ])->render();
 
         if (! is_dir($destinationFolder)) {
