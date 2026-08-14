@@ -2,10 +2,10 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\Metadata;
 
+use Barryvdh\Reflection\DocBlock;
 use Knuckles\Scribe\Extracting\Strategies\Metadata\GetFromDocBlocks;
 use Knuckles\Scribe\Tests\ArraySubsetAsserts;
 use Knuckles\Scribe\Tools\DocumentationConfig;
-use Mpociot\Reflection\DocBlock;
 use PHPUnit\Framework\TestCase;
 
 /**

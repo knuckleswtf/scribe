@@ -2,12 +2,12 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\ResponseFields;
 
+use Barryvdh\Reflection\DocBlock;
 use Knuckles\Scribe\Extracting\Shared\ResponseFieldTools;
 use Knuckles\Scribe\Extracting\Strategies\GetFieldsFromTagStrategy;
 use Knuckles\Scribe\Extracting\Strategies\Responses\UseApiResourceTags;
 use Knuckles\Scribe\Tools\AnnotationParser as a;
 use Knuckles\Scribe\Tools\Utils as u;
-use Mpociot\Reflection\DocBlock;
 
 class GetFromResponseFieldTag extends GetFieldsFromTagStrategy
 {

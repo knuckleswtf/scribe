@@ -2,12 +2,12 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 
+use Barryvdh\Reflection\DocBlock\Tag;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\AnnotationParser as a;
 use Knuckles\Scribe\Tools\Utils;
-use Mpociot\Reflection\DocBlock\Tag;
 
 /**
  * Get a response from the docblock ( @response ).

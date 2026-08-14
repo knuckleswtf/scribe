@@ -2,10 +2,10 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\Metadata;
 
+use Barryvdh\Reflection\DocBlock;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
-use Mpociot\Reflection\DocBlock;
 
 class GetFromDocBlocks extends Strategy
 {

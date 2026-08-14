@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Tools;
 
+use Barryvdh\Reflection\DocBlock\Tag;
 use Closure;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,7 +20,6 @@ use League\Flysystem\Filesystem;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\StorageAttributes;
-use Mpociot\Reflection\DocBlock\Tag;
 use ReflectionFunction;
 
 class Utils
