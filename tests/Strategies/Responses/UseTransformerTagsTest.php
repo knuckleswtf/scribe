@@ -2,12 +2,12 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\Responses;
 
+use Barryvdh\Reflection\DocBlock\Tag;
 use Illuminate\Database\Eloquent\Factory;
 use Knuckles\Scribe\Extracting\Strategies\Responses\UseTransformerTags;
 use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestUser;
 use Knuckles\Scribe\Tools\DocumentationConfig;
-use Mpociot\Reflection\DocBlock\Tag;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 /**

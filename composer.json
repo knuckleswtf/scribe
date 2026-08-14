@@ -23,10 +23,10 @@
         "php": ">=8.1",
         "ext-fileinfo": "*",
         "ext-pdo": "*",
+        "barryvdh/reflection-docblock": "^2.4",
         "fakerphp/faker": "^1.23.1",
         "laravel/framework": "^9.21 || ^10.0 || ^11.0 || ^12.0 || ^13.0",
         "league/flysystem": "^3.0",
-        "mpociot/reflection-docblock": "^1.0.1",
         "nikic/php-parser": "^5.0",
         "nunomaduro/collision": "^6.0 || ^7.0 || ^8.0",
         "parsedown/parsedown": "^1.7",
@@ -58,7 +58,8 @@
             "Knuckles\\Scribe\\": "src/"
         },
         "files": [
-            "src/Config/helpers.php"
+            "src/Config/helpers.php",
+            "src/aliases.php"
         ]
     },
     "autoload-dev": {

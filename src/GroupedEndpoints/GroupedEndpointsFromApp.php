@@ -2,6 +2,8 @@
 
 namespace Knuckles\Scribe\GroupedEndpoints;
 
+use Barryvdh\Reflection\DocBlock;
+use Barryvdh\Reflection\DocBlock\Tag;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -20,8 +22,6 @@ use Knuckles\Scribe\Tools\ErrorHandlingUtils as e;
 use Knuckles\Scribe\Tools\PathConfig;
 use Knuckles\Scribe\Tools\Utils;
 use Knuckles\Scribe\Tools\Utils as u;
-use Mpociot\Reflection\DocBlock;
-use Mpociot\Reflection\DocBlock\Tag;
 use Symfony\Component\Yaml\Yaml;
 
 class GroupedEndpointsFromApp implements GroupedEndpointsContract

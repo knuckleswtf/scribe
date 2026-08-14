@@ -2,10 +2,10 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\UrlParameters;
 
+use Barryvdh\Reflection\DocBlock\Tag;
 use Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromUrlParamTag;
 use Knuckles\Scribe\Tests\ArraySubsetAsserts;
 use Knuckles\Scribe\Tools\DocumentationConfig;
-use Mpociot\Reflection\DocBlock\Tag;
 use PHPUnit\Framework\TestCase;
 
 /**

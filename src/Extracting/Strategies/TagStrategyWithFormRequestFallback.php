@@ -2,12 +2,12 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies;
 
+use Barryvdh\Reflection\DocBlock;
+use Barryvdh\Reflection\DocBlock\Tag;
 use Illuminate\Routing\Route;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Extracting\FindsFormRequestForMethod;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
-use Mpociot\Reflection\DocBlock;
-use Mpociot\Reflection\DocBlock\Tag;
 
 abstract class TagStrategyWithFormRequestFallback extends Strategy
 {

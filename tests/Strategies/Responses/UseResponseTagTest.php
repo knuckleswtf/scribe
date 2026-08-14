@@ -2,10 +2,10 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\Responses;
 
+use Barryvdh\Reflection\DocBlock\Tag;
 use Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseTag;
 use Knuckles\Scribe\Tests\ArraySubsetAsserts;
 use Knuckles\Scribe\Tools\DocumentationConfig;
-use Mpociot\Reflection\DocBlock\Tag;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
