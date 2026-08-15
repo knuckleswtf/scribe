@@ -467,6 +467,7 @@ trait ParsesValidationRules
                     break;
 
                 case 'array':
+                case 'list':
                     $parameterData['setter'] = function () {
                         return [$this->generateDummyValue('string')];
                     };
