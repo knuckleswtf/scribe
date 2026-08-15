@@ -8,6 +8,7 @@ use Knuckles\Scribe\Extracting\DatabaseTransactionHelpers;
 use Knuckles\Scribe\Extracting\InstantiatesExampleModels;
 use Knuckles\Scribe\Extracting\RouteDocBlocker;
 use Knuckles\Scribe\Extracting\Shared\ApiResourceResponseTools;
+use Knuckles\Scribe\Extracting\Shared\JsonApiResourceTools;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\AnnotationParser as a;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
@@ -52,21 +53,28 @@ class UseApiResourceTags extends Strategy
         $modelInstantiator = fn () => $this->instantiateExampleModel($modelClass, $factoryStates, $relations);
 
         $this->startDbTransaction();
-        $content = ApiResourceResponseTools::fetch(
+        $response = ApiResourceResponseTools::fetchResponse(
             $apiResourceClass,
             $isCollection,
             $modelInstantiator,
             $endpointData,
             $pagination,
             $additionalData,
+            $relations,
+            JsonApiResourceTools::shouldDocumentQueryParameters($this->config),
         );
         $this->endDbTransaction();
+
+        if (is_null($response)) {
+            return null;
+        }
 
         return [
             [
                 'status' => $statusCode ?: 200,
                 'description' => $description,
-                'content' => $content,
+                'content' => $response->getContent(),
+                'headers' => JsonApiResourceTools::responseHeaders($apiResourceClass, $response),
             ],
         ];
     }
