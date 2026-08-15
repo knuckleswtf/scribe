@@ -86,7 +86,7 @@ class GetFromLaravelAPI extends Strategy
         // If User model has `id` as an integer, then {id} param should be an integer
         $typeHintedEloquentModels = UrlParamsNormalizer::getTypeHintedEloquentModels($endpointData->method);
         foreach ($typeHintedEloquentModels as $argumentName => $modelInstance) {
-            $routeKey = $modelInstance->getRouteKeyName();
+            $routeKey = $endpointData->route->bindingFields()[$argumentName] ?? $modelInstance->getRouteKeyName();
 
             // Find the param name. In our normalized URL, argument $user might be param {user}, or {user_id}, or {id},
             if (isset($parameters[$argumentName])) {
@@ -118,9 +118,8 @@ class GetFromLaravelAPI extends Strategy
         // Now infer.
         foreach ($modelInstances as $paramName => $modelInstance) {
             // If the routeKey is the same as the primary key in the database, use the PK's type.
-            $routeKey = $modelInstance->getRouteKeyName();
-            $type = $modelInstance->getKeyName() === $routeKey
-                ? static::normalizeTypeName($modelInstance->getKeyType()) : 'string';
+            $routeKey = in_array($paramName, $endpointData->route->bindingFields()) ? $paramName : $modelInstance->getRouteKeyName();;
+            $type = $modelInstance->getKeyName() === $routeKey ? static::normalizeTypeName($modelInstance->getKeyType()) : 'string';
 
             $parameters[$paramName]['type'] = $type;
 
