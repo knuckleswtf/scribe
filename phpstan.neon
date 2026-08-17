@@ -12,6 +12,11 @@ parameters:
         - identifier: return.type
           path: camel\BaseDTOCollection.php
         - identifier: argument.templateType
+        # Laravel's JSON:API resources only exist from 12.45/13.x, but we support 9.x upwards.
+        # Every use of them is guarded by JsonApiResourceTools::isSupported().
+        - identifier: class.notFound
+          path: src\Extracting\Shared\JsonApiResourceTools.php
+          reportUnmatched: false
         - '#Call to an undefined method ReflectionType::getName\(\).#'
         - '#Call to an undefined method Illuminate\\Contracts\\Foundation\\Application::forgetInstance\(\)#'
         - '#Access to an undefined property Illuminate\\Support\\HigherOrderCollectionProxy#'

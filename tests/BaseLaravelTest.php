@@ -5,6 +5,7 @@ namespace Knuckles\Scribe\Tests;
 use Illuminate\Foundation\Application;
 use Knuckles\Scribe\Config;
 use Knuckles\Scribe\Config\AuthIn;
+use Knuckles\Scribe\Extracting\Shared\JsonApiResourceTools;
 use Knuckles\Scribe\Extracting\Strategies;
 use Knuckles\Scribe\ScribeServiceProvider;
 use Orchestra\Testbench\TestCase;
@@ -106,6 +107,13 @@ class BaseLaravelTest extends TestCase
         return [
             ScribeServiceProvider::class,
         ];
+    }
+
+    protected function skipIfNoJsonApiResources(): void
+    {
+        if (! JsonApiResourceTools::isSupported()) {
+            $this->markTestSkipped('JSON:API resources require Laravel 12.45 or later.');
+        }
     }
 
     protected function setConfig($configValues): void
