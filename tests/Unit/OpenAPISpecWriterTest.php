@@ -655,6 +655,30 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         ], $results['paths']['/path2']['put']['responses']);
     }
 
+    public function test_204_responses_never_include_a_content_schema()
+    {
+        $endpointData = $this->createMockEndpointData([
+            'uri' => '/books/{id}',
+            'httpMethods' => ['DELETE'],
+            'responses' => [
+                [
+                    'status' => 204,
+                    'description' => '',
+                    'content' => '{"id": 1, "title": "Some title"}',
+                ],
+            ],
+        ]);
+        $groups = [$this->createGroup([$endpointData])];
+
+        $results = $this->generate($groups);
+
+        $this->assertEquals([
+            '204' => [
+                'description' => '',
+            ],
+        ], $results['paths']['/books/{id}']['delete']['responses']);
+    }
+
     public function test_applies_required_flag_for_nested_response_fields_with_dot_notation()
     {
         $endpointData = $this->createMockEndpointData([

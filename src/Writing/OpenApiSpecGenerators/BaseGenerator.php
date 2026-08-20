@@ -352,7 +352,7 @@ class BaseGenerator extends OpenApiGenerator
             $code = $response->status; // OpenAPI spec requires status codes to be integers
             // OpenAPI groups responses by status code
             // Only one response type per status code, so only the last one will be used
-            if ($code === '204') {
+            if ($code === 204) {
                 // Must not add content for 204
                 $responses[$code] = [
                     'description' => $this->getResponseDescription($response),
