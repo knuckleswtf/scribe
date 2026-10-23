@@ -5,7 +5,6 @@ namespace Knuckles\Scribe\Extracting;
 use Faker\Factory;
 use Faker\Generator;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 trait ParamHelpers

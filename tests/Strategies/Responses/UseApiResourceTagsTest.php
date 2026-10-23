@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\Responses;
 
+use Barryvdh\Reflection\DocBlock\Tag;
 use Illuminate\Database\Eloquent\Factory;
 use Illuminate\Database\Eloquent\LegacyFactoryServiceProvider;
 use Illuminate\Database\Schema\Blueprint;
@@ -15,7 +16,6 @@ use Knuckles\Scribe\Tests\Fixtures\TestPet;
 use Knuckles\Scribe\Tests\Fixtures\TestUser;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Knuckles\Scribe\Tools\Utils;
-use Mpociot\Reflection\DocBlock\Tag;
 
 /**
  * @internal

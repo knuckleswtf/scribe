@@ -95,7 +95,7 @@ Scribe uses a strategy pattern for extraction:
 
 ### Key Dependencies
 - `nikic/php-parser` for parsing PHP code
-- `mpociot/reflection-docblock` for DocBlock parsing
+- `barryvdh/reflection-docblock` for DocBlock parsing
 - `fakerphp/faker` for generating examples
 - `symfony/yaml` and `symfony/var-exporter` for data export
 

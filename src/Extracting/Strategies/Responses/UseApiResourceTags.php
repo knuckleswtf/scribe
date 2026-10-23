@@ -2,6 +2,8 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\Responses;
 
+use Barryvdh\Reflection\DocBlock;
+use Barryvdh\Reflection\DocBlock\Tag;
 use Illuminate\Support\Arr;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Extracting\DatabaseTransactionHelpers;
@@ -12,8 +14,6 @@ use Knuckles\Scribe\Extracting\Strategies\Strategy;
 use Knuckles\Scribe\Tools\AnnotationParser as a;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\Utils;
-use Mpociot\Reflection\DocBlock;
-use Mpociot\Reflection\DocBlock\Tag;
 
 /**
  * Parse an Eloquent API resource response from the docblock ( @apiResource || @apiResourcecollection ).

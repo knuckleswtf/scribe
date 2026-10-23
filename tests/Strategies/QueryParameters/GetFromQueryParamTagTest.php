@@ -2,12 +2,12 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\QueryParameters;
 
+use Barryvdh\Reflection\DocBlock\Tag;
 use Illuminate\Routing\Route;
 use Knuckles\Scribe\Extracting\Strategies\QueryParameters\GetFromQueryParamTag;
 use Knuckles\Scribe\Tests\ArraySubsetAsserts;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
-use Mpociot\Reflection\DocBlock\Tag;
 use PHPUnit\Framework\TestCase;
 
 /**

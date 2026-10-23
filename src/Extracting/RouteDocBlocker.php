@@ -2,10 +2,10 @@
 
 namespace Knuckles\Scribe\Extracting;
 
+use Barryvdh\Reflection\DocBlock;
 use Illuminate\Routing\Route;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use Knuckles\Scribe\Tools\Utils as u;
-use Mpociot\Reflection\DocBlock;
 
 /**
  * Class RouteDocBlocker

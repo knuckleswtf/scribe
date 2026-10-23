@@ -2,12 +2,12 @@
 
 namespace Knuckles\Scribe\Tests\Strategies\ResponseFields;
 
+use Barryvdh\Reflection\DocBlock\Tag;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Camel\Extraction\ResponseCollection;
 use Knuckles\Scribe\Extracting\Strategies\ResponseFields\GetFromResponseFieldTag;
 use Knuckles\Scribe\Tests\ArraySubsetAsserts;
 use Knuckles\Scribe\Tools\DocumentationConfig;
-use Mpociot\Reflection\DocBlock\Tag;
 use PHPUnit\Framework\TestCase;
 
 /**

@@ -2,10 +2,10 @@
 
 namespace Knuckles\Scribe\Extracting\Strategies\Headers;
 
+use Barryvdh\Reflection\DocBlock\Tag;
 use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\Strategies\TagStrategyWithFormRequestFallback;
 use Knuckles\Scribe\Tools\Utils;
-use Mpociot\Reflection\DocBlock\Tag;
 
 class GetFromHeaderTag extends TagStrategyWithFormRequestFallback
 {
