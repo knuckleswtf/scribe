@@ -30,7 +30,10 @@ class HtmlWriter
         $this->config = $config ?: new DocumentationConfig(config('scribe', []));
         $this->markdownParser = new MarkdownParser;
         $baseUrl = $this->config->get('base_url') ?? config('app.url');
-        $this->baseUrl = Str::contains($baseUrl, ['{{', '{!!', '@']) ? Blade::render($baseUrl) : $baseUrl;
+        // For `laravel` type, the docs are a Blade view, so leave Blade syntax to be resolved when they're served
+        $this->baseUrl = $this->config->outputIsStatic() && Str::contains($baseUrl, ['{{', '{!!', '@'])
+            ? Blade::render($baseUrl)
+            : $baseUrl;
         // If they're using the default static path,
         // then use '../docs/{asset}', so assets can work via Laravel app or via index.html
         $this->assetPathPrefix = '../docs/';

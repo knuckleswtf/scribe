@@ -48,6 +48,20 @@ class HtmlWriterTest extends BaseLaravelTest
         $this->assertEquals('https://resolved.example.com/api', $baseUrl);
     }
 
+    public function test_leaves_blade_syntax_in_base_url_for_laravel_type()
+    {
+        config()->set('app.url', 'http://localhost');
+
+        $writer = new HtmlWriter(new DocumentationConfig([
+            'type' => 'laravel',
+            'base_url' => '{{ config("app.url") }}/api',
+            'title' => 'API Docs',
+        ]));
+
+        $baseUrl = (new \ReflectionClass($writer))->getProperty('baseUrl')->getValue($writer);
+        $this->assertEquals('{{ config("app.url") }}/api', $baseUrl);
+    }
+
     public function test_leaves_plain_base_url_untouched()
     {
         $writer = new HtmlWriter(new DocumentationConfig([
