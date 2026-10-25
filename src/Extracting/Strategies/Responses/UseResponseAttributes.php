@@ -11,6 +11,7 @@ use Knuckles\Scribe\Extracting\DatabaseTransactionHelpers;
 use Knuckles\Scribe\Extracting\InstantiatesExampleModels;
 use Knuckles\Scribe\Extracting\ParamHelpers;
 use Knuckles\Scribe\Extracting\Shared\ApiResourceResponseTools;
+use Knuckles\Scribe\Extracting\Shared\JsonApiResourceTools;
 use Knuckles\Scribe\Extracting\Shared\TransformerResponseTools;
 use Knuckles\Scribe\Extracting\Strategies\PhpAttributeStrategy;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
@@ -40,12 +41,17 @@ class UseResponseAttributes extends PhpAttributeStrategy
         $responses = [];
         foreach ([...$attributesOnController, ...$attributesOnFormRequest, ...$attributesOnMethod] as $attributeInstance) {
             // @phpstan-ignore-next-line
-            $responses[] = match (true) {
+            $response = match (true) {
                 $attributeInstance instanceof Response => $attributeInstance->toArray(),
                 $attributeInstance instanceof ResponseFromFile => $attributeInstance->toArray(),
                 $attributeInstance instanceof ResponseFromApiResource => $this->getApiResourceResponse($attributeInstance),
                 $attributeInstance instanceof ResponseFromTransformer => $this->getTransformerResponse($attributeInstance),
             };
+
+            // The resource may have failed to render (eg a JSON:API resource with no model).
+            if (! is_null($response)) {
+                $responses[] = $response;
+            }
         }
 
         return $responses;
@@ -76,20 +82,27 @@ class UseResponseAttributes extends PhpAttributeStrategy
         }
 
         $this->startDbTransaction();
-        $content = ApiResourceResponseTools::fetch(
+        $response = ApiResourceResponseTools::fetchResponse(
             $attributeInstance->name,
             $attributeInstance->isCollection(),
             $modelInstantiator,
             $this->endpointData,
             $pagination,
             $attributeInstance->additional,
+            $attributeInstance->with,
+            JsonApiResourceTools::shouldDocumentQueryParameters($this->config),
         );
         $this->endDbTransaction();
+
+        if (is_null($response)) {
+            return null;
+        }
 
         return [
             'status' => $attributeInstance->status,
             'description' => $attributeInstance->description,
-            'content' => $content,
+            'content' => $response->getContent(),
+            'headers' => JsonApiResourceTools::responseHeaders($attributeInstance->name, $response),
         ];
     }
 

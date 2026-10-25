@@ -211,6 +211,15 @@ return [
         'models_source' => ['factoryCreate', 'factoryMake', 'databaseFirst'],
     ],
 
+    // Settings for Laravel's JSON:API resources (Laravel 12.45+). Ignored on older versions.
+    'json_api' => [
+        // For endpoints returning a JSON:API resource, Scribe documents the `include` and `fields[<type>]`
+        // query parameters, based on the relationships and attributes the resource declares.
+        // Anything you documented yourself (say, an `@queryParam include`) always wins; set this to
+        // false if you'd rather not have these parameters in your docs at all.
+        'document_query_parameters' => true,
+    ],
+
     // The strategies Scribe will use to extract information about your routes at each stage.
     // Use configureStrategy() to specify settings for a strategy in the list.
     // Use removeStrategies() to remove an included strategy.
