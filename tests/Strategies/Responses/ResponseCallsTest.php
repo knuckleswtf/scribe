@@ -14,6 +14,7 @@ use Knuckles\Scribe\Tests\BaseLaravelTest;
 use Knuckles\Scribe\Tests\Fixtures\TestController;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\StreamedJsonResponse;
 
 /**
  * @internal
@@ -173,6 +174,10 @@ class ResponseCallsTest extends BaseLaravelTest
 
     public function test_can_get_content_from_streamed_response()
     {
+        if (! class_exists(StreamedJsonResponse::class)) {
+            $this->markTestSkipped('StreamedJsonResponse requires symfony/http-foundation 6.3+');
+        }
+
         $route = LaravelRouteFacade::post('/withStreamedResponse', [TestController::class, 'withStreamedResponse']);
 
         $this->withoutExceptionHandling();

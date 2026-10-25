@@ -13,11 +13,12 @@ jobs:
       matrix:
         # composer.json allows Laravel ^9.21, but the test suite itself needs 9.41+
         # (Rule::enum() only exists from 9.41.0), so that is the floor we pin here.
+        # `eol`: no security fixes upstream, so Composer's advisory blocking is disabled.
         include:
-          - { php: '8.1', laravel: '^9.41', deps: lowest }
-          - { php: '8.1', laravel: '^9.41', deps: highest }
-          - { php: '8.1', laravel: '^10.0', deps: highest }
-          - { php: '8.2', laravel: '^11.0', deps: highest }
+          - { php: '8.1', laravel: '^9.41', deps: lowest, eol: true }
+          - { php: '8.1', laravel: '^9.41', deps: highest, eol: true }
+          - { php: '8.1', laravel: '^10.0', deps: highest, eol: true }
+          - { php: '8.2', laravel: '^11.0', deps: highest, eol: true }
           - { php: '8.2', laravel: '^12.0', deps: highest }
           - { php: '8.3', laravel: '^12.0', deps: highest }
           - { php: '8.3', laravel: '^13.0', deps: highest }
@@ -37,6 +38,8 @@ jobs:
           coverage: xdebug
 
       - name: Install dependencies
+        env:
+          COMPOSER_POLICY_ADVISORIES_BLOCK: ${{ matrix.eol && '0' || '' }}
         run: |
           composer update --no-interaction --prefer-dist \
             ${{ matrix.deps == 'lowest' && '--prefer-lowest --prefer-stable' || '' }} \
