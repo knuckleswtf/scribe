@@ -1814,6 +1814,37 @@ class OpenAPISpecWriterTest extends BaseUnitTest
         $this->assertTrue($nullableFieldSchema['nullable']);
     }
 
+    public function test_uses_nullable_on_array_not_items_in_openapi30(): void
+    {
+        $config = array_merge($this->config, [
+            'openapi' => ['version' => '3.0.3'],
+        ]);
+
+        $endpoint = $this->createMockEndpointData([
+            'uri' => '/test',
+            'httpMethods' => ['POST'],
+            'bodyParameters' => [
+                'ids' => [
+                    'name' => 'ids',
+                    'type' => 'string[]',
+                    'required' => false,
+                    'description' => 'String id list',
+                    'example' => ['a'],
+                    'nullable' => true,
+                ],
+            ],
+        ]);
+
+        $writer = new OpenAPISpecWriter(new DocumentationConfig($config));
+        $results = $writer->generateSpecContent([$this->createGroup([$endpoint])]);
+
+        $schema = $results['paths']['/test']['post']['requestBody']['content']['application/json']['schema']['properties']['ids'];
+
+        $this->assertEquals('array', $schema['type']);
+        $this->assertTrue($schema['nullable']);
+        $this->assertArrayNotHasKey('nullable', $schema['items']);
+    }
+
     public function test_handles_null_response_content_in_openapi31()
     {
         $config = array_merge($this->config, [

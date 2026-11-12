@@ -105,8 +105,6 @@ class BaseGenerator extends OpenApiGenerator
                 $baseItem['enum'] = $field->enumValues;
             }
 
-            $this->applyNullable($baseItem, $field->nullable);
-
             $fieldData = [
                 'type' => 'array',
                 'description' => $field->description ?: '',
@@ -116,7 +114,7 @@ class BaseGenerator extends OpenApiGenerator
                         'name' => '',
                         'type' => $baseType,
                         'example' => ($field->example ?: [null])[0],
-                        'nullable' => $field->nullable,
+                        'nullable' => false,
                     ])
                     : $baseItem,
             ];
@@ -136,6 +134,8 @@ class BaseGenerator extends OpenApiGenerator
                     }
                 }
             }
+
+            $this->applyNullable($fieldData, $field->nullable);
 
             return $fieldData;
         }

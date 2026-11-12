@@ -880,6 +880,19 @@ class DummyInvokableValidationRule implements InvokableRule
             'description' => 'This rule is invokable.',
         ];
     }
+
+    public function test_preserves_nullable_on_parent_array_field_when_subfield_overwrites_name(): void
+    {
+        $ruleset = [
+            'tags' => ['nullable', 'array'],
+            'tags.*' => ['string'],
+        ];
+
+        $results = $this->strategy->parse($ruleset);
+
+        $this->assertTrue($results['tags']['nullable']);
+        $this->assertEquals('string[]', $results['tags']['type']);
+    }
 }
 
 if ($laravel10Rules) {

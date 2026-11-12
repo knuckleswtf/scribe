@@ -228,6 +228,10 @@ trait ParsesValidationRules
                 }
             }
 
+            if (isset($results[$name]) && ($results[$name]['nullable'] ?? false)) {
+                $details['nullable'] = true;
+            }
+
             $results[$name] = $details;
         }
 
