@@ -476,6 +476,20 @@ class ValidationRuleParsingTest extends BaseLaravelTest
         ];
     }
 
+    public function test_can_parse_exists_and_unique_rule_objects_with_where_clauses()
+    {
+        $results = $this->strategy->parse([
+            'exists_param' => ['integer', Rule::exists('users', 'id')->where('active', true)],
+            'exists_without_where_param' => ['integer', Rule::exists('users', 'id')],
+            'unique_param' => ['string', Rule::unique('users', 'email')->where('active', true)],
+        ]);
+
+        $this->assertEquals('Must match an existing stored value.', $results['exists_param']['description']);
+        $this->assertEquals('integer', $results['exists_param']['type']);
+        $this->assertEquals('Must match an existing stored value.', $results['exists_without_where_param']['description']);
+        $this->assertEquals('string', $results['unique_param']['type']);
+    }
+
     public function test_can_parse_rule_objects()
     {
         $results = $this->strategy->parse([

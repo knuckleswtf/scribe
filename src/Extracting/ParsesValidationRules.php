@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ClosureValidationRule;
 use Illuminate\Validation\Rules\Enum;
+use Illuminate\Validation\Rules\Exists;
+use Illuminate\Validation\Rules\Unique;
 use Knuckles\Scribe\Exceptions\CouldntProcessValidationRule;
 use Knuckles\Scribe\Exceptions\ProblemParsingValidationRules;
 use Knuckles\Scribe\Exceptions\ScribeException;
@@ -310,8 +312,24 @@ trait ParsesValidationRules
                 }
             }
 
-            return [$paramName => $val];
+            return [$paramName => $this->stringifyDatabaseRules($val)];
         })->toArray();
+    }
+
+    // Since Laravel v13.43, the validator keeps an `exists`/`unique` rule with a where() clause
+    // (eg `Rule::exists('users', 'id')->where('active', true)`) as an object, rather than casting it
+    // to its string form as before (and as it still does without one).
+    // See https://github.com/laravel/framework/pull/62425
+    protected function stringifyDatabaseRules(mixed $ruleset): mixed
+    {
+        if (! is_array($ruleset)) {
+            return $ruleset;
+        }
+
+        return array_map(
+            fn ($rule) => ($rule instanceof Exists || $rule instanceof Unique) ? (string) $rule : $rule,
+            $ruleset
+        );
     }
 
     // For inline Closure rules, turn any comment above it into a description
