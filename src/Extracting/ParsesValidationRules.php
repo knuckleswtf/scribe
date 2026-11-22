@@ -316,12 +316,10 @@ trait ParsesValidationRules
         })->toArray();
     }
 
-    /**
-     * Since Laravel v13.43, the validator keeps an `exists`/`unique` rule with a where() clause
-     * (eg `Rule::exists('users', 'id')->where('active', true)`) as an object, rather than casting it
-     * to its string form as before (and as it still does without one). The string form is all we
-     * need to describe it, so we cast it back here.
-     */
+    // Since Laravel v13.43, the validator keeps an `exists`/`unique` rule with a where() clause
+    // (eg `Rule::exists('users', 'id')->where('active', true)`) as an object, rather than casting it
+    // to its string form as before (and as it still does without one).
+    // See https://github.com/laravel/framework/pull/62425
     protected function stringifyDatabaseRules(mixed $ruleset): mixed
     {
         if (! is_array($ruleset)) {
