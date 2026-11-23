@@ -139,31 +139,26 @@ function handleResponse(endpointId, response, status, headers) {
 
     const responseContentEl = document.querySelector('#execution-response-content-' + endpointId);
 
-    // Check if the response contains Laravel's  dd() default dump output
-    const isLaravelDump = response.includes('Sfdump');
+    let json;
+    try {
+        json = JSON.parse(response);
+    } catch (e) {}
 
-    // If it's a Laravel dd() dump, use innerHTML to render it safely
-    if (isLaravelDump) {
-        responseContentEl.innerHTML = response === '' ? responseContentEl.dataset.emptyResponseText : response;
+    if (json !== undefined) {
+        responseContentEl.textContent = JSON.stringify(json, null, 4);
+        window.hljs.highlightElement(responseContentEl);
+    } else if (/<pre\s+class=(?:sf-dump|"sf-dump"|'sf-dump')[\s>]/i.test(response)) {
+        const frame = document.createElement('iframe');
+        frame.className = 'laravel-dump';
+        frame.title = 'Laravel dd()';
+        // Run the dump's toggle script in an opaque origin, isolated from the docs page.
+        frame.setAttribute('sandbox', 'allow-scripts');
+        frame.srcdoc = response;
+        responseContentEl.replaceChildren(frame);
     } else {
-        // Otherwise, stick to textContent for regular responses
         responseContentEl.textContent = response === '' ? responseContentEl.dataset.emptyResponseText : response;
     }
 
-    // Prettify it if it's JSON
-    let isJson = false;
-    try {
-        const jsonParsed = JSON.parse(response);
-        if (jsonParsed !== null) {
-            isJson = true;
-            response = JSON.stringify(jsonParsed, null, 4);
-            responseContentEl.textContent = response;
-        }
-    } catch (e) {
-
-    }
-
-    isJson && window.hljs.highlightElement(responseContentEl);
     const statusEl = document.querySelector('#execution-response-status-' + endpointId);
     statusEl.textContent = ` (${status})`;
     document.querySelector('#execution-results-' + endpointId).hidden = false;
@@ -186,6 +181,9 @@ function handleError(endpointId, err) {
 }
 
 async function executeTryOut(endpointId, form) {
+    document.querySelector('#execution-results-' + endpointId).hidden = true;
+    document.querySelector('#execution-response-content-' + endpointId).replaceChildren();
+
     const executeBtn = document.querySelector(`#btn-executetryout-${endpointId}`);
     executeBtn.textContent = executeBtn.dataset.loadingText;
     executeBtn.disabled = true;
