@@ -16,6 +16,7 @@ class WritingUtils
         'PATCH' => 'purple',
         'DELETE' => 'red',
         'OPTIONS' => 'grey',
+        'QUERY' => 'blue',
     ];
 
     /**

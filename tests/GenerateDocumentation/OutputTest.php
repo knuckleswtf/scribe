@@ -20,6 +20,7 @@ use Knuckles\Scribe\Tests\Fixtures\TestPostUserController;
 use Knuckles\Scribe\Tests\Fixtures\TestUser;
 use Knuckles\Scribe\Tests\TestHelpers;
 use Knuckles\Scribe\Tools\Utils;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Yaml\Yaml;
 
@@ -242,6 +243,30 @@ class OutputTest extends BaseLaravelTest
         $this->generate();
 
         $this->assertFileContainsString($this->bladeOutputPath(), 'Лорем ипсум долор сит амет');
+    }
+
+    /**
+     * @dataProvider themes
+     */
+    #[DataProvider('themes')]
+    public function test_can_generate_docs_for_query_method_routes(string $theme)
+    {
+        // Laravel 13 adds QUERY to Route::any() and introduces Route::query().
+        RouteFacade::match(['QUERY'], '/api/search', [TestController::class, 'dummy']);
+        $this->setConfig(['theme' => $theme, 'postman.enabled' => true]);
+
+        $this->generate();
+
+        $collection = json_decode(file_get_contents($this->postmanOutputPath()), true);
+        $this->assertEquals('QUERY', $collection['item'][0]['item'][0]['request']['method']);
+    }
+
+    public static function themes(): array
+    {
+        return [
+            'default' => ['default'],
+            'elements' => ['elements'],
+        ];
     }
 
     public function test_sorts_group_naturally_if_no_order_specified()
